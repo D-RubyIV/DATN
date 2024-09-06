@@ -43,6 +43,18 @@ public class Staff extends BaseEntity {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "district")
+    private String district;
+
+    @Column(name = "ward")
+    private String ward;
+
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "note")
     private String note;
 
