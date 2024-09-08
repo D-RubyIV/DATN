@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-08T18:12:37+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.7 (Eclipse Adoptium)"
-    date = "2024-09-09T01:19:46+0700",
+    date = "2024-09-09T01:55:38+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
@@ -110,7 +108,9 @@ public class BillResponseMapperImpl implements BillResponseMapper {
         voucherResponseDTO.setQuantity( voucher.getQuantity() );
         voucherResponseDTO.setMinAmount( voucher.getMinAmount() );
         voucherResponseDTO.setMaxPercent( voucher.getMaxPercent() );
-        voucherResponseDTO.setTypeTicket( voucher.getTypeTicket() );
+        if ( voucher.getTypeTicket() != null ) {
+            voucherResponseDTO.setTypeTicket( voucher.getTypeTicket().name() );
+        }
         voucherResponseDTO.setStartDate( voucher.getStartDate() );
         voucherResponseDTO.setEndDate( voucher.getEndDate() );
         voucherResponseDTO.setDeleted( voucher.getDeleted() );

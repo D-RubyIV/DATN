@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-08T18:12:37+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.7 (Eclipse Adoptium)"
+    date = "2024-09-09T01:55:38+0700",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
 public class BillRequestMapperImpl implements BillRequestMapper {
@@ -31,6 +31,7 @@ public class BillRequestMapperImpl implements BillRequestMapper {
         bill.setSubTotal( d.getSubTotal() );
         bill.setStatus( d.getStatus() );
         bill.setCustomer( d.getCustomer() );
+        bill.setVoucher( d.getVoucher() );
 
         return bill;
     }
@@ -64,6 +65,7 @@ public class BillRequestMapperImpl implements BillRequestMapper {
         billRequestDTO.setStatus( e.getStatus() );
         billRequestDTO.setTotal( e.getTotal() );
         billRequestDTO.setSubTotal( e.getSubTotal() );
+        billRequestDTO.setVoucher( e.getVoucher() );
         billRequestDTO.setCustomer( e.getCustomer() );
 
         return billRequestDTO;
