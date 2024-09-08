@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
-import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.enums.TypeVoucher;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Builder
 @Table(name = "voucher", uniqueConstraints = @UniqueConstraint(columnNames = {"code"}))
 public class Voucher extends BaseEntity {
 
@@ -37,8 +39,12 @@ public class Voucher extends BaseEntity {
     @Column(name = "maxPercent")
     private Integer maxPercent;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "typeTicket")
-    private String typeTicket;
+    @Enumerated(EnumType.STRING)
+    private TypeVoucher typeTicket;
 
     @Column(name = "startDate")
     @JsonFormat(pattern = "dd-MM-yyyy")
