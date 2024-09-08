@@ -46,5 +46,4 @@ public class Bill extends BaseEntity {
     private List<History> histories;
 
 
-
 }
