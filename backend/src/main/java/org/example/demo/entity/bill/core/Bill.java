@@ -1,6 +1,5 @@
 package org.example.demo.entity.bill.core;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,11 +10,8 @@ import org.example.demo.entity.bill.enums.Status;
 import org.example.demo.entity.bill.enums.Type;
 import org.example.demo.entity.bill.properties.History;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.voucher.Voucher;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.example.demo.entity.voucher.core.Voucher;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor

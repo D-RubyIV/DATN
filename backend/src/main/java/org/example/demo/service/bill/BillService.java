@@ -10,7 +10,7 @@ import org.example.demo.dto.bill.response.BillResponseDTO;
 import org.example.demo.entity.bill.core.Bill;
 import org.example.demo.entity.bill.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.voucher.Voucher;
+import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.mapper.bill.request.BillRequestMapper;
 import org.example.demo.mapper.bill.response.BillResponseMapper;
 import org.example.demo.repository.bill.BillRepository;

@@ -1,6 +1,5 @@
 package org.example.demo.dto.bill.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -9,13 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.bill.enums.Status;
-import org.example.demo.entity.bill.properties.History;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.voucher.Voucher;
+import org.example.demo.entity.voucher.core.Voucher;
 import org.hibernate.validator.constraints.Length;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor

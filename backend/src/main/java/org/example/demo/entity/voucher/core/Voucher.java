@@ -1,6 +1,5 @@
-package org.example.demo.entity.voucher;
+package org.example.demo.entity.voucher.core;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.enums.TypeVoucher;
+import org.example.demo.entity.voucher.enums.Type;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,7 +43,7 @@ public class Voucher extends BaseEntity {
 
     @Column(name = "typeTicket")
     @Enumerated(EnumType.STRING)
-    private TypeVoucher typeTicket;
+    private Type typeTicket;
 
     @Column(name = "startDate")
     @JsonFormat(pattern = "dd-MM-yyyy")

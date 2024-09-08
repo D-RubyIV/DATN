@@ -9,11 +9,7 @@ import org.example.demo.dto.customer.response.CustomerResponseDTO;
 import org.example.demo.dto.history.response.HistoryResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.bill.enums.Status;
-import org.example.demo.entity.bill.properties.History;
-import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.voucher.Voucher;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
