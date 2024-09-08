@@ -1,5 +1,6 @@
 package org.example.demo.entity.bill.properties;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

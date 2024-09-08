@@ -1,5 +1,6 @@
 package org.example.demo.entity.human.customer;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
