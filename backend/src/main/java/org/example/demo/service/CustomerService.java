@@ -1,4 +1,4 @@
-package org.example.service;
+package org.example.demo.service;
 
 import org.example.demo.entity.human.customer.Customer;
 

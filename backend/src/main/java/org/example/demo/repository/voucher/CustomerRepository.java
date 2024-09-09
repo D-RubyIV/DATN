@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.demo.repository.voucher;
 
 import org.example.demo.entity.human.customer.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;

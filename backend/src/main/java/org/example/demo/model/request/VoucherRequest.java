@@ -1,4 +1,4 @@
-package org.example.model.request;
+package org.example.demo.model.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,10 +7,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.enums.TypeVoucher;
+import org.example.demo.enums.TypeTicket;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -40,7 +39,7 @@ public class VoucherRequest {
     private Integer maxPercent;
 
     @NotNull(message = "Please select the voucher type!")
-    private TypeVoucher typeTicket;
+    private TypeTicket typeTicket;
 
     @NotNull(message = "Start date must not be empty!")
     private LocalDate startDate;

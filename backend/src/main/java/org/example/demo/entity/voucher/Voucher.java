@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.enums.TypeVoucher;
+import org.example.demo.enums.TypeTicket;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -43,7 +43,7 @@ public class Voucher extends BaseEntity {
 
     @Column(name = "typeTicket")
     @Enumerated(EnumType.STRING)
-    private TypeVoucher typeTicket;
+    private TypeTicket typeTicket;
 
     @Column(name = "startDate")
     @JsonFormat(pattern = "dd-MM-yyyy")
@@ -59,8 +59,8 @@ public class Voucher extends BaseEntity {
     @ManyToMany
     @JoinTable(
             name = "voucher_customer",
-            joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "voucher_id")
+            joinColumns = @JoinColumn(name = "voucher_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
     )
     private List<Customer> customers;
 

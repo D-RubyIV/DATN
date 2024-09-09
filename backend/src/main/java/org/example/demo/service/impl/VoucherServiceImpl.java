@@ -1,15 +1,15 @@
-package org.example.service.impl;
+package org.example.demo.service.impl;
 
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.Voucher;
-import org.example.enums.TypeVoucher;
-import org.example.infrastructure.common.AutoGenCode;
-import org.example.infrastructure.converted.VoucherConvert;
-import org.example.model.request.VoucherRequest;
-import org.example.model.response.VoucherResponse;
-import org.example.repository.CustomerRepository;
-import org.example.repository.VoucherRepository;
-import org.example.service.VoucherService;
+import org.example.demo.enums.TypeTicket;
+import org.example.demo.infrastructure.common.AutoGenCode;
+import org.example.demo.infrastructure.converted.VoucherConvert;
+import org.example.demo.model.request.VoucherRequest;
+import org.example.demo.model.response.VoucherResponse;
+import org.example.demo.repository.voucher.CustomerRepository;
+import org.example.demo.repository.voucher.VoucherRepository;
+import org.example.demo.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +34,13 @@ public class VoucherServiceImpl implements VoucherService {
 
 
     @Override
+    public List<VoucherResponse> getCustomerVoucher(Integer id, VoucherRequest request) {
+        return voucherRepository.getAllVouchersWithCustomers(id, request);
+    }
+
+    @Override
     public List<VoucherResponse> getAll() {
-        return voucherRepository.getAllVoucher();
+        return voucherRepository.getPublicVoucher();
     }
 
     @Override
@@ -54,7 +59,7 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucherSaved = voucherRepository.save(voucher);
         updateStatus(voucherSaved);
 
-        if (voucher.getTypeTicket() == TypeVoucher.Individual) {
+        if (voucher.getTypeTicket() == TypeTicket.Individual) {
             List<Customer> customers = voucher.getCustomers();
             for (Customer customer : customers) {
                 // Ví dụ: Gửi thông báo hoặc thực hiện một hành động khác

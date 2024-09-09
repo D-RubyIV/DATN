@@ -1,9 +1,11 @@
-package org.example.controller;
+package org.example.demo.controller.voucher;
 
 import org.example.demo.entity.voucher.Voucher;
-import org.example.model.request.VoucherRequest;
-import org.example.model.response.VoucherResponse;
-import org.example.service.VoucherService;
+
+import org.example.demo.model.request.VoucherRequest;
+import org.example.demo.model.response.VoucherResponse;
+import org.example.demo.service.VoucherService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,11 @@ public class VoucherController {
 
     @Autowired
     private VoucherService voucherService;
+
+    @GetMapping("/private/{id}")
+    public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id,VoucherRequest request){
+        return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id,request));
+    }
 
     @GetMapping("/get-all")
     public ResponseEntity<List<VoucherResponse>> getAll() {

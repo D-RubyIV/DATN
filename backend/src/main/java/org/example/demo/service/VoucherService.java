@@ -1,14 +1,15 @@
-package org.example.service;
+package org.example.demo.service;
 
 
 import org.example.demo.entity.voucher.Voucher;
-import org.example.model.request.VoucherRequest;
-import org.example.model.response.VoucherResponse;
+import org.example.demo.model.request.VoucherRequest;
+import org.example.demo.model.response.VoucherResponse;
 
 import java.util.List;
 
 public interface VoucherService {
 
+    List<VoucherResponse> getCustomerVoucher(Integer id, VoucherRequest request);
     List<VoucherResponse> getAll();
 
     VoucherResponse findVoucherById(Integer id);

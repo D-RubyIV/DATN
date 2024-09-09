@@ -1,15 +1,16 @@
-package org.example.infrastructure.converted;
+package org.example.demo.infrastructure.converted;
 
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.Voucher;
-import org.example.model.request.VoucherRequest;
-import org.example.repository.CustomerRepository;
-import org.example.repository.VoucherRepository;
+import org.example.demo.model.request.VoucherRequest;
+import org.example.demo.repository.voucher.CustomerRepository;
+import org.example.demo.repository.voucher.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class VoucherConvert {
@@ -21,7 +22,9 @@ public class VoucherConvert {
     private CustomerRepository customerRepository;
 
     public Voucher convertRequestToEntity(VoucherRequest request) {
-        List<Customer> customerList = customerRepository.findAllById(request.getCustomers());
+        List<Customer> customerList = customerRepository.findAllById(
+                request.getCustomers()
+        );
 
         return Voucher.builder()
                 .code(request.getCode())

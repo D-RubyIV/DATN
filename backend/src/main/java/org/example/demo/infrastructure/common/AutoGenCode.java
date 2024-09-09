@@ -1,4 +1,4 @@
-package org.example.infrastructure.common;
+package org.example.demo.infrastructure.common;
 
 import org.springframework.stereotype.Component;
 
