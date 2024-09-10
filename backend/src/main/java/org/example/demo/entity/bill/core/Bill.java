@@ -10,6 +10,7 @@ import org.example.demo.entity.bill.enums.Status;
 import org.example.demo.entity.bill.enums.Type;
 import org.example.demo.entity.bill.properties.History;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 
 import java.util.List;
@@ -48,9 +49,13 @@ public class Bill extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(cascade = {CascadeType.MERGE})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "staff_id")
+    private Staff staff;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "voucher_id")

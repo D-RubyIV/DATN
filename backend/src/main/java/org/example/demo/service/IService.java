@@ -1,8 +1,10 @@
 package org.example.demo.service;
 
 import org.apache.coyote.BadRequestException;
-
 /**
+ * The type Staff response dto.
+ * @author PHAH04
+ * Vui lòng không chỉnh sửa, có sửa hãy copy =))
  * @param <E> Entity
  * @param <ID> Kiểu dữ liệu ID của Entity
  * @param <RQ> Đối tượng requestDTO

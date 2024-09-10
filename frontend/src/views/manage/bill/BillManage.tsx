@@ -1,7 +1,14 @@
+import { BillTable } from "./component/BillTable";
+
 const BillManage = () => {
     return ( 
         <div>
-            <p>Bill Manage</p>
+            <div>
+
+            </div>
+            <div>
+                <BillTable></BillTable>
+            </div>
         </div>
      );
 }

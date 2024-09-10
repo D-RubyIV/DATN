@@ -7,7 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.cart.enums.Status;
 import org.example.demo.entity.human.staff.Staff;
-
+/**
+ * The type Staff response dto.
+ * BY PHAH04
+ * Vui lòng không chỉnh sửa, có sửa hãy copy =))
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

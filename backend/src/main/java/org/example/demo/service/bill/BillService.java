@@ -21,13 +21,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author PHAH04
+ * Vui lòng không chỉnh sửa, có sửa hãy copy =))
+ */
 @Slf4j
 @Service
 public class BillService implements IService<Bill, Integer, BillRequestDTO> {
@@ -87,15 +91,37 @@ public class BillService implements IService<Bill, Integer, BillRequestDTO> {
             predicates.add(cb.lessThanOrEqualTo(root.get("total"), toTotal));
         }
 
+        // Áp dụng các điều kiện lọc vào truy vấn
         query.where(predicates.toArray(new Predicate[0]));
 
+        // Thêm điều kiện sắp xếp
+        if (pageable.getSort().isSorted()) {
+            List<Order> orders = new ArrayList<>();
+            for (Sort.Order sortOrder : pageable.getSort()) {
+                Path<Object> path = root.get(sortOrder.getProperty());
+                orders.add(sortOrder.isAscending() ? cb.asc(path) : cb.desc(path));
+            }
+            query.orderBy(orders);
+        }
+
+        // Query để đếm tổng số bản ghi
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<Bill> countRoot = countQuery.from(Bill.class);
+        countQuery.select(cb.count(countRoot))
+                .where(predicates.toArray(new Predicate[0]));
+        Long totalRecords = entityManager.createQuery(countQuery).getSingleResult();
+
+        // Query để lấy dữ liệu phân trang
         TypedQuery<Bill> typedQuery = entityManager.createQuery(query);
         typedQuery.setFirstResult((int) pageable.getOffset());
         typedQuery.setMaxResults(pageable.getPageSize());
 
         List<Bill> resultList = typedQuery.getResultList();
-        return new PageImpl<>(billResponseMapper.toListDTO(resultList), pageable, resultList.size());
+
+        // Trả về Page với tổng số lượng bản ghi và dữ liệu đã sắp xếp
+        return new PageImpl<>(billResponseMapper.toListDTO(resultList), pageable, totalRecords);
     }
+
 
     @Override
     public Bill findById(Integer id) throws BadRequestException {

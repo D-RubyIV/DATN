@@ -8,20 +8,24 @@ import org.example.demo.dto.bill.response.BillResponseDTO;
 import org.example.demo.entity.bill.enums.Status;
 import org.example.demo.mapper.bill.response.BillResponseMapper;
 import org.example.demo.service.bill.BillService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 /**
  * @author PHAH04
- * The type Bill controller.
+ * Vui lòng không chỉnh sửa =))
  */
+@CrossOrigin("*")
 @RestController
 @RequestMapping(value = "bill")
 public class BillController implements IControllerBasic<Integer, BillRequestDTO> {
@@ -33,25 +37,25 @@ public class BillController implements IControllerBasic<Integer, BillRequestDTO>
 
     @GetMapping(value = "")
     public ResponseEntity<?> findAll(
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
+            @Valid @RequestBody PageableObject pageableObject
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(billService.findAll(pageable));
+        return ResponseEntity.ok(billService.findAll(pageableObject.toPageRequest()));
     }
 
-    @GetMapping(value = "page")
+    @RequestMapping(value = "page")
     public ResponseEntity<Page<BillResponseDTO>> findAllByPage(
             @RequestParam(value = "code", required = false) String code,
             @RequestParam(value = "fromDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate fromDate,
             @RequestParam(value = "toDate", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate toDate,
             @RequestParam(value = "fromTotal", required = false) Double fromTotal,
             @RequestParam(value = "toTotal", required = false) Double toTotal,
-            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "5") Integer size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(billService.findAllByPage(code, fromDate, toDate, fromTotal, toTotal, pageable));
+            @Valid @RequestBody PageableObject pageableObject,
+            BindingResult bindingResult
+    ) throws BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        return ResponseEntity.ok(billService.findAllByPage(code, fromDate, toDate, fromTotal, toTotal, pageableObject.toPageRequest()));
     }
 
     @Override

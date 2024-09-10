@@ -5,21 +5,16 @@ import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.demo.dto.customer.response.CustomerResponseDTO;
-import org.example.demo.dto.history.response.HistoryResponseDTO;
-import org.example.demo.dto.staff.response.StaffResponseDTO;
-import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.bill.enums.Status;
-
-import java.util.List;
 /**
  * @author PHAH04
  * Vui lòng không chỉnh sửa =))
  */
+import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BillResponseDTO {
+public class BillOverviewResponseDTO {
     private Integer id;
     private String code;
     private String address;
@@ -29,8 +24,7 @@ public class BillResponseDTO {
     private Status status;
     private Double total;
     private Double subTotal;
-    private CustomerResponseDTO customerResponseDTO;
-    private StaffResponseDTO staffResponseDTO;
-    private VoucherResponseDTO voucherResponseDTO;
-    private List<HistoryResponseDTO> historyResponseDTOS;
+    private String customerName;
+    private String voucherName;
+    private String staffName;
 }

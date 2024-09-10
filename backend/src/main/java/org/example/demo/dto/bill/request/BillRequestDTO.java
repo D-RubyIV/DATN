@@ -11,7 +11,11 @@ import org.example.demo.entity.bill.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.hibernate.validator.constraints.Length;
-
+/**
+ * The type Staff response dto.
+ * BY PHAH04
+ * Vui lòng không chỉnh sửa, có sửa hãy copy =))
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

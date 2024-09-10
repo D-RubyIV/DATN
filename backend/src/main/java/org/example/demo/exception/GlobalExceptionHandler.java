@@ -12,11 +12,13 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -117,4 +119,19 @@ public class GlobalExceptionHandler {
         }
         return fieldName;
     }
+
+    @ExceptionHandler(InvalidArgumentException.class)
+    public ResponseEntity<?> handleMethodArgumentTypeMismatch(InvalidArgumentException ex) {
+        String message = messageSource.getMessage("InvalidArgumentException", new Object[]{ex.getArgumentValue(), ex.getArgumentName()}, LocaleContextHolder.getLocale());
+        CustomError error = new CustomError(HttpStatus.BAD_REQUEST, message);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class})
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        String message = messageSource.getMessage("HttpMessageNotReadableException", new Object[]{}, LocaleContextHolder.getLocale());
+        CustomError error = new CustomError(HttpStatus.BAD_REQUEST, message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 }

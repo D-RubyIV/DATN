@@ -9,12 +9,13 @@ import org.example.demo.entity.bill.core.Bill;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.mapper.customer.response.CustomerResponseMapper;
 import org.example.demo.mapper.history.response.HistoryResponseMapper;
+import org.example.demo.mapper.staff.response.StaffResponseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-09T02:14:39+0700",
+    date = "2024-09-11T01:35:55+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.8 (Oracle Corporation)"
 )
 @Component
@@ -24,6 +25,8 @@ public class BillResponseMapperImpl implements BillResponseMapper {
     private HistoryResponseMapper historyResponseMapper;
     @Autowired
     private CustomerResponseMapper customerResponseMapper;
+    @Autowired
+    private StaffResponseMapper staffResponseMapper;
 
     @Override
     public Bill toEntity(BillResponseDTO d) {
@@ -67,6 +70,7 @@ public class BillResponseMapperImpl implements BillResponseMapper {
 
         BillResponseDTO billResponseDTO = new BillResponseDTO();
 
+        billResponseDTO.setStaffResponseDTO( staffResponseMapper.toDTO( e.getStaff() ) );
         billResponseDTO.setCustomerResponseDTO( customerResponseMapper.toDTO( e.getCustomer() ) );
         billResponseDTO.setVoucherResponseDTO( voucherToVoucherResponseDTO( e.getVoucher() ) );
         billResponseDTO.setHistoryResponseDTOS( historyResponseMapper.toListDTO( e.getHistories() ) );
