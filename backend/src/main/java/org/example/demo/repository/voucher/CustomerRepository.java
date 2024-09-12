@@ -14,4 +14,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     select * from customer
     """, nativeQuery = true)
     List<Customer> getAllCustomer();
+
+
 }

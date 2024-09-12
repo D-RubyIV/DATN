@@ -17,7 +17,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
     @Query(value = """
     SELECT 
-        ROW_NUMBER() OVER(ORDER BY v.id DESC) AS indexs,
+        ROW_NUMBER() OVER(ORDER BY v.created_date DESC) AS indexs,
         v.id AS id,
         v.code AS code,
         v.name AS name, 
@@ -27,20 +27,14 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
         v.end_date AS endDate,
         v.max_percent AS maxPercent,
         v.min_amount AS minAmount,
-        v.status AS status,
-        c.id AS customerId,
-        c.name AS customerName,
-        c.email AS customerEmail
+        v.status AS status
     FROM voucher v
-    LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
-    LEFT JOIN customer c ON vc.customer_id = c.id
-    ORDER BY v.id DESC
     """, nativeQuery = true)
     List<VoucherResponse> getPublicVoucher();
 
     @Query(value = """
     SELECT 
-        ROW_NUMBER() OVER(ORDER BY v.id DESC) AS indexs,
+        ROW_NUMBER() OVER(ORDER BY v.created_date DESC) AS indexs,
         v.id AS id,
         v.code AS code,
         v.name AS name, 
@@ -64,26 +58,62 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 """, nativeQuery = true)
     List<VoucherResponse> getAllVouchersWithCustomers(@Param("idCustomer") Integer id, @Param("req") VoucherRequest request);
 
+//    @Query(value = """
+//    SELECT
+//        v.id as id,
+//        v.code as code,
+//        v.name as name,
+//        v.type_ticket as typeTicket,
+//        v.quantity as quantity,
+//        v.start_date as startDate,
+//        v.end_date as endDate,
+//        v.max_percent as maxPercent,
+//        v.min_amount as minAmount,
+//        v.status as status,
+//        c.id as customerId,
+//        c.name as customerName,
+//        c.email as customerEmail
+//    FROM voucher v
+//    LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
+//    LEFT JOIN customer c ON vc.customer_id = c.id
+//    WHERE v.id = :id
+//""", nativeQuery = true)
+//    Optional<VoucherResponse> findVoucherById(Integer id);
+
     @Query(value = """
-    SELECT 
-        v.id as id,
-        v.code as code,
-        v.name as name, 
-        v.type_ticket as typeTicket,
-        v.quantity as quantity,
-        v.start_date as startDate,
-        v.end_date as endDate,
-        v.max_percent as maxPercent,
-        v.min_amount as minAmount,
-        v.status as status,
-        c.id as customerId,
-        c.name as customerName,
-        c.email as customerEmail
+    
+    SELECT
+        ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
+        STRING_AGG(CAST(vc.customer_id AS VARCHAR(MAX)), ',') AS customer,
+        v.id AS id,
+        v.code AS code,
+        v.name AS name,
+        v.type_ticket AS typeTicket,
+        v.quantity AS quantity,
+        v.start_date AS startDate,
+        v.end_date AS endDate,
+        v.max_percent AS maxPercent,
+        v.min_amount AS minAmount,
+        v.status AS status
     FROM voucher v
     LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
     LEFT JOIN customer c ON vc.customer_id = c.id
     WHERE v.id = :id
+    GROUP BY
+        v.id,
+        v.code,
+        v.name,
+        v.type_ticket,
+        v.quantity,
+        v.start_date,
+        v.end_date,
+        v.max_percent,
+        v.min_amount,
+        v.status,
+        v.created_date
 """, nativeQuery = true)
     Optional<VoucherResponse> findVoucherById(Integer id);
+
+
 
 }

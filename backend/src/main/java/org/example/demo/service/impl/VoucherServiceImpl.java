@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class VoucherServiceImpl implements VoucherService {
@@ -59,15 +60,24 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucherSaved = voucherRepository.save(voucher);
         updateStatus(voucherSaved);
 
-        if (voucher.getTypeTicket() == TypeTicket.Individual) {
-            List<Customer> customers = voucher.getCustomers();
-            for (Customer customer : customers) {
-                // Ví dụ: Gửi thông báo hoặc thực hiện một hành động khác
-                // gui mail
+        if (voucherSaved.getTypeTicket() == TypeTicket.Individual) {
+            if (!request.getCustomers().isEmpty()) {
+                List<Integer> idCustomers = request.getCustomers();
+                List<Customer> listCustomers = idCustomers.stream()
+                        .map(idCustomer -> {
+                            Optional<Customer> customerOptional = customerRepository.findById(idCustomer);
+                            return customerOptional.orElseThrow(() ->
+                                    new RuntimeException("Customer not found: " + idCustomer));
+                        })
+                        .collect(Collectors.toList());
+                voucherSaved.setCustomers(listCustomers);
+                voucherSaved = voucherRepository.save(voucherSaved);
             }
         }
+
         return voucherSaved;
     }
+
 
 
     @Override

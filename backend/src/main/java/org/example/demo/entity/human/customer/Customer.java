@@ -38,7 +38,7 @@ public class Customer extends BaseEntity {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDay;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",fetch = FetchType.EAGER)
     private List<Address> addresses;
 
 }

@@ -22,10 +22,6 @@ public class VoucherConvert {
     private CustomerRepository customerRepository;
 
     public Voucher convertRequestToEntity(VoucherRequest request) {
-        List<Customer> customerList = customerRepository.findAllById(
-                request.getCustomers()
-        );
-
         return Voucher.builder()
                 .code(request.getCode())
                 .name(request.getName())
@@ -37,7 +33,6 @@ public class VoucherConvert {
                 .deleted(false)
                 .maxPercent(request.getMaxPercent())
                 .minAmount(request.getMinAmount())
-                .customers(customerList)
                 .build();
     }
 

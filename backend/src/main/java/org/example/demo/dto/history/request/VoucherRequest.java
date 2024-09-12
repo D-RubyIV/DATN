@@ -1,12 +1,7 @@
-package org.example.demo.model.request;
+package org.example.demo.dto.history.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.example.demo.enums.TypeTicket;
 
 import java.time.LocalDate;
@@ -49,5 +44,6 @@ public class VoucherRequest {
 
     private Boolean deleted = false;
 
+    @NotNull(message = "Please select at least one customer!")
     private List<Integer> customers;
 }
