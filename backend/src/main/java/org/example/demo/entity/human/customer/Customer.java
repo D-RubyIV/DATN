@@ -2,8 +2,10 @@ package org.example.demo.entity.human.customer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.example.demo.entity.BaseEntity;
+import org.hibernate.annotations.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -39,6 +41,8 @@ public class Customer extends BaseEntity {
     private LocalDate birthDay;
 
     @OneToMany(mappedBy = "customer")
+    @Fetch(value = FetchMode.SUBSELECT)
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Address> addresses;
 
 }

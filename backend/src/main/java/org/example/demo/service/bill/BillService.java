@@ -6,9 +6,11 @@ import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.bill.request.BillRequestDTO;
+import org.example.demo.dto.bill.response.BillOverviewResponseDTO;
 import org.example.demo.dto.bill.response.BillResponseDTO;
 import org.example.demo.entity.bill.core.Bill;
 import org.example.demo.entity.bill.enums.Status;
+import org.example.demo.entity.bill.enums.Type;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.mapper.bill.request.BillRequestMapper;
@@ -17,17 +19,17 @@ import org.example.demo.repository.bill.BillRepository;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * @author PHAH04
  * Vui lòng không chỉnh sửa, có sửa hãy copy =))
@@ -72,6 +74,7 @@ public class BillService implements IService<Bill, Integer, BillRequestDTO> {
         root.fetch("customer", JoinType.LEFT);
         root.fetch("voucher", JoinType.LEFT);
         root.fetch("histories", JoinType.LEFT);
+        root.fetch("staff", JoinType.LEFT).fetch("role", JoinType.LEFT);
 
         List<Predicate> predicates = new ArrayList<>();
 
@@ -120,6 +123,20 @@ public class BillService implements IService<Bill, Integer, BillRequestDTO> {
 
         // Trả về Page với tổng số lượng bản ghi và dữ liệu đã sắp xếp
         return new PageImpl<>(billResponseMapper.toListDTO(resultList), pageable, totalRecords);
+    }
+
+    public Page<BillOverviewResponseDTO> findAllOverviewByPage(
+            String code,
+            String phone,
+            String customerName,
+            String staffName,
+            Status status,
+            Type type,
+            LocalDate createdFrom,
+            LocalDate createdTo,
+            Pageable pageable
+    ) {
+        return billRepository.findAllByPageWithQuery(code, phone, customerName, staffName, status, type, createdFrom, createdTo, pageable).map(s -> billResponseMapper.toOverViewDTO(s));
     }
 
 

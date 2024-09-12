@@ -29,6 +29,9 @@ public class PageableObject {
     }
 
     @NotNull(message = "NotNull")
+    private String query;
+
+    @NotNull(message = "NotNull")
     @PositiveOrZero(message = "PositiveOrZero")
     private Integer pageIndex;
 
@@ -42,6 +45,7 @@ public class PageableObject {
 
     public Pageable toPageRequest() {
         List<String> orders = List.of("asc", "desc");
+        this.pageIndex -= 1;
 
         if (this.sort == null) {
             throw new InvalidArgumentException("InvalidArgumentException", "", "sort");

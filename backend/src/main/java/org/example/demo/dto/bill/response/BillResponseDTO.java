@@ -10,6 +10,7 @@ import org.example.demo.dto.history.response.HistoryResponseDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.bill.enums.Status;
+import org.example.demo.entity.bill.enums.Type;
 
 import java.util.List;
 /**
@@ -27,6 +28,8 @@ public class BillResponseDTO {
     private Boolean deleted;
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Enumerated(EnumType.STRING)
+    private Type type;
     private Double total;
     private Double subTotal;
     private CustomerResponseDTO customerResponseDTO;

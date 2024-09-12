@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.bill.enums.Status;
+import org.example.demo.entity.bill.enums.Type;
 /**
  * @author PHAH04
  * Vui lòng không chỉnh sửa =))
@@ -22,9 +23,10 @@ public class BillOverviewResponseDTO {
     private Boolean deleted;
     @Enumerated(EnumType.STRING)
     private Status status;
+    @Enumerated(EnumType.STRING)
+    private Type type;
     private Double total;
     private Double subTotal;
     private String customerName;
-    private String voucherName;
     private String staffName;
 }
