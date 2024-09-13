@@ -1,5 +1,5 @@
-import { lazy } from 'react'
-import type { Routes } from '@/@types/routes'
+import { lazy } from 'react';
+import type { Routes } from '@/@types/routes';
 
 const manageRoute: Routes = [
     {
@@ -27,11 +27,17 @@ const manageRoute: Routes = [
         authority: [],
     },
     {
+        key: 'AddStaffPage',
+        path: `/manage/staff/add`,
+        component: lazy(() => import('@/views/manage/staff/AddStaffPage')),
+        authority: [],
+    },
+    {
         key: 'billManager',
         path: `/manage/bill`,
         component: lazy(() => import('@/views/manage/bill/BillManage')),
         authority: [],
     },
-]
+];
 
-export default manageRoute
+export default manageRoute;

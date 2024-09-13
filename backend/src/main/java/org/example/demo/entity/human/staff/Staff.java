@@ -1,6 +1,5 @@
 package org.example.demo.entity.human.staff;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,11 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
-import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.role.Role;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +19,7 @@ import java.util.List;
 @Entity
 @Table(name = "staff", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "email", "phone"}))
 public class Staff extends BaseEntity {
+
 
     @Column(name = "code")
     private String code;
@@ -37,7 +36,7 @@ public class Staff extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "citizenId")
+    @Column(name = "citizen_id")
     private String citizenId;
 
     @Column(name = "address")
@@ -58,12 +57,22 @@ public class Staff extends BaseEntity {
     @Column(name = "note")
     private String note;
 
-    @Column(name = "birthDay")
+    @Column(name = "birth_day")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDay;
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @Column(name = "created_date")
+    private LocalDate createdDate;
+
+    @Column(name = "updated_date")
+    private LocalDate updatedDate;
+
+    @Column(name = "gender")
+    private Boolean gender;
+
 
     @ManyToOne
     @JoinColumn(name = "role_id")

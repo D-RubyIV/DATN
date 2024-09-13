@@ -6,19 +6,15 @@ import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
 import axios from 'axios'
 import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/DataTable'
-import { Select } from '@/components/ui'
-import TabList from '@/components/ui/Tabs/TabList'
-import TabNav from '@/components/ui/Tabs/TabNav'
-import { TypeBill } from '../store'
-type IOveriewBill = {
+type IBill = {
     id: string;
     code: string;
     phone: string;
     status: string;
-    customerName: string;
-    staffName: string;
+    customerResponseDTO: ICustomer;
+    staffResponseDTO: IStaff;
+    voucherResponseDTO: IVoucher;
     address: string;
-    type: string;
     total: number;
     subTotal: number;
 }
@@ -62,7 +58,6 @@ export const BillTable = ({ }: Props) => {
     const debounceFn = debounce(handleDebounceFn, 500)
 
     function handleDebounceFn(val: string) {
-        console.log(val)
         if (typeof val === 'string' && (val.length > 1 || val.length === 0)) {
             setTableData((prevData) => ({
                 ...prevData,
@@ -71,22 +66,15 @@ export const BillTable = ({ }: Props) => {
         }
     }
 
-    function truncateString(str: string, maxLength: number): string {
-        if (str.length <= maxLength) {
-            return str;
-        }
-        return str.slice(0, maxLength) + '...'; // Thay thế '...' bằng ký hiệu khác nếu cần
-    }
-
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         debounceFn(e.target.value)
     }
 
-    const handleAction = (cellProps: CellContext<IOveriewBill, unknown>) => {
+    const handleAction = (cellProps: CellContext<IBill, unknown>) => {
         console.log('Action clicked', cellProps)
     }
 
-    const columns: ColumnDef<IOveriewBill>[] = [
+    const columns: ColumnDef<IBill>[] = [
         {
             header: 'Code',
             accessorKey: 'code',
@@ -114,30 +102,20 @@ export const BillTable = ({ }: Props) => {
             accessorKey: 'status',
         },
         {
-            header: 'Type',
-            accessorKey: 'type',
-        },
-        {
-            header: 'Customer',
-            accessorKey: 'customer___name',
+            header: 'Staff',
             cell: (props) => (
-                props.row.original.customerName
+                props.row.original.staffResponseDTO.name
             ),
         },
         {
-            header: 'Staff',
-            accessorKey: 'staff___name',
+            header: 'Customer',
             cell: (props) => (
-                props.row.original.staffName
+                props.row.original.customerResponseDTO.name
             ),
         },
         {
             header: 'Address',
             accessorKey: 'address',
-            cell: (props) => (
-                truncateString(props.row.original.address, 25)
-            ),
-
         },
         {
             header: '',
@@ -150,53 +128,33 @@ export const BillTable = ({ }: Props) => {
         },
     ]
 
-    const options1 = [
-        { value: '.com', label: '.com' },
-        { value: '.net', label: '.net' },
-        { value: '.io', label: '.io' },
-    ]
-
-    const typeBills: TypeBill[] = [
-        { label: "ALL", value: "" },
-        { label: "INSTORE", value: "INSTORE" },
-        { label: "ONLINE", value: "ONLINE" },
-    ];
-    const [selectedTypeBill, setSelectedTypeBill] = useState<TypeBill>(typeBills[0])
-
     const handlePaginationChange = (pageIndex: number) => {
         setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
     }
 
     const handleSelectChange = (pageSize: number) => {
-        setTableData((prevData) => ({
-            ...prevData,
-            pageSize: pageSize, // Cập nhật pageSize mới
-            pageIndex: 1 // Đặt pageIndex về 1
-        }));
+        setTableData((prevData) => ({ ...prevData, ...{ pageSize } }))
     }
 
     const handleSort = ({ order, key }: OnSortParam) => {
         console.log({ order, key })
         setTableData((prevData) => ({
             ...prevData,
-            sort: {
-                order,
-                key: (key as string).replace("___", "."),
-            },
-        }));
+            ...{ sort: { order, key } },
+        }))
     }
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true)
-            const response = await axios.post('http://localhost:8080/api/v1/bill/overview', tableData)
+            const response = await axios.post('http://localhost:8080/api/v1/bill/page', tableData)
             console.log(response)
             if (response.data) {
                 setData(response.data.content)
                 setLoading(false)
                 setTableData((prevData) => ({
                     ...prevData,
-                    ...{ total: response.data.totalElements },
+                    ...{ total: response.data.total },
                 }))
             }
         }
@@ -211,36 +169,14 @@ export const BillTable = ({ }: Props) => {
 
     return (
         <>
-            <div className="flex justify-between mb-4">
-                <div className='flex justify-start'>
-                    <TabList >
-                        {
-                            typeBills.map((item, index) => (
-                                <TabNav className={` rounded ${selectedTypeBill.value === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
-                                    <button className='p-2 w-20' onClick={() => setSelectedTypeBill(item)}>
-                                        {item.label}
-                                    </button>
-                                </TabNav>
-                            ))
-                        }
-                    </TabList>
-                </div>
-                <div className='flex justify-end gap-5'>
-                    <Select
-                        isSearchable={true}
-                        defaultValue={{ label: '.com', value: '.com' }}
-                        options={options1}
-                        size='sm'
-                        className='lg:w-52'
-                    />
-                    <Input
-                        ref={inputRef}
-                        placeholder="Search..."
-                        size="sm"
-                        className="lg:w-52"
-                        onChange={handleChange}
-                    />
-                </div>
+            <div className="flex justify-end mb-4">
+                <Input
+                    ref={inputRef}
+                    placeholder="Search..."
+                    size="sm"
+                    className="lg:w-52"
+                    onChange={handleChange}
+                />
             </div>
             <DataTable
                 columns={columns}
