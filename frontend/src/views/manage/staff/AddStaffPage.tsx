@@ -203,7 +203,7 @@ const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
                 "Content-Type": "application/json",
              },
         });
-
+        console.log(newStaff.code)
         console.log('Saved staff:', response.data);
 
         // EmailJS integration
@@ -651,27 +651,63 @@ const removeVietnameseTones = (str: string): string => {
     return str;
 };
 
+// const generateRandomMaNV = (hoTen: string = ''): string => {
+//     const nameStringDefault = 'defaultnv';
+
+//     if (!hoTen || typeof hoTen !== 'string') {
+//         const randomMa = Math.floor(10000 + Math.random() * 90000).toString();
+//         return `${nameStringDefault}NV${randomMa}`;
+//     }
+
+//     hoTen = removeVietnameseTones(hoTen);
+//     const nameParts = hoTen.split(' ');
+
+//     const ho = nameParts[0].charAt(0); // Chữ cái đầu của họ
+//     const tenDem = nameParts.length > 2 ? nameParts.slice(1, -1).map(part => part.charAt(0)).join('') : ''; // Chữ cái đầu của tên đệm, nếu có
+//     const ten = nameParts[nameParts.length - 1]; // Tên
+
+//     const nameInitials = ten.toLowerCase() + ho.toLowerCase() + tenDem.toLowerCase();
+    
+//     const randomMa = Math.floor(10000 + Math.random() * 90000).toString(); // 5 số ngẫu nhiên
+
+//     return `${nameInitials}NV${randomMa}`;
+// };
+
+
+// hùng test có thể xóa đi
 const generateRandomMaNV = (hoTen: string = ''): string => {
     const nameStringDefault = 'defaultnv';
 
     if (!hoTen || typeof hoTen !== 'string') {
-        const randomMa = Math.floor(10000 + Math.random() * 90000).toString();
-        return `${nameStringDefault}NV${randomMa}`;
+        const randomChar = generateRandomString(1); // Sinh 1 ký tự ngẫu nhiên
+        return `${nameStringDefault}${randomChar}`;  // Ghép với tên mặc định
     }
 
     hoTen = removeVietnameseTones(hoTen);
     const nameParts = hoTen.split(' ');
 
-    const ho = nameParts[0].charAt(0); // Chữ cái đầu của họ
-    const tenDem = nameParts.length > 2 ? nameParts.slice(1, -1).map(part => part.charAt(0)).join('') : ''; // Chữ cái đầu của tên đệm, nếu có
-    const ten = nameParts[nameParts.length - 1]; // Tên
+    const ten = nameParts[nameParts.length - 1]; // Tên (lấy phần cuối cùng của họ tên)
 
-    const nameInitials = ten.toLowerCase() + ho.toLowerCase() + tenDem.toLowerCase();
-    
-    const randomMa = Math.floor(10000 + Math.random() * 90000).toString(); // 5 số ngẫu nhiên
+    const randomChar = generateRandomString(1); // Sinh 1 ký tự ngẫu nhiên
 
-    return `${nameInitials}NV${randomMa}`;
+    return `${ten.toLowerCase()}${randomChar}`; // Ghép tên với 1 ký tự ngẫu nhiên
 };
+
+// Hàm phụ để sinh ký tự ngẫu nhiên
+const generateRandomString = (length: number): string => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    const charactersLength = characters.length;
+
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    return result;
+};
+
+
+// hùng test có thể xóa đi
 
 const generateRandomPassword = (): string => {
     const randomPassword = Math.floor(Math.random() * 90000) + 10000; // Generate random 5-digit number
