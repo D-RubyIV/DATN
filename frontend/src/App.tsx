@@ -1,12 +1,34 @@
-import HomePage from "./pages/HomePage"
+import { Provider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
+import { PersistGate } from 'redux-persist/integration/react'
+import store, { persistor } from './store'
+import Theme from '@/components/template/Theme'
+import Layout from '@/components/layouts'
+import appConfig from '@/configs/app.config'
+import './locales'
+
+const environment = process.env.NODE_ENV
+
+/**
+ * Set enableMock(Default false) to true at configs/app.config.js
+ * If you wish to enable mock api
+ */
 
 function App() {
-  return (
-    <div className="flex items-center justify-center w-screen">
-      <div>
-        <HomePage></HomePage>
-      </div>
-    </div>
-  )
+    return (
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+                <BrowserRouter>
+                    <Theme>
+                        <Layout />
+                    </Theme>
+                </BrowserRouter>
+            </PersistGate>
+        </Provider>
+    )
 }
+
 export default App
+
+// sao nó vẫn đỏ thế nhỉ nó thiểu thư viện
+// hay nãy tôi xóa nhầm file nào r =
