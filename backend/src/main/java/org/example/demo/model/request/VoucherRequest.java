@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.demo.enums.TypeTicket;
+import org.example.demo.infrastructure.common.PageableRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
-public class VoucherRequest {
+public class VoucherRequest extends PageableRequest {
 
     @NotNull(message = "Code must not be empty!")
     private String code;

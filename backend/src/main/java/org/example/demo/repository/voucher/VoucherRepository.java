@@ -3,6 +3,8 @@ package org.example.demo.repository.voucher;
 import org.example.demo.entity.voucher.Voucher;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -58,28 +60,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 """, nativeQuery = true)
     List<VoucherResponse> getAllVouchersWithCustomers(@Param("idCustomer") Integer id, @Param("req") VoucherRequest request);
 
-//    @Query(value = """
-//    SELECT
-//        v.id as id,
-//        v.code as code,
-//        v.name as name,
-//        v.type_ticket as typeTicket,
-//        v.quantity as quantity,
-//        v.start_date as startDate,
-//        v.end_date as endDate,
-//        v.max_percent as maxPercent,
-//        v.min_amount as minAmount,
-//        v.status as status,
-//        c.id as customerId,
-//        c.name as customerName,
-//        c.email as customerEmail
-//    FROM voucher v
-//    LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
-//    LEFT JOIN customer c ON vc.customer_id = c.id
-//    WHERE v.id = :id
-//""", nativeQuery = true)
-//    Optional<VoucherResponse> findVoucherById(Integer id);
-
     @Query(value = """
     SELECT
         ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
@@ -113,6 +93,37 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 """, nativeQuery = true)
     Optional<VoucherResponse> findVoucherById(Integer id);
 
+    @Query(value = """
+    SELECT 
+        ROW_NUMBER() OVER(ORDER BY v.created_date DESC) AS indexs,
+        v.id AS id,
+        v.code AS code,
+        v.name AS name, 
+        v.type_ticket AS typeTicket,
+        v.quantity AS quantity,
+        v.start_date AS startDate,
+        v.end_date AS endDate,
+        v.max_percent AS maxPercent,
+        v.min_amount AS minAmount,
+        v.status AS status
+    FROM voucher v
+    WHERE (:#{#req.name} IS NULL OR :#{#req.name} = '' 
+           OR v.name LIKE '%' + :#{#req.name} + '%' 
+           OR v.code LIKE '%' + :#{#req.name} + '%')
+    AND (:#{#req.deleted} IS NULL OR v.deleted = :#{#req.deleted})
+    AND (:#{#req.status} IS NULL OR v.status = :#{#req.status})
+    """,
+            countQuery = """
+    SELECT COUNT(*) 
+    FROM voucher v
+    WHERE (:#{#req.name} IS NULL OR :#{#req.name} = '' 
+           OR v.name LIKE '%' + :#{#req.name} + '%' 
+           OR v.code LIKE '%' + :#{#req.name} + '%')
+    AND (:#{#req.deleted} IS NULL OR v.deleted = :#{#req.deleted})
+    AND (:#{#req.status} IS NULL OR v.status = :#{#req.status})
+    """,
+            nativeQuery = true)
+    Page<VoucherResponse> getAllVoucher(@Param("req") VoucherRequest request, Pageable pageable);
 
 
 }

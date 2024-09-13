@@ -5,6 +5,7 @@ import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.Voucher;
 import org.example.demo.enums.TypeTicket;
 import org.example.demo.infrastructure.common.AutoGenCode;
+import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.infrastructure.converted.VoucherConvert;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
@@ -12,6 +13,7 @@ import org.example.demo.repository.voucher.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -44,6 +46,12 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public List<VoucherResponse> getAll() {
         return voucherRepository.getPublicVoucher();
+    }
+
+    @Override
+    public PageableObject<VoucherResponse> getAll(VoucherRequest request) {
+
+        return new PageableObject<>(voucherRepository.getAllVoucher(request, PageRequest.of(request.getPage() -1 > 0 ? request.getPage()-1 : 0, request.getSizePage())));
     }
 
     @Override

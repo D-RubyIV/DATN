@@ -2,6 +2,7 @@ package org.example.demo.controller.voucher;
 
 import org.example.demo.entity.voucher.Voucher;
 
+import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.example.demo.service.VoucherService;
@@ -9,16 +10,11 @@ import org.example.demo.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/voucher")
 public class VoucherController {
@@ -29,6 +25,11 @@ public class VoucherController {
     @GetMapping("/private/{id}")
     public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id,VoucherRequest request){
         return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id,request));
+    }
+
+    @GetMapping
+    public PageableObject getAll(final VoucherRequest request){
+        return voucherService.getAll(request);
     }
 
     @GetMapping("/get-all")
