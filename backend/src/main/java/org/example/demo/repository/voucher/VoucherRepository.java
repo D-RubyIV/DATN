@@ -81,7 +81,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 //    Optional<VoucherResponse> findVoucherById(Integer id);
 
     @Query(value = """
-    
     SELECT
         ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
         STRING_AGG(CAST(vc.customer_id AS VARCHAR(MAX)), ',') AS customer,

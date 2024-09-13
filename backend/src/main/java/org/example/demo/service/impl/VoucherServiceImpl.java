@@ -1,5 +1,6 @@
 package org.example.demo.service.impl;
 
+import jakarta.transaction.Transactional;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.Voucher;
 import org.example.demo.enums.TypeTicket;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,6 +53,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    @Transactional
     public Voucher addVoucher(VoucherRequest request) {
         if (request.getCode() == null || request.getCode().isEmpty()) {
             request.setCode(autoGenCode.genarateUniqueCode());
@@ -82,13 +85,30 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher updateVoucher(Integer id, VoucherRequest request) {
-        Optional<Voucher> optionalVoucher = voucherRepository.findById(id);
-        if (optionalVoucher.isEmpty()) {
-            throw new RuntimeException("Voucher with ID not found: " + id);
+        Voucher voucherUpdate = voucherRepository.findById(id).orElse(null);
+        Voucher voucherSaved = voucherRepository.save(voucherConvert.convertRequestToEntity(id, request));
+        if (voucherSaved != null) {
+            updateStatus(voucherUpdate);
         }
-        Voucher voucher = voucherConvert.convertRequestToEntity(id, request);
-        updateStatus(voucher);
-        return voucherRepository.save(voucher);
+        if (voucherSaved.getTypeTicket() == TypeTicket.Individual) {
+            if (!request.getCustomers().isEmpty()) {
+                List<Integer> idCustomers = request.getCustomers();
+                List<Customer> listCustomers = idCustomers.stream()
+                        .map(idCustomer -> {
+                            Optional<Customer> customerOptional = customerRepository.findById(idCustomer);
+                            return customerOptional.orElseThrow(() ->
+                                    new RuntimeException("Customer not found: " + idCustomer));
+                        })
+                        .collect(Collectors.toList());
+                voucherSaved.setCustomers(listCustomers);
+                voucherSaved = voucherRepository.save(voucherSaved);
+            }
+        } else {
+            voucherSaved.setCustomers(Collections.emptyList());
+            voucherSaved = voucherRepository.save(voucherSaved);
+        }
+
+        return voucherSaved;
     }
 
     @Override
