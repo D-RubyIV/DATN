@@ -7,11 +7,7 @@ const SAFELIST_COLORS = 'colors'
 
 module.exports = {
 	mode: 'jit',
-	content:  [
-		"./index.html",
-    	"./src/**/*.{js,ts,jsx,tsx}", 
-		'./safelist.txt'
-	],
+	content: ["*"],
 	darkMode: 'class',
 		theme: {
 			fontFamily: {

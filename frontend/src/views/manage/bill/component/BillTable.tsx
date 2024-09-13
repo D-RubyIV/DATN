@@ -10,6 +10,7 @@ import { Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { TypeBill } from '../store'
+import BillDialog from './BillDialog'
 type IOveriewBill = {
     id: string;
     code: string;
@@ -84,7 +85,11 @@ export const BillTable = ({ }: Props) => {
 
     const handleAction = (cellProps: CellContext<IOveriewBill, unknown>) => {
         console.log('Action clicked', cellProps)
+        setIsOpen(true)
     }
+
+    const [dialogIsOpen, setIsOpen] = useState(false)
+
 
     const columns: ColumnDef<IOveriewBill>[] = [
         {
@@ -211,12 +216,13 @@ export const BillTable = ({ }: Props) => {
 
     return (
         <>
+            <BillDialog setIsOpen={setIsOpen} dialogIsOpen={dialogIsOpen}></BillDialog>
             <div className="flex justify-between mb-4">
                 <div className='flex justify-start'>
                     <TabList >
                         {
                             typeBills.map((item, index) => (
-                                <TabNav className={` rounded ${selectedTypeBill.value === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
+                                <TabNav key={index} className={` rounded ${selectedTypeBill.value === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
                                     <button className='p-2 w-20' onClick={() => setSelectedTypeBill(item)}>
                                         {item.label}
                                     </button>
