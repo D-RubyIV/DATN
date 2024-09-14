@@ -35,6 +35,7 @@ const navigationConfig: NavigationTree[] = [
                 authority: [],
                 subMenu: [],
             },
+            
         ],
     },
 ]

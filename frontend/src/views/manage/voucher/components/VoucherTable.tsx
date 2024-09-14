@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { ColumnDef, DataTable } from "@/components/shared";
 import { Button } from "@/components/ui";
 import axios from "axios";
+import Tag from '@/components/ui/Tag';
 
 type IVoucher = {
     id: number;
@@ -74,7 +75,18 @@ const VoucherTable = () => {
         },
         {
             header: 'Status',
-            accessorKey: 'status'
+            accessorKey: 'status',
+            cell: ({ row }) => {
+                const status = row.original.status;
+                const statusColor = status === 'Not started yet' ? 'text-green-500' :
+                                    status === 'In progress' ? 'text-red-500' :
+                                    status === 'Expired' ? 'text-yellow-500' : 'text-gray-500';
+                return (
+                    <Tag className={`${statusColor} font-bold`}>
+                        {status}
+                    </Tag>
+                );
+            }
         },
         {
             header: '',

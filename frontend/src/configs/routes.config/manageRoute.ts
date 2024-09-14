@@ -1,5 +1,7 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
+import { APP_PREFIX_PATH } from '@/constants/route.constant'
+
 
 const manageRoute: Routes = [
     {
@@ -31,6 +33,30 @@ const manageRoute: Routes = [
         path: `/manage/bill`,
         component: lazy(() => import('@/views/manage/bill/BillManage')),
         authority: [],
+    },
+    {
+        key: 'appVouchers.voucherList',
+        path: `${APP_PREFIX_PATH}/voucher/voucher-list`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherManage')),
+        authority: [],
+    },
+    // {
+    //     key: 'appVouchers.voucherEdit',
+    //     path: `${APP_PREFIX_PATH}}/voucher/voucher-edit/:voucherId`,
+    //     component: lazy(() => import('@/views/sales/ProductEdit')),
+    //     authority: [],
+    //     meta: {
+    //         header: 'Edit Voucher',
+    //     },
+    // },
+    {
+        key: 'appVouchers.voucherNew',
+        path: `${APP_PREFIX_PATH}/voucher/voucher-new`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherNew')),
+        authority: [],
+        meta: {
+            header: 'Add New Voucher',
+        },
     },
 ]
 

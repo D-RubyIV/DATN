@@ -29,6 +29,3 @@ function App() {
 }
 
 export default App
-
-// sao nó vẫn đỏ thế nhỉ nó thiểu thư viện
-// hay nãy tôi xóa nhầm file nào r =
