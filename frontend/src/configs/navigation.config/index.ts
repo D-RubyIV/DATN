@@ -66,8 +66,8 @@ const navigationConfig: NavigationTree[] = [
                 subMenu: [],
             },
             {
-                key: 'billManager',
-                path: '/manage/bill',
+                key: 'orderManager',
+                path: '/manage/order',
                 title: 'Collapse menu item 2',
                 translateKey: 'nav.billTitle',
                 icon: '',

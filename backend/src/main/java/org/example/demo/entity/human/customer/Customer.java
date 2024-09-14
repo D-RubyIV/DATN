@@ -41,8 +41,6 @@ public class Customer extends BaseEntity {
     private LocalDate birthDay;
 
     @OneToMany(mappedBy = "customer")
-    @Fetch(value = FetchMode.SUBSELECT)
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Address> addresses;
 
 }

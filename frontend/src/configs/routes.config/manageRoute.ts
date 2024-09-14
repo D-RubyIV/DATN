@@ -27,9 +27,9 @@ const manageRoute: Routes = [
         authority: [],
     },
     {
-        key: 'billManager',
-        path: `/manage/bill`,
-        component: lazy(() => import('@/views/manage/bill/BillManage')),
+        key: 'orderManager',
+        path: `/manage/order`,
+        component: lazy(() => import('@/views/manage/order/OrderManage')),
         authority: [],
     },
 ]
