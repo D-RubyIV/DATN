@@ -69,7 +69,7 @@ const navigationConfig: NavigationTree[] = [
                 key: 'orderManager',
                 path: '/manage/order',
                 title: 'Collapse menu item 2',
-                translateKey: 'nav.billTitle',
+                translateKey: 'nav.orderTitle',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],

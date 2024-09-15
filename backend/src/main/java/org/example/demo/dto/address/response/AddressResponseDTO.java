@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class AddressResponseDTO {
-    @Column(name = "phone")
+    private Integer id;
+
     private String phone;
 
-    @Column(name = "detail")
     private String detail;
 }

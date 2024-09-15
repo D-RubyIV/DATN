@@ -5,7 +5,7 @@ const orderRoute: Routes = [
     {
         key: 'customerManager',
         path: `/manage/order/order-details/:id`,
-        component: lazy(() => import('@/views/manage/order/component/OrderDetails')),
+        component: lazy(() => import('@/views/manage/order/component/other/OrderDetails')),
         authority: [],
     },
 ]

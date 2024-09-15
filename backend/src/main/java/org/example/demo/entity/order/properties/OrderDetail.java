@@ -27,4 +27,7 @@ public class OrderDetail extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
+    @Column(name = "deleted")
+    private Boolean deleted;
 }

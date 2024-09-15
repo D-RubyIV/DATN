@@ -9,9 +9,9 @@ import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/Da
 import { Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { statusEnums, TypeBill, typeEnums } from '../store'
-import BillDialog from './OrderDialog'
+import { StatusBill, statusEnums, TypeBill, typeEnums } from '../../store'
 import { Link } from 'react-router-dom'
+import { HiArrowLeft, HiArrowNarrowLeft, HiRefresh, HiReply } from 'react-icons/hi'
 type IOveriewBill = {
     id: number;
     code: string;
@@ -39,10 +39,6 @@ type Props = {
 export const OrderTable = ({ }: Props) => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const [selectedId, setSelectedId] = useState<number>(0)
-
-
-
     const [queryParam, setQueryParam] = useState<{
         type: typeEnums,
         status: statusEnums,
@@ -53,16 +49,15 @@ export const OrderTable = ({ }: Props) => {
 
     const setTypeParam = (p: typeEnums) => {
         setQueryParam(prevState => ({
-            ...prevState, 
+            ...prevState,
             type: p
         }));
     };
 
-    
-    const setStatusParam = (p: statusEnums ) => {
+    const setStatusParam = (p: statusEnums) => {
         setQueryParam(prevState => ({
-            ...prevState, 
-            status: p 
+            ...prevState,
+            status: p
         }));
     };
 
@@ -110,14 +105,6 @@ export const OrderTable = ({ }: Props) => {
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         debounceFn(e.target.value)
     }
-
-    const handleAction = (cellProps: CellContext<IOveriewBill, unknown>) => {
-        console.log('Action clicked', cellProps)
-        setIsOpen(true)
-        setSelectedId(cellProps.row.original.id)
-    }
-
-    const [dialogIsOpen, setIsOpen] = useState(false)
 
 
     const columns: ColumnDef<IOveriewBill>[] = [
@@ -177,10 +164,6 @@ export const OrderTable = ({ }: Props) => {
             header: 'Action',
             id: 'action',
             cell: (props) => (
-                // <Button size="xs" onClick={() => handleAction(props)}>
-                //     Action
-                // </Button>
-
                 <Button size="xs">
                     <Link to={`order-details/${props.row.original.id}`}>Action</Link>
                 </Button>
@@ -200,7 +183,16 @@ export const OrderTable = ({ }: Props) => {
         { label: "INSTORE", value: "INSTORE" },
         { label: "ONLINE", value: "ONLINE" },
     ];
-    const [selectedTypeBill, setSelectedTypeBill] = useState<TypeBill>(typeBills[0])
+
+    const statusBills: StatusBill[] = [
+        { label: "ALL", value: "" },
+        { label: "PENDING", value: "PENDING" },
+        { label: "TOSHIP", value: "TOSHIP" },
+        { label: "TORECEIVE", value: "TORECEIVE" },
+        { label: "DELIVERED", value: "DELIVERED" },
+        { label: "CANCELED", value: "CANCELED" },
+        { label: "RETURNED", value: "RETURNED" },
+    ];
 
     const handlePaginationChange = (pageIndex: number) => {
         setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
@@ -224,6 +216,15 @@ export const OrderTable = ({ }: Props) => {
             },
         }));
     }
+
+    const handleRestoreSetting = () => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            status: "",
+            type: "",
+        }));
+    }
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -252,23 +253,35 @@ export const OrderTable = ({ }: Props) => {
         tableData.sort,
         tableData.pageSize,
         tableData.query,
-        queryParam
+        queryParam,
     ])
 
     return (
         <>
-            <BillDialog
-                selectedId={selectedId}
-                setIsOpen={setIsOpen}
-                dialogIsOpen={dialogIsOpen}
-            ></BillDialog>
             <div className="flex justify-between mb-4">
                 <div className='flex justify-start'>
-                    <TabList >
+
+                    <div>
+                        <TabList >
+                            {
+                                typeBills.map((item, index) => (
+                                    <TabNav key={index} className={` rounded ${queryParam.type === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
+                                        <button className='p-2 w-20' onClick={() => setTypeParam(item.value)}>
+                                            {item.label}
+                                        </button>
+                                    </TabNav>
+                                ))
+                            }
+                        </TabList>
+                    </div>
+
+                </div>
+                <div>
+                    <TabList className='flex justify-evenly gap-4'>
                         {
-                            typeBills.map((item, index) => (
-                                <TabNav key={index} className={` rounded ${queryParam.type === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
-                                    <button className='p-2 w-20' onClick={() => setTypeParam(item.value)}>
+                            statusBills.map((item, index) => (
+                                <TabNav key={index} className={`w-full rounded ${queryParam.status === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
+                                    <button className='p-2 min-w-20' onClick={() => setStatusParam(item.value)}>
                                         {item.label}
                                     </button>
                                 </TabNav>
@@ -277,13 +290,16 @@ export const OrderTable = ({ }: Props) => {
                     </TabList>
                 </div>
                 <div className='flex justify-end gap-5'>
-                    <Select
+                    {/* <Select
                         isSearchable={true}
                         defaultValue={{ label: '.com', value: '.com' }}
                         options={options1}
                         size='sm'
                         className='lg:w-52'
-                    />
+                    /> */}
+                    <Button block onClick={handleRestoreSetting} variant='default'>
+                        <HiReply />
+                    </Button>
                     <Input
                         ref={inputRef}
                         placeholder="Search..."
@@ -293,6 +309,7 @@ export const OrderTable = ({ }: Props) => {
                     />
                 </div>
             </div>
+
             <DataTable
                 columns={columns}
                 data={data}

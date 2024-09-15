@@ -3,12 +3,11 @@ package org.example.demo.controller.order;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.controller.IControllerBasic;
-import org.example.demo.dto.order.request.OrderRequestDTO;
-import org.example.demo.dto.order.response.OrderOverviewResponseDTO;
-import org.example.demo.dto.order.response.OrderResponseDTO;
+import org.example.demo.dto.order.core.request.OrderRequestDTO;
+import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
+import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.entity.order.enums.Status;
-import org.example.demo.entity.order.enums.Type;
-import org.example.demo.mapper.order.response.OrderResponseMapper;
+import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +32,6 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     @Autowired
     private OrderResponseMapper orderResponseMapper;
-
-    @GetMapping(value = "")
-    public ResponseEntity<?> findAll(
-            @Valid @RequestBody PageableObject pageableObject
-    ) {
-        return ResponseEntity.ok(orderService.findAll(pageableObject.toPageRequest()));
-    }
 
     @RequestMapping(value = "overview")
     public ResponseEntity<Page<OrderOverviewResponseDTO>> findAllByPageV2(

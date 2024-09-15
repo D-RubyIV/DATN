@@ -16,6 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class CustomerResponseDTO {
+    private Integer id;
+
     private String code;
 
     private String name;

@@ -1,13 +1,17 @@
 import { string } from "yup";
 
 export type typeEnums = "" | "ONLINE" | "INSTORE"
-export type statusEnums = "" | "PENDING" | "PICKUP" | "DELIVERY" | "DELIVERED" | "CANCELED" | "RETURNED"
+export type statusEnums = "" | "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
 
 export type TypeBill = {
     label: string,
     value: typeEnums
 }
 
+export type StatusBill = {
+    label: string,
+    value: statusEnums
+}
 
 export type EBillStatus =
     | 'PENDING'
@@ -19,6 +23,12 @@ export type EBillStatus =
 
 export type EBillType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 
+type AddressResponseDTOS = {
+    id: number,
+    phone: string,
+    detail: string
+}
+
 export type CustomerResponseDTO = {
     code: string;
     name: string;
@@ -27,7 +37,7 @@ export type CustomerResponseDTO = {
     password: string;
     deleted: boolean;
     birthDay: string; // Consider using Date type if applicable
-    addressResponseDTOS: any[]; // Define this type if applicable
+    addressResponseDTOS: AddressResponseDTOS[]; // Define this type if applicable
 }
 
 export type StaffResponseDTO = {
@@ -80,5 +90,53 @@ export type BillResponseDTO = {
     customerResponseDTO: CustomerResponseDTO;
     staffResponseDTO: StaffResponseDTO;
     voucherResponseDTO: VoucherResponseDTO;
+    orderDetailResponseDTOS: OrderDetailResponseDTO[];
     historyResponseDTOS: HistoryResponseDTO[];
+}
+
+export type Entity = {
+    id: number;
+    createdDate: string;
+    updatedDate: string;
+    code: string;
+    name: string;
+    deleted: boolean;
+};
+
+export type ProductDetail = Entity & {
+    price: number;
+    quantity: number;
+    size: Entity;
+    color: Entity;
+    product: Entity;
+    texture: Entity;
+    origin: Entity;
+    brand: Entity;
+    collar: Entity;
+    sleeve: Entity;
+    style: Entity;
+    material: Entity;
+    thickness: Entity;
+    elasticity: Entity;
+    image: Entity;
+};
+
+export type OrderDetailResponseDTO = {
+    quantity: number;
+    productDetail: ProductDetail;
+};
+
+export type ProductOrderDetail = {
+    id: string
+    name: string
+    productCode: string
+    img: string
+    price: number
+    quantity: number
+    total: number
+    details: Record<string, string[]>
+}
+
+export type OrderProductsProps = {
+    data?: ProductOrderDetail[]
 }

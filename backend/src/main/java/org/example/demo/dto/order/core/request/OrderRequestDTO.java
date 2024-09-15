@@ -1,4 +1,4 @@
-package org.example.demo.dto.order.request;
+package org.example.demo.dto.order.core.request;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

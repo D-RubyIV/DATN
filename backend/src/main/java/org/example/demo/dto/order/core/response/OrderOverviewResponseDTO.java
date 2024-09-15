@@ -1,4 +1,4 @@
-package org.example.demo.dto.order.response;
+package org.example.demo.dto.order.core.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.EnumType;

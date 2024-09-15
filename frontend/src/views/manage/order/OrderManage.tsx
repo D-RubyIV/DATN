@@ -1,8 +1,8 @@
-import { OrderTable } from "./component/OrderTable";
+import { OrderTable } from "./component/core/OrderTable";
 
 const OrderManage = () => {
     return ( 
-        <div>
+        <div className="bg-white p-5">
             <div>
 
             </div>

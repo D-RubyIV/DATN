@@ -10,7 +10,7 @@
         "productTitle": "Product",
         "staffTitle": "Staff",
         "voucherTitle": "Voucher",
-        "billTitle": "Bill",
+        "orderTitle": "Order",
 
         "singleMenuItem": "Single menu item",
         "collapseMenu": {

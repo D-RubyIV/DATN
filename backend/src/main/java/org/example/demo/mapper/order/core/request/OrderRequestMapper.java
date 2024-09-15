@@ -1,6 +1,6 @@
-package org.example.demo.mapper.order.request;
+package org.example.demo.mapper.order.core.request;
 
-import org.example.demo.dto.order.request.OrderRequestDTO;
+import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.mapper.IMapperBasic;
 import org.example.demo.mapper.customer.request.CustomerRequestMapper;

@@ -2,19 +2,21 @@ import { useEffect, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Dialog from '@/components/ui/Dialog'
 import type { MouseEvent } from 'react'
-import BillTimeLine from './OrderTimeLine';
+import BillTimeLine from '../puzzle/OrderTimeLine';
 import Timeline from '@/components/ui/Timeline/Timeline';
 import TimeLineItem from '@/components/ui/Timeline/TimeLineItem';
 import Axios from 'axios';
-import { BillResponseDTO } from '../store';
+import { BillResponseDTO, OrderDetailResponseDTO, ProductOrderDetail } from '../../store';
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import IconText from '@/components/shared/IconText'
-import { HiMail, HiPhone, HiExternalLink } from 'react-icons/hi'
-import { Link } from 'react-router-dom'
-import OrderProducts from './OrderProducts';
-import PaymentSummary from './PaymentSummary';
-import OrderStep from './OrderStep';
+import { HiMail, HiPhone, HiExternalLink, HiPlusCircle } from 'react-icons/hi'
+import { Link, useParams } from 'react-router-dom'
+import OrderProducts from '../puzzle/OrderProducts';
+import PaymentSummary from '../puzzle/PaymentSummary';
+import OrderStep from '../puzzle/OrderStep';
+import OrderInfo from '../puzzle/OderInfo';
+import { Radio } from '@/components/ui';
 
 interface IProps {
     selectedId: number,
@@ -22,19 +24,21 @@ interface IProps {
     setIsOpen: (isOpen: boolean) => void;  // Sửa kiểu hàm setIsOpen
 }
 
-const OrderDialog = ({ selectedId, dialogIsOpen, setIsOpen }: IProps) => {
+const OrderDetails = () => {
+
+    const { id } = useParams()
 
     const [selectObject, setSelectObject] = useState<BillResponseDTO>()
+    const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
     useEffect(() => {
-        if (selectedId > 0) {
-            fetchData()
-        }
-    }, [selectedId])
+        fetchData()
+    }, [])
 
     const fetchData = async () => {
-        await Axios.get(`http://localhost:8080/api/v1/orders/${selectedId}`).then(function (response) {
+        await Axios.get(`http://localhost:8080/api/v1/orders/${id}`).then(function (response) {
             console.log(response)
             setSelectObject(response.data)
+            setListOrderDetail(response.data.orderDetailResponseDTOS)
         })
     }
 
@@ -43,62 +47,24 @@ const OrderDialog = ({ selectedId, dialogIsOpen, setIsOpen }: IProps) => {
     }, [selectObject])
 
 
-    const onDialogClose = (e: MouseEvent) => {
-        console.log('onDialogClose', e)
-        setIsOpen(false)
-    }
-
-    const onDialogOk = (e: MouseEvent) => {
-        console.log('onDialogOk', e)
-        setIsOpen(false)
-    }
 
     return (
         <div>
-            <Dialog
-                isOpen={dialogIsOpen}
-                bodyOpenClassName="overflow-hidden"
-                className="!w-10/12 max-w-full h-4/5"
-                onClose={onDialogClose}
-                onRequestClose={onDialogClose}
-            >
-
-                <h5 className="mb-4">Dialog Title</h5>
-
-
-                <div className='grid grid-cols-12 gap-10'>
+            <div>
+                <div className='grid grid-cols-12 gap-5'>
                     <div className='col-span-8'>
-                        {/* <OrderProducts></OrderProducts> */}
-                        <div>
+                        <div className='flex flex-col gap-5'>
                             <OrderStep></OrderStep>
-                            {/* <Timeline>
-                                <TimeLineItem>Breakfast - 09:00</TimeLineItem>
-                                <TimeLineItem>Breakfast - 09:00</TimeLineItem>
-                                <TimeLineItem>Breakfast - 09:00</TimeLineItem>
-                            </Timeline> */}
+                            <OrderProducts data={listOrderDetail}></OrderProducts>
                         </div>
                     </div>
                     <div className='col-span-4'>
+                        {selectObject !== undefined && <OrderInfo data={selectObject}></OrderInfo>}
                         {selectObject !== undefined && <CustomerInfo data={selectObject}></CustomerInfo>}
                         <PaymentSummary></PaymentSummary>
                     </div>
                 </div>
-
-
-
-                <div className="text-right mt-6">
-                    <Button
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onDialogClose}
-                    >
-                        Cancel
-                    </Button>
-                    <Button variant="solid" onClick={onDialogOk}>
-                        Okay
-                    </Button>
-                </div>
-            </Dialog>
+            </div>
         </div>
     )
 }
@@ -108,24 +74,24 @@ const OrderDialog = ({ selectedId, dialogIsOpen, setIsOpen }: IProps) => {
 
 const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     return (
-        <Card>
-            <h5 className="mb-4">Customer</h5>
+        <Card className='mb-4'>
+            <h5 className="mb-4">Customer #{data.customerResponseDTO.code}</h5>
             <Link
                 className="group flex items-center justify-between"
                 to="/app/crm/customer-details?id=11"
             >
                 <div className="flex items-center">
-                    <Avatar shape="circle" src={"https://elstar.themenate.net/img/avatars/thumb-11.jpg"} />
+                    <Avatar shape="circle" src={"https://th.bing.com/th/id/OIP.QypR4Rt5VeZ3Po2g8HQ2_QAAAA?rs=1&pid=ImgDetMain"} />
                     <div className="ltr:ml-2 rtl:mr-2">
                         <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
                             {data?.customerResponseDTO.name}
                         </div>
-                        {/* <span>
+                        <span>
                             <span className="font-semibold">
-                                {data?.previousOrder}{' '}
+                                {1}{' '}
                             </span>
                             previous orders
-                        </span> */}
+                        </span>
                     </div>
                 </div>
                 <HiExternalLink className="text-xl hidden group-hover:block" />
@@ -144,11 +110,20 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
             <h6 className="mb-4">Shipping Address</h6>
             <address className="not-italic">
                 <div className="mb-1">{data?.address}</div>
+                <Radio.Group vertical >
+                    {
+                        data.customerResponseDTO.addressResponseDTOS.map((item, index) => (
+                            <Radio value={item.id} key={index}>{item.phone} - {item.detail}</Radio>
+                        ))
+                    }
+                </Radio.Group>
+                <ul>
 
+                </ul>
             </address>
         </Card>
     )
 }
 
 
-export default OrderDialog
+export default OrderDetails
