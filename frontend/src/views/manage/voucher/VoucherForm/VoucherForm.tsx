@@ -1,14 +1,15 @@
 import { ConfirmDialog } from '@/components/shared'
 import { Button, FormContainer } from '@/components/ui'
 import { Form, Formik, FormikProps } from 'formik'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useCallback, useState } from 'react'
 import StickyFooter from '@/components/shared/StickyFooter'
 
 import { HiOutlineTrash } from 'react-icons/hi'
 import cloneDeep from 'lodash/cloneDeep'
 import * as Yup from 'yup'
 import BasicInformationFields from './BasicInformationFields'
-import CustomerTable from './CustomerTable'
+import CustomerTable from './CustomersTable'
+import CustomersTable from './CustomersTable'
 
 type FormikRef = FormikProps<any>
 
@@ -43,11 +44,11 @@ type VoucherForm = {
     onFormSubmit: (formData: FormModel, setSubmitting: SetSubmitting) => void
 }
 
-type Person = {
-    id: number;
-    name: string;
-    phone: string;
-    email: string;
+type Customer = {
+    id: number
+    name: string
+    phone: string
+    email: string
 }
 
 const validationSchema = Yup.object().shape({
@@ -104,13 +105,13 @@ const DeleteVoucherButton = ({ onDelete }: { onDelete: OnDelete }) => {
     )
 }
 
-const handleRowSelect = (customer: { id: number }) => {
-    console.log('Selected customer:', customer)
-};
-
-
-
 const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
+    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([])
+
+    const handleSelectedCustomersChange = (selectedIds: number[]) => {
+        setSelectedCustomerIds(selectedIds)
+    }
+
     const {
         type,
         initialData = {
@@ -120,7 +121,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
             quantity: '',
             maxPercent: 0,
             minAmount: 0,
-            statrtDate: '',
+            startDate: '',
             endDate: '',
             status: '',
             customers: [],
@@ -155,7 +156,11 @@ const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
                                     />
                                 </div>
                                 <div className="lg:col-span-2">
-                                    <CustomerTable  onRowSelect={handleRowSelect}/>
+                                    <CustomersTable
+                                        onSelectedCustomersChange={
+                                            handleSelectedCustomersChange
+                                        }
+                                    />
                                 </div>
                             </div>
                             <StickyFooter
