@@ -1,16 +1,15 @@
 {
     "nav": {
-        "home": "Home",
+        "home": "Trang chủ",
 
-        "settingTitle": "Setting",
-        "manageTitle": "Manage",
+        "settingTitle": "Cài đặt",
+        "manageTitle": "Quản lý",
 
-        
-        "customerTitle": "Customer",
-        "productTitle": "Product",
-        "staffTitle": "Staff",
-        "voucherTitle": "Voucher",
-        "billTitle": "Bill",
+        "customerTitle": "Khách hàng",
+        "productTitle": "Sản phẩm",
+        "staffTitle": "Nhân viên",
+        "voucherTitle": "Khuyễn mãi",
+        "orderTitle": "Hóa đơn",
 
         "singleMenuItem": "Single menu item",
         "collapseMenu": {
@@ -20,9 +19,9 @@
         },
         "groupMenu": {
             "groupMenu": "Group menu",
-            "single": "Group single menu item",
+            "single": "Cấu hình",
             "collapse": {
-                "collapse": "Group collapse menu",
+                "collapse": "Tài liệu",
                 "item1": "Group collapse menu item 1",
                 "item2": "Group collapse menu item 2"
             }

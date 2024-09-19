@@ -9,6 +9,22 @@ const manageRoute: Routes = [
         authority: [],
     },
     {
+        key: 'addCustomer',
+        path: `/manage/customer/add`,
+        component: lazy(
+            () => import('@/views/manage/customer/component/AddCustomer'),
+        ),
+        authority: [],
+    },
+    {
+        key: 'updateCustomer',
+        path: `/manage/customer/update/:id`,
+        component: lazy(
+            () => import('@/views/manage/customer/component/UpdateCustomer'),
+        ),
+        authority: [],
+    },
+    {
         key: 'voucherManager',
         path: `/manage/voucher`,
         component: lazy(() => import('@/views/manage/voucher/VoucherManage')),

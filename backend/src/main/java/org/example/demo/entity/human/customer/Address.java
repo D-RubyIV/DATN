@@ -19,6 +19,19 @@ public class Address extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "district")
+    private String district;
+
+    @Column(name = "ward")
+    private String ward;
+
+
     @Column(name = "detail")
     private String detail;
 

@@ -28,17 +28,23 @@ public class Customer extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "gender")
+    private String gender;
+
     @Column(name = "password")
     private String password;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "birthDay")
+    @Column(name = "birthDate")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate birthDay;
+    private LocalDate birthDate;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE)
     private List<Address> addresses;
 
 }
