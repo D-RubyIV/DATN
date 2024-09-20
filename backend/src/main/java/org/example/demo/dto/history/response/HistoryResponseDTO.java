@@ -18,4 +18,5 @@ public class HistoryResponseDTO {
     @Enumerated(EnumType.STRING)
     private Status status;
     private String note;
+    private String createdBy;
 }

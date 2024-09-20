@@ -13,14 +13,7 @@ export type StatusBill = {
     value: statusEnums
 }
 
-export type EBillStatus =
-    | 'PENDING'
-    | 'PICKUP'
-    | 'DELIVERY'
-    | 'DELIVERED'
-    | 'CANCELLED'
-    | 'RETURNED';
-
+export type EBillStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
 export type EBillType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 
 type AddressResponseDTOS = {
@@ -71,7 +64,7 @@ export type VoucherResponseDTO = {
 
 export type HistoryResponseDTO = {
     id: number;
-    status: 'DELIVERED'; // Adjust or add other statuses if needed
+    status: EBillStatus;
     note: string;
 }
 

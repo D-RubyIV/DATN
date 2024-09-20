@@ -16,7 +16,7 @@ import OrderProducts from '../puzzle/OrderProducts';
 import PaymentSummary from '../puzzle/PaymentSummary';
 import OrderStep from '../puzzle/OrderStep';
 import OrderInfo from '../puzzle/OderInfo';
-import { Radio } from '@/components/ui';
+import { Notification, Radio, toast } from '@/components/ui';
 
 interface IProps {
     selectedId: number,
@@ -39,6 +39,7 @@ const OrderDetails = () => {
             console.log(response)
             setSelectObject(response.data)
             setListOrderDetail(response.data.orderDetailResponseDTOS)
+            openNotification()
         })
     }
 
@@ -47,6 +48,15 @@ const OrderDetails = () => {
     }, [selectObject])
 
 
+    const toastNotification = (
+        <Notification closable title="Mesasge">
+            The fat cat sat on the mat bat away with paws annoy owner.
+        </Notification>
+    )
+
+    function openNotification() {
+        toast.push(toastNotification)
+    }
 
     return (
         <div>
@@ -54,8 +64,9 @@ const OrderDetails = () => {
                 <div className='grid grid-cols-12 gap-5'>
                     <div className='col-span-8'>
                         <div className='flex flex-col gap-5'>
-                            <OrderStep></OrderStep>
-                            <OrderProducts data={listOrderDetail}></OrderProducts>
+                            {selectObject !== undefined && <OrderStep selectObject={selectObject} fetchData={fetchData}></OrderStep>}
+                            {selectObject !== undefined && <OrderProducts data={listOrderDetail} selectObject={selectObject}></OrderProducts>}
+
                         </div>
                     </div>
                     <div className='col-span-4'>

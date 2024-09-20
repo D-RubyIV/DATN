@@ -27,4 +27,6 @@ public class History extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
+    private String createdBy = "Admin";
 }

@@ -6,12 +6,14 @@ import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
 import axios from 'axios'
 import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/DataTable'
-import { Select } from '@/components/ui'
+import { DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { StatusBill, statusEnums, TypeBill, typeEnums } from '../../store'
 import { Link } from 'react-router-dom'
 import { HiArrowLeft, HiArrowNarrowLeft, HiRefresh, HiReply } from 'react-icons/hi'
+import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
+import { format } from 'date-fns';
 type IOveriewBill = {
     id: number;
     code: string;
@@ -23,6 +25,7 @@ type IOveriewBill = {
     type: string;
     total: number;
     subTotal: number;
+    createdDate: string
 }
 type ICustomer = {
     name: string
@@ -42,10 +45,28 @@ export const OrderTable = ({ }: Props) => {
     const [queryParam, setQueryParam] = useState<{
         type: typeEnums,
         status: statusEnums,
+        createdFrom: string,
+        createdTo: string
     }>({
         type: "",
-        status: ""
+        status: "",
+        createdFrom: "",
+        createdTo: ""
     })
+
+    const setFromDateParam = (p: string) => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            createdFrom: p
+        }));
+    };
+
+    const setToDateParam = (p: string) => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            createdTo: p
+        }));
+    };
 
     const setTypeParam = (p: typeEnums) => {
         setQueryParam(prevState => ({
@@ -106,37 +127,36 @@ export const OrderTable = ({ }: Props) => {
         debounceFn(e.target.value)
     }
 
+    const [dateRange, setDateRange] = useState <[Date | null, Date | null]> ([new Date(2022, 11, 1), new Date(2022, 11, 5)])
+    const handleRangePickerChange = (date: [Date | null, Date | null]) => {
+        console.log('Selected range date', date)
+        if(date[0]){
+            console.log(format(date[0], 'dd-MM-yyyy'))
+            setFromDateParam(format(date[0], 'dd-MM-yyyy'))
+        }
+        else{
+            setFromDateParam("")
+        }
+        if(date[1]){
+            console.log(format(date[1], 'dd-MM-yyyy'))
+            setToDateParam(format(date[1], 'dd-MM-yyyy'))
+        }
+        else{
+            setToDateParam("")
+        }
+        setDateRange(date)
+    }
 
     const columns: ColumnDef<IOveriewBill>[] = [
         {
+            header: '#',
+            cell: (props) => (
+                props.row.index + 1
+            ),
+        },
+        {
             header: 'Code',
             accessorKey: 'code',
-        },
-        {
-            header: 'Phone',
-            accessorKey: 'phone',
-        },
-        {
-            header: 'Total',
-            accessorKey: 'total',
-            cell: (props) => (
-                props.row.original.total
-            ),
-        },
-        {
-            header: 'SubTotal',
-            accessorKey: 'subTotal',
-            cell: (props) => (
-                props.row.original.subTotal
-            ),
-        },
-        {
-            header: 'Status',
-            accessorKey: 'status',
-        },
-        {
-            header: 'Type',
-            accessorKey: 'type',
         },
         {
             header: 'Customer',
@@ -153,12 +173,30 @@ export const OrderTable = ({ }: Props) => {
             ),
         },
         {
-            header: 'Address',
-            accessorKey: 'address',
+            header: 'Phone',
+            accessorKey: 'phone',
+        },
+        {
+            header: 'Total',
+            accessorKey: 'total',
             cell: (props) => (
-                truncateString(props.row.original.address, 25)
+                props.row.original.total
             ),
-
+        },
+        {
+            header: 'Create Date',
+            accessorKey: 'createdDate',
+            cell: (props) => (
+                props.row.original.createdDate
+            ),
+        },
+        {
+            header: 'Status',
+            accessorKey: 'status',
+        },
+        {
+            header: 'Type',
+            accessorKey: 'type',
         },
         {
             header: 'Action',
@@ -229,7 +267,6 @@ export const OrderTable = ({ }: Props) => {
     useEffect(() => {
         const fetchData = async () => {
 
-
             setLoading(true)
             const response = await axios.post('http://localhost:8080/api/v1/orders/overview', tableData,
                 {
@@ -258,7 +295,26 @@ export const OrderTable = ({ }: Props) => {
 
     return (
         <>
-            <div className="flex justify-between mb-4">
+            <div className='grid grid-cols-2 gap-5 bg-[#f3f4f6] py-5'>
+                <div>
+                    <Input
+                        ref={inputRef}
+                        placeholder="Search..."
+                        size="sm"
+                        className="lg:w-full"
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className='flex justify-between gap-5'>
+                    <DatePicker.DatePickerRange
+                        placeholder="Select dates range"
+                        value={dateRange}
+                        dateViewCount={2}
+                        onChange={handleRangePickerChange}
+                    />
+                </div>
+            </div>
+            <div className="flex justify-between p-5">
                 <div className='flex justify-start'>
 
                     <div>
@@ -300,13 +356,7 @@ export const OrderTable = ({ }: Props) => {
                     <Button block onClick={handleRestoreSetting} variant='default'>
                         <HiReply />
                     </Button>
-                    <Input
-                        ref={inputRef}
-                        placeholder="Search..."
-                        size="sm"
-                        className="lg:w-52"
-                        onChange={handleChange}
-                    />
+
                 </div>
             </div>
 

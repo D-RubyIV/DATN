@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 import Avatar from '@/components/ui/Avatar'
@@ -11,9 +11,10 @@ import {
 import { NumericFormat } from 'react-number-format'
 import isLastChild from '@/utils/isLastChild'
 import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui'
+import { Button, Drawer, Notification, toast } from '@/components/ui'
 import { HiPlusCircle, HiViewList } from 'react-icons/hi'
-import { OrderDetailResponseDTO, OrderProductsProps, ProductOrderDetail } from '../../store'
+import { BillResponseDTO, OrderDetailResponseDTO, OrderProductsProps, ProductOrderDetail } from '../../store'
+import History from './History'
 
 
 
@@ -82,64 +83,92 @@ const columns = [
     }),
 ]
 
-const OrderProducts = ({ data }: { data: OrderDetailResponseDTO[] }) => {
+
+const OrderProducts = ({ data, selectObject }: { data: OrderDetailResponseDTO[], selectObject: BillResponseDTO }) => {
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
 
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+
+    const openDrawer = () => {
+        setIsOpen(true)
+    }
+
+    const onDrawerClose = (e: MouseEvent | any) => {
+        console.log('onDrawerClose', e)
+        setIsOpen(false)
+    }
+
     return (
-        <AdaptableCard className="mb-4">
-            <div className='flex justify-end items-center pb-4 gap-2'>
-                <Button block variant="default" size="sm" className='bg-indigo-500 !w-auto' icon={<HiViewList />} >
-                    History
-                </Button>
-                <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} >
-                    Add Product
-                </Button>
+        <div>
+            <div className=''>
+                <Drawer
+                    title="History"
+                    isOpen={isOpen}
+                    onClose={(e) => onDrawerClose(e)}
+                    width={600}
+                    onRequestClose={(e) => onDrawerClose(e)}
+                >
+                    <History selectObject={selectObject}></History>
+                </Drawer>
+
             </div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </Th>
-                                )
-                            })}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => {
-                        return (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => {
+            <AdaptableCard className="mb-4">
+                <div className='flex justify-end items-center pb-4 gap-2'>
+                    <Button onClick={() => openDrawer()} block variant="default" size="sm" className='bg-indigo-500 !w-auto' icon={<HiViewList />} >
+                        History
+                    </Button>
+                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />} >
+                        Add Product
+                    </Button>
+                </div>
+                <Table>
+                    <THead>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <Tr key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
                                     return (
-                                        <Td key={cell.id}>
+                                        <Th
+                                            key={header.id}
+                                            colSpan={header.colSpan}
+                                        >
                                             {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
+                                                header.column.columnDef.header,
+                                                header.getContext()
                                             )}
-                                        </Td>
+                                        </Th>
                                     )
                                 })}
                             </Tr>
-                        )
-                    })}
-                </TBody>
-            </Table>
-        </AdaptableCard>
+                        ))}
+                    </THead>
+                    <TBody>
+                        {table.getRowModel().rows.map((row) => {
+                            return (
+                                <Tr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => {
+                                        return (
+                                            <Td key={cell.id}>
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext()
+                                                )}
+                                            </Td>
+                                        )
+                                    })}
+                                </Tr>
+                            )
+                        })}
+                    </TBody>
+                </Table>
+            </AdaptableCard>
+        </div>
     )
 }
 
 export default OrderProducts
+
+

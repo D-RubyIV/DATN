@@ -2,7 +2,7 @@ import { OrderTable } from "./component/core/OrderTable";
 
 const OrderManage = () => {
     return ( 
-        <div className="bg-white p-5">
+        <div className="bg-white">
             <div>
 
             </div>

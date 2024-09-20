@@ -11,9 +11,11 @@ import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.order.properties.History;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.mapper.order.core.request.OrderRequestMapper;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
+import org.example.demo.repository.history.HistoryRepository;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
@@ -37,6 +39,9 @@ import java.util.List;
 public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private HistoryRepository historyRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -113,6 +118,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Order entityFound = findById(id);
         entityFound.setStatus(status);
         System.out.println(status);
+
+        History history = new History();
+        history.setOrder(entityFound);
+        history.setNote();
+
         return orderRepository.save(entityFound);
     }
 }
