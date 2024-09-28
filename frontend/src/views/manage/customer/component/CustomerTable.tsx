@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import DataTable, { CellContext } from '@/components/shared/DataTable';
+import DataTable, { ColumnDef, CellContext } from '@/components/shared/DataTable';
 import { Button, Input, Switcher } from '@/components/ui';
 import { GrEdit } from "react-icons/gr";
 import { IoIosSearch } from "react-icons/io";
@@ -11,15 +11,16 @@ import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
-
-
 type AddressDTO = {
     id: number;
+    name: string;
+    phone: string;
     province: string;
     district: string;
     ward: string;
     detail: string;
-}
+    isDefault?: boolean;
+};
 
 type CustomerListDTO = {
     id: number;
@@ -27,71 +28,63 @@ type CustomerListDTO = {
     email: string;
     phone: string;
     birthDate: string;
-    addressDetails: AddressDTO[];
+    defaultAddress?: AddressDTO;
     status: string;
     gender?: string;
 };
 
 const CustomerTable = () => {
-
     const navigate = useNavigate();
-
-    const [data, setData] = useState<CustomerListDTO[]>([])
+    const [data, setData] = useState<CustomerListDTO[]>([]);
     const [loading, setLoading] = useState(false);
     const [total, setTotal] = useState(0);
-    const [pageIndex, setPageIndex] = useState(1)
+    const [pageIndex, setPageIndex] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [query, setQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
     useEffect(() => {
-
         fetchData(pageIndex, pageSize, query, statusFilter);
-
     }, [pageIndex, pageSize, query, statusFilter]);
 
     const fetchData = async (page: number, size: number, searchTerm: string, status?: string | null) => {
         setLoading(true);
         try {
-
             let url = `http://localhost:8080/api/v1/customer?page=${page}&size=${size}`;
-
             if (searchTerm) {
                 url = `http://localhost:8080/api/v1/customer/search?query=${searchTerm}&page=${page}&size=${size}`;
             }
-
             if (status && status !== '') {
                 url += `&status=${status}`
             }
 
             const response = await axios.get(url);
             const data = response.data;
-            let fetchedCustomers: CustomerListDTO[] = [];
 
-            // Kiem tra du lieu tra ve
-            if (data && data.content) {
-                fetchedCustomers = data.content;
-            }
+            // Log API response
+            console.log("API Response: ", response.data);
+
+            // Extract customers and total elements from response
+            const fetchedCustomers = data.content || [];
+            const totalElements = data.totalElements || 0;
 
             setData(fetchedCustomers);
-            setTotal(data.totalElements || 0);
-
-
+            setTotal(totalElements);
+            setPageIndex(data.pageable.pageNumber + 1); // API pages are 0 index based
+            setPageSize(data.pageable.pageSize);
         } catch (error) {
             console.log("Error fetching customer data: ", error);
-            toast.error("Error fetching customer data")
+            toast.error("Error fetching customer data");
         } finally {
             setLoading(false);
         }
-
-    }
-
+    };
 
     const updateStatus = async (id: number, newStatus: boolean) => {
         try {
             await axios.patch(`http://localhost:8080/api/v1/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
             toast.success('Status updated successfully');
-            fetchData(pageIndex, pageSize, query)
+            fetchData(pageIndex, pageSize, query);
         } catch (error) {
             toast.error('Error updating status');
             console.error('Error updating status:', error);
@@ -107,49 +100,39 @@ const CustomerTable = () => {
         saveAs(blob, 'customer_data.xlsx');
     };
 
-
-    // ham chuyen sang trang add
     const handleAddClick = () => {
         navigate('/manage/customer/add');
-    }
+    };
 
-    // ham chuyen sang trang add
     const handleUpdateClick = (customerId: number) => {
         navigate(`/manage/customer/update/${customerId}`);
-    }
+    };
 
-    // Ham xu ly phan trang
-    const handlePaginationChange = (pageIndex: number) => {
-        setPageIndex(pageIndex);
-    }
+    const handlePaginationChange = (page: number) => {
+        setPageIndex(page);
+    };
 
-    // Ham xu ly thay doi kich thuoc trang
-    const handleSelectChange = (pageSize: number) => {
-        setPageSize(pageSize);
-    }
+    const handleSelectChange = (size: number) => {
+        setPageSize(size);
+    };
 
-    // Ham xu ly tim kiem
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setQuery(e.target.value)
-    }
+        setQuery(e.target.value);
+    };
 
-    // // Ham xu ly loc
     const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setStatusFilter(event.target.value);
     };
 
-
-    const colums = [
-
+    const columns: ColumnDef<CustomerListDTO>[] = [
         {
             header: 'STT',
             id: 'serialNumber',
             cell: ({ row }: CellContext<CustomerListDTO, unknown>) => {
-                const serialNumber = (pageIndex - 1) * pageSize + row.index + 1;
+                const serialNumber = ((pageIndex - 1) * pageSize) + row.index + 1;
                 return serialNumber;
             },
         },
-
         {
             header: 'Tên',
             accessorKey: 'name',
@@ -173,12 +156,9 @@ const CustomerTable = () => {
         {
             header: 'Địa chỉ',
             cell: ({ row }: CellContext<CustomerListDTO, unknown>) => {
-
-                const addressDetails = row.original.addressDetails;
-
-                // Kiem tra neu co dia chi , hien thi chi tiet
-                if (Array.isArray(addressDetails) && addressDetails.length > 0) {
-                    return addressDetails.map((address) => `${address.detail}, ${address.ward}, ${address.district}, ${address.province}`).join(', ')
+                const defaultAddress = row.original.defaultAddress;
+                if (defaultAddress) {
+                    return `${defaultAddress.detail}, ${defaultAddress.ward}, ${defaultAddress.district}, ${defaultAddress.province}`;
                 }
                 return 'N/A';
             },
@@ -189,36 +169,25 @@ const CustomerTable = () => {
             cell: ({ row }: CellContext<CustomerListDTO, unknown>) => {
                 const { status } = row.original;
                 const isActive = status === 'Active';
-
                 const displayStatus = isActive ? 'Hoạt động' : 'Không hoạt động';
-
                 return (
-                    <span
-                        className={`flex items-center font-bold ${isActive ? 'text-green-600' : 'text-red-600'}`}
-                    >
-                        <span
-                            className={`inline-block w-2 h-2 rounded-full mr-2 ${isActive ? 'bg-green-600' : 'bg-red-600'}`}
-                        ></span>
+                    <span className={`flex items-center font-bold ${isActive ? 'text-green-600' : 'text-red-600'}`}>
+                        <span className={`inline-block w-2 h-2 rounded-full mr-2 ${isActive ? 'bg-green-600' : 'bg-red-600'}`}></span>
                         {displayStatus}
                     </span>
                 );
             },
-            size: 100,
         },
         {
             header: 'Hành động',
             id: 'action',
             cell: ({ row }: CellContext<CustomerListDTO, unknown>) => {
                 const customer = row.original;
-                const { id, status } = row.original;
+                const { id, status } = customer;
                 const isActive = status === 'Active';
                 return (
                     <div className='flex space-x-2 justify-center items-center'>
-                        <GrEdit
-                            className='text-2xl mr-3'
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => handleUpdateClick(customer.id)}
-                        />
+                        <GrEdit className='text-2xl mr-3' style={{ cursor: 'pointer' }} onClick={() => handleUpdateClick(customer.id)} />
                         <Switcher
                             color="green-500"
                             checked={isActive}
@@ -230,9 +199,10 @@ const CustomerTable = () => {
                     </div>
                 );
             },
-
         },
     ];
+
+    console.log("Data being passed to DataTable: ", data); // Log the data before passing it to DataTable
 
     return (
         <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
@@ -247,9 +217,7 @@ const CustomerTable = () => {
                     />
                     <IoIosSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-2xl" />
                 </div>
-
                 <div className="relative w-40 mr-4">
-
                     <select
                         className='w-full pl-2 pr-2 py-2 border border-gray-300 rounded focus:outline-none'
                         value={statusFilter || ''}
@@ -260,7 +228,6 @@ const CustomerTable = () => {
                         <option value="Active">Hoạt động</option>
                         <option value="Inactive">Không hoạt động</option>
                     </select>
-
                 </div>
                 <div className="relative w-40">
                     <Button
@@ -271,11 +238,7 @@ const CustomerTable = () => {
                     >
                         Tải Excel
                     </Button>
-
                 </div>
-
-
-
                 <Button
                     size='sm'
                     className='lg:w-24 ml-auto flex items-center justify-center gap-2'
@@ -287,7 +250,7 @@ const CustomerTable = () => {
                 </Button>
             </div>
             <DataTable
-                columns={colums}
+                columns={columns}
                 data={data}
                 loading={loading}
                 pagingData={{
@@ -298,11 +261,8 @@ const CustomerTable = () => {
                 onPaginationChange={handlePaginationChange}
                 onSelectChange={handleSelectChange}
             />
-
         </div>
-    )
+    );
 }
 
-
 export default CustomerTable;
-

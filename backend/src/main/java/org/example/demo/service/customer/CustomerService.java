@@ -1,6 +1,7 @@
 package org.example.demo.service.customer;
 
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.customer.AddressDTO;
 import org.example.demo.dto.customer.CustomerDTO;
 import org.example.demo.dto.customer.CustomerDetailDTO;
 import org.example.demo.dto.customer.CustomerListDTO;
@@ -20,12 +21,13 @@ public interface CustomerService {
 
     Customer saveCustomer(CustomerDTO customerDTO) ;
 
-    Customer updateCustomer(Integer id, CustomerDTO customerDTO);
+    CustomerDetailDTO updateCustomer(Integer id, CustomerDetailDTO customerDetailDTO);
 
     void deleteCustomerById(Integer id);
 
     Customer updateStatus(Integer id, String newStatus);
 
+    AddressDTO addAddressToCustomer(Integer customerId, AddressDTO addressDTO);
 
 
 }

@@ -14,20 +14,15 @@ import java.util.List;
 public class CustomerListDTO {
 
     private int id;
-
     private String name;
-
     private String email;
-
     private String phone;
-
     private String gender;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
 
-    private List<AddressDTO> addressDetails;
+    private AddressDTO defaultAddress;
 
     private String status;
-
 }

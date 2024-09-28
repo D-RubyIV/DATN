@@ -1,6 +1,7 @@
 package org.example.demo.controller.customer;
 
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.customer.AddressDTO;
 import org.example.demo.dto.customer.CustomerDTO;
 import org.example.demo.dto.customer.CustomerDetailDTO;
 import org.example.demo.dto.customer.CustomerListDTO;
@@ -59,10 +60,20 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.CREATED);
     }
 
+    @PostMapping("/{id}/address")
+    public ResponseEntity<AddressDTO> addAddressToCustomer(@PathVariable int id, @RequestBody AddressDTO addressDTO) {
+        AddressDTO newAddress = customerService.addAddressToCustomer(id, addressDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
+    }
+
     @PutMapping("/update/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable("id") Integer id, @RequestBody CustomerDTO customerDTO) {
-        Customer updateCustomer = customerService.updateCustomer(id, customerDTO);
-        return new ResponseEntity<>(updateCustomer, HttpStatus.OK);
+    public ResponseEntity<CustomerDetailDTO> updateCustomer(@PathVariable Integer id, @RequestBody CustomerDetailDTO customerDetailDTO) {
+        try {
+            CustomerDetailDTO updatedCustomer = customerService.updateCustomer(id, customerDetailDTO);
+            return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 

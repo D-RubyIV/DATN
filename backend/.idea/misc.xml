@@ -6,10 +6,12 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="G:/DATN/DATN/backend/pom.xml" />
+        <option value="$USER_HOME$/Downloads/backend/backend/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$USER_HOME$/Downloads/backend/backend/pom.xml" />
         <option value="G:/DATN/DATN/backend/pom.xml" />
       </set>
     </option>

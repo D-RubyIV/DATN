@@ -43,4 +43,9 @@ public class CustomerDTO {
     private String detail;
 
     private String status;
+
+    private String newAddress;
+
+    // xac dinh dia chi moi co la mac dinh khong
+    private boolean defaultAddress;
 }

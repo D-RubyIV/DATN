@@ -31,11 +31,13 @@ public class Address extends BaseEntity {
     @Column(name = "ward")
     private String ward;
 
-
     @Column(name = "detail")
     private String detail;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Column(name = "is_default")
+    private Boolean defaultAddress;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 }
