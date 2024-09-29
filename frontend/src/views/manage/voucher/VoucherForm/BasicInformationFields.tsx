@@ -1,5 +1,4 @@
 import AdaptableCard from '@/components/shared/AdaptableCard'
-import RichTextEditor from '@/components/shared/RichTextEditor'
 import Input from '@/components/ui/Input'
 import { FormItem } from '@/components/ui/Form'
 import { Field, FormikErrors, FormikTouched, FieldProps } from 'formik'
@@ -27,7 +26,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
         <AdaptableCard divider className="mb-4">
             <FormItem
                 asterisk
-                label="Voucher Name"
+                label="Tên Phiếu Giảm Giá"
                 invalid={(errors.name && touched.name) as boolean}
                 errorMessage={errors.name}
             >
@@ -41,7 +40,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                 />
             </FormItem>
             <FormItem
-                label="Code"
+                label="Mã Phiếu Giảm Giá"
                 invalid={(errors.code && touched.code) as boolean}
                 errorMessage={errors.code}
             >
@@ -56,7 +55,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
             </FormItem>
 
             <FormItem
-                label="Quantity"
+                label="Số Lượng"
                 asterisk
                 invalid={(errors.quantity && touched.quantity) as boolean}
                 errorMessage={errors.quantity}
@@ -72,7 +71,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
             </FormItem>
 
             <FormItem
-                label="Max Percent"
+                label="Phần trăm giảm giá tối đa"
                 asterisk
                 invalid={(errors.maxPercent && touched.maxPercent) as boolean}
                 errorMessage={errors.maxPercent}
@@ -91,7 +90,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
             </FormItem>
 
             <FormItem
-                label="Min Amount"
+                label="Giá tối thiểu"
                 asterisk
 
                 invalid={(errors.minAmount && touched.minAmount) as boolean}
@@ -111,7 +110,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
 
             <div className="flex gap-4">
                 <FormItem
-                    label="Start Date"
+                    label="Ngày Bắt Đầu"
                     asterisk
                     invalid={(errors.startDate && touched.startDate) as boolean}
                     errorMessage={errors.startDate}
@@ -126,7 +125,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                 </FormItem>
 
                 <FormItem
-                    label="End Date"
+                    label="Ngày Kết Thúc"
                     asterisk
                     invalid={(errors.endDate && touched.endDate) as boolean}
                     errorMessage={errors.endDate}
@@ -141,7 +140,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                 </FormItem>
             </div>
             <FormItem
-                label="Type Ticket"
+                label="Loại Phiếu Giảm Giá"
                 asterisk
                 invalid={(errors.typeTicket && touched.typeTicket) as boolean}
                 errorMessage={errors.typeTicket}
@@ -157,7 +156,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                                     className="form-radio"
                                     checked={field.value === 'Individual'}
                                 />
-                                <span>Individual</span>
+                                <span>Cá Nhân</span>
                             </label>
                             <label className="flex items-center space-x-2">
                                 <Field
@@ -167,7 +166,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                                     className="form-radio"
                                     checked={field.value === 'Everyone'}
                                 />
-                                <span>Everyone</span>
+                                <span>Mọi Người</span>
                             </label>
                         </div>
                     )}

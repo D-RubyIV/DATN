@@ -28,12 +28,12 @@ const manageRoute: Routes = [
         component: lazy(() => import('@/views/manage/staff/StaffManage')),
         authority: [],
     },
-    {
-        key: 'billManager',
-        path: `/manage/bill`,
-        component: lazy(() => import('@/views/manage/bill/BillManage')),
-        authority: [],
-    },
+    // {
+    //     key: 'billManager',
+    //     path: `/manage/bill`,
+    //     component: lazy(() => import('@/views/manage/bill/BillManage')),
+    //     authority: [],
+    // },
     {
         key: 'appVouchers.voucherList',
         path: `${APP_PREFIX_PATH}/voucher/voucher-list`,

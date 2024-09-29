@@ -11,6 +11,7 @@ const VoucherTableTool = () => {
     };
     return (
         <div className="flex flex-col lg:flex-row lg:items-center">
+            
             {/* // sửa lại export */}
             <Link
                 download
@@ -26,7 +27,7 @@ const VoucherTableTool = () => {
                 className="block lg:inline-block md:mb-0 mb-4"
                 to="/manage/voucher/voucher-new"
             >
-                <Button block variant="solid" size="sm" icon={<HiPlusCircle />} onClick={handleAddVoucher}>
+                <Button block variant="solid" size="sm" color='blue' icon={<HiPlusCircle />} onClick={handleAddVoucher}>
                     Add Voucher
                 </Button>
             </Link>

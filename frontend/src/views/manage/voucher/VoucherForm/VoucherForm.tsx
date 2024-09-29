@@ -1,15 +1,16 @@
 import { ConfirmDialog } from '@/components/shared'
 import { Button, FormContainer } from '@/components/ui'
 import { Form, Formik, FormikProps } from 'formik'
-import { forwardRef, useCallback, useState } from 'react'
+import { forwardRef, useState } from 'react'
 import StickyFooter from '@/components/shared/StickyFooter'
 
 import { HiOutlineTrash } from 'react-icons/hi'
 import cloneDeep from 'lodash/cloneDeep'
 import * as Yup from 'yup'
 import BasicInformationFields from './BasicInformationFields'
-import CustomerTable from './CustomersTable'
-import CustomersTable from './CustomersTable'
+import TableCustomer from '../components/TableCustomer'
+
+
 
 type FormikRef = FormikProps<any>
 
@@ -23,9 +24,7 @@ type InitialData = {
     statrtDate?: string
     endDate?: string
     status?: string
-    customers?: {
-        id: number
-    }[]
+    customers?: number[]
 }
 
 export type FormModel = Omit<InitialData, 'tags'>
@@ -108,8 +107,9 @@ const DeleteVoucherButton = ({ onDelete }: { onDelete: OnDelete }) => {
 const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
     const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([])
 
-    const handleSelectedCustomersChange = (selectedIds: number[]) => {
-        setSelectedCustomerIds(selectedIds)
+    const handleSelectedCustomersChange = (selectedCustomers: Customer[]) => {
+        const customerIds = selectedCustomers.map((customer) => customer.id)
+        setSelectedCustomerIds(customerIds)
     }
 
     const {
@@ -139,6 +139,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
                 validationSchema={validationSchema}
                 onSubmit={(values: FormModel, { setSubmitting }) => {
                     const formData = cloneDeep(values)
+                    formData.customers = selectedCustomerIds
                     if (type === 'new') {
                         console.log(formData)
                     }
@@ -156,11 +157,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
                                     />
                                 </div>
                                 <div className="lg:col-span-2">
-                                    <CustomersTable
-                                        onSelectedCustomersChange={
-                                            handleSelectedCustomersChange
-                                        }
-                                    />
+                                <TableCustomer onSelectedCustomersChange={handleSelectedCustomersChange} />
                                 </div>
                             </div>
                             <StickyFooter

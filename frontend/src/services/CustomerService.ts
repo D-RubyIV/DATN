@@ -1,36 +1,28 @@
-import ApiService from './ApiService'
+import ApiService from "./ApiService";
 
-// export async function apiGetSalesDashboardData<
-//     T extends Record<string, unknown>
-// >() {
-//     return ApiService.fetchData<T>({
-//         url: '/sales/dashboard',
-//         method: 'post',
-//     })
-// }
 
-export async function apiGetSalesCustomers<T, U extends Record<string, unknown>>(
-    data: U
-) {
+export async function apiGetSalesDashboardData<
+    T extends Record<string, unknown>
+>() {
     return ApiService.fetchData<T>({
-        url: '/customer/add',
-        method: 'post',
-        data,
+        url: '/customers/get-all',
+        method: 'post'
     })
 }
 
-export async function apiDeleteSalesVouchers<
+
+export async function apiDeleteSalesCutomers<
     T,
     U extends Record<string, unknown>
 >(data: U) {
     return ApiService.fetchData<T>({
-        url: '/voucher/delete',
+        url: '/customer/delete',
         method: 'delete',
         data,
     })
 }
 
-export async function apiGetSalesVoucher<T, U extends Record<string, unknown>>(
+export async function apiGetSaleCutomer<T, U extends Record<string, unknown>>(
     params: U
 ) {
     return ApiService.fetchData<T>({
@@ -40,24 +32,34 @@ export async function apiGetSalesVoucher<T, U extends Record<string, unknown>>(
     })
 }
 
-export async function apiPutSalesVoucher<T, U extends Record<string, unknown>>(
-    data: U
+export async function apiGetSalesCutomers<T, U extends Record<number, unknown>>(
+    params: U
 ) {
     return ApiService.fetchData<T>({
-        url: '/voucher/update',
-        method: 'put',
-        data,
+        url: '/customer/get-all',
+        method: 'get',
+        params,
     })
 }
 
-export async function apiCreateSalesVoucher<
+export async function apiDeleteSalesOrders<
     T,
-    U extends Record<string, unknown>
+    U extends Record<number, unknown>
 >(data: U) {
     return ApiService.fetchData<T>({
-        url: '/voucher/create',
-        method: 'post',
+        url: '/sales/orders/delete',
+        method: 'delete',
         data,
     })
 }
 
+export async function apiGetSalesOrderDetails<
+    T,
+    U extends Record<string, unknown>
+>(params: U) {
+    return ApiService.fetchData<T>({
+        url: '/sales/orders-details',
+        method: 'get',
+        params,
+    })
+}

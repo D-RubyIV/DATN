@@ -1,54 +1,41 @@
 import { ColumnDef, DataTable, DataTableResetHandle, OnSortParam, Row } from "@/components/shared"
-import { addRowItem, getCustomers, removeRowItem, setSelectedRows, setTableData, useAppDispatch, useAppSelector } from "../store"
-import useThemeClass from "@/utils/hooks/useThemeClass"
-import { useCallback, useEffect, useMemo, useRef } from "react"
-import { useNavigate } from "react-router-dom"
-import dayjs from "dayjs"
 import { cloneDeep } from "lodash"
+import { useCallback, useEffect, useMemo, useRef } from "react"
+import { addRowItem, getCustomers, removeRowItem, setSelectedRows, setTableData, useAppSelector, useAppDispatch } from "./store"
 
 type Customer = {
     id: number
-    name: string
     phone: string
     email: string
+    name: string
 }
 
-const CustomerColumn = ({ row }: { row: Customer }) => {
-    const { textTheme } = useThemeClass()
-    const navigate = useNavigate()
-
-    const onView = useCallback(() => {
-        navigate(`/app/sales/order-details/${row.id}`)
-    }, [navigate, row.id])
-
-    return (
-        <span
-            className={`cursor-pointer select-none font-semibold hover:${textTheme}`}
-            onClick={onView}
-        >
-            #{row.id}
-        </span>
-    )
-}
-
-const OrdersTable = () => {
+const TableCustomer = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
-
     const dispatch = useAppDispatch()
 
-    const { pageIndex, pageSize, sort, query, total } = useAppSelector(
-        (state) => state.salesCustomerList.data.tableData
-    )
-    const loading = useAppSelector((state) => state.salesCustomerList.data.loading)
+    const salesCustomerList = useAppSelector((state) => state.salesCustomerList)
 
-    const data = useAppSelector((state) => state.salesCustomerList.data.customerList)
+    const {
+        total = 0,
+        pageIndex = 1,
+        pageSize = 10,
+        query = '',
+        sort = { order: 'asc', key: '' }
+    } = salesCustomerList?.data?.tableData || {}
+
+    const loading = useAppSelector((state) => state.salesCustomerList?.data?.loading) ?? false
+
+    const data = useAppSelector((state) => state.salesCustomerList?.data?.customerList) ?? []
+
+
 
     const fetchData = useCallback(() => {
-        console.log('{ pageIndex, pageSize, sort, query }', {
+        console.log(`{pageIndex, pageSize, sort, query}`, {
             pageIndex,
             pageSize,
             sort,
-            query,
+            query
         })
         dispatch(getCustomers({ pageIndex, pageSize, sort, query }))
     }, [dispatch, pageIndex, pageSize, sort, query])
@@ -59,7 +46,9 @@ const OrdersTable = () => {
     }, [dispatch, fetchData, pageIndex, pageSize, sort])
 
     useEffect(() => {
-        tableRef.current?.resetSelected()
+        if (tableRef.current) {
+            tableRef.current.resetSelected()
+        }
     }, [data])
 
     const tableData = useMemo(
@@ -72,7 +61,6 @@ const OrdersTable = () => {
             {
                 header: 'Id',
                 accessorKey: 'id',
-                cell: (props) => <CustomerColumn row={props.row.original} />,
             },
             {
                 header: 'Name',
@@ -98,7 +86,7 @@ const OrdersTable = () => {
 
     const onSelectChange = (value: number) => {
         const newTableData = cloneDeep(tableData)
-        newTableData.pageSize = value
+        newTableData.pageSize = Number(value)
         newTableData.pageIndex = 1
         dispatch(setTableData(newTableData))
     }
@@ -129,6 +117,10 @@ const OrdersTable = () => {
         [dispatch]
     )
 
+    if (!salesCustomerList) {
+        return <div>Loading...</div>; // Or any other placeholder you prefer
+    }
+
     return (
         <DataTable
             ref={tableRef}
@@ -137,9 +129,9 @@ const OrdersTable = () => {
             data={data}
             loading={loading}
             pagingData={{
-                total: total,
-                pageIndex: pageIndex,
-                pageSize: pageSize,
+                total,
+                pageIndex,
+                pageSize,
             }}
             onPaginationChange={onPaginationChange}
             onSelectChange={onSelectChange}
@@ -150,4 +142,4 @@ const OrdersTable = () => {
     )
 }
 
-export default OrdersTable
+export default TableCustomer
