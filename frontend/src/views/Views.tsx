@@ -1,27 +1,27 @@
-import { Suspense } from 'react'
-import Loading from '@/components/shared/Loading'
-import { protectedRoutes, publicRoutes } from '@/configs/routes.config'
-import appConfig from '@/configs/app.config'
-import PageContainer from '@/components/template/PageContainer'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAppSelector } from '@/store'
-import ProtectedRoute from '@/components/route/ProtectedRoute'
-import PublicRoute from '@/components/route/PublicRoute'
-import AuthorityGuard from '@/components/route/AuthorityGuard'
-import AppRoute from '@/components/route/AppRoute'
-import type { LayoutType } from '@/@types/theme'
+import { Suspense } from 'react';
+import Loading from '@/components/shared/Loading';
+import { protectedRoutes, publicRoutes } from '@/configs/routes.config';
+import appConfig from '@/configs/app.config';
+import PageContainer from '@/components/template/PageContainer';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAppSelector } from '@/store';
+import ProtectedRoute from '@/components/route/ProtectedRoute';
+import PublicRoute from '@/components/route/PublicRoute';
+import AuthorityGuard from '@/components/route/AuthorityGuard';
+import AppRoute from '@/components/route/AppRoute';
+import type { LayoutType } from '@/@types/theme';
 
 interface ViewsProps {
-    pageContainerType?: 'default' | 'gutterless' | 'contained'
-    layout?: LayoutType
+    pageContainerType?: 'default' | 'gutterless' | 'contained';
+    layout?: LayoutType;
 }
 
-type AllRoutesProps = ViewsProps
+type AllRoutesProps = ViewsProps;
 
-const { authenticatedEntryPath } = appConfig
+const { authenticatedEntryPath } = appConfig;
 
 const AllRoutes = (props: AllRoutesProps) => {
-    const userAuthority = useAppSelector((state) => state.auth.user.authority)
+    const userAuthority = useAppSelector((state) => state.auth.user.authority);
 
     return (
         <Routes>
@@ -68,15 +68,15 @@ const AllRoutes = (props: AllRoutesProps) => {
                 ))}
             </Route>
         </Routes>
-    )
-}
+    );
+};
 
 const Views = (props: ViewsProps) => {
     return (
         <Suspense fallback={<Loading loading={true} />}>
             <AllRoutes {...props} />
         </Suspense>
-    )
-}
+    );
+};
 
-export default Views
+export default Views;
