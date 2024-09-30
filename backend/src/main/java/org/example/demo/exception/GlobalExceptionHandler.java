@@ -93,6 +93,11 @@ public class GlobalExceptionHandler {
         CustomError error = new CustomError(HttpStatus.BAD_REQUEST, ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+    @ExceptionHandler({CustomExceptions.CustomBadRequest.class})
+    public ResponseEntity<?> handleCustomBadRequestException(CustomExceptions.CustomBadRequest ex) {
+        CustomError error = new CustomError(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 
     @ExceptionHandler({SQLIntegrityConstraintViolationException.class})
     public ResponseEntity<?> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex) {

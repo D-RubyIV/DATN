@@ -7,7 +7,7 @@ type PaymentInfoProps = {
     isLast?: boolean
 }
 
-type PaymentSummaryProps = {
+export type PaymentSummaryProps = {
     data?: {
         subTotal: number
         tax: number
@@ -30,7 +30,7 @@ const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
                     value={(Math.round((value as number) * 100) / 100).toFixed(
                         2
                     )}
-                    prefix={'$'}
+                    suffix={'₫'}
                     thousandSeparator={true}
                 />
             </span>
@@ -40,13 +40,13 @@ const PaymentInfo = ({ label, value, isLast }: PaymentInfoProps) => {
 
 const PaymentSummary = ({ data }: PaymentSummaryProps) => {
     return (
-        <Card className="mb-4">
-            <h5 className="mb-4">Payment Summary</h5>
+        <Card className="mb-4 h-[205px]">
+            <h5 className="mb-4">Thông tin thanh toán</h5>
             <ul>
-                <PaymentInfo label="Subtotal" value={data?.subTotal} />
-                <PaymentInfo label="Delivery fee" value={data?.deliveryFees} />
+                <PaymentInfo label="Tổng tiền" value={data?.subTotal} />
+                <PaymentInfo label="Phí vận chuyển" value={data?.deliveryFees} />
                 <hr className="mb-3" />
-                <PaymentInfo isLast label="Total" value={data?.total} />
+                <PaymentInfo isLast label="Tổng thanh toán" value={data?.total} />
             </ul>
         </Card>
     )

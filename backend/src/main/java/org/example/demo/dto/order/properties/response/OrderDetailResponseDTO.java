@@ -9,6 +9,7 @@ import org.example.demo.entity.product.core.ProductDetail;
 @NoArgsConstructor
 @Data
 public class OrderDetailResponseDTO {
+    private Integer id;
     private Integer quantity;
     private ProductDetail productDetail;
 }

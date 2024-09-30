@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping(value = "order-details")
 @RestController
-public class OrderDetailController implements IControllerBasic<OrderDetail, OrderDetailRequestDTO> {
+public class OrderDetailController implements IControllerBasic<Integer, OrderDetailRequestDTO> {
 
     @Autowired
     private OrderDetailService orderDetailService;
@@ -27,28 +27,34 @@ public class OrderDetailController implements IControllerBasic<OrderDetail, Orde
 
 
     @GetMapping(value = "")
-    public ResponseEntity<?> findAll(){
+    public ResponseEntity<?> findAll() {
         return ResponseEntity.ok(orderDetailService.findAll());
     }
 
     @Override
     @PostMapping(value = "")
-    public ResponseEntity<?> create(@Valid @RequestBody OrderDetailRequestDTO orderDetailRequestDTO) throws BadRequestException {
+    public ResponseEntity<?> create(@Valid @RequestBody OrderDetailRequestDTO orderDetailRequestDTO) {
         return ResponseEntity.ok(orderDetailResponseMapper.toDTO(orderDetailService.save(orderDetailRequestDTO)));
     }
 
     @Override
-    public ResponseEntity<?> update(OrderDetail orderDetail, OrderDetailRequestDTO orderDetailRequestDTO) {
+    public ResponseEntity<?> update(Integer integer, OrderDetailRequestDTO orderDetailRequestDTO) {
         return null;
     }
 
-    @Override
-    public ResponseEntity<?> delete(OrderDetail orderDetail) throws BadRequestException {
-        return null;
+    @GetMapping(value = "quantity/update/{id}")
+    public ResponseEntity<?> updateQuantity(@PathVariable Integer id, @RequestParam(value = "quantity", required = true) Integer quantity) {
+        return ResponseEntity.ok(orderDetailResponseMapper.toDTO(orderDetailService.updateQuantity(id, quantity)));
     }
 
     @Override
-    public ResponseEntity<?> detail(OrderDetail orderDetail) throws BadRequestException {
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderDetailService.delete(id));
+    }
+
+    @Override
+    public ResponseEntity<?> detail(Integer integer) {
         return null;
     }
 }

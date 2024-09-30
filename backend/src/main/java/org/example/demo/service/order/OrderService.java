@@ -5,14 +5,18 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
+import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.properties.History;
+import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.voucher.core.Voucher;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.order.core.request.OrderRequestMapper;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.repository.history.HistoryRepository;
@@ -72,13 +76,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Override
-    public Order findById(Integer id) throws BadRequestException {
-        return orderRepository.findById(id).orElseThrow(() -> new BadRequestException("Bill not found"));
+    public Order findById(Integer id) {
+        return orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Bill not found"));
     }
 
     @Override
     @Transactional
-    public Order delete(Integer id) throws BadRequestException {
+    public Order delete(Integer id)  {
         Order entityFound = findById(id);
         entityFound.setDeleted(true);
         return entityFound;
@@ -86,7 +90,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Override
     @Transactional
-    public Order save(OrderRequestDTO requestDTO) throws BadRequestException {
+    public Order save(OrderRequestDTO requestDTO)  {
         Order entityMapped = orderRequestMapper.toEntity(requestDTO);
         entityMapped.setDeleted(false);
         entityMapped.setStatus(Status.PENDING);
@@ -96,12 +100,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         if (customerSelected != null && customerSelected.getId() != null) {
             Integer id = customerSelected.getId();
-            customerSelected = customerRepository.findById(id).orElseThrow(() -> new BadRequestException("Customer provided not found"));
+            customerSelected = customerRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Customer provided not found"));
             entityMapped.setCustomer(customerSelected);
         }
         if (voucherSelected != null && voucherSelected.getId() != null) {
             Integer id = voucherSelected.getId();
-            voucherSelected = voucherRepository.findById(id).orElseThrow(() -> new BadRequestException("Voucher provided not found"));
+            voucherSelected = voucherRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Voucher provided not found"));
             entityMapped.setVoucher(voucherSelected);
         }
         return orderRepository.save(entityMapped);
@@ -114,15 +118,32 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Transactional
-    public Order changeStatus(Integer id, Status status) throws BadRequestException {
+    public Order changeStatus(Integer id, HistoryRequestDTO requestDTO){
         Order entityFound = findById(id);
-        entityFound.setStatus(status);
-        System.out.println(status);
+        entityFound.setStatus(requestDTO.getStatus());
 
         History history = new History();
         history.setOrder(entityFound);
-        history.setNote();
-
+        history.setNote(requestDTO.getNote());
+        history.setStatus(requestDTO.getStatus());
+        historyRepository.save(history);
         return orderRepository.save(entityFound);
     }
+
+    public void reloadTotalOrder(Order order) {
+        double total = 0;
+
+        List<OrderDetail> orderDetailList = order.getOrderDetails();
+
+        for (OrderDetail or : orderDetailList) {
+            total += or.getQuantity() * or.getProductDetail().getPrice();
+        }
+
+        order.setTotal(total);
+        orderRepository.save(order);
+    }
+    public CountStatusOrder getCountStatusAnyOrder(){
+        return orderRepository.getCountStatus();
+    }
+
 }

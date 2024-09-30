@@ -3,7 +3,9 @@ package org.example.demo.controller.order;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.controller.IControllerBasic;
+import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
+import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.entity.order.enums.Status;
@@ -51,7 +53,7 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     @Override
     @PostMapping(value = "")
-    public ResponseEntity<OrderResponseDTO> create(@Valid @RequestBody OrderRequestDTO billResponseDTO) throws BadRequestException {
+    public ResponseEntity<OrderResponseDTO> create(@Valid @RequestBody OrderRequestDTO billResponseDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.save(billResponseDTO)));
     }
 
@@ -64,19 +66,25 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     @Override
     @DeleteMapping(value = "{id}")
-    public ResponseEntity<OrderResponseDTO> delete(@PathVariable Integer id) throws BadRequestException {
+    public ResponseEntity<OrderResponseDTO> delete(@PathVariable Integer id) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.delete(id)));
     }
 
     @Override
     @GetMapping(value = "{id}")
-    public ResponseEntity<OrderResponseDTO> detail(@PathVariable Integer id) throws BadRequestException {
+    public ResponseEntity<OrderResponseDTO> detail(@PathVariable Integer id) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.findById(id)));
     }
 
 
     @PutMapping(value = "status/change/{id}")
-    public ResponseEntity<OrderResponseDTO> changeStatus(@PathVariable Integer id, @RequestParam Status status) throws BadRequestException {
-        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeStatus(id, status)));
+    public ResponseEntity<OrderResponseDTO> changeStatus(@PathVariable Integer id, @RequestBody HistoryRequestDTO requestDTO) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeStatus(id, requestDTO)));
+    }
+
+    // OTHER
+    @GetMapping(value = "count-any-status")
+    public ResponseEntity<CountStatusOrder> getCountAnyStatus(){
+        return ResponseEntity.ok(orderService.getCountStatusAnyOrder());
     }
 }

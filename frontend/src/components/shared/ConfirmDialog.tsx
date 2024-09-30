@@ -119,6 +119,7 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
                     variant="solid"
                     color={confirmButtonColor}
                     onClick={handleConfirm}
+                    className={type === "danger" ? "bg-red-500" : ""}
                 >
                     {confirmText}
                 </Button>

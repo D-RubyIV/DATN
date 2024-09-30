@@ -11,80 +11,171 @@ import {
 import { NumericFormat } from 'react-number-format'
 import isLastChild from '@/utils/isLastChild'
 import { Link } from 'react-router-dom'
-import { Button, Drawer, Notification, toast } from '@/components/ui'
-import { HiPlusCircle, HiViewList } from 'react-icons/hi'
+import { Button, Drawer, Input, Notification, toast } from '@/components/ui'
+import { HiMinus, HiMinusCircle, HiPencil, HiPlusCircle, HiTerminal, HiUserRemove, HiViewList } from 'react-icons/hi'
 import { BillResponseDTO, OrderDetailResponseDTO, OrderProductsProps, ProductOrderDetail } from '../../store'
 import History from './History'
+import ProductModal from './ProductModal'
+import { ConfirmDialog } from '@/components/shared'
+import instance from '@/axios/CustomAxios'
+import { useToastContext } from '@/context/ToastContext'
 
 
 
-const { Tr, Th, Td, THead, TBody } = Table
 
-const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
-const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
-    return (
-        <div className="flex">
-            <Avatar size={90} src={"https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png"} />
-            <div className="ltr:ml-2 rtl:mr-2">
-                <h6 className="mb-2">{row.productDetail.name}</h6>
-                <div className="mb-1">
-                    <span className="capitalize">Size: </span>
-                    <span className="font-semibold">{row.productDetail.size.name}</span>
-                </div>
-                <div className="mb-1">
-                    <span className="capitalize">Color: </span>
-                    <span className="font-semibold">{row.productDetail.color.name}</span>
+
+const OrderProducts = ({ data, selectObject, fetchData }: { data: OrderDetailResponseDTO[], selectObject: BillResponseDTO, fetchData: () => {} }) => {
+    const { Tr, Th, Td, THead, TBody } = Table
+
+    // FUCTION
+    const { openNotification } = useToastContext();
+
+    const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
+
+    const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
+        return (
+            <div className="flex">
+                <Avatar size={90} src={"https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png"} />
+                <div className="ltr:ml-2 rtl:mr-2">
+                    <h6 className="mb-2">{row.productDetail.name}</h6>
+                    <div className="mb-1">
+                        <span className="capitalize">Cỡ: </span>
+                        <span className="font-semibold">{row.productDetail.size.name}</span>
+                    </div>
+                    <div className="mb-1">
+                        <span className="capitalize">Màu: </span>
+                        <span className="font-semibold">{row.productDetail.color.name}</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
-}
-
-const PriceAmount = ({ amount }: { amount: number }) => {
-    return (
-        <NumericFormat
-            displayType="text"
-            value={(Math.round(amount * 100) / 100).toFixed(2)}
-            prefix={'$'}
-            thousandSeparator={true}
-        />
-    )
-}
-
-const columns = [
-    columnHelper.accessor('productDetail.name', {
-        header: 'Product',
-        cell: (props) => {
-            const row = props.row.original
-            return <ProductColumn row={row} />
-        },
-    }),
-    columnHelper.accessor('quantity', {
-        header: 'Quantity',
-        cell: (props) => {
-            const row = props.row.original
-            return <PriceAmount amount={row.productDetail.price} />
-        },
-    }),
-    columnHelper.accessor('productDetail.price', {
-        header: 'Price',
-        cell: (props) => {
-            const row = props.row.original
-            return <PriceAmount amount={row.productDetail.price} />
-        },
-    }),
-    columnHelper.accessor('productDetail', {
-        header: 'Total',
-        cell: (props) => {
-            const row = props.row.original
-            return <PriceAmount amount={row.quantity * row.productDetail.price} />
-        },
-    }),
-]
+        )
+    }
 
 
-const OrderProducts = ({ data, selectObject }: { data: OrderDetailResponseDTO[], selectObject: BillResponseDTO }) => {
+    const [openDelete, setOpenDelete] = useState(false)
+    const [selectedOrderDetailId, setSelectedOrderDetailId] = useState<number>()
+
+    const handleCloseDelete = () => {
+        console.log('Close')
+        setOpenDelete(false)
+    }
+
+    const handleConfirmDelete = async () => {
+        console.log('Confirm')
+        setOpenDelete(false)
+        await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function (response) {
+            fetchData();
+        })
+    }
+
+    const handleUpdateQuantity = async (id: number, quantity: number) => {
+        await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
+            .then(function (response) {
+                fetchData();
+            })
+            .catch(function (err) {
+                console.error("Error updating quantity:", err);
+                if (err.response) {
+                    console.log("Status code:", err.response.status); // Trạng thái HTTP từ phản hồi
+                    if (err.response.status === 400) {
+                        openNotification(err.response.data.error)
+                    }
+                } else {
+                    console.log("Error message:", err.message); // Nếu không có phản hồi từ máy chủ
+                }
+            });
+    };
+
+
+
+    const onOpenDeleteOrderDetail = (id: number) => {
+        setOpenDelete(true)
+        setSelectedOrderDetailId(id);
+    }
+
+    const ActionColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
+        return (
+            <div className="flex gap-2">
+                <button ><HiPencil size={20} ></HiPencil></button>
+                <button onClick={() => onOpenDeleteOrderDetail(row.id)}><HiMinus size={20}></HiMinus ></button>
+            </div>
+        )
+    }
+
+    const PriceAmount = ({ amount }: { amount: number }) => {
+        return (
+            <NumericFormat
+                displayType="text"
+                value={(Math.round(amount * 100) / 100).toFixed(2)}
+                suffix={'₫'}
+                thousandSeparator={true}
+            />
+        )
+    }
+
+    const columns = [
+        columnHelper.accessor('productDetail.name', {
+            header: 'Sản phẩm',
+            cell: (props) => {
+                const row = props.row.original
+                return <ProductColumn row={row} />
+            },
+        }),
+        columnHelper.accessor('quantity', {
+            header: 'Số lượng',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <div className='flex gap-1 items-center justify-start'>
+                        {
+                            selectObject.status === "PENDING" && (<button className='p-2 text-xl' onClick={() => { handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1) }}><HiPlusCircle /></button>)
+                        }
+
+                        <label>{props.row.original.quantity} </label>
+                        {
+                            selectObject.status === "PENDING" && (<button className='p-2 text-xl' onClick={() => { handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1) }}><HiMinusCircle /></button>)
+                        }
+
+                    </div>
+                )
+            },
+        }),
+        columnHelper.accessor('productDetail.price', {
+            header: 'Giá',
+            cell: (props) => {
+                const row = props.row.original
+                return <PriceAmount amount={row.productDetail.price} />
+            },
+        }),
+        columnHelper.accessor('productDetail', {
+            header: 'Tổng',
+            cell: (props) => {
+                const row = props.row.original
+                return <PriceAmount amount={row.quantity * row.productDetail.price} />
+            },
+        }),
+        columnHelper.accessor('productDetail.id', {
+            header: 'Hành động',
+            cell: (props) => {
+                const row = props.row.original
+                return <ActionColumn row={row} />
+            },
+        }),
+    ]
+
+    enum Action {
+        CREATE = 'CREATE',
+        UPDATE = 'UPDATE'
+    }
+
+    const [action, setAction] = useState<Action>(Action.UPDATE);
+
+    const handleModal = (bool: boolean, action: Action) => {
+        setAction(action)
+        setIsOpenProductModal(bool);
+    }
+
     const table = useReactTable({
         data,
         columns,
@@ -102,11 +193,30 @@ const OrderProducts = ({ data, selectObject }: { data: OrderDetailResponseDTO[],
         setIsOpen(false)
     }
 
+    const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
+
+
+
     return (
-        <div>
+        <div className='h-[555px]'>
+            <ConfirmDialog
+                isOpen={openDelete}
+                type={'danger'}
+                title={"Xóa"}
+                confirmButtonColor={'red-600'}
+                onClose={handleCloseDelete}
+                onRequestClose={handleCloseDelete}
+                onCancel={handleCloseDelete}
+                onConfirm={handleConfirmDelete}
+            >
+                <p>Xác nhận muốn xóa ?</p>
+            </ConfirmDialog>
+            {/*  */}
+            {isOpenProductModal && <ProductModal fetchData={fetchData} setIsOpenProductModal={setIsOpenProductModal} selectOrder={selectObject}></ProductModal>}
+            {/*  */}
             <div className=''>
                 <Drawer
-                    title="History"
+                    title="Lịch sử"
                     isOpen={isOpen}
                     onClose={(e) => onDrawerClose(e)}
                     width={600}
@@ -114,56 +224,62 @@ const OrderProducts = ({ data, selectObject }: { data: OrderDetailResponseDTO[],
                 >
                     <History selectObject={selectObject}></History>
                 </Drawer>
-
             </div>
-            <AdaptableCard className="mb-4">
+            <AdaptableCard className="mb-4 h-full">
                 <div className='flex justify-end items-center pb-4 gap-2'>
                     <Button onClick={() => openDrawer()} block variant="default" size="sm" className='bg-indigo-500 !w-auto' icon={<HiViewList />} >
-                        History
+                        Xem lịch sử
                     </Button>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />} >
-                        Add Product
-                    </Button>
+                    {
+                        selectObject.status === "PENDING" && (
+                            <Button block variant="solid" size="sm" className='bg-indigo-500 !w-36' icon={<HiPlusCircle />} onClick={() => setIsOpenProductModal(true)}>
+                                Thêm sản phẩm
+                            </Button>
+                        )
+                    }
+
                 </div>
-                <Table>
-                    <THead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <Tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <Th
-                                            key={header.id}
-                                            colSpan={header.colSpan}
-                                        >
-                                            {flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                        </Th>
-                                    )
-                                })}
-                            </Tr>
-                        ))}
-                    </THead>
-                    <TBody>
-                        {table.getRowModel().rows.map((row) => {
-                            return (
-                                <Tr key={row.id}>
-                                    {row.getVisibleCells().map((cell) => {
+                <div className="max-h-[450px] overflow-y-auto">
+                    <Table>
+                        <THead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <Tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
                                         return (
-                                            <Td key={cell.id}>
+                                            <Th
+                                                key={header.id}
+                                                colSpan={header.colSpan}
+                                            >
                                                 {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext()
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
                                                 )}
-                                            </Td>
+                                            </Th>
                                         )
                                     })}
                                 </Tr>
-                            )
-                        })}
-                    </TBody>
-                </Table>
+                            ))}
+                        </THead>
+                        <TBody>
+                            {table.getRowModel().rows.map((row) => {
+                                return (
+                                    <Tr key={row.id}>
+                                        {row.getVisibleCells().map((cell) => {
+                                            return (
+                                                <Td key={cell.id}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </Td>
+                                            )
+                                        })}
+                                    </Tr>
+                                )
+                            })}
+                        </TBody>
+                    </Table>
+                </div>
             </AdaptableCard>
         </div>
     )

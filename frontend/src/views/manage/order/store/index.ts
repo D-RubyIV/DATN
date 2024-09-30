@@ -10,7 +10,8 @@ export type TypeBill = {
 
 export type StatusBill = {
     label: string,
-    value: statusEnums
+    value: statusEnums,
+    badge: string
 }
 
 export type EBillStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
@@ -66,6 +67,7 @@ export type HistoryResponseDTO = {
     id: number;
     status: EBillStatus;
     note: string;
+    createdBy: string
 }
 
 // Combine all types into one main type
@@ -115,6 +117,7 @@ export type ProductDetail = Entity & {
 };
 
 export type OrderDetailResponseDTO = {
+    id: number;
     quantity: number;
     productDetail: ProductDetail;
 };
@@ -133,3 +136,29 @@ export type ProductOrderDetail = {
 export type OrderProductsProps = {
     data?: ProductOrderDetail[]
 }
+
+export type OrderDetailRequestForCreate = {
+    quantity: number;
+    orderId: number;
+    productDetailId: number;
+};
+
+export type ProductDetailOverviewPhah04 = {
+    id: number;
+    code: string;
+    name: string;
+    deleted: boolean;
+    quantity: number;
+    price: number;
+    sizeName: string;
+    colorName: string;
+    productName: string;
+    textureName: string;
+    originName: string;
+    brandName: string;
+    collarName: string;
+    sleeveName: string;
+    materialName: string;
+    thicknessName: string;
+    elasticityName: string;
+};

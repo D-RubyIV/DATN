@@ -1,5 +1,6 @@
 package org.example.demo.repository.order;
 
+import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
@@ -48,4 +49,15 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             @Param("createdTo") LocalDate createdTo,
             Pageable pageable
     );
+
+    @Query(value = "SELECT new org.example.demo.dto.order.core.response.CountStatusOrder( " +
+            "COUNT(o), " +  // Đếm tổng số đơn hàng
+            "SUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END), " +  // Đếm số đơn hàng 'PENDING'
+            "SUM(CASE WHEN o.status = 'TOSHIP' THEN 1 ELSE 0 END), " +   // Đếm số đơn hàng 'TOSHIP'
+            "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
+            "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
+            "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END), " + // Đếm số đơn hàng 'CANCELED'
+            "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'RETURNED'
+            "FROM Order o")
+    CountStatusOrder getCountStatus();
 }

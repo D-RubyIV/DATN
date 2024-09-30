@@ -4,6 +4,7 @@ import { Button, Input, Radio } from '@/components/ui'
 import { BillResponseDTO, EBillStatus } from '../../store'
 import { HiPlusCircle } from 'react-icons/hi'
 import Axios from 'axios'
+import instance from '@/axios/CustomAxios'
 
 
 
@@ -46,24 +47,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO,
                 "Xác nhận đơn hàng đang được vận chuyển",
             ]
         },
-        {
-            "status": "DELIVERED",
-            "messages": [
-                "Xác nhận đơn hàng đã được giao thành công",
-            ]
-        },
-        {
-            "status": "CANCELED",
-            "messages": [
-                "Xác nhận đơn hàng đã bị hủy"
-            ]
-        },
-        {
-            "status": "RETURNED",
-            "messages": [
-                "Xác nhận đơn hàng đã trả lại"
-            ]
-        },
     ]
 
     const onChange = (nextStep: number) => {
@@ -96,33 +79,41 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO,
             "status": status,
             "note": note
         }
-        Axios.put(`http://localhost:8080/api/v1/orders/status/change/${selectObject.id}`, data).then(function (response) {
+        instance.put(`/orders/status/change/${selectObject.id}`, data).then(function (response) {
             fetchData()
+            setNote("")
         })
     }
 
     const ActionButton = () => {
         if (currentStatus === "PENDING") {
             return (
-                <div>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('TORECEIVE')}> Confirm</Button>
-                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />}>Cancelled</Button>
-                </div>
-            )
-        }
-        else if (currentStatus === "TORECEIVE") {
-            return (
-                <div>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('TOSHIP')}> Confirm</Button>
-                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />}>Cancelled</Button>
+                <div className='flex gap-2'>
+                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('TOSHIP')}>Xác nhận</Button>
+                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('CANCELED')}>Hủy</Button>
                 </div>
             )
         }
         else if (currentStatus === "TOSHIP") {
             return (
-                <div>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('DELIVERED')}> Confirm</Button>
-                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />}>Cancelled</Button>
+                <div className='flex gap-2'>
+                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('TORECEIVE')}>Xác nhận</Button>
+                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('PENDING')}>Quay lại</Button>
+                </div>
+            )
+        }
+        else if (currentStatus === "TORECEIVE") {
+            return (
+                <div className='flex gap-2'>
+                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('DELIVERED')}>Xác nhận</Button>
+                </div>
+            )
+        }
+        else if (currentStatus === "DELIVERED") {
+            return (
+                <div className='flex gap-2'>
+                    {/* <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('DELIVERED')}> Confirm</Button>
+                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />}>Cancelled</Button> */}
                 </div>
             )
         }
@@ -155,25 +146,44 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO,
                             {answers && answers.length > 0 ? (
                                 <Radio.Group vertical value={value} onChange={onChange}>
                                     {answers.map((item, index) => (
-                                        <Radio value={item} key={index} onClick={() => onClickSelectSuggest(item)}>{item}</Radio>
+                                        <Radio value={item} key={index} onClick={() => onClickSelectSuggest(item)}>
+                                            {item}
+                                        </Radio>
                                     ))}
                                     <Radio value={""} onClick={() => onClickSelectSuggest("")}>Khác</Radio>
                                 </Radio.Group>
                             ) : (
-                                <div>Không có câu trả lời gợi ý nào</div>
+                                <div>
+                                    {currentStatus && (
+                                        <Fragment>
+                                            <div className='text-[15px] font-semibold text-center py-5'>
+                                                {currentStatus === "DELIVERED"
+                                                    ? "Đơn hàng được giao thành công"
+                                                    : currentStatus === "RETURNED"
+                                                        ? "Trạng thái đơn hàng chưa cập nhật"
+                                                        : currentStatus === "CANCELED"
+                                                            ? "Trạng thái đơn hàng bị hủy"
+                                                            : null}
+                                            </div>
+                                        </Fragment>
+                                    )}
+                                </div>
                             )}
                         </div>
+
+
                     </div>
-                    <div className='col-span-4'>
+                    <div className='col-span-4' hidden={currentStatus === "DELIVERED" || currentStatus === "CANCELED" || currentStatus === "RETURNED"}>
                         <Input
-                            placeholder="Invalid text area"
+                            placeholder="Nhập nội dung"
                             name="note"
                             width={600}
-                            className='!w-full'
+                            className='!w-full !min-h-12'
                             value={note}
                             onChange={handleInputChange}
                             textArea
                             ref={textareaRef} // Thêm ref vào đây để điều khiển textarea
+                            rows={2}
                         />
                     </div>
                 </div>
@@ -188,7 +198,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO,
 
 
     return (
-        <div className='bg-white p-5 card card-border'>
+        <div className='bg-white p-5 card card-border h-[280px]'>
             {
                 selectObject.historyResponseDTOS.length > 0 ? (
                     <Steps current={step} >

@@ -6,7 +6,7 @@ import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
 import axios from 'axios'
 import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/DataTable'
-import { DatePicker, Select } from '@/components/ui'
+import { Badge, DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { StatusBill, statusEnums, TypeBill, typeEnums } from '../../store'
@@ -14,6 +14,19 @@ import { Link } from 'react-router-dom'
 import { HiArrowLeft, HiArrowNarrowLeft, HiRefresh, HiReply } from 'react-icons/hi'
 import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
 import { format } from 'date-fns';
+import instance from '@/axios/CustomAxios'
+
+
+type BadgeType = 'countAll' | 'countPending' | 'countToShip' | 'countToReceive' | 'countDelivered' | 'countCancelled' | 'countReturned';
+interface ICountStatus {
+    countAll: number;    // Số lượng hóa đơn chờ xác nhận
+    countPending: number;    // Số lượng hóa đơn chờ xác nhận
+    countToShip: number;     // Số lượng hóa đơn chờ giao hàng
+    countToReceive: number;  // Số lượng hóa đơn đang giao hàng
+    countDelivered: number;  // Số lượng hóa đơn đang giao hàng
+    countCancelled: number;  // Số lượng hóa đơn đã hủy
+    countReturned: number;   // Số lượng hóa đơn trả hàng
+}
 type IOveriewBill = {
     id: number;
     code: string;
@@ -42,6 +55,15 @@ type Props = {
 export const OrderTable = ({ }: Props) => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
+    const [countAnyStatus, setCountAnyStatus] = useState<ICountStatus>({
+        countAll: 0,
+        countPending: 0,
+        countToShip: 0,
+        countCancelled: 0,
+        countDelivered: 0,
+        countReturned: 0,
+        countToReceive: 0
+    })
     const [queryParam, setQueryParam] = useState<{
         type: typeEnums,
         status: statusEnums,
@@ -127,21 +149,21 @@ export const OrderTable = ({ }: Props) => {
         debounceFn(e.target.value)
     }
 
-    const [dateRange, setDateRange] = useState <[Date | null, Date | null]> ([new Date(2022, 11, 1), new Date(2022, 11, 5)])
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
     const handleRangePickerChange = (date: [Date | null, Date | null]) => {
         console.log('Selected range date', date)
-        if(date[0]){
+        if (date[0]) {
             console.log(format(date[0], 'dd-MM-yyyy'))
             setFromDateParam(format(date[0], 'dd-MM-yyyy'))
         }
-        else{
+        else {
             setFromDateParam("")
         }
-        if(date[1]){
+        if (date[1]) {
             console.log(format(date[1], 'dd-MM-yyyy'))
             setToDateParam(format(date[1], 'dd-MM-yyyy'))
         }
-        else{
+        else {
             setToDateParam("")
         }
         setDateRange(date)
@@ -155,55 +177,112 @@ export const OrderTable = ({ }: Props) => {
             ),
         },
         {
-            header: 'Code',
+            header: 'Mã',
             accessorKey: 'code',
         },
         {
-            header: 'Customer',
+            header: 'Khách hàng',
             accessorKey: 'customer___name',
             cell: (props) => (
                 props.row.original.customerName
             ),
         },
         {
-            header: 'Staff',
+            header: 'Nhân viên',
             accessorKey: 'staff___name',
             cell: (props) => (
                 props.row.original.staffName
             ),
         },
         {
-            header: 'Phone',
+            header: 'SĐT',
             accessorKey: 'phone',
         },
         {
-            header: 'Total',
-            accessorKey: 'total',
+            header: 'Tổng tiền',
+            accessorKey: 'subTotal',
             cell: (props) => (
-                props.row.original.total
+                props.row.original.subTotal
             ),
         },
         {
-            header: 'Create Date',
+            header: 'Ngày tạo',
             accessorKey: 'createdDate',
             cell: (props) => (
                 props.row.original.createdDate
             ),
         },
         {
-            header: 'Status',
+            header: 'Trạng thái',
             accessorKey: 'status',
+            cell: (props) => (
+                <Button
+                    size="xs"
+                    block
+                    className={`${props.row.original.status === "PENDING"
+                        ? "!bg-yellow-300"
+                        : props.row.original.status === "TOSHIP"
+                            ? "!bg-blue-300"
+                            : props.row.original.status === "TORECEIVE"
+                                ? "!bg-green-300"
+                                : props.row.original.status === "DELIVERED"
+                                    ? "!bg-purple-300"
+                                    : props.row.original.status === "CANCELED"
+                                        ? "!bg-red-300"
+                                        : props.row.original.status === "RETURNED"
+                                            ? "!bg-orange-300"
+                                            : "!bg-gray-300"
+                        }`}
+                >
+                    <p>
+                        {props.row.original.status === "PENDING"
+                            ? "Chờ xác nhân"
+                            : props.row.original.status === "TOSHIP"
+                                ? "Đợi giao hàng"
+                                : props.row.original.status === "TORECEIVE"
+                                    ? "Đang giao hàng"
+                                    : props.row.original.status === "DELIVERED"
+                                        ? "Đã hoàn thành"
+                                        : props.row.original.status === "CANCELED"
+                                            ? "Đã hủy đơn"
+                                            : props.row.original.status === "RETURNED"
+                                                ? "Đã trả hàng"
+                                                : "Không xác định"}
+                    </p>
+                </Button>
+            ),
         },
         {
-            header: 'Type',
+            header: 'Loại hóa đon',
             accessorKey: 'type',
+            cell: (props) => (
+                <Button
+                    size="xs"
+                    block
+                    className={`${props.row.original.type === "INSTORE"
+                        ? "!bg-indigo-300"
+                        : props.row.original.type === "ONLINE"
+                            ? "!bg-green-300"
+                            : ""
+
+                        }`}
+                >
+                    <p>
+                        {props.row.original.type === "INSTORE"
+                            ? "Tại của hàng"
+                            : props.row.original.type === "ONLINE"
+                                ? "Trực tuyến"
+                                : "Không xác định"}
+                    </p>
+                </Button>
+            ),
         },
         {
-            header: 'Action',
+            header: 'Hành động',
             id: 'action',
             cell: (props) => (
                 <Button size="xs">
-                    <Link to={`order-details/${props.row.original.id}`}>Action</Link>
+                    <Link to={`order-details/${props.row.original.id}`}>Chi tiết</Link>
                 </Button>
 
             ),
@@ -223,13 +302,13 @@ export const OrderTable = ({ }: Props) => {
     ];
 
     const statusBills: StatusBill[] = [
-        { label: "ALL", value: "" },
-        { label: "PENDING", value: "PENDING" },
-        { label: "TOSHIP", value: "TOSHIP" },
-        { label: "TORECEIVE", value: "TORECEIVE" },
-        { label: "DELIVERED", value: "DELIVERED" },
-        { label: "CANCELED", value: "CANCELED" },
-        { label: "RETURNED", value: "RETURNED" },
+        { label: "TẤT CẢ", value: "", badge: "countAll" },
+        { label: "CHỜ XÁC NHẬN", value: "PENDING", badge: "countPending" },
+        { label: "CHỜ VẬN CHUYỂN", value: "TOSHIP", badge: "countToShip" },
+        { label: "ĐANG VẬN CHUYỂN", value: "TORECEIVE", badge: "countToReceive" },
+        { label: "ĐÃ GIAO", value: "DELIVERED", badge: "countDelivered" },
+        { label: "ĐÃ HỦY", value: "CANCELED", badge: "countCancelled" },
+        { label: "ĐÃ TRẢ", value: "RETURNED", badge: "countReturned" },
     ];
 
     const handlePaginationChange = (pageIndex: number) => {
@@ -268,7 +347,7 @@ export const OrderTable = ({ }: Props) => {
         const fetchData = async () => {
 
             setLoading(true)
-            const response = await axios.post('http://localhost:8080/api/v1/orders/overview', tableData,
+            const response = await instance.post('/orders/overview', tableData,
                 {
                     params: queryParam
                 }
@@ -283,6 +362,7 @@ export const OrderTable = ({ }: Props) => {
                 }))
             }
         }
+        fetchCountAnyStatus()
         fetchData()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -293,13 +373,28 @@ export const OrderTable = ({ }: Props) => {
         queryParam,
     ])
 
+    const listTypeBillOptions: TypeBill[] = [
+        { label: "Tất cả", value: "" },
+        { label: "Tại cửa hàng", value: "INSTORE" },
+        { label: "Trực tuyến", value: "ONLINE" },
+    ]
+
+    const fetchCountAnyStatus = async () => {
+        instance.get("orders/count-any-status").then(function (response) {
+            if (response.data) {
+                setCountAnyStatus(response.data as ICountStatus)
+            }
+        })
+
+    }
+
     return (
         <>
-            <div className='grid grid-cols-2 gap-5 bg-[#f3f4f6] py-5'>
+            <div className='grid grid-cols-3 gap-2 bg-[#f3f4f6] py-2'>
                 <div>
                     <Input
                         ref={inputRef}
-                        placeholder="Search..."
+                        placeholder="Tìm kiếm..."
                         size="sm"
                         className="lg:w-full"
                         onChange={handleChange}
@@ -307,68 +402,50 @@ export const OrderTable = ({ }: Props) => {
                 </div>
                 <div className='flex justify-between gap-5'>
                     <DatePicker.DatePickerRange
-                        placeholder="Select dates range"
+                        placeholder="Chọn khoảng ngày"
                         value={dateRange}
                         dateViewCount={2}
                         onChange={handleRangePickerChange}
                     />
                 </div>
-            </div>
-            <div className="flex justify-between p-5">
-                <div className='flex justify-start'>
-
-                    <div>
-                        <TabList >
-                            {
-                                typeBills.map((item, index) => (
-                                    <TabNav key={index} className={` rounded ${queryParam.type === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
-                                        <button className='p-2 w-20' onClick={() => setTypeParam(item.value)}>
-                                            {item.label}
-                                        </button>
-                                    </TabNav>
-                                ))
-                            }
-                        </TabList>
-                    </div>
+                <div>
+                    <Select
+                        placeholder="Loại hóa đơn"
+                        options={listTypeBillOptions}
+                        onChange={(el) => {
+                            setTypeParam((el as TypeBill).value); // Sử dụng as để xác nhận kiểu
+                        }}
+                    ></Select>
 
                 </div>
-                <div>
-                    <TabList className='flex justify-evenly gap-4'>
-                        {
-                            statusBills.map((item, index) => (
-                                <TabNav key={index} className={`w-full rounded ${queryParam.status === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
-                                    <button className='p-2 min-w-20' onClick={() => setStatusParam(item.value)}>
+            </div>
+            <div className='bg-[#f3f4f6]  py-2'>
+                <TabList className='flex justify-evenly gap-4 w-full bg-white pt-3 pb-1'>
+                    {
+                        statusBills.map((item, index) => (
+                            <TabNav key={index} className={`w-full rounded ${queryParam.status === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
+                                <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)} maxCount={99} innerClass="bg-red-50 text-red-500">
+                                    <button className='p-2 w-auto' onClick={() => setStatusParam(item.value)}>
                                         {item.label}
                                     </button>
-                                </TabNav>
-                            ))
-                        }
-                    </TabList>
-                </div>
-                <div className='flex justify-end gap-5'>
-                    {/* <Select
-                        isSearchable={true}
-                        defaultValue={{ label: '.com', value: '.com' }}
-                        options={options1}
-                        size='sm'
-                        className='lg:w-52'
-                    /> */}
-                    <Button block onClick={handleRestoreSetting} variant='default'>
-                        <HiReply />
-                    </Button>
-
-                </div>
+                                </Badge>
+                            </TabNav>
+                        ))
+                    }
+                </TabList>
             </div>
 
-            <DataTable
-                columns={columns}
-                data={data}
-                loading={loading}
-                pagingData={tableData}
-                onPaginationChange={handlePaginationChange}
-                onSelectChange={handleSelectChange}
-                onSort={handleSort}
-            />
+            <div className='py-4 px-2'>
+                <DataTable
+                    columns={columns}
+                    data={data}
+                    loading={loading}
+                    pagingData={tableData}
+                    onPaginationChange={handlePaginationChange}
+                    onSelectChange={handleSelectChange}
+                    onSort={handleSort}
+                />
+            </div>
         </>
     )
 }

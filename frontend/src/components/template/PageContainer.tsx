@@ -32,7 +32,7 @@ const PageContainer = (props: PageContainerProps) => {
         header,
         contained = false,
         extraHeader,
-        footer = true,
+        footer = true
     } = props
 
     return (
