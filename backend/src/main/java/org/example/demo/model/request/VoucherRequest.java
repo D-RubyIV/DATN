@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.infrastructure.common.PageableRequest;
 
 import java.time.LocalDate;
@@ -39,7 +40,7 @@ public class VoucherRequest extends PageableRequest {
     private Integer maxPercent;
 
     @NotNull(message = "Please select the voucher type!")
-    private TypeTicket typeTicket;
+    private Type typeTicket;
 
     @NotNull(message = "Start date must not be empty!")
     private LocalDate startDate;

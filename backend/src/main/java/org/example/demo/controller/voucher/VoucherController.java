@@ -1,7 +1,7 @@
 package org.example.demo.controller.voucher;
 
-import org.example.demo.entity.voucher.Voucher;
 
+import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;

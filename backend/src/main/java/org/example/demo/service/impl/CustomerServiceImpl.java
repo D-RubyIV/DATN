@@ -2,7 +2,7 @@ package org.example.demo.service.impl;
 
 import org.example.demo.entity.human.customer.Customer;
 
-import org.example.demo.repository.voucher.CustomerRepository;
+import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -2,7 +2,7 @@ package org.example.demo.dto.history.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.example.demo.enums.TypeTicket;
+import org.example.demo.entity.voucher.enums.Type;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +34,7 @@ public class VoucherRequest {
     private Integer maxPercent;
 
     @NotNull(message = "Please select the voucher type!")
-    private TypeTicket typeTicket;
+    private Type typeTicket;
 
     @NotNull(message = "Start date must not be empty!")
     private LocalDate startDate;

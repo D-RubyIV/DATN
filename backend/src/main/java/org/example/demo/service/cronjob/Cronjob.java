@@ -16,10 +16,10 @@ public class Cronjob {
     // Chạy job mỗi phút
     @Scheduled(cron = "0 * * * * ?")
     public void autoUpdateStatusVoucher() {
-        try {
-            voucherService.updateStatusVoucher();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            voucherService.updateStatusVoucher();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 }

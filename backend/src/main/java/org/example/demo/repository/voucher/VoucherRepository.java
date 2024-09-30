@@ -1,6 +1,6 @@
 package org.example.demo.repository.voucher;
 
-import org.example.demo.entity.voucher.Voucher;
+import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
@@ -94,25 +94,25 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     Optional<VoucherResponse> findVoucherById(Integer id);
 
     @Query(value = """
-    SELECT 
-        ROW_NUMBER() OVER(ORDER BY v.created_date DESC) AS indexs,
-        v.id AS id,
-        v.code AS code,
-        v.name AS name, 
-        v.type_ticket AS typeTicket,
-        v.quantity AS quantity,
-        v.start_date AS startDate,
-        v.end_date AS endDate,
-        v.max_percent AS maxPercent,
-        v.min_amount AS minAmount,
-        v.status AS status
-    FROM voucher v
-    WHERE (:#{#req.name} IS NULL OR :#{#req.name} = '' 
-           OR v.name LIKE '%' + :#{#req.name} + '%' 
-           OR v.code LIKE '%' + :#{#req.name} + '%')
-    AND (:#{#req.deleted} IS NULL OR v.deleted = :#{#req.deleted})
-    AND (:#{#req.status} IS NULL OR v.status = :#{#req.status})
-    """,
+            SELECT 
+                ROW_NUMBER() OVER(ORDER BY v.created_date DESC) AS indexs,
+                v.id AS id,
+                v.code AS code,
+                v.name AS name, 
+                v.type_ticket AS typeTicket,
+                v.quantity AS quantity,
+                v.start_date AS startDate,
+                v.end_date AS endDate,
+                v.max_percent AS maxPercent,
+                v.min_amount AS minAmount,
+                v.status AS status
+            FROM voucher v
+            WHERE (:#{#req.name} IS NULL OR :#{#req.name} = '' 
+                   OR v.name LIKE '%' + :#{#req.name} + '%' 
+                   OR v.code LIKE '%' + :#{#req.name} + '%')
+            AND (:#{#req.deleted} IS NULL OR v.deleted = :#{#req.deleted})
+            AND (:#{#req.status} IS NULL OR v.status = :#{#req.status})
+            """,
             countQuery = """
     SELECT COUNT(*) 
     FROM voucher v

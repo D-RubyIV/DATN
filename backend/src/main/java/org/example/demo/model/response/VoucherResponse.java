@@ -1,7 +1,7 @@
 package org.example.demo.model.response;
 
 
-import org.example.demo.entity.voucher.Voucher;
+import org.example.demo.entity.voucher.core.Voucher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 

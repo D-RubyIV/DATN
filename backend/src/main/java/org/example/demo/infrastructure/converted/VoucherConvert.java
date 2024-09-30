@@ -1,9 +1,9 @@
 package org.example.demo.infrastructure.converted;
 
 import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.voucher.Voucher;
+import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.model.request.VoucherRequest;
-import org.example.demo.repository.voucher.CustomerRepository;
+import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

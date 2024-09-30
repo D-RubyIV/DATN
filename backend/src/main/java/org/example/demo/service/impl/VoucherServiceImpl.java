@@ -2,14 +2,14 @@ package org.example.demo.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.voucher.Voucher;
-import org.example.demo.enums.TypeTicket;
+import org.example.demo.entity.voucher.core.Voucher;
+import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.infrastructure.common.AutoGenCode;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.infrastructure.converted.VoucherConvert;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
-import org.example.demo.repository.voucher.CustomerRepository;
+import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,7 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucherSaved = voucherRepository.save(voucher);
         updateStatus(voucherSaved);
 
-        if (voucherSaved.getTypeTicket() == TypeTicket.Individual) {
+        if (voucherSaved.getTypeTicket() == Type.Individual) {
             if (!request.getCustomers().isEmpty()) {
                 List<Integer> idCustomers = request.getCustomers();
                 List<Customer> listCustomers = idCustomers.stream()
@@ -98,7 +98,7 @@ public class VoucherServiceImpl implements VoucherService {
         if (voucherSaved != null) {
             updateStatus(voucherUpdate);
         }
-        if (voucherSaved.getTypeTicket() == TypeTicket.Individual) {
+        if (voucherSaved.getTypeTicket() == Type.Individual) {
             if (!request.getCustomers().isEmpty()) {
                 List<Integer> idCustomers = request.getCustomers();
                 List<Customer> listCustomers = idCustomers.stream()
