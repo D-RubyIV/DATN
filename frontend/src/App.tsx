@@ -1,22 +1,21 @@
-import { Provider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
-import { PersistGate } from 'redux-persist/integration/react'
-import store, { persistor } from './store'
-import Theme from '@/components/template/Theme'
-import Layout from '@/components/layouts'
-import mockServer from './mock'
-import appConfig from '@/configs/app.config'
-import './locales'
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { PersistGate } from 'redux-persist/integration/react';
+import store, { persistor } from './store';
+import Theme from '@/components/template/Theme';
+import Layout from '@/components/layouts';
+// import appConfig from '@/configs/app.config';
+import './locales';
+import { ToastContainer } from 'react-toastify'; // Nhập ToastContainer
+import 'react-toastify/dist/ReactToastify.css'; // Nhập các kiểu dáng mặc định
 
-const environment = process.env.NODE_ENV
+// const environment = process.env.NODE_ENV;
 
 /**
- * Set enableMock(Default false) to true at configs/app.config.js
- * If you wish to enable mock api
+ * Đặt enableMock(Default false) thành true tại configs/app.config.js
+ * Nếu bạn muốn kích hoạt mock api
  */
-if (environment !== 'production' && appConfig.enableMock) {
-    mockServer({ environment })
-}
+
 function App() {
     return (
         <Provider store={store}>
@@ -24,11 +23,12 @@ function App() {
                 <BrowserRouter>
                     <Theme>
                         <Layout />
+                        <ToastContainer /> {/* Thêm ToastContainer ở đây */}
                     </Theme>
                 </BrowserRouter>
             </PersistGate>
         </Provider>
-    )
+    );
 }
 
-export default App
+export default App;

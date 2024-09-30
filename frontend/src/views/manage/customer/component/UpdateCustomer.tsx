@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Button, Input, Radio, Select } from '@/components/ui';
+import { Button, Input, Radio, Select, Switcher } from '@/components/ui';
 import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
-import { FormItem, FormContainer } from '@/components/ui/Form'
-import { Field, FieldProps, Form, Formik, FormikHelpers, FormikProps } from 'formik'
-import DatePicker from '@/components/ui/DatePicker'
-import axios from "axios";
-
-import dayjs from "dayjs";
+import { FormItem, FormContainer } from '@/components/ui/Form';
+import { Field, FieldArray, FieldProps, Form, Formik, FormikHelpers, FormikProps } from 'formik';
+import DatePicker from '@/components/ui/DatePicker';
+import axios from 'axios';
+import dayjs from 'dayjs';
 import { SingleValue } from 'react-select';
 
-
+// Types
 type CustomerDetailDTO = {
     id: string;
     code: string;
@@ -34,8 +33,8 @@ type AddressDTO = {
     district: string | null;
     ward: string | null;
     detail: string;
-    isDefault: boolean
-}
+    isDefault: boolean;
+};
 
 interface Province {
     id: string;
@@ -55,22 +54,26 @@ interface Ward {
     full_name: string;
 }
 
-// Xu ly validation
+// Validation schema
 const validationSchema = Yup.object({
-    // name: Yup.string().required('Name is required'),
-    // email: Yup.string().email('Invalid email address').required('Email is required'),
-    // phone: Yup.string().required('Phone is required'),
-    // birthDate: Yup.string().required('BrithDay is required'),
-    // province: Yup.string().required('Province is required'),
-    // district: Yup.string().required('District is required'),
-    // ward: Yup.string().required('Ward is required'),
-    // detail: Yup.string().required('Detail address is required'),
-    // status: Yup.string().required('Status is required'),
-})
-
+    name: Yup.string().required('Name is required'),
+    email: Yup.string().email('Invalid email address').required('Email is required'),
+    phone: Yup.string().required('Phone is required'),
+    birthDate: Yup.string().required('Birthdate is required'),
+    addressDTOS: Yup.array().of(
+        Yup.object().shape({
+            name: Yup.string().required('Address name is required'),
+            phone: Yup.string().required('Address phone is required'),
+            province: Yup.string().required('Province is required'),
+            district: Yup.string().required('District is required'),
+            ward: Yup.string().required('Ward is required'),
+            detail: Yup.string().required('Detail address is required'),
+            isDefault: Yup.boolean().required('Is default is required'),
+        })
+    ),
+});
 
 const UpdateCustomer = () => {
-
     const initialAddressDTO: AddressDTO = {
         id: '',
         name: '',
@@ -79,8 +82,8 @@ const UpdateCustomer = () => {
         district: null,
         ward: null,
         detail: '',
-        isDefault: false
-    }
+        isDefault: false,
+    };
 
     const initialCustomerState: CustomerDetailDTO = {
         id: '',
@@ -93,66 +96,54 @@ const UpdateCustomer = () => {
         province: null,
         district: null,
         ward: null,
-        addressDTOS: [
-            {
-                id: '',
-                name: '',
-                phone: '',
-                province: '',
-                district: '',
-                ward: '',
-                detail: '',
-                isDefault: false
-            }
-        ],
+        addressDTOS: [initialAddressDTO],
         status: '',
-    }
+    };
 
-    const [showNewAddressForm, setShowNewAddressForm] = useState(false);
     const [updateCustomer, setUpdateCustomer] = useState<CustomerDetailDTO>(initialCustomerState);
-    const [provinces, setProvinces] = useState<Province[]>([])
-    const [districts, setDistricts] = useState<District[]>([])
-    const [wards, setWards] = useState<Ward[]>([])
+    const [districts, setDistricts] = useState<District[]>([]);
+    const [wards, setWards] = useState<Ward[]>([]);
+    const [provinces, setProvinces] = useState<Province[]>([]);
     const navigate = useNavigate();
     const { id } = useParams();
+    const [formModes, setFormModes] = useState<string[]>([]);
 
     useEffect(() => {
         if (id) {
             fetchCustomer(id);
         }
-        fetchProvinces()
+        loadProvinces();
     }, [id]);
 
     useEffect(() => {
-        if (updateCustomer.province && provinces.length > 0) {
+        if (updateCustomer.province) {
             const province = provinces.find((prov) => prov.full_name === updateCustomer.province);
             if (province) {
                 fetchDistricts(province.id);
             } else {
-                setDistricts([])
+                setDistricts([]);
             }
         }
     }, [updateCustomer.province, provinces]);
 
     useEffect(() => {
-        if (updateCustomer.district && districts.length > 0) {
+        if (updateCustomer.district) {
             const district = districts.find((dist) => dist.full_name === updateCustomer.district);
             if (district) {
-                fetchWards(district.id)
+                fetchWards(district.id);
             } else {
-                setWards([])
+                setWards([]);
             }
         }
     }, [updateCustomer.district, districts]);
 
-    // APi lay du lieu theo id
+    // API calls
     const fetchCustomer = async (id: string) => {
         try {
             const response = await axios.get(`http://localhost:8080/api/v1/customer/${id}`);
-            const customerData = response.data;
-            console.log(customerData);
             if (response.status === 200) {
                 setUpdateCustomer(response.data);
+                setFormModes(response.data.addressDTOS.map(() => 'edit'));
             } else {
                 console.error('Failed to fetch customer data:', response.statusText);
             }
@@ -161,85 +152,80 @@ const UpdateCustomer = () => {
         }
     };
 
-
-
     const fetchProvinces = async () => {
-        try {
-            const response = await axios.get('https://esgoo.net/api-tinhthanh/1/0.htm');
-            const data = response.data;
-            if (data.error === 0) {
-                setProvinces(data.data);
-            } else {
-                console.error('Error loading province:', data.message);
-            }
-        } catch (error) {
-            console.error('Error when calling API province:', error);
+        const response = await axios.get('https://esgoo.net/api-tinhthanh/1/0.htm');
+        if (response.data.error === 0) {
+            return response.data.data;
+        } else {
+            console.error('Error fetching provinces:', response.data);
+            return [];
         }
     };
 
     const fetchDistricts = async (provinceId: string) => {
-        try {
-            const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
-            const data_district = response.data;
-            if (data_district.error === 0) {
-                setDistricts(data_district.data);
-            } else {
-                console.error('Error loading district:', data_district.message);
-            }
-        } catch (error) {
-            console.error(`Error when calling API district with provinceId ${provinceId}:`, error);
+        const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
+        if (response.data.error === 0) {
+            return response.data.data;
+        } else {
+            console.error('Error fetching districts:', response.data);
+            return [];
         }
     };
 
     const fetchWards = async (districtId: string) => {
-        try {
-            const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
-            const data_ward = response.data;
-            if (data_ward.error === 0) {
-                setWards(data_ward.data);
-            } else {
-                console.error('Error loading ward:', data_ward.message);
-            }
-        } catch (error) {
-            console.error(`Error when calling API ward with districtId ${districtId}:`, error);
+        const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
+        if (response.data.error === 0) {
+            return response.data.data;
+        } else {
+            console.error('Error fetching wards:', response.data);
+            return [];
         }
     };
-
 
     const handleLocationChange = (
         type: 'province' | 'district' | 'ward',
         newValue: Province | District | Ward | null,
-        form: FormikProps<CustomerDetailDTO>
+        form: FormikProps<CustomerDetailDTO>,
+        addressIndex: number
     ) => {
         if (newValue) {
+            const fieldBase = `addressDTOS[${addressIndex}]`;
             if (type === 'province') {
-                form.setFieldValue('province', newValue.full_name);
-                form.setFieldValue('district', '');
-                form.setFieldValue('ward', '');
-                setUpdateCustomer((prev) => ({ ...prev, province: newValue.full_name, district: null, ward: null }));
-                fetchDistricts(newValue.id)
+                form.setFieldValue(`${fieldBase}.province`, newValue.full_name);
+                form.setFieldValue(`${fieldBase}.district`, '');
+                form.setFieldValue(`${fieldBase}.ward`, '');
+                fetchDistricts(newValue.id).then((data) => {
+                    setDistricts(data);
+                });
             } else if (type === 'district') {
-                form.setFieldValue('district', newValue.full_name);
-                form.setFieldValue('ward', '');
-                setUpdateCustomer((prev) => ({ ...prev, district: newValue.full_name, ward: null }));
-                fetchWards(newValue.id)
+                form.setFieldValue(`${fieldBase}.district`, newValue.full_name);
+                form.setFieldValue(`${fieldBase}.ward`, '');
+                fetchWards(newValue.id).then((data) => {
+                    setWards(data);
+                });
             } else if (type === 'ward') {
-                form.setFieldValue('ward', newValue.full_name);
-                setUpdateCustomer((prev) => ({ ...prev, ward: newValue.full_name }));
+                form.setFieldValue(`${fieldBase}.ward`, newValue.full_name);
             }
         }
-    }
+    };
 
+    const loadProvinces = async () => {
+        const cachedProvinces = localStorage.getItem('provinces');
+        if (cachedProvinces) {
+            setProvinces(JSON.parse(cachedProvinces));
+        } else {
+            const data = await fetchProvinces();
+            setProvinces(data);
+            localStorage.setItem('provinces', JSON.stringify(data));
+        }
+    };
 
-    const handleUpdate = async (values: CustomerDetailDTO, { resetForm, setSubmitting }: FormikHelpers<CustomerDetailDTO>) => {
+    const handleUpdate = async (values: CustomerDetailDTO, { setSubmitting }: FormikHelpers<CustomerDetailDTO>) => {
         try {
             const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, values);
-            resetForm();
-
             if (response.status === 200) {
                 navigate('/manage/customer');
             } else {
-                console.error('Failed to update customer:', response.statusText);
                 alert('Failed to update customer. Please try again.');
             }
         } catch (error) {
@@ -250,13 +236,30 @@ const UpdateCustomer = () => {
         }
     };
 
-    const handleNewAddressSubmit = (values: AddressDTO, { resetForm }: FormikHelpers<AddressDTO>) => {
-        // Xử lý việc gửi địa chỉ mới tại đây
-        console.log('Địa chỉ mới đã được gửi:', values);
-        resetForm();
-        setShowNewAddressForm(false);
+    const handleAddressSubmit = async (
+        mode: 'add' | 'edit',
+        address: AddressDTO,
+        customerId: string,
+        addressIndex: number
+    ) => {
+        try {
+            let response;
+            if (mode === 'add') {
+                response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
+                if (response.status === 200) {
+                    setFormModes((prev) => prev.map((m, i) => (i === addressIndex ? 'edit' : m)));
+                }
+                alert('Địa chỉ mới đã được thêm');
+            } else {
+                response = await axios.put(`http://localhost:8080/api/v1/customer/${customerId}/address/${address.id}`, address);
+                alert('Địa chỉ đã được cập nhật');
+            }
+            fetchCustomer(customerId);
+        } catch (error) {
+            console.error('Error submitting address:', error);
+            alert('Error submitting address. Please try again.');
+        }
     };
-
 
     return (
         <Formik
@@ -267,12 +270,10 @@ const UpdateCustomer = () => {
         >
             {({ values, setFieldValue, touched, errors, resetForm, isSubmitting }) => (
                 <Form>
-                    <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Cập nhật khách hàng</h1>
+                    <h1 className="text-center font-semibold text-2xl mb-4 uppercase">Cập nhật khách hàng</h1>
                     <div className="flex flex-col lg:flex-row gap-4">
-                        {/* Right side - Address Information */}
                         <div className="w-full lg:w-1/3 bg-white p-6 shadow-md rounded-lg">
                             <h4 className="font-medium text-xl mb-4">Thông tin khách hàng</h4>
-
                             <FormContainer>
                                 <FormItem
                                     asterisk
@@ -280,13 +281,7 @@ const UpdateCustomer = () => {
                                     invalid={errors.name && touched.name}
                                     errorMessage={errors.name}
                                 >
-                                    <Field
-                                        type="text"
-                                        autoComplete="off"
-                                        name="name"
-                                        placeholder="Tên khách hàng..."
-                                        component={Input}
-                                    />
+                                    <Field type="text" autoComplete="off" name="name" placeholder="Tên khách hàng..." component={Input} />
                                 </FormItem>
 
                                 <FormItem
@@ -295,13 +290,7 @@ const UpdateCustomer = () => {
                                     invalid={errors.email && touched.email}
                                     errorMessage={errors.email}
                                 >
-                                    <Field
-                                        type="text"
-                                        autoComplete="off"
-                                        name="email"
-                                        placeholder="email..."
-                                        component={Input}
-                                    />
+                                    <Field type="text" autoComplete="off" name="email" placeholder="Email..." component={Input} />
                                 </FormItem>
 
                                 <FormItem
@@ -310,13 +299,7 @@ const UpdateCustomer = () => {
                                     invalid={errors.phone && touched.phone}
                                     errorMessage={errors.phone}
                                 >
-                                    <Field
-                                        type="number"
-                                        autoComplete="off"
-                                        name="phone"
-                                        placeholder="Số điện thoại..."
-                                        component={Input}
-                                    />
+                                    <Field type="text" autoComplete="off" name="phone" placeholder="Số điện thoại..." component={Input} />
                                 </FormItem>
 
                                 <FormItem
@@ -327,38 +310,26 @@ const UpdateCustomer = () => {
                                 >
                                     <DatePicker
                                         placeholder="Pick a date"
-                                        value={values.birthDate ? dayjs(values.birthDate, 'DD-MM-YYYY').toDate() : null}
+                                        value={values.birthDate ? dayjs(values.birthDate, 'YYYY-MM-DD').toDate() : null}
                                         onChange={(date) => {
-                                            if (date && dayjs(date).isValid()) {  // Kiểm tra xem ngày có hợp lệ không
-                                                const formattedDate = dayjs(date).format('DD-MM-YYYY');
-                                                setFieldValue('birthDate', formattedDate); // Cập nhật birthDate trong Formik
+                                            if (date && dayjs(date).isValid()) {
+                                                const formattedDate = dayjs(date).format('YYYY-MM-DD');
+                                                setFieldValue('birthDate', formattedDate);
                                             } else {
-                                                setFieldValue('birthDate', ''); // Xử lý khi giá trị ngày không hợp lệ
+                                                setFieldValue('birthDate', '');
                                             }
                                         }}
                                     />
                                 </FormItem>
 
-                                <FormItem
-                                    asterisk
-                                    label="Giới tính"
-                                >
+                                <FormItem asterisk label="Giới tính">
                                     <Field name="gender">
                                         {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
                                             <>
-                                                <Radio
-                                                    className="mr-4"
-                                                    value="Nam"
-                                                    checked={field.value === 'Nam'}
-                                                    onChange={() => form.setFieldValue('gender', 'Nam')}
-                                                >
+                                                <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'} onChange={() => form.setFieldValue('gender', 'Nam')}>
                                                     Nam
                                                 </Radio>
-                                                <Radio
-                                                    value="Nữ"
-                                                    checked={field.value === 'Nữ'}
-                                                    onChange={() => form.setFieldValue('gender', 'Nữ')}
-                                                >
+                                                <Radio value="Nữ" checked={field.value === 'Nữ'} onChange={() => form.setFieldValue('gender', 'Nữ')}>
                                                     Nữ
                                                 </Radio>
                                             </>
@@ -366,13 +337,8 @@ const UpdateCustomer = () => {
                                     </Field>
                                 </FormItem>
 
-                                <FormItem >
-                                    <Button
-                                        type="reset"
-                                        className="ltr:mr-2 rtl:ml-2"
-                                        disabled={isSubmitting} // vô hiệu hóa nút khi gửi dữ liệu
-                                        onClick={() => resetForm()}
-                                    >
+                                <FormItem>
+                                    <Button type="reset" className="ltr:mr-2 rtl:ml-2" disabled={isSubmitting} onClick={() => resetForm()}>
                                         Tải lại
                                     </Button>
                                     <Button variant="solid" type="submit" disabled={isSubmitting}>
@@ -382,63 +348,54 @@ const UpdateCustomer = () => {
                             </FormContainer>
                         </div>
 
-                        {/* Left side - Address Information */}
                         <div className="w-full lg:w-2/3 bg-white p-6 shadow-md rounded-lg">
                             <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
+                            <FieldArray name="addressDTOS">
+                                {({ insert, remove }) => (
+                                    <div>
+                                        <Button
+                                            type="button"
+                                            className="mb-4 mt-4"
+                                            onClick={() => {
+                                                insert(0, initialAddressDTO);
+                                                setFormModes(['add', ...formModes]);
+                                            }}
+                                        >
+                                            Thêm địa chỉ mới
+                                        </Button>
 
-                            {/* Nút thêm địa chỉ mới */}
-                            <Button
-                                variant="default"
-                                className="mb-4 mt-4"
-                                type='button'
-                                onClick={() => setShowNewAddressForm(!showNewAddressForm)}
-                            >
-                                {showNewAddressForm ? 'Hủy bỏ' : 'Thêm địa chỉ mới'}
-                            </Button>
-
-                            {/* Form địa chỉ mới */}
-                            {showNewAddressForm && (
-
-                                <Formik
-                                    initialValues={initialAddressDTO}
-                                    // validationSchema={NewAddressSchema}
-                                    onSubmit={handleNewAddressSubmit}
-                                >
-                                    {({ isSubmitting }: FormikProps<AddressDTO>) => (
-
-                                        <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
-                                            <div className="w-full">
+                                        {values.addressDTOS.map((address, index) => (
+                                            <div key={index} className="bg-white p-6 shadow-md rounded-lg mb-6">
                                                 <FormContainer>
-                                                    {/* Tên và Số điện thoại trên cùng một hàng */}
+                                                    <h4 className="text-lg font-medium mb-2">Địa chỉ {index + 1}</h4>
                                                     <div className="flex w-full flex-wrap mb-4">
                                                         <div className="w-1/2 pr-4">
                                                             <FormItem asterisk label="Tên">
-                                                                <Field type="text" name="name" placeholder="Nhập tên..." component={Input} />
+                                                                <Field type="text" name={`addressDTOS[${index}].name`} placeholder="Nhập tên..." component={Input} />
                                                             </FormItem>
                                                         </div>
-
                                                         <div className="w-1/2">
                                                             <FormItem asterisk label="Số điện thoại">
-                                                                <Field type="text" name="phone" placeholder="Nhập số điện thoại..." component={Input} />
+                                                                <Field type="text" name={`addressDTOS[${index}].phone`} placeholder="Nhập số điện thoại..." component={Input} />
                                                             </FormItem>
                                                         </div>
                                                     </div>
 
-                                                    {/* Tỉnh, Quận, Xã trên cùng một hàng */}
                                                     <div className="flex w-full flex-wrap mb-4">
                                                         <div className="w-1/3 pr-4">
-                                                            <FormItem
-                                                                asterisk
-                                                                label="Tỉnh/thành phố">
-                                                                <Field name="province">
-                                                                    {({ field }: FieldProps<string>) => (
+                                                            <FormItem asterisk label="Tỉnh/Thành phố">
+                                                                <Field name={`addressDTOS[${index}].province`}>
+                                                                    {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
                                                                         <Select
-                                                                            value={provinces.find(province => province.id === field.value) || null}
-                                                                            placeholder="Chọn tỉnh thành"
-                                                                            getOptionLabel={(option) => option.name}
-                                                                            getOptionValue={(option) => option.id}
+                                                                            value={provinces.find((prov) => prov.full_name === field.value) || null}
+                                                                            placeholder="Chọn tỉnh/thành phố..."
+                                                                            getOptionLabel={(option) => option.full_name}
+                                                                            getOptionValue={(option) => option.full_name}
                                                                             options={provinces}
-                                                                        // onChange={(newValue: SingleValue<Province> | null) => handleProvinceChange(newValue, form)}
+                                                                            onChange={(newValue: SingleValue<Province> | null) => {
+                                                                                handleLocationChange('province', newValue, form, index);
+                                                                            }}
+                                                                            onBlur={() => form.setFieldTouched(`addressDTOS[${index}].province`, true)}
                                                                         />
                                                                     )}
                                                                 </Field>
@@ -446,19 +403,20 @@ const UpdateCustomer = () => {
                                                         </div>
 
                                                         <div className="w-1/3 pr-4">
-                                                            <FormItem
-                                                                asterisk
-                                                                label="Quận/huyện"
-                                                            >
-                                                                <Field name="district">
-                                                                    {({ field }: FieldProps<string>) => (
+                                                            <FormItem asterisk label="Quận/huyện">
+                                                                <Field name={`addressDTOS[${index}].district`}>
+                                                                    {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
                                                                         <Select
-                                                                            value={districts.find(district => district.id === field.value) || null}
-                                                                            placeholder="Chọn quận huyện"
-                                                                            getOptionLabel={(option) => option.name}
-                                                                            getOptionValue={(option) => option.id}
+                                                                            isDisabled={!values.addressDTOS[index].province}
+                                                                            value={districts.find((dist) => dist.full_name === field.value) || null}
+                                                                            placeholder="Chọn quận/huyện..."
+                                                                            getOptionLabel={(option) => option.full_name || option.name}
+                                                                            getOptionValue={(option) => option.full_name}
                                                                             options={districts}
-                                                                        // onChange={(newValue: SingleValue<District> | null) => handleDistrictChange(newValue, form)}
+                                                                            onChange={(newValue: SingleValue<District> | null) => {
+                                                                                handleLocationChange('district', newValue, form, index);
+                                                                            }}
+                                                                            onBlur={() => form.setFieldTouched(`addressDTOS[${index}].district`, true)}
                                                                         />
                                                                     )}
                                                                 </Field>
@@ -466,19 +424,20 @@ const UpdateCustomer = () => {
                                                         </div>
 
                                                         <div className="w-1/3">
-                                                            <FormItem
-                                                                asterisk
-                                                                label="Xã/phường/thị trấn"
-                                                            >
-                                                                <Field name="ward">
-                                                                    {({ field }: FieldProps<string>) => (
+                                                            <FormItem asterisk label="Xã/phường/thị trấn">
+                                                                <Field name={`addressDTOS[${index}].ward`}>
+                                                                    {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
                                                                         <Select
-                                                                            value={wards.find(ward => ward.id === field.value) || null}
-                                                                            placeholder="Chọn phường xã"
-                                                                            getOptionLabel={(option) => option.name}
-                                                                            getOptionValue={(option) => option.id}
+                                                                            isDisabled={!values.addressDTOS[index].district}
+                                                                            value={wards.find((ward) => ward.full_name === field.value) || null}
+                                                                            placeholder="Chọn xã/phường/thị trấn..."
+                                                                            getOptionLabel={(option) => option.full_name}
+                                                                            getOptionValue={(option) => option.full_name}
                                                                             options={wards}
-                                                                        // onChange={(newValue: SingleValue<Ward> | null) => handleWardChange(newValue, form)}
+                                                                            onChange={(newValue: SingleValue<Ward> | null) => {
+                                                                                handleLocationChange('ward', newValue, form, index);
+                                                                            }}
+                                                                            onBlur={() => form.setFieldTouched(`addressDTOS[${index}].ward`, true)}
                                                                         />
                                                                     )}
                                                                 </Field>
@@ -486,118 +445,54 @@ const UpdateCustomer = () => {
                                                         </div>
                                                     </div>
 
-                                                    {/* Địa chỉ chi tiết */}
-                                                    <div className="w-full mb-4">
-                                                        <FormItem asterisk label="Địa chỉ chi tiết">
-                                                            <Field type="text" name="detail" placeholder="Nhập địa chỉ chi tiết" component={Input} />
-                                                        </FormItem>
-                                                    </div>
-
-                                                    <FormItem>
-                                                        <Button type="submit" disabled={isSubmitting}>
-                                                            Thêm địa chỉ
-                                                        </Button>
+                                                    <FormItem asterisk label="Địa chỉ chi tiết">
+                                                        <Field type="text" name={`addressDTOS[${index}].detail`} placeholder="Nhập địa chỉ chi tiết" component={Input} />
                                                     </FormItem>
+
+                                                    <FormItem label="Địa chỉ mặc định">
+                                                        <Field name={`addressDTOS[${index}].isDefault`}>
+                                                            {({ field }) => (
+                                                                <Switcher
+                                                                    checked={field.value}
+                                                                    onChange={(checked) => {
+                                                                        setFieldValue(`addressDTOS[${index}].isDefault`, checked);
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    </FormItem>
+
+                                                    <div className="flex justify-end">
+                                                        <Button
+                                                            type="button"
+                                                            className="mr-4"
+                                                            onClick={() => handleAddressSubmit(formModes[index] as 'add' | 'edit', values.addressDTOS[index], values.id, index)}
+                                                        >
+                                                            {formModes[index] === 'add' ? 'Thêm' : 'Cập nhật'}
+                                                        </Button>
+                                                        <Button
+                                                            type="button"
+                                                            variant="solid"
+                                                            onClick={() => {
+                                                                remove(index);
+                                                                setFormModes((prev) => prev.filter((_, i) => i !== index));
+                                                            }}
+                                                        >
+                                                            Xóa
+                                                        </Button>
+                                                    </div>
                                                 </FormContainer>
                                             </div>
-                                        </div>
-
-                                    )}
-                                </Formik>
-                            )}
-                            <FormContainer>
-                                <FormItem
-                                    asterisk
-                                    label="Tỉnh/thành phố"
-                                    invalid={errors.province && touched.province}
-                                    errorMessage={errors.province}
-                                >
-                                    <Field name="province">
-                                        {({ field, form }: FieldProps<string>) => (
-                                            <Select
-                                                value={provinces.find(province => province.full_name === field.value) || null}
-                                                placeholder="Chọn tỉnh/thành phố..."
-                                                getOptionLabel={(option) => option.full_name}
-                                                getOptionValue={(option) => option.full_name} // Sử dụng ID để so sánh
-                                                options={provinces}
-                                                onChange={(newValue: SingleValue<Province> | null) => {
-                                                    handleLocationChange('province', newValue, form);
-                                                }}
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
-
-                                <FormItem
-                                    asterisk
-                                    label="Quận/huyện"
-                                    invalid={errors.district && touched.district}
-                                    errorMessage={errors.district}
-                                >
-                                    <Field name="district">
-                                        {({ field, form }: FieldProps<string>) => (
-                                            <Select
-                                                value={districts.find(district => district.full_name === field.value) || null}
-                                                placeholder="Chọn tỉnh/thành phố..."
-                                                getOptionLabel={(option) => option.full_name}
-                                                getOptionValue={(option) => option.full_name} // Sử dụng ID để so sánh
-                                                options={provinces}
-                                                onChange={(newValue: SingleValue<District> | null) => {
-                                                    handleLocationChange('province', newValue, form);
-                                                }}
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
-
-                                <FormItem
-                                    asterisk
-                                    label="Xã/phường/thị trấn"
-                                    invalid={!!errors.ward && touched.ward}
-                                    errorMessage={errors.ward}
-                                >
-                                    <Field name="ward">
-                                        {({ field, form }: FieldProps<string>) => (
-                                            <Select
-                                                value={wards.find(ward => ward.full_name === field.value) || null}
-                                                placeholder="Chọn tỉnh/thành phố..."
-                                                getOptionLabel={(option) => option.full_name}
-                                                getOptionValue={(option) => option.full_name} // Sử dụng ID để so sánh
-                                                options={provinces}
-                                                onChange={(newValue: SingleValue<Ward> | null) => {
-                                                    handleLocationChange('province', newValue, form);
-                                                }}
-                                            />
-                                        )}
-                                    </Field>
-                                </FormItem>
-
-
-
-                                <FormItem
-                                    asterisk
-                                    label="Chi tiết địa chỉ"
-                                >
-                                    <Field
-                                        type="text"
-                                        autoComplete="off"
-                                        name="addressDTOS[0].detail"
-                                        placeholder="Chi tiết địa chỉ"
-                                        component={Input}
-                                    />
-                                </FormItem>
-
-
-                            </FormContainer>
-
+                                        ))}
+                                    </div>
+                                )}
+                            </FieldArray>
                         </div>
                     </div>
                 </Form>
             )}
         </Formik>
-
     );
-
 };
 
 export default UpdateCustomer;

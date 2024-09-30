@@ -94,7 +94,9 @@ public class CustomerMapper {
                     updateAddressFromDTO(addressDTO, existingAddress);
                 } else {
                     // Thêm địa chỉ mới nếu không tồn tại
-                    customer.getAddresses().add(toEntityAddress(addressDTO));
+                    Address newAddress = toEntityAddress(addressDTO);
+                    newAddress.setCustomer(customer); // Set the customer on the new address
+                    customer.getAddresses().add(newAddress);
                 }
             }
         }
@@ -110,7 +112,6 @@ public class CustomerMapper {
         address.setDefaultAddress(dto.getIsDefault());
     }
 
-
     public static Address toEntityAddress(AddressDTO dto) {
         Address address = new Address();
         address.setId(dto.getId());
@@ -121,6 +122,7 @@ public class CustomerMapper {
         address.setWard(dto.getWard());
         address.setDetail(dto.getDetail());
         address.setDefaultAddress(dto.getIsDefault());
+        // Note: Setting the customer should be handled when adding to the customer's addresses directly
         return address;
     }
 
@@ -136,5 +138,4 @@ public class CustomerMapper {
         dto.setIsDefault(address.getDefaultAddress());
         return dto;
     }
-
 }

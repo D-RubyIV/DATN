@@ -5,6 +5,7 @@ import org.example.demo.dto.customer.AddressDTO;
 import org.example.demo.dto.customer.CustomerDTO;
 import org.example.demo.dto.customer.CustomerDetailDTO;
 import org.example.demo.dto.customer.CustomerListDTO;
+import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.service.customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +90,18 @@ public class CustomerController {
         customerService.updateStatus(id, newStatus);
         return ResponseEntity.noContent().build();
     }
+    @PatchMapping("/{addressId}/default")
+    public ResponseEntity<Address> updateDefaultAddress(
+            @PathVariable Integer addressId,
+            @RequestParam("customerId") Integer customerId,
+            @RequestParam("default") Boolean defaultAddress) {
+        // Gọi service để cập nhật địa chỉ mặc định
+        Address updatedAddress = customerService.updateAddressDefault(customerId, addressId, defaultAddress);
+        return ResponseEntity.ok(updatedAddress);
+    }
+
+
+
+
 
 }

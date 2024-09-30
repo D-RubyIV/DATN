@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -73,6 +74,8 @@ public class CustomerServiceImpl implements CustomerService {
         Customer savedCustomer = customerRepository.save(customer);
 
         Address defaultAddress = new Address();
+        defaultAddress.setName(customerDTO.getName()); // mới sửa
+        defaultAddress.setPhone(customerDTO.getPhone()); // mới sửa
         defaultAddress.setProvince(customerDTO.getProvince());
         defaultAddress.setDistrict(customerDTO.getDistrict());
         defaultAddress.setWard(customerDTO.getWard());
@@ -130,6 +133,36 @@ public class CustomerServiceImpl implements CustomerService {
         // Save the updated staff entity
         return customerRepository.save(customer);
     }
+    @Transactional
+    @Override
+    public Address updateAddressDefault(Integer customerId, Integer addressId, Boolean defaultAddress) {
+        // Lấy tất cả các địa chỉ của khách hàng
+        List<Address> customerAddresses = addressRepository.findByCustomerId(customerId);
+
+        // Nếu địa chỉ mới được đặt làm mặc định
+        if (defaultAddress) {
+            // Đặt tất cả các địa chỉ khác thành không mặc định
+            for (Address address : customerAddresses) {
+                if (!address.getId().equals(addressId)) { // Chỉ đặt các địa chỉ khác
+                    address.setDefaultAddress(false);
+                }
+            }
+        }
+
+        // Tìm địa chỉ cần cập nhật (nếu địa chỉ không tồn tại, ném ngoại lệ)
+        Address addressToUpdate = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id " + addressId));
+
+        // Cập nhật giá trị isDefault cho địa chỉ được chọn
+        addressToUpdate.setDefaultAddress(defaultAddress);
+
+        // Lưu tất cả các địa chỉ đã thay đổi
+        addressRepository.saveAll(customerAddresses);
+
+        // Lưu địa chỉ đang được cập nhật (vì đã thay đổi giá trị isDefault)
+        return addressRepository.save(addressToUpdate);
+    }
+
 
     @Override
     public AddressDTO addAddressToCustomer(Integer customerId, AddressDTO addressDTO) {
