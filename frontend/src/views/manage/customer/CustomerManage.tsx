@@ -1,3 +1,5 @@
+import TableCustomer from "./TableCustomer";
+
 const CustomerManage = () => {
     return ( 
         <div>
