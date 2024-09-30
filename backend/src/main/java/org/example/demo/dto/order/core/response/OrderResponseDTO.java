@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.demo.dto.customer.response.CustomerResponseDTO;
 import org.example.demo.dto.history.response.HistoryResponseDTO;
 import org.example.demo.dto.order.properties.response.OrderDetailResponseDTO;
-import org.example.demo.dto.staff.response.phah04.StaffResponseDTO;
+import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;

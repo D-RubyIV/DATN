@@ -63,15 +63,8 @@ public class Staff extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
-
-    @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
-
     @Column(name = "gender")
     private Boolean gender;
-
 
     @ManyToOne
     @JoinColumn(name = "role_id")

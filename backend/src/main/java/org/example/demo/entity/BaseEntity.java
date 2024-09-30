@@ -29,9 +29,9 @@ public class BaseEntity {
 
     @CreationTimestamp
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime createdDate;
+    private LocalDate createdDate;
 
     @UpdateTimestamp
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime updatedDate;
+    private LocalDate updatedDate;
 }
