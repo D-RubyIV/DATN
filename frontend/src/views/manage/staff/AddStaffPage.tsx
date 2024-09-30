@@ -438,12 +438,12 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
     return (
         <div>
             {/* <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Thêm nhân viên</h1> */}
-            <p className=" text-center text-xl font-bold mb-2 mx-auto mb-2">THÊM NHÂN VIÊN </p>
+            <p className=" text-center text-xl font-bold mx-auto mb-2">THÊM NHÂN VIÊN </p>
 
             <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h6 className="font-medium text-x font-bold ">Thông tin nhân viên</h6>
+                    <h6 className=" text-x font-bold ">Thông tin nhân viên</h6>
                     <Box style={{ display: 'flex', alignItems: 'center' }}>
                         <Button
                             color="primary"
