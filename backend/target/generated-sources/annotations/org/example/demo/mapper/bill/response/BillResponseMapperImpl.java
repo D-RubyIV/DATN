@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-13T17:03:17+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (Amazon.com Inc.)"
+    date = "2024-09-30T10:35:02+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.40.0.v20240919-1711, environment: Java 17.0.12 (Eclipse Adoptium)"
 )
 @Component
 public class BillResponseMapperImpl implements BillResponseMapper {
@@ -40,14 +40,14 @@ public class BillResponseMapperImpl implements BillResponseMapper {
         Bill bill = new Bill();
 
         bill.setId( d.getId() );
-        bill.setCode( d.getCode() );
         bill.setAddress( d.getAddress() );
-        bill.setPhone( d.getPhone() );
+        bill.setCode( d.getCode() );
         bill.setDeleted( d.getDeleted() );
-        bill.setTotal( d.getTotal() );
-        bill.setSubTotal( d.getSubTotal() );
-        bill.setType( d.getType() );
+        bill.setPhone( d.getPhone() );
         bill.setStatus( d.getStatus() );
+        bill.setSubTotal( d.getSubTotal() );
+        bill.setTotal( d.getTotal() );
+        bill.setType( d.getType() );
 
         return bill;
     }
@@ -78,15 +78,15 @@ public class BillResponseMapperImpl implements BillResponseMapper {
         billResponseDTO.setCustomerResponseDTO( customerResponseMapper.toDTO( e.getCustomer() ) );
         billResponseDTO.setVoucherResponseDTO( voucherToVoucherResponseDTO( e.getVoucher() ) );
         billResponseDTO.setHistoryResponseDTOS( historyResponseMapper.toListDTO( e.getHistories() ) );
-        billResponseDTO.setId( e.getId() );
-        billResponseDTO.setCode( e.getCode() );
         billResponseDTO.setAddress( e.getAddress() );
-        billResponseDTO.setPhone( e.getPhone() );
+        billResponseDTO.setCode( e.getCode() );
         billResponseDTO.setDeleted( e.getDeleted() );
+        billResponseDTO.setId( e.getId() );
+        billResponseDTO.setPhone( e.getPhone() );
         billResponseDTO.setStatus( e.getStatus() );
-        billResponseDTO.setType( e.getType() );
-        billResponseDTO.setTotal( e.getTotal() );
         billResponseDTO.setSubTotal( e.getSubTotal() );
+        billResponseDTO.setTotal( e.getTotal() );
+        billResponseDTO.setType( e.getType() );
 
         return billResponseDTO;
     }
@@ -115,15 +115,15 @@ public class BillResponseMapperImpl implements BillResponseMapper {
 
         billOverviewResponseDTO.setCustomerName( eCustomerName( e ) );
         billOverviewResponseDTO.setStaffName( eStaffName( e ) );
-        billOverviewResponseDTO.setId( e.getId() );
-        billOverviewResponseDTO.setCode( e.getCode() );
         billOverviewResponseDTO.setAddress( e.getAddress() );
-        billOverviewResponseDTO.setPhone( e.getPhone() );
+        billOverviewResponseDTO.setCode( e.getCode() );
         billOverviewResponseDTO.setDeleted( e.getDeleted() );
+        billOverviewResponseDTO.setId( e.getId() );
+        billOverviewResponseDTO.setPhone( e.getPhone() );
         billOverviewResponseDTO.setStatus( e.getStatus() );
-        billOverviewResponseDTO.setType( e.getType() );
-        billOverviewResponseDTO.setTotal( e.getTotal() );
         billOverviewResponseDTO.setSubTotal( e.getSubTotal() );
+        billOverviewResponseDTO.setTotal( e.getTotal() );
+        billOverviewResponseDTO.setType( e.getType() );
 
         return billOverviewResponseDTO;
     }
@@ -150,16 +150,16 @@ public class BillResponseMapperImpl implements BillResponseMapper {
         VoucherResponseDTO voucherResponseDTO = new VoucherResponseDTO();
 
         voucherResponseDTO.setCode( voucher.getCode() );
+        voucherResponseDTO.setDeleted( voucher.getDeleted() );
+        voucherResponseDTO.setEndDate( voucher.getEndDate() );
+        voucherResponseDTO.setMaxPercent( voucher.getMaxPercent() );
+        voucherResponseDTO.setMinAmount( voucher.getMinAmount() );
         voucherResponseDTO.setName( voucher.getName() );
         voucherResponseDTO.setQuantity( voucher.getQuantity() );
-        voucherResponseDTO.setMinAmount( voucher.getMinAmount() );
-        voucherResponseDTO.setMaxPercent( voucher.getMaxPercent() );
+        voucherResponseDTO.setStartDate( voucher.getStartDate() );
         if ( voucher.getTypeTicket() != null ) {
             voucherResponseDTO.setTypeTicket( voucher.getTypeTicket().name() );
         }
-        voucherResponseDTO.setStartDate( voucher.getStartDate() );
-        voucherResponseDTO.setEndDate( voucher.getEndDate() );
-        voucherResponseDTO.setDeleted( voucher.getDeleted() );
 
         return voucherResponseDTO;
     }

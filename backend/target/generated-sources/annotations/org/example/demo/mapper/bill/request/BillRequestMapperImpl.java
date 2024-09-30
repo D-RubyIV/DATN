@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-13T17:03:16+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 17.0.12 (Amazon.com Inc.)"
+    date = "2024-09-30T10:35:01+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.40.0.v20240919-1711, environment: Java 17.0.12 (Eclipse Adoptium)"
 )
 @Component
 public class BillRequestMapperImpl implements BillRequestMapper {
@@ -23,14 +23,14 @@ public class BillRequestMapperImpl implements BillRequestMapper {
 
         Bill bill = new Bill();
 
-        bill.setCode( d.getCode() );
         bill.setAddress( d.getAddress() );
-        bill.setPhone( d.getPhone() );
-        bill.setDeleted( d.getDeleted() );
-        bill.setTotal( d.getTotal() );
-        bill.setSubTotal( d.getSubTotal() );
-        bill.setStatus( d.getStatus() );
+        bill.setCode( d.getCode() );
         bill.setCustomer( d.getCustomer() );
+        bill.setDeleted( d.getDeleted() );
+        bill.setPhone( d.getPhone() );
+        bill.setStatus( d.getStatus() );
+        bill.setSubTotal( d.getSubTotal() );
+        bill.setTotal( d.getTotal() );
         bill.setVoucher( d.getVoucher() );
 
         return bill;
@@ -58,15 +58,15 @@ public class BillRequestMapperImpl implements BillRequestMapper {
 
         BillRequestDTO billRequestDTO = new BillRequestDTO();
 
-        billRequestDTO.setCode( e.getCode() );
         billRequestDTO.setAddress( e.getAddress() );
-        billRequestDTO.setPhone( e.getPhone() );
-        billRequestDTO.setDeleted( e.getDeleted() );
-        billRequestDTO.setStatus( e.getStatus() );
-        billRequestDTO.setTotal( e.getTotal() );
-        billRequestDTO.setSubTotal( e.getSubTotal() );
-        billRequestDTO.setVoucher( e.getVoucher() );
+        billRequestDTO.setCode( e.getCode() );
         billRequestDTO.setCustomer( e.getCustomer() );
+        billRequestDTO.setDeleted( e.getDeleted() );
+        billRequestDTO.setPhone( e.getPhone() );
+        billRequestDTO.setStatus( e.getStatus() );
+        billRequestDTO.setSubTotal( e.getSubTotal() );
+        billRequestDTO.setTotal( e.getTotal() );
+        billRequestDTO.setVoucher( e.getVoucher() );
 
         return billRequestDTO;
     }

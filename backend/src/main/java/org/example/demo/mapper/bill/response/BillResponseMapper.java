@@ -14,6 +14,7 @@ import java.util.List;
  * @author PHAH04
  * Vui lòng không chỉnh sửa, có sửa hãy copy =))
  */
+
 @Mapper(componentModel = "spring", uses = {HistoryResponseMapper.class, CustomerResponseMapper.class, StaffResponseMapper.class})
 public interface BillResponseMapper{
     Bill toEntity(BillResponseDTO d);

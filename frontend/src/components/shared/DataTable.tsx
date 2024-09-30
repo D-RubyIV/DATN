@@ -115,7 +115,7 @@ function _DataTable<T>(
         onPaginationChange,
         onSelectChange,
         onSort,
-        pageSizes = [10, 25, 50, 100],
+        pageSizes = [5,10, 25, 50, 100],
         selectable = false,
         skeletonAvatarProps,
         pagingData = {
@@ -322,6 +322,7 @@ function _DataTable<T>(
                 )}
             </Table>
             <div className="flex items-center justify-between mt-4">
+                <div></div>
                 <Pagination
                     pageSize={pageSize}
                     currentPage={pageIndex}

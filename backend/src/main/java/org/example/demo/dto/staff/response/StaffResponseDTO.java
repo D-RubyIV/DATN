@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class StaffResponseDTO {
+    private Integer id;
     private String code;
     private String name;
     private String email;
@@ -23,6 +24,7 @@ public class StaffResponseDTO {
     private String district;
     private String ward;
     private String status;
+    private Boolean gender;
     private String note;
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDay;

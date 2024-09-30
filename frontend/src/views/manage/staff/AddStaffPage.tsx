@@ -1,719 +1,809 @@
-import React, { ChangeEvent, FormEvent, Fragment, useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useRef } from "react"; // Import các hook của React
+import { Snackbar, Box } from '@mui/material'; // Import các thành phần UI từ Material-UI
 import {
-    Button,
-    FormControl,
-    Grid,
-    InputLabel,
-    MenuItem,
-    Select,
-    Snackbar,
-    TextField,
-    Typography,
-    Box
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
-import { Html5QrcodeScanner } from "html5-qrcode";
-import emailjs from 'emailjs-com';
-import { CloseOutlined } from '@mui/icons-material';
-
-// Khai báo các interface
+    Formik,
+    Field,
+    Form,
+    FormikHelpers,
+    FormikProps,
+    FieldProps,
+    useFormikContext
+} from "formik"; // Import các thành phần từ Formik
+import * as Yup from "yup"; // Import Yup để xác thực
+import axios from "axios"; // Import axios để gọi API
+import emailjs from "emailjs-com"; // Import thư viện gửi email
+import dayjs from "dayjs"; // Import thư viện xử lý ngày tháng
+import { useNavigate } from "react-router-dom"; // Import hook để điều hướng
+import {
+    FormItem,
+    FormContainer,
+} from "@/components/ui/Form"; // Import các thành phần tùy chỉnh
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import DatePicker from "@/components/ui/DatePicker";
+import Radio from "@/components/ui/Radio";
+import Select from "@/components/ui/Select";
+import { toast } from "react-toastify"; // Import thư viện thông báo
+import { Html5QrcodeScanner } from "html5-qrcode"; // Import thư viện quét mã QR
+import { SingleValue } from "react-select"; // Import kiểu dữ liệu từ react-select
+import { CloseOutlined } from '@mui/icons-material'; // Import biểu tượng đóng
+import { IoPersonAdd } from "react-icons/io5";
+import { RxReset } from "react-icons/rx";
+import { BsQrCodeScan } from "react-icons/bs";
+import { color } from "framer-motion";
+// Định nghĩa kiểu dữ liệu cho nhân viên
 interface Staff {
-    id?: string;
+    id: string;
     code: string;
     name: string;
     email: string;
     phone: string;
     citizenId: string;
     address: string;
-    province: string;
-    district: string;
-    password: string,
-    ward: string;
+    province: string | null;
+    district: string | null;
+    ward: string | null;
     status: string;
     note: string;
     birthDay: string;
     gender?: boolean;
     deleted?: boolean;
-    role: {
-        id: string;
-        name: string;
-    };
+    password: string;
 }
 
-interface Tinh {
-    id: string,
-    name: string,
-    full_name: string
+// Định nghĩa kiểu dữ liệu cho tỉnh, huyện, xã
+interface Province {
+    id: string;
+    name: string;
+    full_name: string;
 }
 
-interface Quan {
-    id: string,
-    name: string,
-    full_name: string
+interface District {
+    id: string;
+    name: string;
+    full_name: string;
 }
 
-interface Phuong {
-    id: string,
-    name: string,
-    full_name: string
+interface Ward {
+    id: string;
+    name: string;
+    full_name: string;
 }
 
-interface AddNhanVienProps {
-    onAddSuccess?: () => void;
-}
+// Khởi tạo trạng thái ban đầu cho nhân viên
+const initialStaffState: Staff = {
+    id: "",
+    code: "",
+    name: "",
+    email: "",
+    phone: "",
+    citizenId: "",
+    address: "",
+    province: null,
+    district: null,
+    ward: null,
+    status: "active",
+    note: "",
+    birthDay: "",
+    gender: true,
+    password: "",
+    deleted: false,
+};
 
-const AddStaffPage: React.FC<AddNhanVienProps> = ({ onAddSuccess }) => {
-    const initialStaffState: Staff = {
-        id: '',
-        code: generateRandomMaNV(),
-        name: '',
-        email: '',
-        phone: '',
-        citizenId: '',
-        address: '',
-        province: '',
-        district: '',
-        ward: '',
-        status: 'active',
-        note: '',
-        birthDay: '',
-        gender:true,
-        password: generateRandomPassword(),
-        deleted: false,
-        role: {
-            id: '',
-            name: ''
-        }
-    };
+// Thành phần chính của trang thêm nhân viên
+const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
+    const [newStaff, setNewStaff] = useState<Staff>(initialStaffState); // Trạng thái cho nhân viên mới
+    const [provinces, setProvinces] = useState<Province[]>([]); // Trạng thái cho danh sách tỉnh
+    const [districts, setDistricts] = useState<District[]>([]); // Trạng thái cho danh sách huyện
+    const [wards, setWards] = useState<Ward[]>([]); // Trạng thái cho danh sách xã
+    const [loadingProvinces, setLoadingProvinces] = useState(false); // Trạng thái đang tải tỉnh
+    const [loadingDistricts, setLoadingDistricts] = useState(false); // Trạng thái đang tải huyện
+    const [loadingWards, setLoadingWards] = useState(false); // Trạng thái đang tải xã
+    const [openDialog, setOpenDialog] = useState(false); // Trạng thái hiển thị hộp thoại quét mã
+    const scannerRef = useRef<any>(null); // Tham chiếu cho scanner mã QR
+    const [snackbarOpen, setSnackbarOpen] = useState(false); // Trạng thái hiển thị snackbar
+    const [snackbarMessage, setSnackbarMessage] = useState(''); // Thông điệp snackbar
 
-    const [newStaff, setNewStaff] = useState<Staff>(initialStaffState);
-    const [formErrors, setFormErrors] = useState<Partial<Staff>>({});
-    const [provinces, setProvinces] = useState<Tinh[]>([]);
-    const [districts, setDistricts] = useState<Quan[]>([]);
-    const [wards, setWards] = useState<Phuong[]>([]);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [isEditMode, setIsEditMode] = useState<boolean>(false);
-    const [openDialog, setOpenDialog] = useState(false);
-    const scannerRef = useRef<any>(null);
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Khởi tạo hàm điều hướng
 
+    // Fetch tỉnh khi trang được tải
     useEffect(() => {
         fetchProvinces();
     }, []);
-    useEffect(() => {
-        if (newStaff.name) {
-            const code = generateRandomMaNV(newStaff.name);
-            setNewStaff(prevState => ({ ...prevState, code }));
-        }
-    }, [newStaff.name]);
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement | { name?: any; value: any }>) => {
-        const { name, value } = e.target;
-        setNewStaff({ ...newStaff, [name]: value });
-    };
 
+    // Fetch huyện khi tỉnh được chọn
+    useEffect(() => {
+        if (newStaff.province && provinces.length > 0) {
+            const province = provinces.find((prov) => prov.full_name === newStaff.province);
+            if (province) {
+                fetchDistricts(province.id);
+            } else {
+                setDistricts([]);
+            }
+        }
+    }, [newStaff.province, provinces]);
+
+    // Fetch xã khi huyện được chọn
+    useEffect(() => {
+        if (newStaff.district && districts.length > 0) {
+            const district = districts.find((dist) => dist.full_name === newStaff.district);
+            if (district) {
+                fetchWards(district.id);
+            } else {
+                setWards([]);
+            }
+        }
+    }, [newStaff.district, districts]);
+
+    // Hàm fetch tỉnh từ API
     const fetchProvinces = async () => {
+        setLoadingProvinces(true);
         try {
-            const response = await axios.get('https://esgoo.net/api-tinhthanh/1/0.htm');
+            const response = await axios.get("https://esgoo.net/api-tinhthanh/1/0.htm");
             const data = response.data;
             if (data.error === 0) {
-                setProvinces(data.data);
+                setProvinces(data.data); // Cập nhật danh sách tỉnh
             } else {
-                console.error('Lỗi khi tải dữ liệu tỉnh/thành phố:', data.message);
+                // Xử lý lỗi nếu cần
             }
         } catch (error) {
-            console.error('Lỗi khi gọi API tỉnh/thành phố:', error);
+            // Xử lý lỗi khi gọi API
+        } finally {
+            setLoadingProvinces(false);
         }
     };
 
+    // Hàm fetch huyện từ API
     const fetchDistricts = async (provinceId: string) => {
+        setLoadingDistricts(true);
         try {
             const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
-            const data_district = response.data;
-            if (data_district.error === 0) {
-                setDistricts(data_district.data);
+            if (response.data.error === 0) {
+                setDistricts(response.data.data); // Cập nhật danh sách huyện
             } else {
-                console.error('Lỗi khi tải dữ liệu quận/huyện:', data_district.message);
+                setDistricts([]);
             }
         } catch (error) {
-            console.error(`Lỗi khi gọi API quận/huyện với provinceId ${provinceId}:`, error);
+            setDistricts([]); // Xử lý lỗi
+        } finally {
+            setLoadingDistricts(false);
         }
     };
 
+    // Hàm fetch xã từ API
     const fetchWards = async (districtId: string) => {
+        setLoadingWards(true);
         try {
             const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
-            const data_ward = response.data;
-            if (data_ward.error === 0) {
-                setWards(data_ward.data);
+            if (response.data.error === 0) {
+                setWards(response.data.data); // Cập nhật danh sách xã
             } else {
-                console.error('Lỗi khi tải dữ liệu phường/xã:', data_ward.message);
+                setWards([]);
             }
         } catch (error) {
-            console.error(`Lỗi khi gọi API phường/xã với districtId ${districtId}:`, error);
+            setWards([]); // Xử lý lỗi
+        } finally {
+            setLoadingWards(false);
         }
     };
 
-    const handleProvinceChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        const province = event.target.value as Tinh;
-        setNewStaff(prevState => ({
-            ...prevState,
-            province: province.full_name,
-        }));
-        fetchDistricts(province.id);
-    };
-
-    const handleDistrictChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        const district = event.target.value as Quan;
-        setNewStaff(prevState => ({
-            ...prevState,
-            district: district.full_name,
-        }));
-        fetchWards(district.id);
-    };
-
-    const handleWardChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        const ward = event.target.value as Phuong;
-        setNewStaff(prevState => ({
-            ...prevState,
-            ward: ward.full_name,
-        }));
-    };
-
-
-const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const errors = validateForm(newStaff);
-    if (Object.keys(errors).length > 0) {
-        setFormErrors(errors);
-        return;
-    }
-
-    try {
-        console.log("Form data being submitted: ", newStaff);
-
-        // POST request to add a new staff member
-        const response = await axios.post<Staff>('http://localhost:8080/api/v1/staffs', newStaff, {
-            
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-             },
-        });
-        console.log(newStaff.code)
-        console.log('Saved staff:', response.data);
-
-        // EmailJS integration
-        const serviceId = 'service_tmmslu9';
-        const templateId = 'template_lad6zvl';
-        const publicKey = '2TdUStOWX9A6vm7Ex';
-
-        const templateParams = {
-            from_name: 'BeeShop',
-            from_email: 'no-reply@beeshop.com',
-            to_name: newStaff.code,
-            to_email: newStaff.email,
-            message: `Your account:\nEmployee code: ${newStaff.code}\nPassword: ${newStaff.password}`,
-        };
-
-        try {
-            const emailResponse = await emailjs.send(serviceId, templateId, templateParams, publicKey);
-            console.log('Email sent successfully!', emailResponse);
-        } catch (emailError) {
-            console.error('EmailJS error:', emailError);
-            setSnackbarMessage('Email không thể gửi. Vui lòng kiểm tra lại.');
-            setSnackbarOpen(true);
-        }
-
-        setNewStaff(initialStaffState);
-        setFormErrors({});
-        setSnackbarMessage('Thêm nhân viên thành công và email đã được gửi.');
-        setSnackbarOpen(true);
-
-        if (typeof onAddSuccess === 'function') {
-            onAddSuccess();
-        } else {
-            navigate('/manage');
-        }
-    } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-            if (error.response) {
-                console.error('Response error data:', error.response.data);
-                console.error('Response status:', error.response.status);
-                console.error('Response headers:', error.response.headers);
-            } else {
-                console.error('Axios error without response:', error.message);
+    // Hàm xử lý thay đổi địa điểm
+    const handleLocationChange = (
+        type: 'province' | 'district' | 'ward',
+        newValue: Province | District | Ward | null,
+        form: FormikProps<Staff>
+    ) => {
+        if (newValue) {
+            if (type === 'province') {
+                form.setFieldValue('province', newValue.full_name); // Cập nhật tỉnh
+                form.setFieldValue('district', ''); // Reset huyện
+                form.setFieldValue('ward', ''); // Reset xã
+                setNewStaff((prev) => ({ ...prev, province: newValue.full_name, district: null, ward: null }));
+                fetchDistricts(newValue.id); // Fetch huyện mới
+            } else if (type === 'district') {
+                form.setFieldValue('district', newValue.full_name); // Cập nhật huyện
+                form.setFieldValue('ward', ''); // Reset xã
+                setNewStaff((prev) => ({ ...prev, district: newValue.full_name, ward: null }));
+                fetchWards(newValue.id); // Fetch xã mới
+            } else if (type === 'ward') {
+                form.setFieldValue('ward', newValue.full_name); // Cập nhật xã
+                setNewStaff((prev) => ({ ...prev, ward: newValue.full_name }));
             }
-        } else {
-            console.error('Non-Axios error:', error);
         }
+    };
 
-        setSnackbarMessage('Lỗi khi lưu thông tin nhân viên hoặc gửi email.');
-        setSnackbarOpen(true);
-    }
-};
-
-    
-
-    const validateForm = (newStaff: Staff): Partial<Staff> => {
-        const errors: Partial<Staff> = {};
-
-        if (!newStaff.name) {
-            errors.name = 'Họ và Tên là bắt buộc';
-        } else if (!/^[\p{L}\s]+$/u.test(newStaff.name)) {
-            errors.name = 'Họ và Tên chỉ chứa chữ cái và khoảng trắng';
-        }
-
-        if (!newStaff.phone) {
-            errors.phone = 'Số điện thoại là bắt buộc';
-        } else if (!/^\d{10,11}$/.test(newStaff.phone)) {
-            errors.phone = 'Số điện thoại không hợp lệ';
-        }
-
-        if (!newStaff.email) {
-            errors.email = 'Email là bắt buộc';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newStaff.email)) {
-            errors.email = 'Email không hợp lệ';
-        }
-
-        if (!newStaff.citizenId) {
-            errors.citizenId = 'CCCD là bắt buộc';
-        } else if (!/^\d{12}$/.test(newStaff.citizenId)) {
-            errors.citizenId = 'CCCD phải chứa 12 số';
-        }
-
-        if (!newStaff.birthDay) {
-            errors.birthDay = 'Ngày sinh là bắt buộc';
-        } else {
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            if (!dateRegex.test(newStaff.birthDay)) {
-                errors.birthDay = 'Ngày sinh không hợp lệ (YYYY-MM-DD)';
-            } else {
-                const birthDayDate = new Date(newStaff.birthDay);
-                const today = new Date();
-                if (birthDayDate > today) {
-                    errors.birthDay = 'Ngày sinh không được lớn hơn ngày hiện tại';
-                } else {
-                    let age = today.getFullYear() - birthDayDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDayDate.getMonth();
-                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDayDate.getDate())) {
-                        age--;
-                    }
-                    if (age < 16 || age > 40) {
-                        errors.birthDay = 'Tuổi phải lớn hơn 16 và nhỏ hơn 40 tuổi';
-                    }
+    // Xác thực dữ liệu nhập vào
+    const validationSchema = Yup.object({
+        name: Yup.string().required("Họ tên nhân viên là bắt buộc"),
+        citizenId: Yup.string().required("Căn cước công dân là bắt buộc"),
+        email: Yup.string()
+            .email("Email không hợp lệ")
+            .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email phải có định dạng đúng")
+            .required("Email là bắt buộc"),
+        birthDay: Yup.date()
+            .required("Ngày sinh là bắt buộc")
+            .max(new Date(), "Ngày sinh không được là tương lai")
+            .test(
+                "age-range",
+                "Nhân viên phải trong độ tuổi từ 16 đến 40",
+                function (value) {
+                    const age = dayjs().diff(dayjs(value), 'year'); // Tính tuổi
+                    return age >= 16 && age <= 40; // Kiểm tra độ tuổi
                 }
+            ),
+        address: Yup.string().required("Số nhà là bắt buộc"),
+        phone: Yup.string()
+            .required("Số điện thoại là bắt buộc")
+            .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ"),
+        province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
+        district: Yup.string().required("Quận/Huyện là bắt buộc"),
+        ward: Yup.string().required("Phường/Xã là bắt buộc"),
+        note: Yup.string(),
+        gender: Yup.boolean().required("Giới tính là bắt buộc"),
+    });
+
+    // Hàm xử lý khi gửi biểu mẫu
+    const handleSubmit = async (
+        values: Staff,
+        { resetForm, setSubmitting }: FormikHelpers<Staff>
+    ) => {
+        try {
+            const selectedProvince = provinces.find((p) => p.id === values.province);
+            if (selectedProvince) values.province = selectedProvince.name; // Cập nhật tên tỉnh
+
+            const selectedDistrict = districts.find((d) => d.id === values.district);
+            if (selectedDistrict) values.district = selectedDistrict.name; // Cập nhật tên huyện
+
+            const selectedWard = wards.find((w) => w.id === values.ward);
+            if (selectedWard) values.ward = selectedWard.name; // Cập nhật tên xã
+
+            const payload = {
+                ...values,
+                province: values.province,
+                district: values.district,
+                ward: values.ward,
+            };
+
+            const response = await axios.post("http://localhost:8080/api/v1/staffs", payload); // Gửi dữ liệu lên API
+            resetForm(); // Reset biểu mẫu
+
+            if (response.status === 201) {
+                const { code, password } = response.data; // Lấy mã nhân viên và mật khẩu từ phản hồi
+                setNewStaff((prev) => ({ ...prev, code, password }));
+
+                toast.success('Nhân viên đã được thêm thành công!'); // Hiển thị thông báo thành công
+
+                // Gửi email nếu lưu thành công
+                const serviceId = 'service_tmmslu9';
+                const templateId = 'template_lad6zvl';
+                const publicKey = '2TdUStOWX9A6vm7Ex';
+
+                const templateParams = {
+                    from_name: 'Fashion Canth Shop',
+                    from_email: 'no-reply@fashioncanthshop.com',
+                    to_name: values.name,
+                    to_email: values.email,
+                    message: `Tài khoản của bạn:\nMã nhân viên: ${code}\nMật khẩu: ${password}`,
+                };
+
+                try {
+                    const emailResponse = await emailjs.send(serviceId, templateId, templateParams, publicKey); // Gửi email
+                    toast.success('Nhân viên đã được thêm thành công và email đã được gửi.');
+                } catch (emailError) {
+                    toast.error('Không thể gửi email. Vui lòng kiểm tra thông tin chi tiết của bạn.'); // Xử lý lỗi gửi email
+                }
+
+                navigate("/manage/staff"); // Điều hướng đến trang quản lý nhân viên
             }
-        }
 
-        if (!newStaff.address) {
-            errors.address = 'Địa chỉ là bắt buộc';
+        } catch (error) {
+            toast.error(`Lỗi lưu nhân viên. ${error}`); // Xử lý lỗi khi lưu
+        } finally {
+            setSubmitting(false); // Kết thúc trạng thái gửi
         }
-
-        if (!newStaff.province) {
-            errors.province = 'Tỉnh là bắt buộc';
-        }
-
-        if (!newStaff.district) {
-            errors.district = 'Quận là bắt buộc';
-        }
-
-        if (!newStaff.ward) {
-            errors.ward = 'Phường là bắt buộc';
-        }
-
-        return errors;
     };
 
+    // Hàm reset biểu mẫu
+    const handleReset = (resetForm: () => void) => {
+        resetForm();
+        setNewStaff(initialStaffState); // Reset trạng thái nhân viên mới
+    };
+
+    // Hàm đóng snackbar
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
     };
 
+    // Hàm mở hộp thoại quét mã CCCD
     const handleQuetCCCDNhanVienClick = () => {
-        setOpenDialog(true); // Mở dialog khi click vào nút "Quét CCCD"
+        setOpenDialog(true);
     };
 
+    // Hàm đóng hộp thoại
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
 
+    // Hàm định dạng ngày
     const parseDate = (dateString: string): string | null => {
         if (dateString.length === 8) {
             const day = dateString.slice(0, 2);
             const month = dateString.slice(2, 4);
             const year = dateString.slice(4, 8);
             const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-            return formattedDate;
+            return formattedDate; // Trả về định dạng ngày chuẩn
         }
         return null;
     };
 
+    // Hook để quét mã QR
     useEffect(() => {
         if (openDialog && scannerRef.current) {
-            const html5QrCodeScanner = new Html5QrcodeScanner(
-                "reader",
-                { fps: 10, qrbox: 350 },
-                false
-            );
-    
+            const html5QrCodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 350 }, false);
+
             html5QrCodeScanner.render(
-                (data: string) => {
+                async (data: string) => {
                     const cccdParts = data.split('|');
-                    if (cccdParts.length >= 5) {
+                    if (cccdParts.length >= 6) {
                         const citizenId = cccdParts[0];
                         const name = cccdParts[2];
                         const birthDay = parseDate(cccdParts[3]);
+                        const gender = cccdParts[4] === 'Nam';
+                        const diaChi = cccdParts[5];
+                        const diaChiSplit = diaChi.split(",");
+
                         if (!birthDay) {
                             console.error('Invalid date format in QR code');
                             return;
                         }
-                        const gender = cccdParts[4] === 'Nam' ? "Nam" : "Nữ";
-                        const diaChi = cccdParts[5];
-                        const diaChiSplit = diaChi.split(",");
+
                         const soNha = diaChiSplit[0];
-                        const tinhOBJ = provinces.find(s => s.full_name.toLowerCase().includes(diaChiSplit[3].toLowerCase()));
-    
+                        const tinhOBJ = provinces.find((s: Province) => s.full_name.toLowerCase().includes(diaChiSplit[3].toLowerCase()));
+
                         if (tinhOBJ?.id) {
-                            axios.get(`https://esgoo.net/api-tinhthanh/2/${tinhOBJ?.id}.htm`).then(function (response) {
-                                if (response.status === 200) {
-                                    setDistricts(response.data.data);
-    
-                                    if (Array.isArray(response.data.data)) {
-                                        const foundQuanOBJ = (response.data.data as Quan[]).find(s => s.full_name.toLowerCase().includes(diaChiSplit[2].toLowerCase()));
-                                        setNewStaff(prevState => ({
-                                            ...prevState,
-                                            district: foundQuanOBJ?.full_name || "",
-                                        }));
-    
-                                        if (foundQuanOBJ?.full_name) {
-                                            axios.get(`https://esgoo.net/api-tinhthanh/3/${foundQuanOBJ.id}.htm`).then(function (response) {
-                                                if (response.status === 200) {
-                                                    setWards(response.data.data)
-                                                    if (Array.isArray(response.data.data)) {
-                                                        const foundPhuongOBJ = (response.data.data as Phuong[]).find(s => s.full_name.toLowerCase().includes(diaChiSplit[1].toLowerCase()));
-                                                        setNewStaff(prevState => ({
-                                                            ...prevState,
-                                                            ward: foundPhuongOBJ?.full_name || "",
-                                                        }));
-                                                    } else {
-                                                        console.error("Expected an array but received:", response.data);
-                                                    }
-                                                }
-                                            })
+                            try {
+                                const districtResponse = await axios.get(`https://esgoo.net/api-tinhthanh/2/${tinhOBJ.id}.htm`);
+                                if (districtResponse.status === 200) {
+                                    setDistricts(districtResponse.data.data);
+                                    const foundQuanOBJ = districtResponse.data.data.find((s: District) => s.full_name.toLowerCase().includes(diaChiSplit[2].toLowerCase()));
+
+                                    if (foundQuanOBJ?.id) {
+                                        const wardResponse = await axios.get(`https://esgoo.net/api-tinhthanh/3/${foundQuanOBJ.id}.htm`);
+                                        if (wardResponse.status === 200) {
+                                            setWards(wardResponse.data.data);
+                                            const foundPhuongOBJ = wardResponse.data.data.find((s: Ward) => s.full_name.toLowerCase().includes(diaChiSplit[1].toLowerCase()));
+
+                                            setNewStaff(prevState => ({
+                                                ...prevState,
+                                                citizenId,
+                                                name,
+                                                birthDay,
+                                                address: soNha,
+                                                province: tinhOBJ.full_name || "",
+                                                district: foundQuanOBJ.full_name || "",
+                                                ward: foundPhuongOBJ?.full_name || "",
+                                                gender,
+                                            }));
+
+                                            form.setFieldValue("province", tinhOBJ.full_name || "");
+                                            form.setFieldValue("district", foundQuanOBJ.full_name || "");
+                                            form.setFieldValue("ward", foundPhuongOBJ?.full_name || "");
                                         }
-                                    } else {
-                                        console.error("Expected an array but received:", response.data);
                                     }
-    
-                                    setNewStaff(prevState => ({
-                                        ...prevState,
-                                        citizenId: citizenId,
-                                        name: name,
-                                        birthDay: birthDay,
-                                        role: { ...prevState.role, name: gender },
-                                        address: soNha,
-                                        province: tinhOBJ?.full_name || "",
-                                    }));
                                 }
-                            });
+                            } catch (error) {
+                                // Xử lý lỗi khi fetch dữ liệu
+                            }
                         } else {
+                            // Xử lý trường hợp không tìm thấy tỉnh
                             setNewStaff(prevState => ({
                                 ...prevState,
-                                citizenId: citizenId,
-                                name: name,
-                                birthDay: birthDay,
-                                role: { ...prevState.role, name: gender },
+                                citizenId,
+                                name,
+                                birthDay,
                                 address: soNha,
-                                province: tinhOBJ?.full_name || "",
+                                province: "",
+                                gender,
                             }));
                         }
-    
-                        setOpenDialog(false);
-                        html5QrCodeScanner.clear();
+
+                        setOpenDialog(false); // Đóng hộp thoại sau khi quét xong
+                        html5QrCodeScanner.clear(); // Xóa scanner
                     } else {
                         console.error('Dữ liệu mã QR không đúng định dạng');
                     }
                 },
                 (error: unknown) => {
-                    console.error(error);
+                    console.error(error); // Xử lý lỗi quét
                 }
             );
-    
+
             return () => {
-                html5QrCodeScanner.clear();
+                html5QrCodeScanner.clear(); // Dọn dẹp khi component bị hủy
             };
         }
     }, [openDialog, provinces]);
 
+    // Đồng bộ dữ liệu mới với Formik
+    const SyncFormikWithNewStaff = () => {
+        const formik = useFormikContext<Staff>();
+
+        useEffect(() => {
+            formik.setValues(newStaff); // Cập nhật giá trị Formik
+        }, [newStaff]);
+
+        return null; // Không trả về gì
+    };
+
     return (
-        <Fragment>
-            <Grid item>
-                <Typography variant="h5" color="textPrimary" fontWeight="bold" style={{ color: '#666' }}>
-                    THÊM MỚI NHÂN VIÊN
-                </Typography>
-            </Grid>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 2 }}>
-                <Button variant="contained" color="primary" onClick={handleQuetCCCDNhanVienClick}>
-                    Quét CCCD
-                </Button>
-            </Box>
-            <div className={`shadow-xl px-8 z-10 bg-white py-4 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/6 ${openDialog ? "" : "hidden"}`}>
-                <div className='flex flex-col'>
-                    <div className='flex justify-between'>
-                        <label>Quét CCCD</label>
-                        <button onClick={handleCloseDialog}><CloseOutlined /></button>
-                    </div>
-                    <div>
-                        <div id="reader" ref={scannerRef}></div>
+        <div>
+            {/* <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Thêm nhân viên</h1> */}
+            <p className=" text-center text-xl font-bold mb-2 mx-auto mb-2">THÊM NHÂN VIÊN </p>
+
+            <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h6 className="font-medium text-x font-bold ">Thông tin nhân viên</h6>
+                    <Box style={{ display: 'flex', alignItems: 'center' }}>
+                        <Button
+                            color="primary"
+                            className="btn-outline-info"
+                            onClick={handleQuetCCCDNhanVienClick}
+                            style={{
+                                display: 'flex', // Đảm bảo Button sử dụng flex để căn biểu tượng và văn bản trên cùng một dòng
+                                alignItems: 'center', // Căn giữa theo chiều dọc
+                                justifyContent: 'center' // Đảm bảo nội dung Button được căn giữa
+                            }}
+                        >
+                            <BsQrCodeScan className="mr-2" style={{ fontSize: '24px' }} /> {/* Tăng kích thước biểu tượng nếu cần */}
+                            Quét CCCD
+                        </Button>
+                    </Box>
+
+                </div>
+                <div className={`shadow-xl px-8 z-10 bg-white py-2 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/6 ${openDialog ? "" : "hidden"}`}>
+                    <div className='flex flex-col'>
+                        <div className='flex justify-between'>
+                            <label>Quét thẻ căn cước công dân</label>
+                            <button onClick={handleCloseDialog}><CloseOutlined /></button>
+                        </div>
+                        <div>
+                            <div id="reader" ref={scannerRef}></div>
+                        </div>
                     </div>
                 </div>
+                <Formik
+                    initialValues={newStaff}
+                    validationSchema={validationSchema}
+                    onSubmit={handleSubmit}
+                    enableReinitialize={true}
+                >
+                    {({ errors, touched, resetForm, setFieldValue, values }) => (
+                        <Form>
+                            <SyncFormikWithNewStaff />
+                            <FormContainer>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                                    <div style={{ flex: '1 1 300px', minWidth: '200px' }}>
+                                        <FormItem asterisk label="Họ tên nhân viên">
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="name"
+                                                placeholder="Nhập họ tên nhân viên..."
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    setFieldValue("name", e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, name: e.target.value }));
+                                                }}
+                                                value={newStaff.name}
+                                            />
+                                            {touched.name && errors.name && (
+                                                <div style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", minHeight: "20px" }}>
+                                                    {errors.name}
+                                                </div>
+                                            )}
+                                        </FormItem>
+                                        <FormItem asterisk label="Căn cước công dân">
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="citizenId"
+                                                placeholder="Nhập căn cước công dân..."
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    setFieldValue("citizenId", e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, citizenId: e.target.value }));
+                                                }}
+                                                value={newStaff.citizenId}
+                                            />
+                                            {touched.citizenId && errors.citizenId && (
+                                                <div style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", minHeight: "20px" }}>
+                                                    {errors.citizenId}
+                                                </div>
+                                            )}
+                                        </FormItem>
+                                        <FormItem
+                                            asterisk
+                                            label="Ngày sinh"
+                                            invalid={errors.birthDay && touched.birthDay}
+                                            errorMessage={errors.birthDay}
+                                        >
+                                            <DatePicker
+                                                inputtable
+                                                inputtableBlurClose={false}
+                                                placeholder="Chọn ngày sinh..."
+                                                // Hiển thị ngày sinh nếu có, chuyển đổi từ định dạng "YYYY-MM-DD" sang "Date" object để tương thích với DatePicker
+                                                value={newStaff.birthDay ? dayjs(newStaff.birthDay, 'YYYY-MM-DD').toDate() : null}
+                                                onChange={(date) => {
+                                                    if (date) {
+                                                        // Chuyển đổi ngày từ "Date" sang "YYYY-MM-DD"
+                                                        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+
+                                                        // Cập nhật giá trị vào form (Formik) và state (newStaff)
+                                                        setFieldValue('birthDay', formattedDate);
+                                                        setNewStaff((prev) => ({
+                                                            ...prev,
+                                                            birthDay: formattedDate
+                                                        }));
+                                                    } else {
+                                                        // Nếu người dùng xoá ngày, reset giá trị birthDay
+                                                        setFieldValue('birthDay', '');
+                                                        setNewStaff((prev) => ({
+                                                            ...prev,
+                                                            birthDay: ''
+                                                        }));
+                                                    }
+                                                }}
+
+                                            />{newStaff.birthDay && (
+                                                <div>
+                                                    Ngày sinh: {dayjs(newStaff.birthDay).isValid()
+                                                        ? `Ngày ${dayjs(newStaff.birthDay).format('DD')} tháng ${dayjs(newStaff.birthDay).format('MM')} năm ${dayjs(newStaff.birthDay).format('YYYY')}`
+                                                        : 'Ngày không hợp lệ'}
+                                                </div>
+                                            )}
+                                        </FormItem>
+
+
+                                        <FormItem
+                                            asterisk
+                                            label="Giới tính"
+                                        >
+                                            <Field name="gender">
+                                                {({ field, form }: FieldProps) => (
+                                                    <>
+                                                        <Radio
+                                                            className="mr-4"
+                                                            value="Nam"
+                                                            checked={newStaff.gender === true}
+                                                            onChange={() => {
+                                                                form.setFieldValue('gender', true);
+                                                                setNewStaff((prev) => ({ ...prev, gender: true }));
+                                                            }}
+                                                        >
+                                                            Nam
+                                                        </Radio>
+                                                        <Radio
+                                                            value="Nữ"
+                                                            checked={newStaff.gender === false}
+                                                            onChange={() => {
+                                                                form.setFieldValue('gender', false);
+                                                                setNewStaff((prev) => ({ ...prev, gender: false }));
+                                                            }}
+                                                        >
+                                                            Nữ
+                                                        </Radio>
+                                                    </>
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                    </div>
+                                    <div style={{ flex: '1 1 300px', minWidth: '200px' }}>
+                                        <FormItem
+                                            asterisk
+                                            label="Tỉnh/Thành phố"
+                                            invalid={errors.province && touched.province}
+                                            errorMessage={errors.province}
+                                        >
+                                            <Field name="province">
+                                                {({ form }: FieldProps<Staff>) => (
+                                                    <Select
+                                                        isDisabled={loadingProvinces}
+                                                        value={provinces.find(s => s.full_name === newStaff.province) || null}
+                                                        placeholder="Chọn tỉnh/thành phố..."
+                                                        getOptionLabel={(option) => option.full_name}
+                                                        getOptionValue={(option) => option.full_name}
+                                                        options={provinces}
+                                                        onChange={(newValue: SingleValue<Province> | null) => {
+                                                            handleLocationChange("province", newValue, form);
+                                                            form.setFieldValue("province", newValue ? newValue.full_name : "");
+                                                            setNewStaff((prev) => ({ ...prev, province: newValue ? newValue.full_name : "" }));
+                                                        }}
+                                                        onBlur={() => form.setFieldTouched("province", true)}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                        <FormItem
+                                            asterisk
+                                            label="Quận/huyện"
+                                            invalid={errors.district && touched.district}
+                                            errorMessage={errors.district}
+                                        >
+                                            <Field name="district">
+                                                {({ form }: FieldProps<Staff>) => (
+                                                    <Select
+                                                        isDisabled={loadingDistricts}
+                                                        value={districts.find(s => s.full_name === newStaff.district) || null}
+                                                        placeholder="Chọn quận/huyện..."
+                                                        getOptionLabel={(option) => option.full_name}
+                                                        getOptionValue={(option) => option.full_name}
+                                                        options={districts}
+                                                        onChange={(newValue: SingleValue<District> | null) => {
+                                                            handleLocationChange("district", newValue, form);
+                                                            form.setFieldValue("district", newValue ? newValue.full_name : "");
+                                                            setNewStaff((prev) => ({ ...prev, district: newValue ? newValue.full_name : "" }));
+                                                        }}
+                                                        onBlur={() => form.setFieldTouched("district", true)}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                        <FormItem
+                                            asterisk
+                                            label="Xã/phường/thị trấn"
+                                            invalid={errors.ward && touched.ward}
+                                            errorMessage={errors.ward}
+                                        >
+                                            <Field name="ward">
+                                                {({ form }: FieldProps<Staff>) => (
+                                                    <Select
+                                                        isDisabled={loadingWards}
+                                                        value={wards.find(s => s.full_name === newStaff.ward) || null}
+                                                        placeholder="Chọn xã/phường/thị trấn..."
+                                                        getOptionLabel={(option) => option.full_name}
+                                                        getOptionValue={(option) => option.full_name}
+                                                        options={wards}
+                                                        onChange={(newValue: SingleValue<Ward> | null) => {
+                                                            handleLocationChange("ward", newValue, form);
+                                                            form.setFieldValue("ward", newValue ? newValue.full_name : "");
+                                                            setNewStaff((prev) => ({ ...prev, ward: newValue ? newValue.full_name : "" }));
+                                                        }}
+                                                        onBlur={() => form.setFieldTouched("ward", true)}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </FormItem>
+                                        <FormItem
+                                            asterisk
+                                            label="Địa chỉ"
+                                            invalid={!!errors.address && touched.address}
+                                        >
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="address"
+                                                placeholder="Nhập địa chỉ..."
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    setFieldValue("address", e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, address: e.target.value }));
+                                                }}
+                                                value={newStaff.address}
+                                            />
+                                            {touched.address && errors.address && (
+                                                <div style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", minHeight: "20px" }}>
+                                                    {errors.address}
+                                                </div>
+                                            )}
+                                        </FormItem>
+                                    </div>
+                                    <div style={{ flex: '1 1 300px', minWidth: '200px' }}>
+                                        <FormItem asterisk label="Số điện thoại">
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="phone"
+                                                placeholder="Nhập số điện thoại..."
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    setFieldValue("phone", e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, phone: e.target.value }));
+                                                }}
+                                                value={newStaff.phone}
+                                            />
+                                            {touched.phone && errors.phone && (
+                                                <div style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", minHeight: "20px" }}>
+                                                    {errors.phone}
+                                                </div>
+                                            )}
+                                        </FormItem>
+                                        <FormItem asterisk label="Email">
+                                            <Field
+                                                type="text"
+                                                autoComplete="off"
+                                                name="email"
+                                                placeholder="Nhập email..."
+                                                component={Input}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    setFieldValue("email", e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, email: e.target.value }));
+                                                }}
+                                                value={newStaff.email}
+                                            />
+                                            {touched.email && errors.email && (
+                                                <div style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", minHeight: "20px" }}>
+                                                    {errors.email}
+                                                </div>
+                                            )}
+                                        </FormItem>
+                                        <FormItem label="Ghi chú">
+                                            <Field
+                                                as={Input}
+                                                name="note"
+                                                placeholder="Nhập ghi chú"
+                                                textArea
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                    setFieldValue("note", e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, note: e.target.value }));
+                                                }}
+                                                value={newStaff.note}
+                                                style={{ height: '150px' }} // Điều chỉnh chiều cao
+                                            />
+                                        </FormItem>
+
+                                    </div>
+                                </div>
+
+                                <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center' }}>
+                                    <Button
+                                        type="submit"
+                                        className="flex items-center justify-center"
+                                        variant="twoTone"
+                                        color="blue-600"
+                                        style={{
+                                            height: '40px',
+                                            width: '200px',
+                                            marginRight: '15px', // Khoảng cách giữa hai nút
+                                            lineHeight: '40px', // Căn chỉnh văn bản theo chiều dọc
+                                            padding: '0', // Đảm bảo không có padding dư thừa
+                                        }}
+                                    >
+                                        <IoPersonAdd className="mr-2" style={{ fontSize: '20px' }} /> {/* Tăng kích thước biểu tượng */}
+                                        Thêm nhân viên
+                                    </Button>
+
+                                    <Button
+                                        type="button"
+                                        onClick={() => handleReset(resetForm)}
+                                        className="flex items-center justify-center"
+                                        style={{
+                                            height: '40px', // Chiều cao đồng nhất
+                                            width: '110px',
+                                            lineHeight: '40px', // Căn chỉnh văn bản theo chiều dọc
+                                            padding: '0', // Đảm bảo không có padding dư thừa
+                                            fontSize: '15px'
+                                        }}
+                                    >
+                                        <RxReset className="mr-2" style={{ fontSize: '18px' }} /> {/* Tăng kích thước biểu tượng nếu cần */}
+                                        Đặt lại
+                                    </Button>
+                                </div>
+
+
+                            </FormContainer>
+                        </Form>
+                    )}
+                </Formik>
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={3000}
+                    onClose={handleSnackbarClose}
+                    message={snackbarMessage}
+                />
             </div>
-            <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <form onSubmit={handleFormSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={4} style={{ width: '33.33%' }}>
-              <TextField
-                label="Họ và tên"
-                name="name"
-                value={newStaff.name}
-                onChange={handleInputChange}
-                error={!!formErrors.name}
-                helperText={formErrors.name}
-                fullWidth
-                required
-                margin="normal"
-              />
-              <TextField
-                label="CCCD"
-                name="citizenId"
-                value={newStaff.citizenId}
-                onChange={handleInputChange}
-                error={!!formErrors.citizenId}
-                helperText={formErrors.citizenId}
-                fullWidth
-                required
-                margin="normal"
-              />
-              <TextField
-                label="Ngày sinh"
-                type="date"
-                name="birthDay"
-                value={newStaff.birthDay}
-                onChange={handleInputChange}
-                error={!!formErrors.birthDay}
-                helperText={formErrors.birthDay}
-                fullWidth
-                required
-                margin="normal"
-                InputLabelProps={{ shrink: true }}
-              />
-              <FormControl component="fieldset" margin="normal">
-                <FormLabel component="legend">Giới tính</FormLabel>
-                <RadioGroup
-                  row
-                  aria-label="gender"
-                  name="gender"
-                  value={newStaff.gender ? 'true' : 'false'}
-                  onChange={(e) => setNewStaff({ ...newStaff, gender: e.target.value === 'true' })}
-                >
-                  <FormControlLabel value="true" control={<Radio />} label="Nam" />
-                  <FormControlLabel value="false" control={<Radio />} label="Nữ" />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-            <Grid item xs={4} style={{ width: '33.33%' }}>
-              <FormControl fullWidth required margin="normal" error={!!formErrors.province}>
-                <InputLabel>Tỉnh/Thành phố</InputLabel>
-                <Select
-                  name="province"
-                  value={provinces.find(s => s.full_name === newStaff.province) || ""}
-                  onChange={handleProvinceChange}
-                  label="Tỉnh/Thành phố"
-                >
-                  {provinces.map(province => (
-                    <MenuItem key={province.id} value={province}>{province.full_name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth required margin="normal" error={!!formErrors.district}>
-                <InputLabel>Quận/Huyện</InputLabel>
-                <Select
-                  name="district"
-                  value={Array.isArray(districts) && districts.find(s => s.full_name === newStaff.district) || ""}
-                  onChange={handleDistrictChange}
-                  label="Quận/Huyện"
-                >
-                  {Array.isArray(districts) && districts.map(district => (
-                    <MenuItem key={district.id} value={district}>{district.full_name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth required margin="normal" error={!!formErrors.ward}>
-                <InputLabel>Phường/Xã</InputLabel>
-                <Select
-                  name="ward"
-                  value={Array.isArray(wards) && wards.find(s => s.full_name === newStaff.ward) || ""}
-                  onChange={handleWardChange}
-                  label="Phường/Xã"
-                >
-                  {wards.map(ward => (
-                    <MenuItem key={ward.id} value={ward}>{ward.full_name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <TextField
-                label="Địa Chỉ"
-                name="address"
-                value={newStaff.address}
-                onChange={handleInputChange}
-                error={!!formErrors.address}
-                helperText={formErrors.address}
-                fullWidth
-                required
-                margin="normal"
-              />
-            </Grid>
-            <Grid item xs={4} style={{ width: '33.33%' }}>
-              <TextField
-                label="Số điện thoại"
-                name="phone"
-                value={newStaff.phone}
-                onChange={handleInputChange}
-                error={!!formErrors.phone}
-                helperText={formErrors.phone}
-                fullWidth
-                required
-                margin="normal"
-              />
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                type="email"
-                value={newStaff.email}
-                onChange={handleInputChange}
-                error={!!formErrors.email}
-                helperText={formErrors.email}
-              />
-              <TextField
-                label="Ghi chú"
-                name="note"
-                value={newStaff.note}
-                onChange={handleInputChange}
-                fullWidth
-                multiline
-                rows={4.5}
-                margin="normal"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disableElevation
-                style={{ marginRight: 10 }}
-              >
-                {isEditMode ? 'Cập nhật' : 'Thêm mới'}
-              </Button>
-              <Button
-                variant="contained"
-                disableElevation
-                onClick={() => navigate('/manage/staff')}
-              >
-                Hủy bỏ
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Grid>
-    </Grid>
- 
-
-
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={3000}
-                onClose={handleSnackbarClose}
-                message={snackbarMessage}
-            />
-        </Fragment>
+        </div>
     );
 };
-
-const removeVietnameseTones = (str: string): string => {
-    str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-    str = str.replace(/đ/g, 'd').replace(/Đ/g, 'D');
-    return str;
-};
-
-// const generateRandomMaNV = (hoTen: string = ''): string => {
-//     const nameStringDefault = 'defaultnv';
-
-//     if (!hoTen || typeof hoTen !== 'string') {
-//         const randomMa = Math.floor(10000 + Math.random() * 90000).toString();
-//         return `${nameStringDefault}NV${randomMa}`;
-//     }
-
-//     hoTen = removeVietnameseTones(hoTen);
-//     const nameParts = hoTen.split(' ');
-
-//     const ho = nameParts[0].charAt(0); // Chữ cái đầu của họ
-//     const tenDem = nameParts.length > 2 ? nameParts.slice(1, -1).map(part => part.charAt(0)).join('') : ''; // Chữ cái đầu của tên đệm, nếu có
-//     const ten = nameParts[nameParts.length - 1]; // Tên
-
-//     const nameInitials = ten.toLowerCase() + ho.toLowerCase() + tenDem.toLowerCase();
-    
-//     const randomMa = Math.floor(10000 + Math.random() * 90000).toString(); // 5 số ngẫu nhiên
-
-//     return `${nameInitials}NV${randomMa}`;
-// };
-
-
-// hùng test có thể xóa đi
-const generateRandomMaNV = (hoTen: string = ''): string => {
-    const nameStringDefault = 'defaultnv';
-
-    if (!hoTen || typeof hoTen !== 'string') {
-        const randomChar = generateRandomString(1); // Sinh 1 ký tự ngẫu nhiên
-        return `${nameStringDefault}${randomChar}`;  // Ghép với tên mặc định
-    }
-
-    hoTen = removeVietnameseTones(hoTen);
-    const nameParts = hoTen.split(' ');
-
-    const ten = nameParts[nameParts.length - 1]; // Tên (lấy phần cuối cùng của họ tên)
-
-    const randomChar = generateRandomString(1); // Sinh 1 ký tự ngẫu nhiên
-
-    return `${ten.toLowerCase()}${randomChar}`; // Ghép tên với 1 ký tự ngẫu nhiên
-};
-
-// Hàm phụ để sinh ký tự ngẫu nhiên
-const generateRandomString = (length: number): string => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    const charactersLength = characters.length;
-
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-
-    return result;
-};
-
-
-// hùng test có thể xóa đi
-
-const generateRandomPassword = (): string => {
-    const randomPassword = Math.floor(Math.random() * 90000) + 10000; // Generate random 5-digit number
-    return `${randomPassword}`;
-};
-
-
 
 export default AddStaffPage;

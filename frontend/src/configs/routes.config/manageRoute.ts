@@ -33,6 +33,13 @@ const manageRoute: Routes = [
         authority: [],
     },
     {
+        key: 'UpdateStaff',
+        path: `/manage/staff/update/:id`,
+        component: lazy(() => import('@/views/manage/staff/UpdateStaff')),
+        authority: [],
+    },
+    
+    {
         key: 'billManager',
         path: `/manage/bill`,
         component: lazy(() => import('@/views/manage/bill/BillManage')),

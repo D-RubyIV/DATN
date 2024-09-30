@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+//import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.role.Role;
 
@@ -19,8 +20,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "staff", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "email", "phone"}))
 public class Staff extends BaseEntity {
-
-
     @Column(name = "code")
     private String code;
 
@@ -65,10 +64,10 @@ public class Staff extends BaseEntity {
     private Boolean deleted;
 
     @Column(name = "created_date")
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
     @Column(name = "updated_date")
-    private LocalDate updatedDate;
+    private LocalDateTime updatedDate;
 
     @Column(name = "gender")
     private Boolean gender;
