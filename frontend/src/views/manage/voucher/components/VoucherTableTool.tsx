@@ -1,17 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '@/components/ui/Button'
 import { HiDownload, HiPlusCircle } from 'react-icons/hi'
+import VoucherTableSearch from './VoucherTableSearch'
 
 const VoucherTableTool = () => {
-
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const handleAddVoucher = () => {
-        navigate('/manage/voucher/voucher-new');
-    };
+        navigate('/manage/voucher/voucher-new')
+    }
     return (
         <div className="flex flex-col lg:flex-row lg:items-center">
-            
+            <VoucherTableSearch />
             {/* // sửa lại export */}
             <Link
                 download
@@ -27,7 +27,14 @@ const VoucherTableTool = () => {
                 className="block lg:inline-block md:mb-0 mb-4"
                 to="/manage/voucher/voucher-new"
             >
-                <Button block variant="solid" size="sm" color='blue' icon={<HiPlusCircle />} onClick={handleAddVoucher}>
+                <Button
+                    block
+                    variant="solid"
+                    size="sm"
+                    color="blue"
+                    icon={<HiPlusCircle />}
+                    onClick={handleAddVoucher}
+                >
                     Add Voucher
                 </Button>
             </Link>
