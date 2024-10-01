@@ -97,7 +97,7 @@ const validationSchema = Yup.object({
     gender: Yup.boolean().required('Giới tính là bắt buộc'),
 });
 
-const UpdateStaffPage: React.FC = () => {
+const UpdateStaffPage = () => {
     const [staff, setStaff] = useState<Staff>(initialStaffState);
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [districts, setDistricts] = useState<District[]>([]);

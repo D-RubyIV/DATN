@@ -90,8 +90,17 @@ const initialStaffState: Staff = {
     deleted: false,
 };
 
+interface Meta {
+    // Các thuộc tính cần thiết cho Meta
+}
+
+// Định nghĩa kiểu Props cho AddStaffPage
+interface AddStaffPageProps {
+    form?: FormikProps<Staff>; // Định nghĩa form là tùy chọn
+}
+
 // Thành phần chính của trang thêm nhân viên
-const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
+const AddStaffPage: React.FC<AddStaffPageProps> = ({ form }) => {
     const [newStaff, setNewStaff] = useState<Staff>(initialStaffState); // Trạng thái cho nhân viên mới
     const [provinces, setProvinces] = useState<Province[]>([]); // Trạng thái cho danh sách tỉnh
     const [districts, setDistricts] = useState<District[]>([]); // Trạng thái cho danh sách huyện
