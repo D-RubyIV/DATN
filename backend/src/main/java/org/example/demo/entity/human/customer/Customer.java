@@ -2,6 +2,7 @@ package org.example.demo.entity.human.customer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.example.demo.entity.BaseEntity;
