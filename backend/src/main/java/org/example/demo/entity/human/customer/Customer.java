@@ -2,6 +2,7 @@ package org.example.demo.entity.human.customer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.example.demo.entity.BaseEntity;
@@ -30,17 +31,23 @@ public class Customer extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "gender")
+    private String gender;
+
     @Column(name = "password")
     private String password;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "birthDay")
+    @Column(name = "birthDate")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate birthDay;
+    private LocalDate birthDate;
 
-    @OneToMany(mappedBy = "customer",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;
 
 }

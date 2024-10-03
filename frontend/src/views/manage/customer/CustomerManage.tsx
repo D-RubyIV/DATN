@@ -1,11 +1,19 @@
-import TableCustomer from "./TableCustomer";
+import CustomerTable from "./component/CustomerTable";
+
 
 const CustomerManage = () => {
-    return ( 
+
+    return (
         <div>
-            <p>Customer Manage</p>
+            <div>
+
+            </div>
+            <div>
+                <CustomerTable />
+
+            </div>
         </div>
-     );
+    );
 }
- 
+
 export default CustomerManage;

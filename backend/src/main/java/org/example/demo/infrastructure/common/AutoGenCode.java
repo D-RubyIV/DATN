@@ -8,6 +8,6 @@ import java.util.UUID;
 public class AutoGenCode {
     public String genarateUniqueCode() {
         String uuidPart = UUID.randomUUID().toString().split("-")[0];
-        return "VOUCHER-" + uuidPart;
+        return "HC-" + uuidPart;
     }
 }

@@ -23,7 +23,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/staffs")
-@CrossOrigin(origins = "http://localhost:5173")
 public class StaffController {
 
     private final StaffService staffService;
