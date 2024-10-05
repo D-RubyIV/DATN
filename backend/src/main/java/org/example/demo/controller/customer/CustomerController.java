@@ -89,6 +89,7 @@ public class CustomerController {
         customerService.updateStatus(id, newStatus);
         return ResponseEntity.noContent().build();
     }
+
     @PatchMapping("/{addressId}/default")
     public ResponseEntity<Address> updateDefaultAddress(
             @PathVariable Integer addressId,
@@ -98,9 +99,6 @@ public class CustomerController {
         Address updatedAddress = customerService.updateAddressDefault(customerId, addressId, defaultAddress);
         return ResponseEntity.ok(updatedAddress);
     }
-
-
-
 
 
 }

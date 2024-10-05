@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "history")
-public class History{
+public class History {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

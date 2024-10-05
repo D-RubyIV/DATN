@@ -1,4 +1,5 @@
 package org.example.demo.dto.order.properties.response;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

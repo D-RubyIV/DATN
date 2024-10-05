@@ -1,13 +1,14 @@
 package org.example.demo.controller.voucher;
 
 
+import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.voucher.core.Voucher;
-import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.example.demo.service.VoucherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,17 @@ public class VoucherController {
     private VoucherService voucherService;
 
     @GetMapping("/private/{id}")
-    public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id,VoucherRequest request){
-        return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id,request));
+    public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id, VoucherRequest request) {
+        return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id, request));
     }
 
     @GetMapping
-    public PageableObject getAll(final VoucherRequest request){
-        return voucherService.getAll(request);
+    public ResponseEntity<Page<VoucherResponseDTO>> getAllNhanVien(
+            @RequestParam(name = "limit", defaultValue = "5") int limit,
+            @RequestParam(name = "offset", defaultValue = "0") int offset) {
+        Page<Voucher> result = voucherService.getAllVouchers(limit, offset);
+        Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/get-all")

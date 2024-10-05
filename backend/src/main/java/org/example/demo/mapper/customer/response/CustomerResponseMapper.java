@@ -12,10 +12,12 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {AddressResponseMapper.class})
 public interface CustomerResponseMapper {
     Customer toEntity(CustomerResponseDTO d);
+
     List<Customer> toListEntity(List<CustomerResponseDTO> d);
 
 
     @Mapping(target = "addressResponseDTOS", source = "addresses")
     CustomerResponseDTO toDTO(Customer e);
+
     List<CustomerResponseDTO> toListDTO(List<Customer> e);
 }

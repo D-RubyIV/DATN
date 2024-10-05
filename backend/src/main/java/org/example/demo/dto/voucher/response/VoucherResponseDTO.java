@@ -1,34 +1,27 @@
 package org.example.demo.dto.voucher.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class VoucherResponseDTO {
-    private String code;
 
+    private Integer id;
     private String name;
-
-    private Integer quantity;
-
-    private Integer minAmount;
-
-    private Integer maxPercent;
-
-    private String typeTicket;
-
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    private String code;
     private LocalDate startDate;
-
-    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate endDate;
-
-    private Boolean deleted;
+    private String status;
+    private Long quantity;
+    private Integer maxPercent;
+    private Double minAmount;
+    private String typeTicket;
+    private Integer customerId;
+    private String customerName;
+    private String customerEmail;
 }

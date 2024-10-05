@@ -23,5 +23,6 @@ public interface ProductDetailResponseMapper extends IMapperBasic<ProductDetail,
     @Mapping(target = "thicknessName", source = "thickness.name")
     @Mapping(target = "elasticityName", source = "elasticity.name")
     ProductOverviewResponse toOverviewDTO(ProductDetail productDetail);
+
     List<ProductOverviewResponse> toOverviewDTOs(List<ProductDetail> productDetailList);
 }

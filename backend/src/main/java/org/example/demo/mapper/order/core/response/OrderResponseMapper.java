@@ -13,6 +13,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+
 /**
  * @author PHAH04
  * Vui lòng không chỉnh sửa, có sửa hãy copy =))
@@ -20,6 +21,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {AddressResponseMapper.class, HistoryResponseMapper.class, CustomerResponseMapper.class, StaffResponseMapper.class, ProductDetailResponseMapper.class, OrderDetailResponseMapper.class})
 public interface OrderResponseMapper {
     Order toEntity(OrderResponseDTO d);
+
     List<Order> toListEntity(List<OrderResponseDTO> d);
 
     @Mapping(target = "staffResponseDTO", source = "staff")
@@ -28,10 +30,12 @@ public interface OrderResponseMapper {
     @Mapping(target = "historyResponseDTOS", source = "histories")
     @Mapping(target = "orderDetailResponseDTOS", source = "orderDetails")
     OrderResponseDTO toDTO(Order e);
+
     List<OrderResponseDTO> toListDTO(List<Order> e);
 
     @Mapping(target = "customerName", source = "customer.name")
     @Mapping(target = "staffName", source = "staff.name")
     OrderOverviewResponseDTO toOverViewDTO(Order e);
+
     List<OrderOverviewResponseDTO> toListOverViewDTO(List<Order> e);
 }

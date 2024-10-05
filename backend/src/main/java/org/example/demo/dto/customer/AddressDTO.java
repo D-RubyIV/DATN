@@ -23,6 +23,6 @@ public class AddressDTO {
 
     private String detail;
 
-    private Boolean  isDefault;
+    private Boolean isDefault;
 
 }

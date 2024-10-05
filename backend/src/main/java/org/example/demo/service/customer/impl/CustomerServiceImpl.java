@@ -133,6 +133,7 @@ public class CustomerServiceImpl implements CustomerService {
         // Save the updated staff entity
         return customerRepository.save(customer);
     }
+
     @Transactional
     @Override
     public Address updateAddressDefault(Integer customerId, Integer addressId, Boolean defaultAddress) {
