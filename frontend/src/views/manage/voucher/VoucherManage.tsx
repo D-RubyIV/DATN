@@ -1,18 +1,44 @@
-import VoucherTable from './components/VoucherTable'
-import { AdaptableCard } from '@/components/shared'
-import VoucherTableTool from './components/VoucherTableTool'
-
+import VoucherTable from './components/VoucherTable';
+import { AdaptableCard } from '@/components/shared';
+import VoucherTableTool from './components/VoucherTableTool';
+import { Link } from 'react-router-dom';
 
 const VoucherManage = () => {
     return (
         <AdaptableCard className="h-full" bodyClass="h-full">
+            {/* Breadcrumb */}
             <div className="lg:flex items-center justify-between mb-4">
-                <h3 className="mb-4 lg:mb-0">Phiếu Giảm Giá</h3>
-                <VoucherTableTool />
+                <nav className="flex" aria-label="Breadcrumb">
+                    <ol className="inline-flex items-center space-x-1 md:space-x-3">
+                        <li>
+                            <div className="flex items-center">
+                                <Link to="/" className="text-gray-700 hover:text-blue-600">
+                                    Home
+                                </Link>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="flex items-center">
+                                <span className="mx-2">/</span>
+                                <Link to="/manage" className="text-gray-700 hover:text-blue-600">
+                                    Manage
+                                </Link>
+                            </div>
+                        </li>
+                        <li aria-current="page">
+                            <div className="flex items-center">
+                                <span className="mx-2">/</span>
+                                <span className="text-gray-500">Phiếu Giảm Giá</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
             </div>
+
+            {/* Table Component */}
             <VoucherTable />
         </AdaptableCard>
-    )
-}
+    );
+};
 
-export default VoucherManage
+export default VoucherManage;
