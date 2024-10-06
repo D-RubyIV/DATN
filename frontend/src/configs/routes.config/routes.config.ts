@@ -3,6 +3,7 @@ import authRoute from './authRoute'
 import type { Routes } from '@/@types/routes'
 import manageRoute from './manageRoute'
 import orderRoute from './orderRoute'
+import tuanRoute from './tuanRoute'
 
 export const publicRoutes: Routes = [...authRoute]
 
@@ -56,4 +57,5 @@ export const protectedRoutes = [
     },
     ...manageRoute,
     ...orderRoute,
+    ...tuanRoute
 ]

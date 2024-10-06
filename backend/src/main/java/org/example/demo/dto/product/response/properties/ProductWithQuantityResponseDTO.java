@@ -1,0 +1,25 @@
+package org.example.demo.dto.product.response.properties;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.example.demo.entity.product.properties.Product;
+import org.springframework.data.rest.core.config.Projection;
+
+import java.time.LocalDate;
+
+@Projection(types = {Product.class})
+public interface ProductWithQuantityResponseDTO {
+    Integer getId();
+    String getCode();
+    String getName();
+    Boolean getDeleted();
+    Integer getQuantity();
+    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    LocalDate getCreatedDate();
+    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    LocalDate getModifiedDate();
+
+
+}
