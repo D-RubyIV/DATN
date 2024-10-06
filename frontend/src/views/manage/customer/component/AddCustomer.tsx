@@ -9,6 +9,8 @@ import DatePicker from '@/components/ui/DatePicker';
 import { SingleValue } from "react-select";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+import { toast } from 'react-toastify';
+
 
 type CustomerDTO = {
     id: string;
@@ -205,6 +207,7 @@ const AddCustomer = () => {
             console.log('Submitting formatted values:', formattedValues);
 
             const response = await axios.post('http://localhost:8080/api/v1/customer/save', formattedValues);
+            toast.success('Lưu thành công');
             resetForm();
             if (response.status === 201) {
                 navigate('/manage/customer');
@@ -225,8 +228,8 @@ const AddCustomer = () => {
         >
             {({ setFieldValue, touched, errors, resetForm, isSubmitting }) => (
                 <Form>
-                    <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Thêm khách hàng</h1>
                     <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
+                        <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Thêm khách hàng</h1>
                         <h4 className="font-medium text-xl mb-4">Thông tin khách hàng</h4>
                         <div className="flex w-full">
                             <div className="w-full lg:w-1/2 pr-4">
@@ -239,9 +242,10 @@ const AddCustomer = () => {
                                     >
                                         <Field
                                             type="text"
-                                            autoComplete="off"
+                                            autoComplete="on"
                                             name="name"
                                             placeholder="Nhập tên khách hàng..."
+                                            style={{ height: '44px' }}
                                             component={Input}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                 setFieldValue("name", e.target.value);
@@ -258,8 +262,9 @@ const AddCustomer = () => {
                                     >
                                         <Field
                                             type="text"
-                                            autoComplete="off"
+                                            autoComplete="on"
                                             name="email"
+                                            style={{ height: '44px' }}
                                             placeholder="Nhập email..."
                                             component={Input}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -276,14 +281,16 @@ const AddCustomer = () => {
                                         errorMessage={errors.phone}
                                     >
                                         <Field
-                                            type="text"
-                                            autoComplete="off"
+                                            type="tel"
+                                            autoComplete="on"
                                             name="phone"
+                                            style={{ height: '44px' }}
                                             placeholder="Nhập số điện thoại..."
                                             component={Input}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                setFieldValue("phone", e.target.value);
-                                                setNewCustomer((prev) => ({ ...prev, phone: e.target.value }));
+                                                const value = e.target.value.replace(/[^0-9]/g, ''); // Chỉ cho phép nhập ký tự số
+                                                setFieldValue("phone", value);
+                                                setNewCustomer((prev) => ({ ...prev, phone: value }));
                                             }}
                                         />
                                     </FormItem>
@@ -294,11 +301,13 @@ const AddCustomer = () => {
                                         invalid={errors.birthDate && touched.birthDate}
                                         errorMessage={errors.birthDate}
                                     >
+
                                         <DatePicker
                                             inputtable
                                             inputtableBlurClose={false}
                                             placeholder="Chọn ngày sinh..."
                                             value={newCustomer.birthDate ? dayjs(newCustomer.birthDate, 'YYYY-MM-DD').toDate() : null}
+                                            className="custom-datepicker"
                                             onChange={(date) => {
                                                 if (date) {
                                                     const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -316,6 +325,7 @@ const AddCustomer = () => {
                                                 }
                                             }}
                                         />
+
                                     </FormItem>
 
                                     <FormItem asterisk label="Giới tính">
@@ -359,6 +369,7 @@ const AddCustomer = () => {
                                                     isDisabled={loadingProvinces}
                                                     value={provinces.find(prov => prov.full_name === newCustomer.province) || null}
                                                     placeholder="Chọn tỉnh/thành phố..."
+                                                    style={{ height: '40px' }}
                                                     getOptionLabel={(option) => option.full_name}
                                                     getOptionValue={(option) => option.full_name}
                                                     options={provinces}
@@ -430,8 +441,9 @@ const AddCustomer = () => {
                                     >
                                         <Field
                                             type="text"
-                                            autoComplete="off"
+                                            autoComplete="on"
                                             name="detail"
+                                            style={{ height: '44px' }}
                                             placeholder="Nhập địa chỉ cụ thể..."
                                             component={Input}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -443,13 +455,14 @@ const AddCustomer = () => {
                                     <FormItem>
                                         <Button
                                             type="reset"
+                                            style={{ backgroundColor: '#fff', height: '40px' }}
                                             className="ltr:mr-2 rtl:ml-2"
                                             disabled={isSubmitting}
                                             onClick={() => resetForm()}
                                         >
                                             Tải lại
                                         </Button>
-                                        <Button variant="solid" type="submit" disabled={isSubmitting}>
+                                        <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} type="submit" disabled={isSubmitting}>
                                             Lưu
                                         </Button>
                                     </FormItem>

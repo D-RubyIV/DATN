@@ -20,7 +20,7 @@ public interface CustomerService {
 
     CustomerDetailDTO getCustomerDetailById(Integer id);
 
-    Customer saveCustomer(CustomerDTO customerDTO) ;
+    Customer saveCustomer(CustomerDTO customerDTO) throws BadRequestException;
 
     CustomerDetailDTO updateCustomer(Integer id, CustomerDetailDTO customerDetailDTO);
 

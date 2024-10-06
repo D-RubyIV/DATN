@@ -8,6 +8,7 @@ import DatePicker from '@/components/ui/DatePicker';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { SingleValue } from 'react-select';
+import { toast } from 'react-toastify';
 
 // Types
 type CustomerDetailDTO = {
@@ -54,7 +55,6 @@ interface Ward {
     full_name: string;
 }
 
-// Validation schema
 const validationSchema = Yup.object({
     name: Yup.string().required('Name is required'),
     email: Yup.string().email('Invalid email address').required('Email is required'),
@@ -249,10 +249,10 @@ const UpdateCustomer = () => {
                 if (response.status === 200) {
                     setFormModes((prev) => prev.map((m, i) => (i === addressIndex ? 'edit' : m)));
                 }
-                alert('Địa chỉ mới đã được thêm');
+                toast.success('Lưu thành công');
             } else {
-                response = await axios.put(`http://localhost:8080/api/v1/customer/${customerId}/address/${address.id}`, address);
-                alert('Địa chỉ đã được cập nhật');
+                response = await axios.put(`http://localhost:8080/api/v1/address/update/${customerId}`, address);
+                toast.success('Cập nhật thành công');
             }
             fetchCustomer(customerId);
         } catch (error) {
@@ -260,6 +260,53 @@ const UpdateCustomer = () => {
             alert('Error submitting address. Please try again.');
         }
     };
+
+    // Hàm cập nhật địa chỉ mặc định
+    const updateDefaultAddress = async (addressId: string, isDefault: boolean) => {
+        try {
+            console.log('Updating address ID:', addressId, 'to default:', isDefault);
+            const response = await axios.put(
+                `http://localhost:8080/api/v1/customer/${addressId}/default`,
+                null,
+                {
+                    params: {
+                        customerId: updateCustomer.id,
+                        isDefault: isDefault,
+                    },
+                }
+            );
+            if (response.status === 200) {
+                console.log('Địa chỉ đã được cập nhật thành công:', response.data);
+                fetchCustomer(updateCustomer.id); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
+            } else {
+                console.error('Cập nhật địa chỉ không thành công:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Lỗi khi cập nhật địa chỉ:', error);
+        }
+    };
+
+
+    // Hàm xử lý thay đổi của Switcher
+    const handleSwitcherChange = async (index: number, checked: boolean) => {
+        try {
+            // Đặt địa chỉ được chọn làm mặc định
+            const updatedAddresses = updateCustomer.addressDTOS.map((address, i) => ({
+                ...address,
+                isDefault: i === index ? true : false, // Chỉ có địa chỉ tại index được đặt mặc định
+            }));
+
+            // Cập nhật địa chỉ trong state (tạm thời)
+            setUpdateCustomer({ ...updateCustomer, addressDTOS: updatedAddresses });
+            toast.success('cập nhật thành công');
+            // Gọi API chỉ một lần để cập nhật địa chỉ mặc định và các địa chỉ khác
+            await updateDefaultAddress(updateCustomer.addressDTOS[index].id, true);
+        } catch (error) {
+            console.error('Lỗi khi cập nhật địa chỉ mặc định:', error);
+        }
+    };
+
+
 
     return (
         <Formik
@@ -270,225 +317,247 @@ const UpdateCustomer = () => {
         >
             {({ values, setFieldValue, touched, errors, resetForm, isSubmitting }) => (
                 <Form>
-                    <h1 className="text-center font-semibold text-2xl mb-4 uppercase">Cập nhật khách hàng</h1>
-                    <div className="flex flex-col lg:flex-row gap-4">
-                        <div className="w-full lg:w-1/3 bg-white p-6 shadow-md rounded-lg">
-                            <h4 className="font-medium text-xl mb-4">Thông tin khách hàng</h4>
-                            <FormContainer>
-                                <FormItem
-                                    asterisk
-                                    label="Tên khách hàng"
-                                    invalid={errors.name && touched.name}
-                                    errorMessage={errors.name}
-                                >
-                                    <Field type="text" autoComplete="off" name="name" placeholder="Tên khách hàng..." component={Input} />
-                                </FormItem>
+                    <div className='w-full bg-white p-6 shadow-md rounded-lg'>
+                        <h1 className="text-center font-semibold text-2xl mb-4 uppercase">Cập nhật khách hàng</h1>
+                        <div className="flex flex-col lg:flex-row gap-4">
+                            <div className="w-full lg:w-1/3 bg-white p-6 shadow-md rounded-lg">
+                                <h4 className="font-medium text-xl mb-4">Thông tin khách hàng</h4>
+                                <FormContainer>
+                                    <FormItem
+                                        asterisk
+                                        label="Tên khách hàng"
+                                        invalid={errors.name && touched.name}
+                                        errorMessage={errors.name}
+                                    >
+                                        <Field type="text" autoComplete="off" name="name" style={{ height: '44px' }} placeholder="Tên khách hàng..." component={Input} />
+                                    </FormItem>
 
-                                <FormItem
-                                    asterisk
-                                    label="Email"
-                                    invalid={errors.email && touched.email}
-                                    errorMessage={errors.email}
-                                >
-                                    <Field type="text" autoComplete="off" name="email" placeholder="Email..." component={Input} />
-                                </FormItem>
+                                    <FormItem
+                                        asterisk
+                                        label="Email"
+                                        invalid={errors.email && touched.email}
+                                        errorMessage={errors.email}
+                                    >
+                                        <Field type="text" autoComplete="off" name="email" style={{ height: '44px' }} placeholder="Email..." component={Input} />
+                                    </FormItem>
 
-                                <FormItem
-                                    asterisk
-                                    label="Số điện thoại"
-                                    invalid={errors.phone && touched.phone}
-                                    errorMessage={errors.phone}
-                                >
-                                    <Field type="text" autoComplete="off" name="phone" placeholder="Số điện thoại..." component={Input} />
-                                </FormItem>
+                                    <FormItem
+                                        asterisk
+                                        label="Số điện thoại"
+                                        invalid={errors.phone && touched.phone}
+                                        errorMessage={errors.phone}
+                                    >
+                                        <Field type="text" autoComplete="off" name="phone" style={{ height: '44px' }} placeholder="Số điện thoại..." component={Input} />
+                                    </FormItem>
 
-                                <FormItem
-                                    asterisk
-                                    label="Ngày sinh"
-                                    invalid={errors.birthDate && touched.birthDate}
-                                    errorMessage={errors.birthDate}
-                                >
-                                    <DatePicker
-                                        placeholder="Pick a date"
-                                        value={values.birthDate ? dayjs(values.birthDate, 'YYYY-MM-DD').toDate() : null}
-                                        onChange={(date) => {
-                                            if (date && dayjs(date).isValid()) {
-                                                const formattedDate = dayjs(date).format('YYYY-MM-DD');
-                                                setFieldValue('birthDate', formattedDate);
-                                            } else {
-                                                setFieldValue('birthDate', '');
-                                            }
-                                        }}
-                                    />
-                                </FormItem>
+                                    <FormItem
+                                        asterisk
+                                        label="Ngày sinh"
+                                        invalid={errors.birthDate && touched.birthDate}
+                                        errorMessage={errors.birthDate}
+                                    >
 
-                                <FormItem asterisk label="Giới tính">
-                                    <Field name="gender">
-                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
-                                            <>
-                                                <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'} onChange={() => form.setFieldValue('gender', 'Nam')}>
-                                                    Nam
-                                                </Radio>
-                                                <Radio value="Nữ" checked={field.value === 'Nữ'} onChange={() => form.setFieldValue('gender', 'Nữ')}>
-                                                    Nữ
-                                                </Radio>
-                                            </>
-                                        )}
-                                    </Field>
-                                </FormItem>
-
-                                <FormItem>
-                                    <Button type="reset" className="ltr:mr-2 rtl:ml-2" disabled={isSubmitting} onClick={() => resetForm()}>
-                                        Tải lại
-                                    </Button>
-                                    <Button variant="solid" type="submit" disabled={isSubmitting}>
-                                        Cập nhật
-                                    </Button>
-                                </FormItem>
-                            </FormContainer>
-                        </div>
-
-                        <div className="w-full lg:w-2/3 bg-white p-6 shadow-md rounded-lg">
-                            <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
-                            <FieldArray name="addressDTOS">
-                                {({ insert, remove }) => (
-                                    <div>
-                                        <Button
-                                            type="button"
-                                            className="mb-4 mt-4"
-                                            onClick={() => {
-                                                insert(0, initialAddressDTO);
-                                                setFormModes(['add', ...formModes]);
+                                        <DatePicker
+                                            inputtable
+                                            inputtableBlurClose={false}
+                                            placeholder="Chọn ngày sinh..."
+                                            value={updateCustomer.birthDate ? dayjs(updateCustomer.birthDate, 'YYYY-MM-DD').toDate() : null}
+                                            className="custom-datepicker"
+                                            onChange={(date) => {
+                                                if (date) {
+                                                    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+                                                    setFieldValue('birthDate', formattedDate);
+                                                    setUpdateCustomer((prev) => ({
+                                                        ...prev,
+                                                        birthDate: formattedDate
+                                                    }));
+                                                } else {
+                                                    setFieldValue('birthDate', '');
+                                                    setUpdateCustomer((prev) => ({
+                                                        ...prev,
+                                                        birthDate: ''
+                                                    }));
+                                                }
                                             }}
-                                        >
-                                            Thêm địa chỉ mới
+                                        />
+
+                                    </FormItem>
+
+                                    <FormItem asterisk label="Giới tính">
+                                        <Field name="gender">
+                                            {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                <>
+                                                    <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'} onChange={() => form.setFieldValue('gender', 'Nam')}>
+                                                        Nam
+                                                    </Radio>
+                                                    <Radio value="Nữ" checked={field.value === 'Nữ'} onChange={() => form.setFieldValue('gender', 'Nữ')}>
+                                                        Nữ
+                                                    </Radio>
+                                                </>
+                                            )}
+                                        </Field>
+                                    </FormItem>
+
+                                    <FormItem>
+                                        <Button type="reset" className="ltr:mr-2 rtl:ml-2" style={{ backgroundColor: '#fff', height: '40px' }} disabled={isSubmitting} onClick={() => resetForm()}>
+                                            Tải lại
                                         </Button>
+                                        <Button variant="solid" type="submit" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} disabled={isSubmitting} >
+                                            Cập nhật
+                                        </Button>
+                                    </FormItem>
+                                </FormContainer>
+                            </div>
 
-                                        {values.addressDTOS.map((address, index) => (
-                                            <div key={index} className="bg-white p-6 shadow-md rounded-lg mb-6">
-                                                <FormContainer>
-                                                    <h4 className="text-lg font-medium mb-2">Địa chỉ {index + 1}</h4>
-                                                    <div className="flex w-full flex-wrap mb-4">
-                                                        <div className="w-1/2 pr-4">
-                                                            <FormItem asterisk label="Tên">
-                                                                <Field type="text" name={`addressDTOS[${index}].name`} placeholder="Nhập tên..." component={Input} />
-                                                            </FormItem>
-                                                        </div>
-                                                        <div className="w-1/2">
-                                                            <FormItem asterisk label="Số điện thoại">
-                                                                <Field type="text" name={`addressDTOS[${index}].phone`} placeholder="Nhập số điện thoại..." component={Input} />
-                                                            </FormItem>
-                                                        </div>
-                                                    </div>
+                            <div className="w-full lg:w-2/3 bg-white p-6 shadow-md rounded-lg">
+                                <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
+                                <FieldArray name="addressDTOS">
+                                    {({ insert, remove }) => (
+                                        <div>
+                                            <Button
+                                                type="button"
+                                                className="mb-4 mt-4"
+                                                onClick={() => {
+                                                    insert(0, initialAddressDTO);
+                                                    setFormModes(['add', ...formModes]);
+                                                }}
+                                            >
+                                                Thêm địa chỉ mới
+                                            </Button>
 
-                                                    <div className="flex w-full flex-wrap mb-4">
-                                                        <div className="w-1/3 pr-4">
-                                                            <FormItem asterisk label="Tỉnh/Thành phố">
-                                                                <Field name={`addressDTOS[${index}].province`}>
-                                                                    {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
-                                                                        <Select
-                                                                            value={provinces.find((prov) => prov.full_name === field.value) || null}
-                                                                            placeholder="Chọn tỉnh/thành phố..."
-                                                                            getOptionLabel={(option) => option.full_name}
-                                                                            getOptionValue={(option) => option.full_name}
-                                                                            options={provinces}
-                                                                            onChange={(newValue: SingleValue<Province> | null) => {
-                                                                                handleLocationChange('province', newValue, form, index);
-                                                                            }}
-                                                                            onBlur={() => form.setFieldTouched(`addressDTOS[${index}].province`, true)}
-                                                                        />
-                                                                    )}
-                                                                </Field>
-                                                            </FormItem>
-                                                        </div>
-
-                                                        <div className="w-1/3 pr-4">
-                                                            <FormItem asterisk label="Quận/huyện">
-                                                                <Field name={`addressDTOS[${index}].district`}>
-                                                                    {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
-                                                                        <Select
-                                                                            isDisabled={!values.addressDTOS[index].province}
-                                                                            value={districts.find((dist) => dist.full_name === field.value) || null}
-                                                                            placeholder="Chọn quận/huyện..."
-                                                                            getOptionLabel={(option) => option.full_name || option.name}
-                                                                            getOptionValue={(option) => option.full_name}
-                                                                            options={districts}
-                                                                            onChange={(newValue: SingleValue<District> | null) => {
-                                                                                handleLocationChange('district', newValue, form, index);
-                                                                            }}
-                                                                            onBlur={() => form.setFieldTouched(`addressDTOS[${index}].district`, true)}
-                                                                        />
-                                                                    )}
-                                                                </Field>
-                                                            </FormItem>
+                                            {values.addressDTOS.map((address, index) => (
+                                                <div key={index} className="bg-white p-6 shadow-md rounded-lg mb-6">
+                                                    <FormContainer>
+                                                        <h4 className="text-lg font-medium mb-2">Địa chỉ {index + 1}</h4>
+                                                        <div className="flex w-full flex-wrap mb-4">
+                                                            <div className="w-1/2 pr-4">
+                                                                <FormItem asterisk label="Tên">
+                                                                    <Field type="text" name={`addressDTOS[${index}].name`} style={{ height: '44px' }} placeholder="Nhập tên..." component={Input} />
+                                                                </FormItem>
+                                                            </div>
+                                                            <div className="w-1/2">
+                                                                <FormItem asterisk label="Số điện thoại">
+                                                                    <Field type="text" name={`addressDTOS[${index}].phone`} style={{ height: '44px' }} placeholder="Nhập số điện thoại..." component={Input} />
+                                                                </FormItem>
+                                                            </div>
                                                         </div>
 
-                                                        <div className="w-1/3">
-                                                            <FormItem asterisk label="Xã/phường/thị trấn">
-                                                                <Field name={`addressDTOS[${index}].ward`}>
-                                                                    {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
-                                                                        <Select
-                                                                            isDisabled={!values.addressDTOS[index].district}
-                                                                            value={wards.find((ward) => ward.full_name === field.value) || null}
-                                                                            placeholder="Chọn xã/phường/thị trấn..."
-                                                                            getOptionLabel={(option) => option.full_name}
-                                                                            getOptionValue={(option) => option.full_name}
-                                                                            options={wards}
-                                                                            onChange={(newValue: SingleValue<Ward> | null) => {
-                                                                                handleLocationChange('ward', newValue, form, index);
-                                                                            }}
-                                                                            onBlur={() => form.setFieldTouched(`addressDTOS[${index}].ward`, true)}
-                                                                        />
-                                                                    )}
-                                                                </Field>
-                                                            </FormItem>
+                                                        <div className="flex w-full flex-wrap mb-4">
+                                                            <div className="w-1/3 pr-4">
+                                                                <FormItem asterisk label="Tỉnh/Thành phố">
+                                                                    <Field name={`addressDTOS[${index}].province`}>
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                            <Select
+                                                                                value={provinces.find((prov) => prov.full_name === field.value) || null}
+                                                                                placeholder="Chọn tỉnh/thành phố..."
+                                                                                getOptionLabel={(option) => option.full_name}
+                                                                                getOptionValue={(option) => option.full_name}
+                                                                                options={provinces}
+                                                                                onChange={(newValue: SingleValue<Province> | null) => {
+                                                                                    handleLocationChange('province', newValue, form, index);
+                                                                                }}
+                                                                                onBlur={() => form.setFieldTouched(`addressDTOS[${index}].province`, true)}
+                                                                            />
+                                                                        )}
+                                                                    </Field>
+                                                                </FormItem>
+                                                            </div>
+
+                                                            <div className="w-1/3 pr-4">
+                                                                <FormItem asterisk label="Quận/huyện">
+                                                                    <Field name={`addressDTOS[${index}].district`}>
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                            <Select
+                                                                                isDisabled={!values.addressDTOS[index].province}
+                                                                                value={districts.find((dist) => dist.full_name === field.value) || null}
+                                                                                placeholder="Chọn quận/huyện..."
+                                                                                getOptionLabel={(option) => option.full_name || option.name}
+                                                                                getOptionValue={(option) => option.full_name}
+                                                                                options={districts}
+                                                                                onChange={(newValue: SingleValue<District> | null) => {
+                                                                                    handleLocationChange('district', newValue, form, index);
+                                                                                }}
+                                                                                onBlur={() => form.setFieldTouched(`addressDTOS[${index}].district`, true)}
+                                                                            />
+                                                                        )}
+                                                                    </Field>
+                                                                </FormItem>
+                                                            </div>
+
+                                                            <div className="w-1/3">
+                                                                <FormItem asterisk label="Xã/phường/thị trấn">
+                                                                    <Field name={`addressDTOS[${index}].ward`}>
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                            <Select
+                                                                                isDisabled={!values.addressDTOS[index].district}
+                                                                                value={wards.find((ward) => ward.full_name === field.value) || null}
+                                                                                placeholder="Chọn xã/phường/thị trấn..."
+                                                                                getOptionLabel={(option) => option.full_name}
+                                                                                getOptionValue={(option) => option.full_name}
+                                                                                options={wards}
+                                                                                onChange={(newValue: SingleValue<Ward> | null) => {
+                                                                                    handleLocationChange('ward', newValue, form, index);
+                                                                                }}
+                                                                                onBlur={() => form.setFieldTouched(`addressDTOS[${index}].ward`, true)}
+                                                                            />
+                                                                        )}
+                                                                    </Field>
+                                                                </FormItem>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <FormItem asterisk label="Địa chỉ chi tiết">
-                                                        <Field type="text" name={`addressDTOS[${index}].detail`} placeholder="Nhập địa chỉ chi tiết" component={Input} />
-                                                    </FormItem>
+                                                        <FormItem asterisk label="Địa chỉ chi tiết">
+                                                            <Field type="text" name={`addressDTOS[${index}].detail`} style={{ height: '44px' }} placeholder="Nhập địa chỉ chi tiết" component={Input} />
+                                                        </FormItem>
 
-                                                    <FormItem label="Địa chỉ mặc định">
-                                                        <Field name={`addressDTOS[${index}].isDefault`}>
-                                                            {({ field }) => (
-                                                                <Switcher
-                                                                    checked={field.value}
-                                                                    onChange={(checked) => {
-                                                                        setFieldValue(`addressDTOS[${index}].isDefault`, checked);
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </Field>
-                                                    </FormItem>
+                                                        <FormItem label="Địa chỉ mặc định">
+                                                            <Field name={`addressDTOS[${index}].isDefault`}>
+                                                                {({ field }) => (
+                                                                    <Switcher
+                                                                        color='blue-600'
+                                                                        checked={field.value}
+                                                                        onChange={(checked) => {
+                                                                            setFieldValue(`addressDTOS[${index}].isDefault`, checked);
+                                                                            handleSwitcherChange(index, checked); // Gọi hàm để cập nhật địa chỉ mặc định
+                                                                        }}
+                                                                    />
 
-                                                    <div className="flex justify-end">
-                                                        <Button
-                                                            type="button"
-                                                            className="mr-4"
-                                                            onClick={() => handleAddressSubmit(formModes[index] as 'add' | 'edit', values.addressDTOS[index], values.id, index)}
-                                                        >
-                                                            {formModes[index] === 'add' ? 'Thêm' : 'Cập nhật'}
-                                                        </Button>
-                                                        <Button
-                                                            type="button"
-                                                            variant="solid"
-                                                            onClick={() => {
-                                                                remove(index);
-                                                                setFormModes((prev) => prev.filter((_, i) => i !== index));
-                                                            }}
-                                                        >
-                                                            Xóa
-                                                        </Button>
-                                                    </div>
-                                                </FormContainer>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </FieldArray>
+                                                                )}
+                                                            </Field>
+                                                        </FormItem>
+
+                                                        <div className="flex justify-end">
+                                                            <Button
+                                                                type="button"
+                                                                className="mr-4"
+                                                                variant="solid"
+                                                                style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                                                onClick={() => handleAddressSubmit(formModes[index] as 'add' | 'edit', values.addressDTOS[index], values.id, index)}
+                                                            >
+                                                                {formModes[index] === 'add' ? 'Thêm' : 'Cập nhật'}
+                                                            </Button>
+                                                            <Button
+                                                                type="button"
+                                                                variant="default"
+                                                                style={{ backgroundColor: '#fff', height: '40px' }}
+                                                                onClick={() => {
+                                                                    remove(index);
+                                                                    setFormModes((prev) => prev.filter((_, i) => i !== index));
+                                                                }}
+                                                            >
+                                                                Xóa
+                                                            </Button>
+                                                        </div>
+                                                    </FormContainer>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </FieldArray>
+                            </div>
                         </div>
                     </div>
+
                 </Form>
             )}
         </Formik>

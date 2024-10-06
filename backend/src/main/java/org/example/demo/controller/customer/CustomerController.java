@@ -89,11 +89,12 @@ public class CustomerController {
         customerService.updateStatus(id, newStatus);
         return ResponseEntity.noContent().build();
     }
-    @PatchMapping("/{addressId}/default")
+
+    @PutMapping("/{addressId}/default")
     public ResponseEntity<Address> updateDefaultAddress(
             @PathVariable Integer addressId,
             @RequestParam("customerId") Integer customerId,
-            @RequestParam("default") Boolean defaultAddress) {
+            @RequestParam("isDefault") Boolean defaultAddress) {
         // Gọi service để cập nhật địa chỉ mặc định
         Address updatedAddress = customerService.updateAddressDefault(customerId, addressId, defaultAddress);
         return ResponseEntity.ok(updatedAddress);

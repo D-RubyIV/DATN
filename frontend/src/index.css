@@ -1,6 +1,4 @@
 @import "./assets/styles/app.css";
-
-
 ::-webkit-scrollbar {
     width: 6px;
     /* Độ rộng của thanh cuộn */
@@ -21,4 +19,8 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
     /* Màu của thanh cuộn khi hover */
+}
+
+.custom-datepicker {
+    height: 44px !important;
 }

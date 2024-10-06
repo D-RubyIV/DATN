@@ -11,7 +11,7 @@ import type { ReactNode, ComponentPropsWithRef, MouseEvent } from 'react'
 
 export interface ButtonProps
     extends CommonProps,
-        Omit<ComponentPropsWithRef<'button'>, 'onClick'> {
+    Omit<ComponentPropsWithRef<'button'>, 'onClick'> {
     active?: boolean
     block?: boolean
     color?: string
@@ -114,6 +114,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
                 : `hover:bg-${buttonColor}-${decreaseLevel}`,
             activeColor: `active:bg-${buttonColor}-${increaseLevel}`,
         }
+
+
         return getBtnColor(btn)
     }
 
@@ -161,9 +163,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
         activeColor,
         textColor,
     }: ButtonColor) => {
-        return `${bgColor} ${
-            disabled || loading ? disabledClass : hoverColor + ' ' + activeColor
-        } ${textColor}`
+        return `${bgColor} ${disabled || loading ? disabledClass : hoverColor + ' ' + activeColor
+            } ${textColor}`
     }
 
     const btnColor = () => {
