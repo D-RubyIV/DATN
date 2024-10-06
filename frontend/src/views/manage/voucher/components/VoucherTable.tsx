@@ -126,7 +126,7 @@ const VoucherTable = () => {
                     const isGreen = status === 'Not started yet';
                     const isRed = status === 'In progress';
                     const isYellow = status === 'Expired';
-            
+
                     const statusColor = isGreen
                         ? 'bg-green-600'
                         : isRed
@@ -134,9 +134,9 @@ const VoucherTable = () => {
                             : isYellow
                                 ? 'bg-yellow-600'
                                 : 'bg-gray-500';
-            
+
                     const textColor = isGreen || isYellow ? 'text-green-600' : 'text-red-600';
-            
+
                     return (
                         <span className={`flex items-center font-bold ${textColor}`}>
                             <span
@@ -160,7 +160,7 @@ const VoucherTable = () => {
                 cell: ({ row }: CellContext<IVoucher, unknown>) => {
                     const { id, status } = row.original;
                     const isActive = status === 'Active';
-    
+
                     return (
                         <div className="flex items-center space-x-1">
                             <Tooltip title="Cập nhật trạng thái">
@@ -173,7 +173,7 @@ const VoucherTable = () => {
                                     className="text-sm"
                                 />
                             </Tooltip>
-    
+
                             <Tooltip title="Cập nhật">
                                 <Button size="xs">
                                     <FaPen />
@@ -258,84 +258,89 @@ const VoucherTable = () => {
 
     return (
         <>
-        <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
-            <div className="p-2 mb-4">
-                <p className="text-xl font-bold mb-2 mx-auto mb-10">Quản Lý Phiếu Giảm Giá</p>
-                <div
-                    className="flex flex-col lg:flex-row justify-between items-center mb-4"
-                    style={{
-                        marginBottom: '20px',
-                        overflow: 'hidden',
-                        maxWidth: '100%',
-                    }}
-                >
-                    <div className="flex items-center w-full justify-between flex-wrap">
-                        {/* Bên trái: Input tìm kiếm */}
-                        <div className="flex items-center space-x-2">
-                            <div style={{ position: 'relative', width: '300px' }}>
-                                <IoIosSearch
+            <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
+                <div className="p-2 mb-4">
+                    <p className="text-xl font-bold mb-2 mx-auto mb-10">Quản Lý Phiếu Giảm Giá</p>
+                    <div
+                        className="flex flex-col lg:flex-row justify-between items-center mb-4"
+                        style={{
+                            marginBottom: '20px',
+                            overflow: 'hidden',
+                            maxWidth: '100%',
+                        }}
+                    >
+                        <div className="flex items-center w-full justify-between flex-wrap">
+                            {/* Bên trái: Input tìm kiếm */}
+                            <div className="flex items-center space-x-2">
+                                <div style={{ position: 'relative', width: '500px' }}>
+                                    <IoIosSearch
+                                        style={{
+                                            position: 'absolute',
+                                            left: '5px',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            fontSize: '20px',
+                                            pointerEvents: 'none'
+                                        }}
+                                    />
+                                    <Input
+                                        placeholder="Tìm kiếm theo tên, mã, loại, số lượng..."
+                                        style={{
+                                            width: '100%',
+                                            height: '37px',
+                                            paddingLeft: '30px',
+                                            boxSizing: 'border-box',
+                                        }}
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                    />
+                                </div>
+                                {/* Bộ lọc trạng thái */}
+                                <select
+                                    className='border border-gray-300 rounded focus:outline-none'
+                                    value={tableData.statusFilter || ''}
+                                    onChange={handleFilterChange}
                                     style={{
-                                        position: 'absolute',
-                                        left: '5px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        fontSize: '20px',
-                                        pointerEvents: 'none'
-                                    }}
-                                />
-                                <Input
-                                    placeholder="Tìm Kiếm..."
-                                    style={{
-                                        width: '100%',
                                         height: '37px',
-                                        paddingLeft: '30px',
-                                        boxSizing: 'border-box',
+                                        marginLeft: '8px',
+                                        padding: '0 12px', // Đảm bảo padding bên trong
+                                        boxSizing: 'border-box', // Đảm bảo chiều rộng chính xác
                                     }}
-                                    value={searchTerm}
-                                    onChange={handleSearchChange}
-                                />
+                                >
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="In progress">Đang diễn ra</option>
+                                    <option value="Expired">Đã kết thúc</option>
+                                    <option value="Not started yet">Chưa bắt đầu</option>
+                                </select>
                             </div>
 
-                            {/* Bộ lọc trạng thái */}
-                            <select
-                                className='w-full pl-2 pr-2 border border-gray-300 rounded focus:outline-none'
-                                value={tableData.statusFilter || ''}
-                                onChange={handleFilterChange}
-                                style={{ height: '37px', marginBottom: '8px' }}
-                            >
-                                <option value="">Tất cả trạng thái</option>
-                                <option value="In progress">Đang diễn ra</option>
-                                <option value="Expired">Đã kết thúc</option>
-                                <option value="Not started yet">Chưa bắt đầu</option>
-                            </select>
-                        </div>
-
-                        {/* Bên phải: Nút và công cụ */}
-                        <div className="flex items-center space-x-2 justify-end">
-                            <VoucherTableTool />
+                            {/* Bên phải: Nút và công cụ */}
+                            <div className="flex items-center space-x-2 justify-end">
+                                <VoucherTableTool />
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="overflow-x-auto">
-                    {loading ? (
-                        <p>Đang tải...</p>
-                    ) : data.length === 0 ? (
-                        <p>Không có dữ liệu nhân viên.</p>
-                    ) : (
-                        <DataTable
-                            columns={columns}
-                            data={data}
-                            loading={loading}
-                            pagingData={tableData}
-                            onPaginationChange={handlePaginationChange}
-                            onSelectChange={handleSelectChange}
-                            onSort={handleSort}
-                        />
-                    )}
+
+                    <div className="overflow-x-auto">
+                        {loading ? (
+                            <p>Đang tải...</p>
+                        ) : data.length === 0 ? (
+                            <p>Không có dữ liệu nhân viên.</p>
+                        ) : (
+                            <DataTable
+                                columns={columns}
+                                data={data}
+                                loading={loading}
+                                pagingData={tableData}
+                                onPaginationChange={handlePaginationChange}
+                                onSelectChange={handleSelectChange}
+                                onSort={handleSort}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
         </>
     )
 }
