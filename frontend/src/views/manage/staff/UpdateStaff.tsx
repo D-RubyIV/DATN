@@ -97,7 +97,7 @@ const validationSchema = Yup.object({
     gender: Yup.boolean().required('Giới tính là bắt buộc'),
 });
 
-const UpdateStaffPage = () => {
+const UpdateStaffPage: React.FC = () => {
     const [staff, setStaff] = useState<Staff>(initialStaffState);
     const [provinces, setProvinces] = useState<Province[]>([]);
     const [districts, setDistricts] = useState<District[]>([]);
@@ -280,12 +280,12 @@ const UpdateStaffPage = () => {
 
     return (
         <div>
-            <p className=" text-center text-xl font-bold mx-auto mb-2">CẬP NHẬT NHÂN VIÊN </p>
+            <p className=" text-center text-xl font-bold mb-2 mx-auto mb-2">CẬP NHẬT NHÂN VIÊN </p>
 
             {/* <h1 className="text-center font-semibold text-2xl mb-4 text-uppercase">Cập nhật nhân viên</h1> */}
             <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h6 className="text-x font-bold ">Thông tin nhân viên</h6>
+                <h6 className="font-medium text-x font-bold ">Thông tin nhân viên</h6>
                    
                     {/* <h4 className="font-medium text-xl">Thông tin nhân viên</h4> */}
                 </div>

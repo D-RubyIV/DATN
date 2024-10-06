@@ -18,12 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/staffs")
-@CrossOrigin(origins = "http://localhost:5173")
 public class StaffController {
 
     private final StaffService staffService;

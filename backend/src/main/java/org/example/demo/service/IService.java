@@ -13,5 +13,5 @@ public interface IService<E, ID, RQ> {
     E findById(ID id) throws BadRequestException;
     E delete(ID id) throws BadRequestException;
     E save(RQ requestDTO) throws BadRequestException;
-    E update(ID id, RQ requestDTO);
+    E update(ID id, RQ requestDTO) throws BadRequestException;
 }

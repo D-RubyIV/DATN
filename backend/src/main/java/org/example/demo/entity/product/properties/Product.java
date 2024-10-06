@@ -1,14 +1,14 @@
 package org.example.demo.entity.product.properties;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
+import org.example.demo.entity.product.core.ProductDetail;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,4 +26,5 @@ public class Product extends BaseEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
 }

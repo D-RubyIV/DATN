@@ -20,6 +20,7 @@ type IVoucher = {
 const VoucherTable = () => {
     const [data, setData] = useState<IVoucher[]>([])
     const [loading, setLoading] = useState(false)
+    const [searchKeyword, setSearchKeyword] = useState('')
     const [tableData, setTableData] = useState<{
         pageIndex: number
         pageSize: number
@@ -28,9 +29,9 @@ const VoucherTable = () => {
             key: string | number
         }
         query: string
-        totalPages: number
+        total: number
     }>({
-        totalPages: 0,
+        total: 0,
         pageIndex: 1,
         pageSize: 10,
         query: '',
@@ -113,11 +114,11 @@ const VoucherTable = () => {
     )
 
     const handlePaginationChange = (pageIndex: number) => {
-        setTableData((prevData) => ({ ...prevData, pageIndex: pageIndex - 1 }))
+        setTableData((prevData) => ({ ...prevData, pageIndex }))
     }
 
     const handleSelectChange = (pageSize: number) => {
-        setTableData((prevData) => ({ ...prevData, pageSize, pageIndex: 0 }))
+        setTableData((prevData) => ({ ...prevData, pageSize }))
     }
 
     const handleSort = ({
@@ -130,30 +131,38 @@ const VoucherTable = () => {
         setTableData((prevData) => ({
             ...prevData,
             sort: { order, key },
-            pageIndex: 0,
         }))
     }
 
+    useEffect(() => {
+        setTableData((prevData) => ({
+            ...prevData,
+            query: searchKeyword,
+            pageIndex: 1, // Reset lại page khi tìm kiếm mới
+        }))
+    }, [searchKeyword])
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true)
             const params = new URLSearchParams({
-                page: (tableData.pageIndex + 1).toString(),
-                size: tableData.pageSize.toString(),
+                pageIndex: tableData.pageIndex.toString(),
+                pageSize: tableData.pageSize.toString(),
                 sortKey: tableData.sort.key.toString(),
                 sortOrder: tableData.sort.order,
                 query: tableData.query,
             })
-        
+
             try {
-                const res = await axios.get(`http://localhost:8080/api/v1/voucher?${params.toString()}`)
+                const res = await axios.get(
+                    `http://localhost:8080/api/v1/voucher?${params.toString()}`,
+                )
                 console.log(res)
                 if (res.data) {
                     setData(res.data.data)
                     setTableData((prevData) => ({
                         ...prevData,
-                        totalPages: res.data.totalPages,
+                        total: res.data.totalPages,
                     }))
                 }
             } catch (error) {
@@ -163,19 +172,27 @@ const VoucherTable = () => {
             }
         }
         fetchData()
-    }, [tableData.pageIndex, tableData.sort, tableData.pageSize, tableData.query])
-    
+    }, [
+        tableData.pageIndex,
+        tableData.sort,
+        tableData.pageSize,
+        tableData.query,
+    ])
 
     return (
         <div>
-            
+            <Input
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                placeholder="Nhập từ khóa tìm kiếm..."
+            />
             <DataTable<IVoucher>
                 columns={columns}
                 data={data}
                 loading={loading}
                 pagingData={{
-                    total: tableData.totalPages,
-                    pageIndex: tableData.pageIndex + 1,
+                    total: tableData.total,
+                    pageIndex: tableData.pageIndex,
                     pageSize: tableData.pageSize,
                 }}
                 onPaginationChange={handlePaginationChange}

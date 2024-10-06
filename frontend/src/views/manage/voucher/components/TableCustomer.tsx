@@ -51,19 +51,14 @@ interface TableCustomerProps {
     onSelectedCustomersChange: (selectedCustomers: Customer[]) => void
 }
 
-function TableCustomer({ onSelectedCustomersChange }: TableCustomerProps) {
-    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>(
-        {},
-    )
+function TableCustomer ({ onSelectedCustomersChange }: TableCustomerProps) {
+    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
     const [data, setData] = useState<Customer[]>([])
     const [loading, setLoading] = useState(true)
-    const [searchTerm, setSearchTerm] = useState('')
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(
-                'http://localhost:8080/api/v1/customer/get-all',
-            )
+            const response = await axios.get('http://localhost:8080/api/v1/customer/get-all')
             setData(response.data)
         } catch (error) {
             console.error('Failed to fetch customer data:', error)
@@ -76,24 +71,19 @@ function TableCustomer({ onSelectedCustomersChange }: TableCustomerProps) {
         fetchData()
     }, [])
 
-    const filteredData = useMemo(() => {
-        return data.filter(customer => 
-            customer.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    }, [data, searchTerm])
-
-    
+    // Lắng nghe sự thay đổi của rowSelection và truyền dữ liệu ra ngoài component
     useEffect(() => {
-        
-        const selectedCustomerIds = Object.keys(rowSelection).filter(
-            (key) => rowSelection[key],
-        )
-        const selectedCustomers = data.filter((customer) =>
-            selectedCustomerIds.includes(String(customer.id)),
-        ) 
-
-        onSelectedCustomersChange(selectedCustomers) 
-    }, [rowSelection, data]) 
+        const selectedCustomerIds = Object.keys(rowSelection).filter(key => rowSelection[key]);
+        const selectedCustomers = data.filter(customer => selectedCustomerIds.includes(customer.id.toString()));
+    
+        // Handle when no customer is selected
+        if (selectedCustomers.length > 0) {
+            onSelectedCustomersChange(selectedCustomers);
+        } else {
+            onSelectedCustomersChange([]);
+        }
+    }, [rowSelection, data, onSelectedCustomersChange]);
+    
 
     const columns = useMemo<ColumnDef<Customer>[]>(() => {
         return [
@@ -118,7 +108,7 @@ function TableCustomer({ onSelectedCustomersChange }: TableCustomerProps) {
                 ),
             },
             {
-                header: 'Tên',
+                header: 'Tên ',
                 accessorKey: 'name',
             },
             {
@@ -133,7 +123,7 @@ function TableCustomer({ onSelectedCustomersChange }: TableCustomerProps) {
     }, [])
 
     const table = useReactTable({
-        data: filteredData,
+        data,
         columns,
         state: {
             rowSelection,
@@ -154,45 +144,30 @@ function TableCustomer({ onSelectedCustomersChange }: TableCustomerProps) {
     }
 
     return (
-        <div className="border border-gray-300 rounded-md p-4 bg-white">
-            <input
-                type="text"
-                placeholder="Tìm kiếm theo tên"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="border border-gray-300 rounded-md mb-4 p-2 w-full"
-            />
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <Th key={header.id} colSpan={header.colSpan}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext(),
-                                    )}
-                                </Th>
-                            ))}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <Tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <Td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext(),
-                                    )}
-                                </Td>
-                            ))}
-                        </Tr>
-                    ))}
-                </TBody>
-            </Table>
-        </div>
+        <Table>
+            <THead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                    <Tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                            <Th key={header.id} colSpan={header.colSpan}>
+                                {flexRender(header.column.columnDef.header, header.getContext())}
+                            </Th>
+                        ))}
+                    </Tr>
+                ))}
+            </THead>
+            <TBody>
+                {table.getRowModel().rows.map((row) => (
+                    <Tr key={row.id}>
+                        {row.getVisibleCells().map((cell) => (
+                            <Td key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </Td>
+                        ))}
+                    </Tr>
+                ))}
+            </TBody>
+        </Table>
     )
 }
 

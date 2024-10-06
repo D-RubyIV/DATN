@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author PHAH04
@@ -26,7 +26,7 @@ public class OrderOverviewResponseDTO {
     private String phone;
     private Boolean deleted;
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
     @Enumerated(EnumType.STRING)
     private Status status;
     @Enumerated(EnumType.STRING)

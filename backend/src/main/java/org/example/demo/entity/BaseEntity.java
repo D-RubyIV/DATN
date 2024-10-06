@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -29,9 +28,9 @@ public class BaseEntity {
 
     @CreationTimestamp
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
     @UpdateTimestamp
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate updatedDate;
+    private LocalDateTime updatedDate;
 }

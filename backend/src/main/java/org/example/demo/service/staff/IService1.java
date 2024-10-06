@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * The interface IService1.
@@ -41,8 +41,8 @@ public interface IService1<E, ID, RQ> {
 //            Integer id,
             String code,
             String name,
-            LocalDate fromDate,
-            LocalDate toDate,
+            LocalDateTime fromDate,
+            LocalDateTime toDate,
             Pageable pageable);
 
     /**

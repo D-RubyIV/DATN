@@ -11,10 +11,11 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { StatusBill, statusEnums, TypeBill, typeEnums } from '../../store'
 import { Link } from 'react-router-dom'
-import { HiArrowLeft, HiArrowNarrowLeft, HiRefresh, HiReply } from 'react-icons/hi'
+import { HiArrowLeft, HiArrowNarrowLeft, HiEye, HiOutlineSearch, HiRefresh, HiReply } from 'react-icons/hi'
 import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
 import { format } from 'date-fns';
 import instance from '@/axios/CustomAxios'
+import { IoIosSearch } from 'react-icons/io'
 
 
 type BadgeType = 'countAll' | 'countPending' | 'countToShip' | 'countToReceive' | 'countDelivered' | 'countCancelled' | 'countReturned';
@@ -219,36 +220,55 @@ export const OrderTable = ({ }: Props) => {
                 <Button
                     size="xs"
                     block
+                    variant='solid'
                     className={`${props.row.original.status === "PENDING"
-                        ? "!bg-yellow-300"
+                        ? "!text-yellow-500"
                         : props.row.original.status === "TOSHIP"
-                            ? "!bg-blue-300"
+                            ? "!text-blue-500"
                             : props.row.original.status === "TORECEIVE"
-                                ? "!bg-green-300"
+                                ? "!text-green-500"
                                 : props.row.original.status === "DELIVERED"
-                                    ? "!bg-purple-300"
+                                    ? "!text-purple-500"
                                     : props.row.original.status === "CANCELED"
-                                        ? "!bg-red-300"
+                                        ? "!text-red-500"
                                         : props.row.original.status === "RETURNED"
-                                            ? "!bg-orange-300"
-                                            : "!bg-gray-300"
+                                            ? "!text-orange-500"
+                                            : "!text-gray-500"
                         }`}
                 >
-                    <p>
-                        {props.row.original.status === "PENDING"
-                            ? "Chờ xác nhân"
+                    <span className={`flex items-center font-bold`}>
+                        <span className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.status === "PENDING"
+                            ? "!bg-yellow-500"
                             : props.row.original.status === "TOSHIP"
-                                ? "Đợi giao hàng"
+                                ? "!bg-blue-500"
                                 : props.row.original.status === "TORECEIVE"
-                                    ? "Đang giao hàng"
+                                    ? "!bg-green-500"
                                     : props.row.original.status === "DELIVERED"
-                                        ? "Đã hoàn thành"
+                                        ? "!bg-purple-500"
                                         : props.row.original.status === "CANCELED"
-                                            ? "Đã hủy đơn"
+                                            ? "!bg-red-500"
                                             : props.row.original.status === "RETURNED"
-                                                ? "Đã trả hàng"
-                                                : "Không xác định"}
-                    </p>
+                                                ? "!bg-orange-500"
+                                                : "!bg-gray-500"
+                            }`}></span>
+                        <span>
+                            <p>
+                                {props.row.original.status === "PENDING"
+                                    ? "Chờ xác nhân"
+                                    : props.row.original.status === "TOSHIP"
+                                        ? "Đợi giao hàng"
+                                        : props.row.original.status === "TORECEIVE"
+                                            ? "Đang giao hàng"
+                                            : props.row.original.status === "DELIVERED"
+                                                ? "Đã hoàn thành"
+                                                : props.row.original.status === "CANCELED"
+                                                    ? "Đã hủy đơn"
+                                                    : props.row.original.status === "RETURNED"
+                                                        ? "Đã trả hàng"
+                                                        : "Không xác định"}
+                            </p>
+                        </span>
+                    </span>
                 </Button>
             ),
         },
@@ -259,21 +279,23 @@ export const OrderTable = ({ }: Props) => {
                 <Button
                     size="xs"
                     block
-                    className={`${props.row.original.type === "INSTORE"
-                        ? "!bg-indigo-300"
-                        : props.row.original.type === "ONLINE"
-                            ? "!bg-green-300"
-                            : ""
-
-                        }`}
+                    variant='solid'
                 >
-                    <p>
-                        {props.row.original.type === "INSTORE"
-                            ? "Tại của hàng"
-                            : props.row.original.type === "ONLINE"
-                                ? "Trực tuyến"
-                                : "Không xác định"}
-                    </p>
+
+                    <span className={`flex items-center font-bold ${props.row.original.type === "INSTORE" ? 'text-green-600' : 'text-red-600'}`}>
+                        <span
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.type === "INSTORE" ? 'bg-green-600' : 'bg-red-600'}`}
+                        ></span>
+                        <span>
+                            <p>
+                                {props.row.original.type === "INSTORE"
+                                    ? "Tại của hàng"
+                                    : props.row.original.type === "ONLINE"
+                                        ? "Trực tuyến"
+                                        : "Không xác định"}
+                            </p>
+                        </span>
+                    </span>
                 </Button>
             ),
         },
@@ -281,8 +303,8 @@ export const OrderTable = ({ }: Props) => {
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
-                <Button size="xs">
-                    <Link to={`order-details/${props.row.original.id}`}>Chi tiết</Link>
+                <Button size="xs" className='w-full flex justify-start items-center' variant='plain'>
+                    <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className='mr-3 text-2xl' style={{ cursor: 'pointer' }}/></Link>
                 </Button>
 
             ),
@@ -390,15 +412,21 @@ export const OrderTable = ({ }: Props) => {
 
     return (
         <>
-            <div className='grid grid-cols-3 gap-2 bg-[#f3f4f6] py-2'>
+            <div>
+                <h1 className="font-semibold text-xl mb-4 text-transform: uppercase">Quản lý hóa đơn</h1>
+            </div>
+            <div className='grid grid-cols-3 gap-2 py-2'>
                 <div>
-                    <Input
-                        ref={inputRef}
-                        placeholder="Tìm kiếm..."
-                        size="sm"
-                        className="lg:w-full"
-                        onChange={handleChange}
-                    />
+                    <div className="relative mr-4">
+                        <Input
+                            ref={inputRef}
+                            placeholder="Tìm kiếm theo mã, tên nhân viên, tên khách hàng ..."
+                            size="sm"
+                            className="lg:w-full"
+                            onChange={handleChange}
+                            prefix={<HiOutlineSearch className="text-lg" />}
+                        />
+                    </div>
                 </div>
                 <div className='flex justify-between gap-5'>
                     <DatePicker.DatePickerRange
@@ -419,7 +447,7 @@ export const OrderTable = ({ }: Props) => {
 
                 </div>
             </div>
-            <div className='bg-[#f3f4f6]  py-2'>
+            <div className='py-2'>
                 <TabList className='flex justify-evenly gap-4 w-full bg-white pt-3 pb-1'>
                     {
                         statusBills.map((item, index) => (

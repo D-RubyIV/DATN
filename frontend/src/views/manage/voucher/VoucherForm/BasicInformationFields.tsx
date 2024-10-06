@@ -52,9 +52,6 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                     component={Input}
                     className="w-full"
                 />
-                <small className="text-gray-500">
-                    Bạn có thể nhập mã hoặc để trống để hệ thống tự động tạo mã.
-                </small>
             </FormItem>
 
             <FormItem
@@ -86,7 +83,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                         name="maxPercent"
                         placeholder="Max Percent"
                         component={Input}
-                        className="w-full pr-12"
+                        className="w-full pr-12" 
                     />
                     <span className="absolute right-1 text-gray-500">%</span>
                 </div>
@@ -95,6 +92,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
             <FormItem
                 label="Giá tối thiểu"
                 asterisk
+
                 invalid={(errors.minAmount && touched.minAmount) as boolean}
                 errorMessage={errors.minAmount}
             >
@@ -106,7 +104,8 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                     component={Input}
                     className="w-full pr-12"
                 />
-                <span className="absolute right-1 text-gray-500 mt-3">VNĐ</span>
+                    <span className="absolute right-1 text-gray-500 mt-3">VNĐ</span>
+
             </FormItem>
 
             <div className="flex gap-4">

@@ -32,67 +32,67 @@ public class ProductDetail extends BaseEntity {
     private Boolean deleted;
 
     // Kích thước
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "size_id")
     private Size size;
 
     // Màu sắc
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "color_id")
     private Color color;
 
     // Sản phẩm
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
     // Họa tiết
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "texture_id")
     private Texture texture;
 
     // Xuất xứ
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "origin_id")
     private Origin origin;
 
     // Thương hiệu
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
     // Cổ áo
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "collar_id")
     private Collar collar;
 
     // Tay Áo
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "sleeve_id")
     private Sleeve sleeve;
 
     // Kiểu dáng
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "style_id")
     private Style style;
 
     // Chất liệu
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "material_id")
     private Material material;
 
     // Độ dày vài
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "thickness_id")
     private Thickness thickness;
 
     // Độ co dãn
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "elasticity_id")
     private Elasticity elasticity;
 
     // Hình ảnh
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "image_id")
     private Image image;
 

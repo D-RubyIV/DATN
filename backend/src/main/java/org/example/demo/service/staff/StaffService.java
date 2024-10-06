@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.Normalizer;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -49,7 +49,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     private ModelMapper modelMapper;
 
     @Override
-    public Page<StaffResponseDTO> findAllByPage(String code, String name, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<StaffResponseDTO> findAllByPage(String code, String name, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Staff> query = cb.createQuery(Staff.class);
         Root<Staff> root = query.from(Staff.class);
@@ -71,7 +71,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         return staffRepository.findAll(PageRequest.of(offset / limit, limit));
     }
 
-    private List<Predicate> buildSearchPredicates(CriteriaBuilder cb, Root<Staff> root, String code, String name, LocalDate fromDate, LocalDate toDate) {
+    private List<Predicate> buildSearchPredicates(CriteriaBuilder cb, Root<Staff> root, String code, String name, LocalDateTime fromDate, LocalDateTime toDate) {
         List<Predicate> predicates = new ArrayList<>();
         if (code != null && !code.isEmpty()) {
             predicates.add(cb.equal(root.get("code"), code));
@@ -235,7 +235,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
                 staff.setStatus(getCellValue(row.getCell(8)));
 
                 if (DateUtil.isCellDateFormatted(row.getCell(9))) {
-                    LocalDate birthDate = row.getCell(9).getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                    LocalDateTime birthDate = row.getCell(9).getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
                     staff.setBirthDay(birthDate);
                 }
 
