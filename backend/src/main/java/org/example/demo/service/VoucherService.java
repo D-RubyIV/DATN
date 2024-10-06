@@ -37,6 +37,8 @@ public interface VoucherService {
 
     Voucher addVoucher(VoucherRequest request);
 
+    Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, int limit, int offset);
+
     Voucher updateVoucher(Integer id, VoucherRequest request);
 
     void updateStatusVoucher();

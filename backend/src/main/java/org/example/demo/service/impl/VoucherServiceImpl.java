@@ -6,6 +6,7 @@ import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.infrastructure.common.AutoGenCode;
@@ -134,6 +135,13 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Page<Voucher> getAllVouchers(int limit, int offset) {
         return voucherRepository.findAll(PageRequest.of(offset / limit, limit));
+    }
+
+
+    @Override
+    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, int limit, int offset) {
+        Pageable pageable = PageRequest.of(offset / limit, limit);
+        return voucherRepository.searchVoucher(keyword,name, code, typeTicket, quantity, maxPercent,minAmount,status, pageable);
     }
 
     @Transactional

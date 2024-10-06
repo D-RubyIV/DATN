@@ -9,6 +9,8 @@ import org.example.demo.service.VoucherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,27 @@ public class VoucherController {
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/page")
+    public ResponseEntity<Page<VoucherResponseDTO>> searchNhanVien(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String typeTicket,
+            @RequestParam(required = false) Integer quantity,
+            @RequestParam(required = false) Double maxPercent,
+            @RequestParam(required = false) Double minAmount,
+            @RequestParam(required = false) String status,
+            @PageableDefault(size = 5) Pageable pageable) {
+
+        // Ensure the service layer can handle the status filtering
+        Page<Voucher> result = voucherService.searchVoucher(
+                keyword, name, typeTicket, code, quantity, maxPercent,minAmount,status,
+                pageable.getPageSize(), (int) pageable.getOffset());
+
+        Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/get-all")
     public ResponseEntity<List<VoucherResponse>> getAll() {
