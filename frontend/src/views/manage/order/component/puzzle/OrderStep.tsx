@@ -5,16 +5,42 @@ import { BillResponseDTO, EBillStatus } from '../../store'
 import { HiPlusCircle } from 'react-icons/hi'
 import Axios from 'axios'
 import instance from '@/axios/CustomAxios'
-
+import { compile } from "@fileforge/react-print";
+import Document from './Document'
+import { FileforgeClient } from '@fileforge/client'
+import { displayDoc } from './util'
 
 
 type ExampleAnswers = {
     status: EBillStatus;
     messages: string[];
 }
+const ff = new FileforgeClient({
+    apiKey: '029d0f13-d976-43f8-a3ec-16955667b1d2',
+});
 
 
 const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO, fetchData: () => {} }) => {
+
+    const run = async () => {
+
+        // This is used to prevent treeshaking during building
+        // @ts-ignore
+        await import('react-dom/server');
+
+        const html = `<doctype html><html><body>${await compile(
+            <Document billDTO={selectObject}></Document>
+        )}</body></html>`;
+
+        const { url } = await ff.pdf.generate(html, {
+            options: {
+                host: true,
+            },
+        });
+
+        displayDoc(url);
+    };
+
     const [step, setStep] = useState(0)
     const [invalid, setInvalid] = useState(false)
     const [value, setValue] = useState('')
@@ -87,9 +113,13 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO,
 
     const ActionButton = () => {
         if (currentStatus === "PENDING") {
+            const submitToShip = async () => {
+                submitChangeStatus('TOSHIP')
+                await run()
+            }
             return (
                 <div className='flex gap-2'>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('TOSHIP')}>Xác nhận</Button>
+                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={submitToShip}>Xác nhận</Button>
                     <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('CANCELED')}>Hủy</Button>
                 </div>
             )

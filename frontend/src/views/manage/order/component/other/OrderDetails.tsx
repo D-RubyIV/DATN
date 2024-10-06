@@ -98,7 +98,7 @@ const OrderDetails = () => {
 
 
 const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
-    const [isOpenEditAddress, setIsOpenEditAddress] = useState<boolean>(true)
+    const [isOpenEditAddress, setIsOpenEditAddress] = useState<boolean>(false)
 
     return (
         <Card className='mb-5 h-[450px]'>
