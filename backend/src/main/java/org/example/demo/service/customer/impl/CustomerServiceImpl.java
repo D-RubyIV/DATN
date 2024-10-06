@@ -30,6 +30,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private AutoGenCode autoGenCode;
 
+    @Override
+    public Optional<Customer> getCustomerById(Integer id) {
+        return customerRepository.findById(id);
+    }
 
     @Override
     public Page<CustomerListDTO> search(String searchTerm, Pageable pageable) {

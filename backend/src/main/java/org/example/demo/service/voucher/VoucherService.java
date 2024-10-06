@@ -1,4 +1,4 @@
-package org.example.demo.service;
+package org.example.demo.service.voucher;
 
 
 import org.example.demo.entity.voucher.core.Voucher;

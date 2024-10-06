@@ -5,7 +5,7 @@ import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
-import org.example.demo.service.VoucherService;
+import org.example.demo.service.voucher.VoucherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

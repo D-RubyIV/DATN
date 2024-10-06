@@ -1,4 +1,4 @@
-package org.example.demo.service.impl;
+package org.example.demo.service.voucher.impl;
 
 import jakarta.transaction.Transactional;
 import org.example.demo.entity.human.customer.Customer;
@@ -11,7 +11,7 @@ import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
-import org.example.demo.service.VoucherService;
+import org.example.demo.service.voucher.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

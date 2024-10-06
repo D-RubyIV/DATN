@@ -1,6 +1,6 @@
 package org.example.demo.service.cronjob;
 
-import org.example.demo.service.VoucherService;
+import org.example.demo.service.voucher.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
