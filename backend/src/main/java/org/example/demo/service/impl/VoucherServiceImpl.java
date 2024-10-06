@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -144,9 +144,9 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     public void updateStatus(Voucher voucher) {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate startDate = voucher.getStartDate();
-        LocalDate endDate = voucher.getEndDate();
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime startDate = voucher.getStartDate();
+        LocalDateTime endDate = voucher.getEndDate();
 
         if (currentDate.isBefore(startDate)) {
             voucher.setStatus("Not started yet");

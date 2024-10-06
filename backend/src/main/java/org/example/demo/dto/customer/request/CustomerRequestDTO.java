@@ -3,7 +3,7 @@ package org.example.demo.dto.customer.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.example.demo.entity.human.customer.Address;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CustomerRequestDTO {
@@ -20,7 +20,7 @@ public class CustomerRequestDTO {
     private Boolean deleted;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate birthDay;
+    private LocalDateTime birthDay;
 
     private List<Address> addresses;
 }

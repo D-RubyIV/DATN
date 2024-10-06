@@ -11,7 +11,7 @@ import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.enums.Type;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -47,11 +47,11 @@ public class Voucher extends BaseEntity {
 
     @Column(name = "startDate")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "endDate")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @Column(name = "deleted")
     private Boolean deleted;

@@ -7,7 +7,7 @@ import org.example.demo.mapper.address.response.AddressResponseMapper;
 import org.example.demo.mapper.customer.response.CustomerResponseMapper;
 import org.example.demo.mapper.history.response.HistoryResponseMapper;
 import org.example.demo.mapper.order.properties.response.OrderDetailResponseMapper;
-import org.example.demo.mapper.product.phah04.ProductDetailResponseMapper;
+import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
 import org.example.demo.mapper.staff.response.StaffResponseMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

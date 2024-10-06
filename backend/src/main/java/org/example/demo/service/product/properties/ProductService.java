@@ -19,7 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -57,8 +58,8 @@ public class ProductService implements IService<Product, Integer, ProductRequest
 
 
     public Page<ProductWithQuantityResponseDTO> findAllOverviewByPageV3(
-            LocalDate createdFrom,
-            LocalDate createdTo,
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
             PageableObject pageableObject
     ) {
         Pageable pageable = pageableObject.toPageRequest();

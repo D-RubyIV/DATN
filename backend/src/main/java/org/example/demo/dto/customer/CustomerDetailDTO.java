@@ -5,7 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 @Data
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class CustomerDetailDTO {
     private String gender;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDate birthDate;
+    private LocalDateTime birthDate;
 
     private String status;
 

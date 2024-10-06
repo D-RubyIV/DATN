@@ -30,7 +30,8 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,8 +66,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     public Page<OrderOverviewResponseDTO> findAllOverviewByPage(
             String status,
             String type,
-            LocalDate createdFrom,
-            LocalDate createdTo,
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
             PageableObject pageableObject
     ) {
         Pageable pageable = pageableObject.toPageRequest();

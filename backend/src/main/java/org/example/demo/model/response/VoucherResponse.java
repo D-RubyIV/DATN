@@ -5,7 +5,7 @@ import org.example.demo.entity.voucher.core.Voucher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -18,8 +18,8 @@ public interface VoucherResponse {
     Integer getId();
     String getName();
     String getCode();
-    LocalDate getStartDate();
-    LocalDate getEndDate();
+    LocalDateTime getStartDate();
+    LocalDateTime getEndDate();
     String getStatus();
     Long getQuantity();
     Integer getMaxPercent();

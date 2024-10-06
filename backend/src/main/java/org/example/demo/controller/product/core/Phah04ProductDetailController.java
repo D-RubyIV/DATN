@@ -1,7 +1,7 @@
 package org.example.demo.controller.product.core;
 
 import jakarta.validation.Valid;
-import org.example.demo.mapper.product.phah04.ProductDetailResponseMapper;
+import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class Phah04ProductDetailController {
                 thickness,
                 elasticity,
                 pageableObject.toPageRequest()
-        ).map(s -> productDetailResponseMapper.toOverviewDTO(s)));
+        ).map(s -> productDetailResponseMapper.toOverviewDTOPhah04(s)));
     }
 
 }

@@ -11,7 +11,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.human.role.Role;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -55,7 +56,7 @@ public class StaffRequestDTO {
     private Boolean deleted; // Consider setting this to false by default in the service
     private Boolean gender;
 
-    private LocalDate birthDay;
+    private LocalDateTime birthDay;
 
 //    @NotNull(message = "NotNull")
     private Role role; // Assume Role is included directly, or you might want to use roleId instead

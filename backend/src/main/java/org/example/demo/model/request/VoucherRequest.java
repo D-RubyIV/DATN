@@ -10,7 +10,7 @@ import lombok.Setter;
 import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.infrastructure.common.PageableRequest;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -43,10 +43,10 @@ public class VoucherRequest extends PageableRequest {
     private Type typeTicket;
 
     @NotNull(message = "Start date must not be empty!")
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @NotNull(message = "End date must not be empty!")
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     private Boolean deleted = false;
 

@@ -24,7 +24,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @Controller
 @RequestMapping("product")
@@ -63,8 +64,8 @@ public class ProductController {
 
     @RequestMapping(value = "overview")
     public ResponseEntity<Page<ProductWithQuantityResponseDTO>> findAllByPageV3(
-            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createdFrom,
-            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createdTo,
+            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
+            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdTo,
             @Valid @RequestBody PageableObject pageableObject,
             BindingResult bindingResult
     ) throws BindException {

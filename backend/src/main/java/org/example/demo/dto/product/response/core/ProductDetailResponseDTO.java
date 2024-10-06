@@ -6,7 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.product.properties.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,9 +32,9 @@ public class ProductDetailResponseDTO {
     private Elasticity elasticity;
     private Image image;
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private  LocalDate modifiedDate;
+    private  LocalDateTime modifiedDate;
 
 
 }
