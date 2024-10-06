@@ -20,6 +20,8 @@ import type {
     OnSortParam,
     ColumnDef,
 } from '@/components/shared/DataTable'
+import { Button } from '@/components/ui'
+import { HiEye } from 'react-icons/hi'
 
 type Product = {
     id: string
@@ -55,27 +57,7 @@ const getInventoryStatus = (quantity: number) => {
 const withIcon = (component: ReactNode) => {
     return <div className="text-lg">{component}</div>
 }
-const ActionColumn = ({ row }: { row: Product }) => {
-    const dispatch = useAppDispatch()
-    const onDelete = () => {
-        dispatch(toggleDeleteConfirmation(true))
-        dispatch(setSelectedProduct(row.id))
-    }
 
-    const onSwitcherToggle = (val: boolean, e: ChangeEvent) => {
-        onDelete()
-    }
-    return (
-        <div className="flex justify-end text-lg">
-            <Switcher
-                unCheckedContent={withIcon(<RiMoonClearLine />)}
-                checkedContent={withIcon(<RiSunLine />)}
-                color="green-500"
-                checked={!row.deleted}
-                onChange={onSwitcherToggle} />
-        </div>
-    );
-};
 
 const ProductColumn = ({ row }: { row: Product }) => {
 
@@ -131,6 +113,30 @@ const ProductTable = () => {
 
     }
 
+    const ActionColumn = ({ row }: { row: Product }) => {
+        const dispatch = useAppDispatch()
+        const onDelete = () => {
+            dispatch(toggleDeleteConfirmation(true))
+            dispatch(setSelectedProduct(row.id))
+        }
+    
+        const onSwitcherToggle = (val: boolean, e: ChangeEvent) => {
+            onDelete()
+        }
+        return (
+            <div className="flex w-full justify-start gap-2 items-center">
+                <HiEye onClick={() => handleRowClick(row)} size={20} className='mr-3 text-2xl' style={{ cursor: 'pointer' }}></HiEye>
+                <Switcher
+                    className='text-sm'
+                    unCheckedContent={withIcon(<RiMoonClearLine />)}
+                    checkedContent={withIcon(<RiSunLine />)}
+                    color="green-500"
+                    checked={!row.deleted}
+                    onChange={onSwitcherToggle} />
+            </div>
+        );
+    };
+
     const columns: ColumnDef<Product>[] = useMemo(
         () => [
             {
@@ -167,6 +173,10 @@ const ProductTable = () => {
                 },
             },
             {
+                header: 'Ngày tạo',
+                accessorKey: 'createdDate',
+            },
+            {
                 header: 'Trạng thái',
                 accessorKey: 'status',
                 cell: (props) => {
@@ -186,7 +196,7 @@ const ProductTable = () => {
                 },
             },
             {
-                header: '',
+                header: 'Hành động',
                 id: 'action',
                 cell: (props) => <ActionColumn row={props.row.original} />,
             },
@@ -237,7 +247,6 @@ const ProductTable = () => {
                 onPaginationChange={onPaginationChange}
                 onSelectChange={onSelectChange}
                 onSort={onSort}
-                onRowClick={handleRowClick}
             />
             <ProductDeleteConfirmation />
         </>

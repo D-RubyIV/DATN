@@ -11,7 +11,7 @@ import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { StatusBill, statusEnums, TypeBill, typeEnums } from '../../store'
 import { Link } from 'react-router-dom'
-import { HiArrowLeft, HiArrowNarrowLeft, HiEye, HiRefresh, HiReply } from 'react-icons/hi'
+import { HiArrowLeft, HiArrowNarrowLeft, HiEye, HiOutlineSearch, HiRefresh, HiReply } from 'react-icons/hi'
 import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
 import { format } from 'date-fns';
 import instance from '@/axios/CustomAxios'
@@ -303,8 +303,8 @@ export const OrderTable = ({ }: Props) => {
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
-                <Button size="xs" className='w-full flex justify-center items-center' variant='plain'>
-                    <Link to={`order-details/${props.row.original.id}`}><HiEye size={16}/></Link>
+                <Button size="xs" className='w-full flex justify-start items-center' variant='plain'>
+                    <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className='mr-3 text-2xl' style={{ cursor: 'pointer' }}/></Link>
                 </Button>
 
             ),
@@ -412,8 +412,8 @@ export const OrderTable = ({ }: Props) => {
 
     return (
         <>
-            <div className=' text-xl font-semibold'>
-                <p className='text-xl font-bold mx-auto'>Quản lý hóa đơn</p>
+            <div>
+                <h1 className="font-semibold text-xl mb-4 text-transform: uppercase">Quản lý hóa đơn</h1>
             </div>
             <div className='grid grid-cols-3 gap-2 py-2'>
                 <div>
@@ -422,10 +422,10 @@ export const OrderTable = ({ }: Props) => {
                             ref={inputRef}
                             placeholder="Tìm kiếm theo mã, tên nhân viên, tên khách hàng ..."
                             size="sm"
-                            className="lg:w-full pl-8"
+                            className="lg:w-full"
                             onChange={handleChange}
+                            prefix={<HiOutlineSearch className="text-lg" />}
                         />
-                        <IoIosSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-2xl" />
                     </div>
                 </div>
                 <div className='flex justify-between gap-5'>

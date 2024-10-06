@@ -25,7 +25,13 @@ const ProductTableTools = () => {
                     className="block lg:inline-block md:mb-0 mb-4"
                     to="/manage/product/product-new"
                 >
-                    <Button block variant="solid" size="sm" icon={<HiPlusCircle />}>
+                    <Button
+                        size='sm'
+                        variant="solid"
+                        style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                        className='flex items-center justify-center gap-2 button-bg-important'
+                        icon={<HiPlusCircle />} 
+                    >
                         Thêm Sản Phẩm
                     </Button>
                 </Link>

@@ -1,6 +1,7 @@
 package org.example.demo.service.customer.impl;
 
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.customer.*;
 import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.customer.Customer;
@@ -29,6 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private AutoGenCode autoGenCode;
 
+
     @Override
     public Page<CustomerListDTO> search(String searchTerm, Pageable pageable) {
         return customerRepository.search(searchTerm, pageable)
@@ -55,7 +57,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public Customer saveCustomer(CustomerDTO customerDTO) {
+    public Customer saveCustomer(CustomerDTO customerDTO)  {
 
         String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
                 ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
@@ -133,6 +135,7 @@ public class CustomerServiceImpl implements CustomerService {
         // Save the updated staff entity
         return customerRepository.save(customer);
     }
+
     @Transactional
     @Override
     public Address updateAddressDefault(Integer customerId, Integer addressId, Boolean defaultAddress) {
@@ -145,7 +148,17 @@ public class CustomerServiceImpl implements CustomerService {
             for (Address address : customerAddresses) {
                 if (!address.getId().equals(addressId)) { // Chỉ đặt các địa chỉ khác
                     address.setDefaultAddress(false);
+                    addressRepository.save(address); // Lưu ngay lập tức từng địa chỉ đã thay đổi
                 }
+            }
+        } else {
+            // Nếu địa chỉ được chọn không làm mặc định, kiểm tra xem có ít nhất một địa chỉ nào đó là mặc định không
+            boolean hasDefaultAddress = customerAddresses.stream()
+                    .anyMatch(Address::getDefaultAddress);
+
+            // Nếu không có địa chỉ mặc định, ném ngoại lệ
+            if (!hasDefaultAddress) {
+                throw new IllegalStateException("At least one address must be set as default.");
             }
         }
 
@@ -155,9 +168,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         // Cập nhật giá trị isDefault cho địa chỉ được chọn
         addressToUpdate.setDefaultAddress(defaultAddress);
-
-        // Lưu tất cả các địa chỉ đã thay đổi
-        addressRepository.saveAll(customerAddresses);
 
         // Lưu địa chỉ đang được cập nhật (vì đã thay đổi giá trị isDefault)
         return addressRepository.save(addressToUpdate);

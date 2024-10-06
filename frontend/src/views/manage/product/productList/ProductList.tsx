@@ -8,14 +8,16 @@ injectReducer('salesProductList', reducer)
 
 const ProductList = () => {
     return (
-        <AdaptableCard className="h-full" bodyClass="h-full">
-                <h3 className="mb-4 lg:mb-0">SẢN PHẨM</h3>
-            {/* <div className="lg:flex items-center justify-between mb-4"> */}
-            <div className='mb-5 mt-5'>
-                <ProductTableTools />
+        <div className="bg-white">
+            <div className="p-8 shadow-md rounded-md card h-full card-border">
+                <h1 className="font-semibold text-xl mb-4 text-transform: uppercase">Quản lý sản phẩm</h1>
+                <div className='mb-5 mt-6'>
+                    <ProductTableTools />
+                </div>
+                <ProductTable />
             </div>
-            <ProductTable />
-        </AdaptableCard>
+        </div>
+
     )
 }
 

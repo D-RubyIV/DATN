@@ -10,6 +10,8 @@ import { toast } from 'react-toastify';
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { FaFileDownload } from "react-icons/fa";
+import { HiPencil, HiPlusCircle } from 'react-icons/hi';
 
 
 
@@ -88,7 +90,7 @@ const CustomerTable = () => {
     const updateStatus = async (id: number, newStatus: boolean) => {
         try {
             await axios.patch(`http://localhost:8080/api/v1/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
-            toast.success('Status updated successfully');
+            toast.success('cập nhật thành công');
             fetchData(pageIndex, pageSize, query)
         } catch (error) {
             toast.error('Error updating status');
@@ -104,6 +106,7 @@ const CustomerTable = () => {
         const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
         saveAs(blob, 'customer_data.xlsx');
     };
+
 
 
     // ham chuyen sang trang add
@@ -212,9 +215,10 @@ const CustomerTable = () => {
                 const { id, status } = row.original;
                 const isActive = status === 'Active';
                 return (
-                    <div className='flex space-x-2 justify-center items-center'>
-                        <GrEdit
-                            className='text-2xl mr-3'
+                    <div className='flex w-full justify-start gap-2 items-center'>
+                        <HiPencil
+                            size={20}
+                            className='mr-3'
                             style={{ cursor: 'pointer' }}
                             onClick={() => handleUpdateClick(customer.id)}
                         />
@@ -234,58 +238,59 @@ const CustomerTable = () => {
     ];
 
     return (
-        <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
-            <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Danh sách khách hàng</h1>
+        <div className="bg-white rounded-lg mb-6 w-full">
+            <h1 className="font-semibold text-xl mb-4 text-transform: uppercase">Quản lý khách hàng</h1>
+            <div className='flex justify-between items-center mb-4'>
+                <div className='flex items-center'>
+                    <div className="relative w-80 mr-4">
+                        <Input
+                            placeholder='Tìm kiếm theo tên, email, số điện thoại...'
+                            size='sm'
+                            style={{ backgroundColor: '#fff', height: '40px' }}
+                            className='w-full pl-10 pr-2 py-1 border border-gray-300 rounded focus:outline-none'
+                            onChange={handleSearch}
+                        />
+                        <IoIosSearch style={{ height: '40px' }} className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-2xl" />
+                    </div>
 
-            <div className='flex justify-start mb-4'>
-                <div className="relative w-80 mr-4">
-                    <Input
-                        placeholder='Tìm kiếm theo tên, email, số điện thoại...'
-                        size='sm'
-                        className='w-full pl-10 pr-2 py-1 border border-gray-300 rounded focus:outline-none'
-                        onChange={handleSearch}
-                    />
-                    <IoIosSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-2xl" />
+                    <div className="relative w-40 mr-4">
+                        <select
+                            className='w-full pl-2 pr-2 py-2 border border-gray-300 rounded focus:outline-none'
+                            value={statusFilter || ''}
+                            style={{ backgroundColor: '#fff', height: '40px' }}
+                            onChange={handleStatusChange}
+                        >
+                            <option value="">Tất cả</option>
+                            <option value="Active">Hoạt động</option>
+                            <option value="Inactive">Không hoạt động</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div className="relative w-40 mr-4">
-
-                    <select
-                        className='w-full pl-2 pr-2 py-2 border border-gray-300 rounded focus:outline-none'
-                        value={statusFilter || ''}
-                        style={{ height: '40px' }}
-                        onChange={handleStatusChange}
-                    >
-                        <option value="">Tất cả</option>
-                        <option value="Active">Hoạt động</option>
-                        <option value="Inactive">Không hoạt động</option>
-                    </select>
-
-                </div>
-                <div className="relative w-40">
+                <div className='flex items-center'>
                     <Button
                         size="sm"
-                        className="w-full h-10 flex items-center justify-center"
-                        style={{ height: '40px' }}
+                        className="w-full h-10 flex items-center justify-center mr-4"
+                        style={{ backgroundColor: '#fff', height: '40px' }}
                         onClick={exportToExcel}
                     >
+                        <FaFileDownload className="mr-2" />
                         Tải Excel
                     </Button>
 
+                    <Button
+                        size='sm'
+                        variant="solid"
+                        style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                        className='flex items-center justify-center gap-2 button-bg-important'
+                        onClick={handleAddClick}
+                        icon={<HiPlusCircle />} 
+                    >
+                        Thêm mới
+                    </Button>
                 </div>
-
-
-
-                <Button
-                    size='sm'
-                    className='lg:w-24 ml-auto flex items-center justify-center gap-2'
-                    style={{ height: '40px' }}
-                    onClick={handleAddClick}
-                >
-                    <FiPlusCircle />
-                    Thêm
-                </Button>
             </div>
+
             <DataTable
                 columns={colums}
                 data={data}
