@@ -30,13 +30,14 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
             "(:email IS NULL OR emp.email LIKE %:email%) AND " +
             "(:status IS NULL OR emp.status = :status) AND " +
             "(:citizenId IS NULL OR emp.citizenId LIKE %:citizenId%) " +
-            "ORDER BY emp.createdDate DESC")  // Sort by the most recently created
+            "ORDER BY emp.createdDate DESC")
+        // Sort by the most recently created
     Page<Staff> searchNhanVien(@Param("keyword") String keyword,
-                                  @Param("fullName") String fullName,
-                                  @Param("phone") String phone,
-                                  @Param("code") String code,
-                                  @Param("email") String email,
-                                  @Param("status") String status,
-                                  @Param("citizenId") String citizenId,
-                                  Pageable pageable);
+                               @Param("fullName") String fullName,
+                               @Param("phone") String phone,
+                               @Param("code") String code,
+                               @Param("email") String email,
+                               @Param("status") String status,
+                               @Param("citizenId") String citizenId,
+                               Pageable pageable);
 }

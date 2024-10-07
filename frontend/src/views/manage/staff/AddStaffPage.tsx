@@ -214,12 +214,16 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
 
     // Xác thực dữ liệu nhập vào
     const validationSchema = Yup.object({
-        name: Yup.string().required("Họ tên nhân viên là bắt buộc"),
-        citizenId: Yup.string().required("Căn cước công dân là bắt buộc"),
-        email: Yup.string()
-            .email("Email không hợp lệ")
-            .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email phải có định dạng đúng")
-            .required("Email là bắt buộc"),
+        name: Yup.string()
+            .matches(/^[\p{L}]+(?: [\p{L}]+)*$/u, "Họ tên không hợp lệ") // Chấp nhận chữ cái và khoảng trắng
+            .min(2, "Họ tên phải có ít nhất 2 ký tự") // Tối thiểu 2 ký tự
+            .max(50, "Họ tên không được vượt quá 50 ký tự") // Tối đa 50 ký tự
+            .required("Họ tên nhân viên là bắt buộc"), // Bắt buộc nhập
+        citizenId: Yup.string()
+            .matches(/^[0-9]+$/, "Căn cước công dân chỉ được chứa số") // Chỉ chứa số
+            .required("Căn cước công dân là bắt buộc"),
+        email: Yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
+
         birthDay: Yup.date()
             .required("Ngày sinh là bắt buộc")
             .max(new Date(), "Ngày sinh không được là tương lai")
@@ -234,7 +238,10 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
         address: Yup.string().required("Số nhà là bắt buộc"),
         phone: Yup.string()
             .required("Số điện thoại là bắt buộc")
-            .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ"),
+            .matches(/^(0[3|5|7|8|9]|01[2|6|8|9])\d{8}$/, "Số điện thoại không hợp lệ") // Đảm bảo định dạng số điện thoại
+            .matches(/^[0-9]+$/, "Số điện thoại không được chứa chữ"), // Kiểm tra chỉ chứa số
+
+
         province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
         district: Yup.string().required("Quận/Huyện là bắt buộc"),
         ward: Yup.string().required("Phường/Xã là bắt buộc"),
@@ -242,20 +249,36 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
         gender: Yup.boolean().required("Giới tính là bắt buộc"),
     });
 
+
+    const checkEmailDuplicate = async (email: string) => {
+        // Gọi API hoặc kiểm tra email trùng lặp trong cơ sở dữ liệu
+        const response = await axios.get(`/api/check-email?email=${email}`);
+        return response.data.isDuplicate;
+    };
+
+    const checkPhoneDuplicate = async (phone: string) => {
+        // Gọi API hoặc kiểm tra số điện thoại trùng lặp trong cơ sở dữ liệu
+        const response = await axios.get(`/api/check-phone?phone=${phone}`);
+        return response.data.isDuplicate;
+    };
+
+
     // Hàm xử lý khi gửi biểu mẫu
     const handleSubmit = async (
         values: Staff,
         { resetForm, setSubmitting }: FormikHelpers<Staff>
     ) => {
+        setSubmitting(true); // Đặt trạng thái gửi thành true
+
         try {
             const selectedProvince = provinces.find((p) => p.id === values.province);
-            if (selectedProvince) values.province = selectedProvince.name; // Cập nhật tên tỉnh
+            if (selectedProvince) values.province = selectedProvince.name;
 
             const selectedDistrict = districts.find((d) => d.id === values.district);
-            if (selectedDistrict) values.district = selectedDistrict.name; // Cập nhật tên huyện
+            if (selectedDistrict) values.district = selectedDistrict.name;
 
             const selectedWard = wards.find((w) => w.id === values.ward);
-            if (selectedWard) values.ward = selectedWard.name; // Cập nhật tên xã
+            if (selectedWard) values.ward = selectedWard.name;
 
             const payload = {
                 ...values,
@@ -264,19 +287,16 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                 ward: values.ward,
             };
 
-            const response = await axios.post("http://localhost:8080/api/v1/staffs", payload); // Gửi dữ liệu lên API
-            resetForm(); // Reset biểu mẫu
+            const response = await axios.post("http://localhost:8080/api/v1/staffs", payload);
 
             if (response.status === 201) {
-                const { code, password } = response.data; // Lấy mã nhân viên và mật khẩu từ phản hồi
+                const { code, password } = response.data;
                 setNewStaff((prev) => ({ ...prev, code, password }));
 
-                toast.success('Nhân viên đã được thêm thành công!'); // Hiển thị thông báo thành công
 
-                // Gửi email nếu lưu thành công
-                const serviceId = 'service_tmmslu9';
-                const templateId = 'template_lad6zvl';
-                const publicKey = '2TdUStOWX9A6vm7Ex';
+                const serviceId = 'service_t622scu';
+                const templateId = 'template_j3dv5du';
+                const publicKey = 'OHyULXp7jha_7dpil';
 
                 const templateParams = {
                     from_name: 'Fashion Canth Shop',
@@ -286,22 +306,22 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                     message: `Tài khoản của bạn:\nMã nhân viên: ${code}\nMật khẩu: ${password}`,
                 };
 
-                try {
-                    const emailResponse = await emailjs.send(serviceId, templateId, templateParams, publicKey); // Gửi email
-                    toast.success('Nhân viên đã được thêm thành công và email đã được gửi.');
-                } catch (emailError) {
-                    toast.error('Không thể gửi email. Vui lòng kiểm tra thông tin chi tiết của bạn.'); // Xử lý lỗi gửi email
-                }
+                // Gửi email
+                await emailjs.send(serviceId, templateId, templateParams, publicKey);
+                toast.success('Nhân viên đã được thêm thành công!');
 
+                resetForm(); // Reset biểu mẫu
                 navigate("/manage/staff"); // Điều hướng đến trang quản lý nhân viên
             }
-
         } catch (error) {
-            toast.error(`Lỗi lưu nhân viên. ${error}`); // Xử lý lỗi khi lưu
+            toast.error(`Lỗi lưu nhân viên`); // Hiển thị lỗi
         } finally {
             setSubmitting(false); // Kết thúc trạng thái gửi
         }
     };
+
+
+
 
     // Hàm reset biểu mẫu
     const handleReset = (resetForm: () => void) => {
@@ -438,29 +458,30 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
     return (
         <div>
             {/* <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Thêm nhân viên</h1> */}
-            <p className=" text-center text-xl font-bold mx-auto mb-2">THÊM NHÂN VIÊN </p>
 
             <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
-
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h6 className=" text-x font-bold ">Thông tin nhân viên</h6>
+                    {/* Left-aligned Heading */}
+                    <p className="text-left text-xl font-bold">THÊM NHÂN VIÊN</p>
+
+                    {/* Right-aligned Button */}
                     <Box style={{ display: 'flex', alignItems: 'center' }}>
                         <Button
                             color="primary"
                             className="btn-outline-info"
                             onClick={handleQuetCCCDNhanVienClick}
                             style={{
-                                display: 'flex', // Đảm bảo Button sử dụng flex để căn biểu tượng và văn bản trên cùng một dòng
-                                alignItems: 'center', // Căn giữa theo chiều dọc
-                                justifyContent: 'center' // Đảm bảo nội dung Button được căn giữa
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
                             }}
                         >
-                            <BsQrCodeScan className="mr-2" style={{ fontSize: '24px' }} /> {/* Tăng kích thước biểu tượng nếu cần */}
+                            <BsQrCodeScan className="mr-2" style={{ fontSize: '24px' }} />
                             Quét CCCD
                         </Button>
                     </Box>
-
                 </div>
+
                 <div className={`shadow-xl px-8 z-10 bg-white py-2 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2/6 ${openDialog ? "" : "hidden"}`}>
                     <div className='flex flex-col'>
                         <div className='flex justify-between'>
@@ -475,10 +496,12 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                 <Formik
                     initialValues={newStaff}
                     validationSchema={validationSchema}
+                    validateOnChange={true} // Xác thực khi thay đổi
+                    validateOnBlur={true} // Xác thực khi mất tiêu điểm
                     onSubmit={handleSubmit}
                     enableReinitialize={true}
                 >
-                    {({ errors, touched, resetForm, setFieldValue, values }) => (
+                    {({ errors, touched, resetForm, setFieldValue, values, isSubmitting }) => (
                         <Form>
                             <SyncFormikWithNewStaff />
                             <FormContainer>
@@ -522,6 +545,7 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                                                 </div>
                                             )}
                                         </FormItem>
+
                                         <FormItem
                                             asterisk
                                             label="Ngày sinh"
@@ -554,15 +578,14 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                                                         }));
                                                     }
                                                 }}
-
-                                            />{newStaff.birthDay && (
-                                                <div>
-                                                    Ngày sinh: {dayjs(newStaff.birthDay).isValid()
-                                                        ? `Ngày ${dayjs(newStaff.birthDay).format('DD')} tháng ${dayjs(newStaff.birthDay).format('MM')} năm ${dayjs(newStaff.birthDay).format('YYYY')}`
-                                                        : 'Ngày không hợp lệ'}
-                                                </div>
-                                            )}
+                                                // Ngăn người dùng chọn ngày tương lai
+                                                disableDate={(current) => {
+                                                    const dayjsCurrent = dayjs(current); // Chuyển đổi current sang dayjs
+                                                    return dayjsCurrent.isAfter(dayjs().endOf('day')); // Kiểm tra xem có phải ngày tương lai không
+                                                }}
+                                            />
                                         </FormItem>
+
 
 
                                         <FormItem
@@ -633,7 +656,7 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                                             <Field name="district">
                                                 {({ form }: FieldProps<Staff>) => (
                                                     <Select
-                                                        isDisabled={loadingDistricts}
+                                                        // isDisabled={loadingDistricts}
                                                         value={districts.find(s => s.full_name === newStaff.district) || null}
                                                         placeholder="Chọn quận/huyện..."
                                                         getOptionLabel={(option) => option.full_name}
@@ -658,7 +681,7 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                                             <Field name="ward">
                                                 {({ form }: FieldProps<Staff>) => (
                                                     <Select
-                                                        isDisabled={loadingWards}
+                                                        // isDisabled={loadingWards}
                                                         value={wards.find(s => s.full_name === newStaff.ward) || null}
                                                         placeholder="Chọn xã/phường/thị trấn..."
                                                         getOptionLabel={(option) => option.full_name}
@@ -676,14 +699,14 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                                         </FormItem>
                                         <FormItem
                                             asterisk
-                                            label="Địa chỉ"
+                                            label="Số đường/số nhà"
                                             invalid={!!errors.address && touched.address}
                                         >
                                             <Field
                                                 type="text"
                                                 autoComplete="off"
                                                 name="address"
-                                                placeholder="Nhập địa chỉ..."
+                                                placeholder="Nhập số đường/số nhà..."
                                                 component={Input}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                                                     setFieldValue("address", e.target.value);
@@ -759,18 +782,12 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                                     <Button
                                         type="submit"
                                         className="flex items-center justify-center"
-                                        variant="twoTone"
+                                        variant="solid"
                                         color="blue-600"
-                                        style={{
-                                            height: '40px',
-                                            width: '200px',
-                                            marginRight: '15px', // Khoảng cách giữa hai nút
-                                            lineHeight: '40px', // Căn chỉnh văn bản theo chiều dọc
-                                            padding: '0', // Đảm bảo không có padding dư thừa
-                                        }}
+                                        disabled={isSubmitting}
                                     >
-                                        <IoPersonAdd className="mr-2" style={{ fontSize: '20px' }} /> {/* Tăng kích thước biểu tượng */}
-                                        Thêm nhân viên
+                                        <IoPersonAdd className="mr-2" style={{ fontSize: '20px' }} />
+                                        Lưu
                                     </Button>
 
                                     <Button
@@ -778,17 +795,19 @@ const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
                                         onClick={() => handleReset(resetForm)}
                                         className="flex items-center justify-center"
                                         style={{
-                                            height: '40px', // Chiều cao đồng nhất
+                                            height: '40px',
                                             width: '110px',
-                                            lineHeight: '40px', // Căn chỉnh văn bản theo chiều dọc
-                                            padding: '0', // Đảm bảo không có padding dư thừa
-                                            fontSize: '15px'
+                                            lineHeight: '40px',
+                                            padding: '0',
+                                            fontSize: '15px',
+                                            marginLeft: '1rem' // Thêm khoảng cách bên trái cho nút Đặt lại
                                         }}
                                     >
-                                        <RxReset className="mr-2" style={{ fontSize: '18px' }} /> {/* Tăng kích thước biểu tượng nếu cần */}
+                                        <RxReset className="mr-2" style={{ fontSize: '18px' }} />
                                         Đặt lại
                                     </Button>
                                 </div>
+
 
 
                             </FormContainer>

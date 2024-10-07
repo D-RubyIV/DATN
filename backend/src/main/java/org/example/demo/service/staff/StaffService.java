@@ -117,7 +117,6 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     }
 
 
-
     public Staff findById(Integer id) {
         return staffRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Staff with id " + id + " not found"));
     }

@@ -1,162 +1,162 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ColumnDef, DataTable } from "@/components/shared";
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui";
 import axios from "axios";
-import { Checkbox } from "@/components/ui/Checkbox"; // Assuming Checkbox is a custom or UI library component
+import { IoIosSearch } from 'react-icons/io';
+import { Input } from 'antd';
 
-type Customer = {
+type ICustomer = {
     id: number;
-    phone: string;
-    email: string;
     name: string;
+    email: string;
+    phone: string;
 };
 
-const CustomerTable = () => {
-    const [data, setData] = useState<Customer[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [selectedCustomers, setSelectedCustomers] = useState<number[]>([]); // State to store selected customers' IDs
-    const [tableData, setTableData] = useState<{
-        pageIndex: number;
-        pageSize: number;
-        sort: {
-            order: '' | 'asc' | 'desc';
-            key: string | number;
-        };
-        query: string;
-        total: number;
-    }>({
-        total: 0,
-        pageIndex: 1,
-        pageSize: 10,
-        query: '',
-        sort: {
-            order: '',
-            key: '',
-        },
-    });
+type CustomerTableProps = {
+    onSelectedCustomersChange: (selectedCustomers: ICustomer[]) => void;
+};
 
-    const handleSelectCustomer = (id: number, isChecked: boolean) => {
-        setSelectedCustomers((prev) =>
-            isChecked ? [...prev, id] : prev.filter((customerId) => customerId !== id)
-        );
-    };
+const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
+    const [customers, setCustomers] = useState<ICustomer[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
 
-    const columns: ColumnDef<Customer>[] = useMemo(() => [
-        {
-            header: ({ table }) => (
-                <Checkbox
-                    checked={selectedCustomers.length === data.length}
-                    onChange={(e) => {
-                        const isChecked = e.target.checked;
-                        if (isChecked) {
-                            setSelectedCustomers(data.map((customer) => customer.id)); // Select all
-                        } else {
-                            setSelectedCustomers([]); // Deselect all
-                        }
-                    }}
-                />
-            ),
-            id: 'select',
-            cell: ({ row }) => (
-                <Checkbox
-                    checked={selectedCustomers.includes(row.original.id)}
-                    onChange={(e) => handleSelectCustomer(row.original.id, e.target.checked)}
-                />
-            ),
-        },
-        {
-            header: 'ID',
-            accessorKey: 'id',
-        },
-        {
-            header: 'Name',
-            accessorKey: 'name',
-        },
-        {
-            header: 'Phone',
-            accessorKey: 'phone',
-        },
-        {
-            header: 'Email',
-            accessorKey: 'email',
-        },
-        {
-            header: '',
-            id: 'action',
-            cell: ({ row }: { row: any }) => (
-                <Button size="xs" onClick={() => console.log('Action clicked', row)}>
-                    Action
-                </Button>
-            ),
-        },
-    ], [selectedCustomers, data]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [customersPerPage] = useState(5); // Số khách hàng trên mỗi trang
 
-    const handlePaginationChange = (pageIndex: number) => {
-        setTableData((prevData) => ({ ...prevData, pageIndex }));
-    };
-
-    const handleSelectChange = (pageSize: number) => {
-        setTableData((prevData) => ({ ...prevData, pageSize }));
-    };
-
-    const handleSort = ({ order, key }: { order: '' | 'asc' | 'desc'; key: string | number }) => {
-        setTableData((prevData) => ({
-            ...prevData,
-            sort: { order, key }
-        }));
-    };
-
+    // Fetch customers from API
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchCustomers = async () => {
             setLoading(true);
-            const params = new URLSearchParams({
-                pageIndex: tableData.pageIndex.toString(),
-                pageSize: tableData.pageSize.toString(),
-                sortKey: tableData.sort.key.toString(),
-                sortOrder: tableData.sort.order,
-                query: tableData.query,
-            });
-
             try {
-                const res = await axios.get(`http://localhost:8080/api/v1/customers?${params.toString()}`);
-                console.log(res);
-                if (res.data) {
-                    setData(res.data.data);
-                    setTableData((prevData) => ({
-                        ...prevData,
-                        total: res.data.totalPages,
-                    }));
-                }
+                const res = await axios.get('http://localhost:8080/api/v1/customer');
+                setCustomers(res.data.content);
             } catch (error) {
-                console.error("Error fetching customer data:", error);
+                console.error("Error fetching customers:", error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchData();
-    }, [tableData.pageIndex, tableData.sort, tableData.pageSize, tableData.query]);
+
+        fetchCustomers();
+    }, []);
+
+    // Effect to notify parent of selected customers
+    useEffect(() => {
+        const selectedCustomers = customers.filter(customer => selectedCustomerIds.includes(customer.id));
+        onSelectedCustomersChange(selectedCustomers);
+    }, [selectedCustomerIds, customers]); // Chỉ bao gồm selectedCustomerIds và customers
+
+    // Handle customer selection
+    const handleSelectCustomer = (customerId: number) => {
+        setSelectedCustomerIds((prevSelected) => {
+            const updatedSelected = prevSelected.includes(customerId)
+                ? prevSelected.filter((id) => id !== customerId)
+                : [...prevSelected, customerId];
+
+            return updatedSelected;
+        });
+    };
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+        setCurrentPage(1); // Reset to the first page when searching
+    };
+
+    // Filtered customers
+    const filteredCustomers = customers.filter((customer) =>
+        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Pagination logic
+    const indexOfLastCustomer = currentPage * customersPerPage;
+    const indexOfFirstCustomer = indexOfLastCustomer - customersPerPage;
+    const currentCustomers = filteredCustomers.slice(indexOfFirstCustomer, indexOfLastCustomer);
+    const totalPages = Math.ceil(filteredCustomers.length / customersPerPage);
 
     return (
-        <>
+        <div className="overflow-x-auto">
+
+            {/* Search Input */}
             <div className="mb-4">
-                <Button onClick={() => console.log('Selected Customers:', selectedCustomers)}>
-                    Get Selected Customers
+                <div style={{ position: 'relative', width: '500px' }}>
+                    <IoIosSearch
+                        style={{
+                            color:'black',
+                            position: 'absolute',
+                            left: '5px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            fontSize: '20px',
+                            pointerEvents: 'none'
+                        }}
+                    />
+                    <Input
+                        placeholder="Tìm kiếm theo tên, email, số điện thoại,..."
+                        style={{
+                            width: '100%',
+                            height: '37px',
+                            paddingLeft: '30px',
+                            boxSizing: 'border-box',
+                        }}
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                    />
+                </div>
+            </div>
+
+            {loading ? (
+                <p className="text-gray-500">Loading customers...</p>
+            ) : (
+                <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                    <thead className="bg-blue-200">
+                        <tr className="text-left">
+                            <th className="border-b border-gray-300 px-4 py-2">Select</th>
+                            <th className="border-b border-gray-300 px-4 py-2">Name</th>
+                            <th className="border-b border-gray-300 px-4 py-2">Email</th>
+                            <th className="border-b border-gray-300 px-4 py-2">Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {currentCustomers.map((customer) => (
+                            <tr key={customer.id} className="hover:bg-gray-100 transition duration-200">
+                                <td className="border-b border-gray-300 px-4 py-2 text-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCustomerIds.includes(customer.id)}
+                                        onChange={() => handleSelectCustomer(customer.id)}
+                                        className="form-checkbox h-5 w-5 text-blue-600"
+                                    />
+                                </td>
+                                <td className="border-b border-gray-300 px-4 py-2">{customer.name}</td>
+                                <td className="border-b border-gray-300 px-4 py-2">{customer.email}</td>
+                                <td className="border-b border-gray-300 px-4 py-2">{customer.phone}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-4">
+                <Button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="bg-blue-600 text-black rounded-lg px-4 py-2"
+                >
+                    Previous
+                </Button>
+                <span>{`Page ${currentPage} of ${totalPages}`}</span>
+                <Button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="bg-blue-600 text-black rounded-lg px-4 py-2"
+                >
+                    Next
                 </Button>
             </div>
-            <DataTable<Customer>
-                columns={columns}
-                data={data}
-                loading={loading}
-                pagingData={{
-                    total: tableData.total,
-                    pageIndex: tableData.pageIndex,
-                    pageSize: tableData.pageSize,
-                }}
-                onPaginationChange={handlePaginationChange}
-                onSelectChange={handleSelectChange}
-                onSort={handleSort}
-            />
-        </>
+        </div>
     );
 };
 

@@ -67,7 +67,7 @@ const manageRoute: Routes = [
         component: lazy(() => import('@/views/manage/voucher/VoucherNew')),
         authority: [],
         meta: {
-            header: 'Add New Voucher',
+            header: 'Thêm Phiếu Giảm Giá',
         },
     },
 ]

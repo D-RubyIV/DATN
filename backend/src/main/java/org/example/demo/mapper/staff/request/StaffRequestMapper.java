@@ -21,7 +21,8 @@ public interface StaffRequestMapper extends IMapperBasic<Staff, StaffRequestDTO>
 
     // Use MapStruct's `@MappingTarget` to update an existing Staff entity
     @Mapping(target = "id", ignore = true)         // Don't overwrite the ID
-    @Mapping(target = "deleted", ignore = true)    // Don't overwrite the deleted flag
+    @Mapping(target = "deleted", ignore = true)
+    // Don't overwrite the deleted flag
     void updateEntity(StaffRequestDTO dto, @MappingTarget Staff entity);
 
     @AfterMapping

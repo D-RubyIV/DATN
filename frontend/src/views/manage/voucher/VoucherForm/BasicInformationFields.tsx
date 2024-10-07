@@ -26,7 +26,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
         <AdaptableCard divider className="mb-4">
             <FormItem
                 asterisk
-                label="Tên Phiếu Giảm Giá"
+                label="Tên Phiếu Giảm Giá:"
                 invalid={(errors.name && touched.name) as boolean}
                 errorMessage={errors.name}
             >
@@ -40,22 +40,27 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                 />
             </FormItem>
             <FormItem
-                label="Mã Phiếu Giảm Giá"
+                label="Mã Phiếu Giảm Giá:"
                 invalid={(errors.code && touched.code) as boolean}
                 errorMessage={errors.code}
             >
-                <Field
-                    type="text"
-                    autoComplete="off"
-                    name="code"
-                    placeholder="Code"
-                    component={Input}
-                    className="w-full"
-                />
+                <div className="relative group"> 
+                    <Field
+                        type="text"
+                        autoComplete="off"
+                        name="code"
+                        placeholder="Code"
+                        component={Input}
+                        className="w-full"
+                    />
+                    <div className="absolute left-0 right-0 top-full mt-1 text-red-500 hidden bg-white border border-gray-300 p-2 z-10 group-hover:block">
+                       Mã có thể nhập hoặc hệ thống sẽ tự động tạo mã
+                    </div>
+                </div>
             </FormItem>
 
             <FormItem
-                label="Số Lượng"
+                label="Số Lượng:"
                 asterisk
                 invalid={(errors.quantity && touched.quantity) as boolean}
                 errorMessage={errors.quantity}
@@ -83,7 +88,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                         name="maxPercent"
                         placeholder="Max Percent"
                         component={Input}
-                        className="w-full pr-12" 
+                        className="w-full pr-12"
                     />
                     <span className="absolute right-1 text-gray-500">%</span>
                 </div>
@@ -104,7 +109,7 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                     component={Input}
                     className="w-full pr-12"
                 />
-                    <span className="absolute right-1 text-gray-500 mt-3">VNĐ</span>
+                <span className="absolute right-1 text-gray-500 mt-3">VNĐ</span>
 
             </FormItem>
 

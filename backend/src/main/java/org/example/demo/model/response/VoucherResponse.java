@@ -16,16 +16,25 @@ public interface VoucherResponse {
     Integer getIndex();
 
     Integer getId();
+
     String getName();
+
     String getCode();
     LocalDateTime getStartDate();
     LocalDateTime getEndDate();
     String getStatus();
+
     Long getQuantity();
+
     Integer getMaxPercent();
+
     Double getMinAmount();
+
     String getTypeTicket();
+
     Integer getCustomerId();
+
     String getCustomerName();
+
     String getCustomerEmail();
 }

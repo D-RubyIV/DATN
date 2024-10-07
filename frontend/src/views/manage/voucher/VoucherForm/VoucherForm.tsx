@@ -1,14 +1,14 @@
 import { ConfirmDialog } from '@/components/shared'
 import { Button, FormContainer } from '@/components/ui'
 import { Form, Formik, FormikProps } from 'formik'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useCallback, useState } from 'react'
 import StickyFooter from '@/components/shared/StickyFooter'
 
 import { HiOutlineTrash } from 'react-icons/hi'
 import cloneDeep from 'lodash/cloneDeep'
 import * as Yup from 'yup'
 import BasicInformationFields from './BasicInformationFields'
-import TableCustomer from '../components/TableCustomer'
+import CustomerTable from '../components/CustomerTable'
 
 
 
@@ -104,13 +104,21 @@ const DeleteVoucherButton = ({ onDelete }: { onDelete: OnDelete }) => {
     )
 }
 
-const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
-    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([])
+type ICustomer = {
+    id: number;
+    name: string;
+    email: string;
+}
 
-    const handleSelectedCustomersChange = (selectedCustomers: Customer[]) => {
-        const customerIds = selectedCustomers.map((customer) => customer.id)
-        setSelectedCustomerIds(customerIds)
-    }
+const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
+    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
+
+    // Sử dụng useCallback để giữ hàm ổn định
+    const handleSelectedCustomersChange = useCallback((selectedCustomers: ICustomer[]) => {
+        const customerIds = selectedCustomers.map((customer) => customer.id);
+        setSelectedCustomerIds(customerIds);
+    }, []);
+
 
     const {
         type,
@@ -157,7 +165,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
                                     />
                                 </div>
                                 <div className="lg:col-span-2">
-                                <TableCustomer onSelectedCustomersChange={handleSelectedCustomersChange} />
+                                <CustomerTable onSelectedCustomersChange={handleSelectedCustomersChange} />
                                 </div>
                             </div>
                             <StickyFooter
@@ -181,6 +189,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
                                         Discard
                                     </Button>
                                     <Button
+                                        color='blue'
                                         size="sm"
                                         variant="solid"
                                         loading={isSubmitting}

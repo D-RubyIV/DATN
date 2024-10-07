@@ -83,7 +83,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Override
     @Transactional
-    public Order delete(Integer id)  {
+    public Order delete(Integer id) {
         Order entityFound = findById(id);
         entityFound.setDeleted(true);
         return entityFound;
@@ -91,7 +91,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Override
     @Transactional
-    public Order save(OrderRequestDTO requestDTO)  {
+    public Order save(OrderRequestDTO requestDTO) {
         Order entityMapped = orderRequestMapper.toEntity(requestDTO);
         entityMapped.setDeleted(false);
         entityMapped.setStatus(Status.PENDING);
@@ -119,7 +119,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Transactional
-    public Order changeStatus(Integer id, HistoryRequestDTO requestDTO){
+    public Order changeStatus(Integer id, HistoryRequestDTO requestDTO) {
         Order entityFound = findById(id);
         entityFound.setStatus(requestDTO.getStatus());
 
@@ -143,7 +143,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setTotal(total);
         orderRepository.save(order);
     }
-    public CountStatusOrder getCountStatusAnyOrder(){
+
+    public CountStatusOrder getCountStatusAnyOrder() {
         return orderRepository.getCountStatus();
     }
 

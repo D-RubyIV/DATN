@@ -17,31 +17,31 @@ import java.time.LocalDateTime;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query(value = """
-        SELECT DISTINCT b FROM Order b
-        LEFT JOIN FETCH b.customer bc
-        LEFT JOIN FETCH b.staff bs
-        LEFT JOIN FETCH b.voucher bv
-        LEFT JOIN FETCH bs.role
-        LEFT JOIN FETCH bv.customers
-        WHERE
-        (
-            (:query IS NULL OR LOWER(b.code) LIKE LOWER(CONCAT('%', :query, '%')))
-            OR
-            (:query IS NULL OR LOWER(b.phone) LIKE LOWER(CONCAT('%', :query, '%')))
-            OR
-            (:query IS NULL OR LOWER(b.customer.name) LIKE LOWER(CONCAT('%', :query, '%')))
-            OR
-            (:query IS NULL OR LOWER(b.staff.name) LIKE LOWER(CONCAT('%', :query, '%')))
-        )
-        AND
-        (:status IS NULL OR LOWER(b.status) LIKE LOWER(CONCAT('%', :status, '%')))
-        AND
-        (:type IS NULL OR LOWER(b.type) LIKE LOWER(CONCAT('%', :type, '%')))
-        AND
-        (:createdFrom IS NULL OR b.createdDate >= :createdFrom)
-        AND
-        (:createdTo IS NULL OR b.createdDate <= :createdTo)
-        """)
+            SELECT DISTINCT b FROM Order b
+            LEFT JOIN FETCH b.customer bc
+            LEFT JOIN FETCH b.staff bs
+            LEFT JOIN FETCH b.voucher bv
+            LEFT JOIN FETCH bs.role
+            LEFT JOIN FETCH bv.customers
+            WHERE
+            (
+                (:query IS NULL OR LOWER(b.code) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR
+                (:query IS NULL OR LOWER(b.phone) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR
+                (:query IS NULL OR LOWER(b.customer.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR
+                (:query IS NULL OR LOWER(b.staff.name) LIKE LOWER(CONCAT('%', :query, '%')))
+            )
+            AND
+            (:status IS NULL OR LOWER(b.status) LIKE LOWER(CONCAT('%', :status, '%')))
+            AND
+            (:type IS NULL OR LOWER(b.type) LIKE LOWER(CONCAT('%', :type, '%')))
+            AND
+            (:createdFrom IS NULL OR b.createdDate >= :createdFrom)
+            AND
+            (:createdTo IS NULL OR b.createdDate <= :createdTo)
+            """)
     Page<Order> findAllByPageWithQuery(
             @Param("query") String query,
             @Param("status") String status,

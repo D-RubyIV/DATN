@@ -1,7 +1,6 @@
 package org.example.demo.dto.staff.request;
 
 
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,30 +20,30 @@ public class StaffRequestDTO {
 
     private Integer id;
 
-//    @Size(message = "Length-5-50", min = 5, max = 50)
+    //    @Size(message = "Length-5-50", min = 5, max = 50)
 //    @NotNull(message = "NotNull")
 //    @NotBlank(message = "NotBlank")
     private String code;
 
-//    @Size(message = "Length-5-25", min = 5, max = 25)
+    //    @Size(message = "Length-5-25", min = 5, max = 25)
 //    @NotNull(message = "NotNull")
 //    @NotBlank(message = "NotBlank")
     private String name;
 
-//    @Email(message = "Invalid email format")
+    //    @Email(message = "Invalid email format")
 //    @NotNull(message = "NotNull")
 //    @NotBlank(message = "NotBlank")
     private String email;
 
-//    @Size(message = "Length-10-15", min = 10, max = 15)
+    //    @Size(message = "Length-10-15", min = 10, max = 15)
 //    @NotNull(message = "NotNull")
 //    @NotBlank(message = "NotBlank")
     private String phone;
 
-//    @NotNull(message = "NotNull")
+    //    @NotNull(message = "NotNull")
     private String password;
 
-//    @Size(message = "Length-5-20", min = 5, max = 20)
+    //    @Size(message = "Length-5-20", min = 5, max = 20)
     private String citizenId;
 
     private String address;
@@ -58,7 +57,7 @@ public class StaffRequestDTO {
 
     private LocalDateTime birthDay;
 
-//    @NotNull(message = "NotNull")
+    //    @NotNull(message = "NotNull")
     private Role role; // Assume Role is included directly, or you might want to use roleId instead
 }
 

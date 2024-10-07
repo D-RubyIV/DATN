@@ -16,6 +16,12 @@ import java.util.List;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
+    @Query(value = """
+            select * from customer
+            """, nativeQuery = true)
+    List<Customer> getAllCustomer();
+
+
     // Tim kiem theo name, email, phone
     @Query("SELECT c FROM Customer c WHERE " +
             "LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +

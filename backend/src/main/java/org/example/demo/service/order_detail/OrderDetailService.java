@@ -73,7 +73,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             orderDetail.setQuantity(requestDTO.getQuantity());
             orderDetail.setOrder(orderService.findById(requestDTO.getOrderId()));
             orderDetail.setProductDetail(orderProductDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found")));
-            OrderDetail response =  orderDetailRepository.save(orderDetail);
+            OrderDetail response = orderDetailRepository.save(orderDetail);
             orderService.reloadTotalOrder(orderDetail.getOrder());
             return response;
         }

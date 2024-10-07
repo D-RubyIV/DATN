@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Integer> {
     boolean existsByCodeAndName(String code, String name);
+
     ProductDetail findByCodeAndName(String code, String name);
     ProductDetail findByName(String name);
     List<ProductDetail> findByProductId(Integer productId);
