@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom"
 import VoucherForm, { FormModel, SetSubmitting } from "../VoucherForm"
 import axios from "axios"
 import toast from '@/components/ui/toast'
-import Notification from '@/components/ui/Notification'
-
+import { Notification } from "@/components/ui"
+ 
 const VoucherNew =() => {
 
     const navigate = useNavigate()
@@ -15,7 +15,6 @@ const VoucherNew =() => {
             },
         });
         return response.data
-        console.log('Saved Voucher:', response.data);
     }
 
     const handleFormSubmit  = async (

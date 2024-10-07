@@ -6,36 +6,50 @@ type ICustomer = {
     id: number;
     name: string;
     email: string;
-}
+};
 
-const CustomerTable = () => {
+type CustomerTableProps = {
+    onSelectedCustomersChange: (selectedCustomers: ICustomer[]) => void;
+};
+
+const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
     const [customers, setCustomers] = useState<ICustomer[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]); // Lưu danh sách ID khách hàng được chọn
+    const [loading, setLoading] = useState(true);
+    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
 
-    // Xử lý khi chọn hoặc bỏ chọn khách hàng
-    const handleSelectCustomer = (customerId: number) => {
-        setSelectedCustomerIds((prevSelected) =>
-            prevSelected.includes(customerId)
-                ? prevSelected.filter((id) => id !== customerId) // Bỏ chọn khách hàng
-                : [...prevSelected, customerId] // Thêm ID vào danh sách đã chọn
-        );
-    };
-
+    // Fetch customers from API
     useEffect(() => {
         const fetchCustomers = async () => {
             setLoading(true);
             try {
-                const res = await axios.get('http://localhost:8080/api/v1/customer/get-all');
-                setCustomers(res.data); // Giả sử API trả về danh sách khách hàng
+                const res = await axios.get('http://localhost:8080/api/v1/customer');
+                setCustomers(res.data.content);
             } catch (error) {
                 console.error("Error fetching customers:", error);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchCustomers();
     }, []);
+
+    // Effect to notify parent of selected customers
+    useEffect(() => {
+        const selectedCustomers = customers.filter(customer => selectedCustomerIds.includes(customer.id));
+        onSelectedCustomersChange(selectedCustomers);
+    }, [selectedCustomerIds, customers]); // Chỉ bao gồm selectedCustomerIds và customers
+
+    // Handle customer selection
+    const handleSelectCustomer = (customerId: number) => {
+        setSelectedCustomerIds((prevSelected) => {
+            const updatedSelected = prevSelected.includes(customerId)
+                ? prevSelected.filter((id) => id !== customerId)
+                : [...prevSelected, customerId];
+
+            return updatedSelected; 
+        });
+    };
 
     return (
         <div>
@@ -68,11 +82,6 @@ const CustomerTable = () => {
                     </tbody>
                 </table>
             )}
-            <div className="mt-4">
-                <Button size="md" onClick={() => console.log('Selected Customer IDs:', selectedCustomerIds)}>
-                    Get Selected Customers
-                </Button>
-            </div>
         </div>
     );
 };

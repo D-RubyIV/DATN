@@ -1,6 +1,5 @@
 import VoucherTable from './components/VoucherTable';
 import { AdaptableCard } from '@/components/shared';
-import VoucherTableTool from './components/VoucherTableTool';
 import { Link } from 'react-router-dom';
 
 const VoucherManage = () => {

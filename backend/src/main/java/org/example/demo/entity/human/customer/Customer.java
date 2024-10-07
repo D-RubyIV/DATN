@@ -43,7 +43,7 @@ public class Customer extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @Column(name = "birthDate")
+    @Column(name = "birth_date")
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
 
