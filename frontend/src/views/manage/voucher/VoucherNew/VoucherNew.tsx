@@ -27,7 +27,7 @@ const VoucherNew =() => {
         if (success) {
             toast.push(
                 <Notification title={'Successfuly added'} type="success" duration={2500}>
-                    Voucher Successfuly Added
+                  Thêm mới thành công!
                 </Notification>,
                 {
                     placement : 'top-center'
