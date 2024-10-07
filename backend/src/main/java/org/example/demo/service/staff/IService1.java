@@ -30,12 +30,6 @@ public interface IService1<E, ID, RQ> {
      * @param pageable Thông tin phân trang
      * @return Trang kết quả của thực thể dưới dạng DTO
      */
-//    Page<StaffResponseDTO> findAllByPage(
-//            String code,
-//            String name,
-//            LocalDate fromDate,
-//            LocalDate toDate,
-//            Pageable pageable);
 
     Page<StaffResponseDTO> findAllByPage(
 //            Integer id,

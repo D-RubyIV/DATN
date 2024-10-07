@@ -14,7 +14,6 @@ import { FaPen } from 'react-icons/fa';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import emailjs from "emailjs-com";
-import Notification from './Notification';
 import { IoIosSearch } from "react-icons/io";
 import { FaFileDownload } from "react-icons/fa";
 import { FaFileUpload } from "react-icons/fa";
@@ -31,13 +30,13 @@ type IStaff = {
     province: string;
     status: 'Active' | 'Inactive';
     birthDay: string;
-    gender: boolean;
+    gender: true;
     createdDate: string;
     role: any;
 };
 
 const StaffTableStaff = () => {
-    
+
     const [data, setData] = useState<IStaff[]>([]);
     const [loading, setLoading] = useState(false);
     const [tableData, setTableData] = useState({
@@ -110,32 +109,37 @@ const StaffTableStaff = () => {
 
     const columns: ColumnDef<IStaff>[] = [
         {
-            header: 'STT',
+            header: '#',
             id: 'serialNumber',
             cell: ({ row }: CellContext<IStaff, unknown>) => {
                 const { pageIndex, pageSize } = tableData;
                 return (pageIndex - 1) * pageSize + row.index + 1;
             },
-            
+
         },
-        { header: 'Ma', accessorKey: 'code' },
-        { header: 'Họ Tên', accessorKey: 'name' },
+        { header: 'MaNV', accessorKey: 'code' },
+        { header: 'HọTên', accessorKey: 'name' },
         {
             header: 'Giới Tính',
-            // accessorKey: 'gender',
+            accessorKey: 'gender',
             size: 100,
             cell: ({ getValue }) => {
                 const genderValue = getValue();
-                return genderValue ? 'Nam' : 'Nữ'; // Hiển thị "Nam" nếu true và "Nữ" nếu false
+                // Hiển thị "Nam" nếu giới tính là true, ngược lại "Nữ"
+                return genderValue === true ? 'Nam' : 'Nữ';
             }
-        },
-        
+        }
+
+
+        ,
+
+
         { header: 'Ngày Sinh', accessorKey: 'birthDay' },
 
         { header: 'SDT', accessorKey: 'phone' },
 
         {
-            header: 'Địachỉ',
+            header: 'Địa chỉ',
             accessorKey: 'address',
 
             cell: ({ row }: CellContext<IStaff, unknown>) => {
@@ -144,7 +148,7 @@ const StaffTableStaff = () => {
             },
         },
         {
-            header: 'Trạngthái',
+            header: 'Trạng thái',
             accessorKey: 'status',
             cell: ({ row }: CellContext<IStaff, unknown>) => {
                 const { status } = row.original;
@@ -164,7 +168,7 @@ const StaffTableStaff = () => {
             size: 100,
         },
         {
-            header: 'Hànhđộng',
+            header: 'Hành động',
             id: 'action',
             cell: ({ row }: CellContext<IStaff, unknown>) => {
                 const { id, status } = row.original;
@@ -293,13 +297,11 @@ const StaffTableStaff = () => {
                             const code = row[0]; // Hàng thứ i, cột thứ 1
                             const password = row[13]; // Hàng thứ i, cột thứ 14
 
-                            // Ghi ra console để kiểm tra giá trị
-                            console.log(`Mã nhân viên: ${code}, Mật khẩu: ${password}`);
 
                             // Gửi email
-                            const serviceId = 'service_tmmslu9';
-                            const templateId = 'template_lad6zvl';
-                            const publicKey = '2TdUStOWX9A6vm7Ex';
+                            const serviceId = 'service_t622scu';
+                            const templateId = 'template_j3dv5du';
+                            const publicKey = 'OHyULXp7jha_7dpil';
 
                             const templateParams = {
                                 from_name: 'Fashion Canth Shop',
@@ -352,10 +354,9 @@ const StaffTableStaff = () => {
 
     return (
         <>
-            <Notification />
             <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
                 <div className="p-2 mb-4">
-                    <p className="text-xl font-bold mb-2 mx-auto mb-10">Quản Lý Nhân Viên</p>
+                    <p className="text-left text-xl font-bold mx-auto mb-2">QUẢN LÝ NHÂN VIÊN</p>
                     <div
                         className="flex flex-col lg:flex-row justify-between items-center mb-4"
                         style={{
@@ -369,10 +370,10 @@ const StaffTableStaff = () => {
                                 <IoIosSearch
                                     style={{
                                         position: 'absolute',
-                                        left: '5px',
+                                        left: '10px',
                                         top: '40%',
                                         transform: 'translateY(-45%)',
-                                        fontSize: '25px',
+                                        fontSize: '18px',
                                         pointerEvents: 'none'
                                     }}
                                 />
@@ -380,9 +381,11 @@ const StaffTableStaff = () => {
                                     placeholder="Tìm Kiếm Theo Mã, Họ Và Tên, SDT, CCCD, Email..."
                                     style={{
                                         width: '100%', // Để chiều rộng của Input bằng với chiều rộng của div bao quanh
-                                        height: '37px',
-                                        paddingLeft: '30px',
+                                        height: '35px',
+                                        marginLeft: '3px',
+                                        paddingLeft: '35px',
                                         boxSizing: 'border-box', // Đảm bảo padding không ảnh hưởng đến tổng chiều rộng
+
                                     }}
                                     className="mb-2"
                                     value={searchTerm}
@@ -440,7 +443,7 @@ const StaffTableStaff = () => {
                             </div>
                             <Button
                                 className="h-10 flex items-center justify-center"
-                                variant="twoTone"
+                                variant="solid"
                                 color="blue-600"
                                 onClick={() => navigate('/manage/staff/add')}
                                 style={{ height: '38px', width: '155px', marginBottom: '8px', }} // Giảm chiều rộng xuống còn 150px

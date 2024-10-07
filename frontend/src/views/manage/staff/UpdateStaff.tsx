@@ -72,29 +72,39 @@ const initialStaffState: Staff = {
 };
 
 const validationSchema = Yup.object({
-    name: Yup.string().required('Họ tên nhân viên là bắt buộc'),
-    citizenId: Yup.string().required('Căn cước công dân là bắt buộc'),
+    name: Yup.string()
+        .matches(/^[\p{L}]+(?: [\p{L}]+)*$/u, "Họ tên không hợp lệ") // Chấp nhận chữ cái và khoảng trắng
+        .min(2, "Họ tên phải có ít nhất 2 ký tự") // Tối thiểu 2 ký tự
+        .max(50, "Họ tên không được vượt quá 50 ký tự") // Tối đa 50 ký tự
+        .required("Họ tên nhân viên là bắt buộc"), // Bắt buộc nhập
+    citizenId: Yup.string()
+        .matches(/^[0-9]+$/, "Căn cước công dân chỉ được chứa số") // Chỉ chứa số
+        .required("Căn cước công dân là bắt buộc"),
     email: Yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
+
     birthDay: Yup.date()
-        .required('Ngày sinh là bắt buộc')
-        .max(new Date(), 'Ngày sinh không được là tương lai')
+        .required("Ngày sinh là bắt buộc")
+        .max(new Date(), "Ngày sinh không được là tương lai")
         .test(
-            'age-range',
-            'Nhân viên phải trong độ tuổi từ 16 đến 40',
+            "age-range",
+            "Nhân viên phải trong độ tuổi từ 16 đến 40",
             function (value) {
-                const age = dayjs().diff(dayjs(value), 'year');
-                return age >= 16 && age <= 40;
+                const age = dayjs().diff(dayjs(value), 'year'); // Tính tuổi
+                return age >= 16 && age <= 40; // Kiểm tra độ tuổi
             }
         ),
-    address: Yup.string().required('Số nhà là bắt buộc'),
+    address: Yup.string().required("Số nhà là bắt buộc"),
     phone: Yup.string()
-        .required('Số điện thoại là bắt buộc')
-        .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không hợp lệ'),
-    province: Yup.string().required('Tỉnh/Thành phố là bắt buộc'),
-    district: Yup.string().required('Quận/Huyện là bắt buộc'),
-    ward: Yup.string().required('Phường/Xã là bắt buộc'),
+        .required("Số điện thoại là bắt buộc")
+        .matches(/^(0[3|5|7|8|9]|01[2|6|8|9])\d{8}$/, "Số điện thoại không hợp lệ") // Đảm bảo định dạng số điện thoại
+        .matches(/^[0-9]+$/, "Số điện thoại không được chứa chữ"), // Kiểm tra chỉ chứa số
+
+
+    province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
+    district: Yup.string().required("Quận/Huyện là bắt buộc"),
+    ward: Yup.string().required("Phường/Xã là bắt buộc"),
     note: Yup.string(),
-    gender: Yup.boolean().required('Giới tính là bắt buộc'),
+    gender: Yup.boolean().required("Giới tính là bắt buộc"),
 });
 
 const UpdateStaffPage = () => {
@@ -203,7 +213,7 @@ const UpdateStaffPage = () => {
         }
     };
 
-   
+
 
     const handleLocationChange = (
         type: 'province' | 'district' | 'ward',
@@ -229,35 +239,28 @@ const UpdateStaffPage = () => {
         }
     };
 
-    const handleSubmit = async (
-        values: Staff,
-        { resetForm, setSubmitting }: FormikHelpers<Staff>
-    ) => {
+    const handleSubmit = async (values: Staff, { resetForm, setSubmitting }: FormikHelpers<Staff>) => {
         try {
-            // Đảm bảo ngày sinh được định dạng đúng trước khi gửi lên server
             const formattedValues = {
                 ...values,
                 birthDay: values.birthDay ? dayjs(values.birthDay).format('YYYY-MM-DD') : '',
             };
-            
-            const response = await axios.put(`http://localhost:8080/api/v1/staffs/${id}`, formattedValues);
+
+            await axios.put(`http://localhost:8080/api/v1/staffs/${id}`, formattedValues);
             resetForm();
-    
-            if (response.status === 200) {
-                toast.success('Nhân viên đã được cập nhật thành công.'); // Thông báo thành công
-                navigate('/manage/staff');
-            }
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                toast.error(`Lỗi cập nhật nhân viên. ${error.response?.data?.message || error.message}`); // Thông báo lỗi từ axios
-            } else {
-                toast.error(`Lỗi cập nhật nhân viên. ${error instanceof Error ? error.message : 'Có lỗi xảy ra'}`); // Thông báo lỗi khác
-            }
+            toast.success('Nhân viên đã được cập nhật thành công.');
+            navigate('/manage/staff');
+        } catch (error) {
+            const errorMessage = axios.isAxiosError(error)
+                ? error.response?.data?.message || error.message
+                : error instanceof Error ? error.message : 'Có lỗi xảy ra';
+            toast.error(`Lỗi cập nhật nhân viên. ${errorMessage}`);
         } finally {
-            setSubmitting(false); // Đặt trạng thái không đang gửi
+            setSubmitting(false);
         }
     };
-    
+
+
 
     const handleReset = (resetForm: () => void) => {
         resetForm();
@@ -280,14 +283,12 @@ const UpdateStaffPage = () => {
 
     return (
         <div>
-            <p className=" text-center text-xl font-bold mx-auto mb-2">CẬP NHẬT NHÂN VIÊN </p>
 
             {/* <h1 className="text-center font-semibold text-2xl mb-4 text-uppercase">Cập nhật nhân viên</h1> */}
             <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
+                <p className="text-left text-xl font-bold mx-auto mb-2">CẬP NHẬT NHÂN VIÊN</p>
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h6 className="text-x font-bold ">Thông tin nhân viên</h6>
-                   
-                    {/* <h4 className="font-medium text-xl">Thông tin nhân viên</h4> */}
                 </div>
                 <Formik
                     initialValues={staff}
@@ -295,7 +296,7 @@ const UpdateStaffPage = () => {
                     onSubmit={handleSubmit}
                     enableReinitialize={true}
                 >
-                    {({ errors, touched, resetForm, setFieldValue, values }) => (
+                    {({ errors, touched, resetForm, setFieldValue, values,isSubmitting }) => (
                         <Form>
                             <SyncFormikWithStaff />
                             <FormContainer>
@@ -347,13 +348,19 @@ const UpdateStaffPage = () => {
                                                 inputtable
                                                 inputtableBlurClose={false}
                                                 placeholder="Chọn ngày sinh..."
+                                                // Chuyển đổi giá trị birthDay từ Formik sang đối tượng Date cho DatePicker
                                                 value={values.birthDay ? dayjs(values.birthDay, 'YYYY-MM-DD').toDate() : null}
                                                 onChange={(date) => {
                                                     const formattedDate = date ? dayjs(date).format('YYYY-MM-DD') : '';
-                                                    setFieldValue('birthDay', formattedDate); // Cập nhật giá trị Formik
+                                                    setFieldValue('birthDay', formattedDate); // Cập nhật giá trị vào Formik
                                                 }}
+                                                // Ngăn người dùng chọn ngày tương lai
+                                                disableDate={(current) => dayjs(current).isAfter(dayjs().endOf('day'))}
                                             />
                                         </FormItem>
+
+
+
 
 
                                         <FormItem
@@ -524,8 +531,9 @@ const UpdateStaffPage = () => {
                                     <Button
                                         type="submit"
                                         className="flex items-center justify-center"
-                                        variant="twoTone"
+                                        variant="solid"
                                         color="blue-600"
+                                        disabled={isSubmitting}
                                         style={{
                                             height: '40px',
                                             width: '200px',
@@ -534,7 +542,7 @@ const UpdateStaffPage = () => {
                                             padding: '0', // Đảm bảo không có padding dư thừa
                                         }}
                                     >
-                                        <GrUpdate className="mr-2" style={{ fontSize: '20px' }} /> 
+                                        <GrUpdate className="mr-2" style={{ fontSize: '20px' }} />
                                         Cập Nhật
                                     </Button>
 

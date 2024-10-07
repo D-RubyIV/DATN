@@ -66,6 +66,12 @@ public class Staff extends BaseEntity {
     @Column(name = "gender")
     private Boolean gender;
 
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;

@@ -19,15 +19,16 @@ const environment = process.env.NODE_ENV;
 function App() {
     return (
         <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <BrowserRouter>
-                    <Theme>
-                        <Layout />
-                        <ToastContainer /> {/* Thêm ToastContainer ở đây */}
-                    </Theme>
-                </BrowserRouter>
-            </PersistGate>
-        </Provider>
+        <PersistGate loading={null} persistor={persistor}>
+            <BrowserRouter>
+                <Theme>
+                    <Layout />
+                </Theme>
+                <ToastContainer position="top-right" autoClose={1200} />
+            </BrowserRouter>
+        </PersistGate>
+    </Provider>
+    
     );
 }
 

@@ -58,7 +58,7 @@ public class StaffController {
                 ", code=" + code + ", email=" + email + ", status=" + status +
                 ", citizenId=" + citizenId);
 
-        // Ensure the service layer can handle the status filtering
+
         Page<Staff> result = staffService.searchNhanVien(
                 keyword, name, phone, code, email, status, citizenId,
                 pageable.getPageSize(), (int) pageable.getOffset());

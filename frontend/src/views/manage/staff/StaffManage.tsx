@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+// import styled from 'styled-components';
 import StaffTableStaff1 from "./component1/StaffTable1";
 
 
