@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -27,6 +28,6 @@ public class StaffResponseDTO {
     private Boolean gender;
     private String note;
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
     private Boolean deleted;
 }

@@ -23,6 +23,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +96,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
 
-    private List<Predicate> buildSearchPredicates(CriteriaBuilder cb, Root<Voucher> root, String code, String name, LocalDate fromDate, LocalDate toDate) {
+    private List<Predicate> buildSearchPredicates(CriteriaBuilder cb, Root<Voucher> root, String code, String name, LocalDateTime fromDate, LocalDateTime toDate) {
         List<Predicate> predicates = new ArrayList<>();
         if (code != null && !code.isEmpty()) {
             predicates.add(cb.equal(root.get("code"), code));
@@ -150,7 +151,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<VoucherResponseDTO> findAllByPage(String code, String name, LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+    public Page<VoucherResponseDTO> findAllByPage(String code, String name, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Voucher> query = cb.createQuery(Voucher.class);
         Root<Voucher> root = query.from(Voucher.class);

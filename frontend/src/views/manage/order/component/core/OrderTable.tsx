@@ -413,7 +413,7 @@ export const OrderTable = ({ }: Props) => {
     return (
         <>
             <div>
-                <h1 className="font-semibold text-xl mb-4 text-transform: uppercase">Quản lý hóa đơn</h1>
+                <h1 className="font-semibold text-xl text-black mb-4 text-transform: uppercase">Quản lý hóa đơn</h1>
             </div>
             <div className='grid grid-cols-3 gap-2 py-2'>
                 <div>

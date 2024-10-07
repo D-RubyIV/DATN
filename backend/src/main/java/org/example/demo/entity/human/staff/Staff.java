@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.role.Role;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
@@ -58,7 +59,7 @@ public class Staff extends BaseEntity {
 
     @Column(name = "birth_day")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
 
     @Column(name = "deleted")
     private Boolean deleted;

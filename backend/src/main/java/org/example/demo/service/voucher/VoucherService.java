@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface VoucherService {
@@ -31,8 +32,8 @@ public interface VoucherService {
     Page<VoucherResponseDTO> findAllByPage(
             String code,
             String name,
-            LocalDate fromDate,
-            LocalDate toDate,
+            LocalDateTime fromDate,
+            LocalDateTime toDate,
             Pageable pageable);
 
     Voucher addVoucher(VoucherRequest request);

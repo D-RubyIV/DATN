@@ -23,8 +23,8 @@ function App() {
                 <BrowserRouter>
                     <Theme>
                         <Layout />
-                        <ToastContainer /> {/* Thêm ToastContainer ở đây */}
                     </Theme>
+                    <ToastContainer /> {/* Thêm ToastContainer ở đây */}
                 </BrowserRouter>
             </PersistGate>
         </Provider>

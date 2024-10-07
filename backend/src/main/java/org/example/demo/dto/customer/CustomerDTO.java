@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
@@ -32,7 +33,7 @@ public class CustomerDTO {
 
     @NotNull(message = "NotNull")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     private String province;
 

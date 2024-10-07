@@ -8,6 +8,7 @@ import lombok.*;
 import org.example.demo.entity.BaseEntity;
 import org.hibernate.annotations.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +47,7 @@ public class Customer extends BaseEntity {
 
     @Column(name = "birth_date")
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses;

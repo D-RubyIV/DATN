@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.example.demo.dto.address.response.AddressResponseDTO;
 import org.example.demo.entity.human.customer.Address;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class CustomerResponseDTO {
     private Boolean deleted;
 
     @JsonFormat(pattern = "dd-MM-yyyy")
-    private LocalDateTime birthDay;
+    private LocalDate birthDay;
 
     private List<AddressResponseDTO> addressResponseDTOS;
 }

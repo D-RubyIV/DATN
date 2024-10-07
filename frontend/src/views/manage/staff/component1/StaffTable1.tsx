@@ -354,9 +354,9 @@ const StaffTableStaff = () => {
 
     return (
         <>
-            <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
-                <div className="p-2 mb-4">
-                    <p className="text-left text-xl font-bold mx-auto mb-2">QUẢN LÝ NHÂN VIÊN</p>
+            <div className="bg-white p-5 w-full">
+                <div className="mb-4">
+                    <p className="text-left text-xl text-black font-bold mx-auto mb-2 uppercase">QUẢN LÝ NHÂN VIÊN</p>
                     <div
                         className="flex flex-col lg:flex-row justify-between items-center mb-4"
                         style={{

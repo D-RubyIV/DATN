@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.Normalizer;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -234,7 +235,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
                 staff.setStatus(getCellValue(row.getCell(8)));
 
                 if (DateUtil.isCellDateFormatted(row.getCell(9))) {
-                    LocalDateTime birthDate = row.getCell(9).getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
+                    LocalDate birthDate = row.getCell(9).getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
                     staff.setBirthDay(birthDate);
                 }
 

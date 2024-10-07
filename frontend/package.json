@@ -13,6 +13,7 @@
     "format": "npm run prettier:fix && npm run lint:fix"
   },
   "dependencies": {
+    "@emotion/styled": "^11.13.0",
     "@fileforge/client": "^0.1.18",
     "@fileforge/react-print": "^0.1.150",
     "@floating-ui/react": "^0.26.4",
@@ -92,6 +93,7 @@
     "@typescript-eslint/parser": "^6.15.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.20",
+    "chroma-js": "^3.1.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
     "eslint": "^8.36.0",

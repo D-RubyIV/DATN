@@ -18,5 +18,5 @@ public interface IService<E, ID, RQ> {
 
     E save(RQ requestDTO) throws BadRequestException;
 
-    E update(ID id, RQ requestDTO);
+    E update(ID id, RQ requestDTO)  throws BadRequestException;
 }

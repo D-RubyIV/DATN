@@ -266,9 +266,9 @@ const VoucherTable = () => {
 
     return (
         <>
-            <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
-                <div className="p-2 mb-4">
-                    <p className="text-xl font-bold mb-2 mx-auto mb-10">Quản Lý Phiếu Giảm Giá</p>
+            <div className="bg-white p-5 mb-6 w-full">
+                <div className="mb-4">
+                    <p className="text-xl font-bold mx-auto mb-5 text-black uppercase">Quản Lý Phiếu Giảm Giá</p>
                     <div
                         className="flex flex-col lg:flex-row justify-between items-center mb-4"
                         style={{
