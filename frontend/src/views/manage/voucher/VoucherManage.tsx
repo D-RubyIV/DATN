@@ -13,7 +13,7 @@ const VoucherManage = () => {
                         <li>
                             <div className="flex items-center">
                                 <Link to="/" className="text-gray-700 hover:text-blue-600">
-                                    Home
+                                    Trang Chủ
                                 </Link>
                             </div>
                         </li>
@@ -21,7 +21,7 @@ const VoucherManage = () => {
                             <div className="flex items-center">
                                 <span className="mx-2">/</span>
                                 <Link to="/manage" className="text-gray-700 hover:text-blue-600">
-                                    Manage
+                                    Quản Lý
                                 </Link>
                             </div>
                         </li>
@@ -34,8 +34,6 @@ const VoucherManage = () => {
                     </ol>
                 </nav>
             </div>
-
-            {/* Table Component */}
             <VoucherTable />
         </AdaptableCard>
     );

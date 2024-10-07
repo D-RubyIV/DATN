@@ -163,7 +163,7 @@ const VoucherTable = () => {
 
                     return (
                         <div className="flex items-center space-x-1">
-                            <Tooltip title="Cập nhật trạng thái">
+                            <Tooltip title="Xoá Phiếu Giảm Giá">
                                 <Switcher
                                     color="green-500"
                                     checked={isActive}
@@ -190,12 +190,20 @@ const VoucherTable = () => {
 
     const softDelete = async (id: number) => {
         try {
-            await axios.patch(`http://localhost:8080/api/v1/voucher/delete/${id}`);
-            toast.success('Xoá thành công');
-            fetchData();
+            const response = await axios.delete(`http://localhost:8080/api/v1/voucher/delete/${id}`);
+            if (response.status === 200) {
+                toast.success('Xoá thành công');
+                fetchData();
+            } else {
+                toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
         } catch (error) {
-            toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
-            console.error('Error updating status:', error);
+            if (axios.isAxiosError(error) && error.response) {
+                toast.error(`Có lỗi xảy ra: ${error.response.data.message || 'Vui lòng thử lại.'}`);
+            } else {
+                toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+            }
+            console.error('Error deleting voucher:', error);
         }
     };
 

@@ -58,7 +58,7 @@ function TableCustomer ({ onSelectedCustomersChange }: TableCustomerProps) {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/v1/customer/get-all')
+            const response = await axios.get('http://localhost:8080/api/v1/customer')
             setData(response.data)
         } catch (error) {
             console.error('Failed to fetch customer data:', error)
@@ -71,7 +71,6 @@ function TableCustomer ({ onSelectedCustomersChange }: TableCustomerProps) {
         fetchData()
     }, [])
 
-    // Lắng nghe sự thay đổi của rowSelection và truyền dữ liệu ra ngoài component
     useEffect(() => {
         const selectedCustomerIds = Object.keys(rowSelection).filter(key => rowSelection[key]);
         const selectedCustomers = data.filter(customer => selectedCustomerIds.includes(customer.id.toString()));
