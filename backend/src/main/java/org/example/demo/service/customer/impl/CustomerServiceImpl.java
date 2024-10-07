@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
             return customerRepository.findByStatus(status, pageable)
                     .map(CustomerMapper::toCustomerListDTO);
         }
-        return customerRepository.findAll(pageable)
+        return customerRepository.findAllCustomers(pageable)
                 .map(CustomerMapper::toCustomerListDTO);
     }
 
@@ -57,11 +59,15 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public Customer saveCustomer(CustomerDTO customerDTO)  {
+    public Customer saveCustomer(CustomerDTO customerDTO) {
+        // Thiết lập ngày tạo cho khách hàng
+        customerDTO.setCreatedDate(LocalDateTime.now());
 
+        // Tạo mã khách hàng nếu không có
         String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
                 ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
 
+        // Tạo đối tượng Customer từ DTO
         Customer customer = new Customer();
         customer.setCode(generatedCode);
         customer.setName(customerDTO.getName());
@@ -70,14 +76,16 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setBirthDate(customerDTO.getBirthDate());
         customer.setGender(customerDTO.getGender());
         customer.setStatus(customerDTO.getStatus());
-        customer.setDeleted(false);// Mặc định là không bị xóa
+        customer.setDeleted(false); // Mặc định là không bị xóa
+        customer.setCreatedDate(customerDTO.getCreatedDate()); // Thiết lập ngày tạo
 
         // Lưu Customer vào database
         Customer savedCustomer = customerRepository.save(customer);
 
+        // Tạo và lưu địa chỉ mặc định
         Address defaultAddress = new Address();
-        defaultAddress.setName(customerDTO.getName()); // mới sửa
-        defaultAddress.setPhone(customerDTO.getPhone()); // mới sửa
+        defaultAddress.setName(customerDTO.getName());
+        defaultAddress.setPhone(customerDTO.getPhone());
         defaultAddress.setProvince(customerDTO.getProvince());
         defaultAddress.setDistrict(customerDTO.getDistrict());
         defaultAddress.setWard(customerDTO.getWard());
@@ -90,6 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         return savedCustomer;
     }
+
 
 
     @Override

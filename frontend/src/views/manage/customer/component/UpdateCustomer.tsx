@@ -209,6 +209,8 @@ const UpdateCustomer = () => {
         }
     };
 
+
+
     const loadProvinces = async () => {
         const cachedProvinces = localStorage.getItem('provinces');
         if (cachedProvinces) {
@@ -224,6 +226,7 @@ const UpdateCustomer = () => {
         try {
             const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, values);
             if (response.status === 200) {
+                toast.success('Cập nhật thành công');
                 navigate('/manage/customer');
             } else {
                 alert('Failed to update customer. Please try again.');
@@ -429,7 +432,7 @@ const UpdateCustomer = () => {
                                                 <div key={index} className="bg-white p-6 shadow-md rounded-lg mb-6">
                                                     <FormContainer>
                                                         <h4 className="text-lg font-medium mb-2">Địa chỉ {index + 1}</h4>
-                                                        <div className="flex w-full flex-wrap mb-4">
+                                                        {/* <div className="flex w-full flex-wrap mb-4">
                                                             <div className="w-1/2 pr-4">
                                                                 <FormItem asterisk label="Tên">
                                                                     <Field type="text" name={`addressDTOS[${index}].name`} style={{ height: '44px' }} placeholder="Nhập tên..." component={Input} />
@@ -440,7 +443,7 @@ const UpdateCustomer = () => {
                                                                     <Field type="text" name={`addressDTOS[${index}].phone`} style={{ height: '44px' }} placeholder="Nhập số điện thoại..." component={Input} />
                                                                 </FormItem>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
 
                                                         <div className="flex w-full flex-wrap mb-4">
                                                             <div className="w-1/3 pr-4">

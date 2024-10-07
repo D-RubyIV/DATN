@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -48,4 +49,10 @@ public class CustomerDTO {
 
     // xac dinh dia chi moi co la mac dinh khong
     private boolean defaultAddress;
+
+
+    private LocalDateTime createdDate;
+
+
+    private LocalDateTime updatedDate;
 }
