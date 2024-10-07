@@ -368,7 +368,7 @@ const UpdateCustomer = () => {
                                             className="custom-datepicker"
                                             onChange={(date) => {
                                                 if (date) {
-                                                    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+                                                    const formattedDate = dayjs(date).format('DD-MM-YYYY');
                                                     setFieldValue('birthDate', formattedDate);
                                                     setUpdateCustomer((prev) => ({
                                                         ...prev,
@@ -432,7 +432,7 @@ const UpdateCustomer = () => {
                                                 <div key={index} className="bg-white p-6 shadow-md rounded-lg mb-6">
                                                     <FormContainer>
                                                         <h4 className="text-lg font-medium mb-2">Địa chỉ {index + 1}</h4>
-                                                        {/* <div className="flex w-full flex-wrap mb-4">
+                                                        <div className="flex w-full flex-wrap mb-4">
                                                             <div className="w-1/2 pr-4">
                                                                 <FormItem asterisk label="Tên">
                                                                     <Field type="text" name={`addressDTOS[${index}].name`} style={{ height: '44px' }} placeholder="Nhập tên..." component={Input} />
@@ -443,7 +443,7 @@ const UpdateCustomer = () => {
                                                                     <Field type="text" name={`addressDTOS[${index}].phone`} style={{ height: '44px' }} placeholder="Nhập số điện thoại..." component={Input} />
                                                                 </FormItem>
                                                             </div>
-                                                        </div> */}
+                                                        </div>
 
                                                         <div className="flex w-full flex-wrap mb-4">
                                                             <div className="w-1/3 pr-4">
