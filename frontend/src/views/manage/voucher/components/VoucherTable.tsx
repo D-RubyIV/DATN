@@ -123,10 +123,13 @@ const VoucherTable = () => {
                 accessorKey: 'status',
                 cell: ({ row }) => {
                     const status = row.original.status;
+            
+                    // Define colors for status background and text color
                     const isGreen = status === 'Not started yet';
                     const isRed = status === 'In progress';
                     const isYellow = status === 'Expired';
-
+            
+                    // Set background color and text color for each status
                     const statusColor = isGreen
                         ? 'bg-green-600'
                         : isRed
@@ -134,9 +137,15 @@ const VoucherTable = () => {
                             : isYellow
                                 ? 'bg-yellow-600'
                                 : 'bg-gray-500';
-
-                    const textColor = isGreen || isYellow ? 'text-green-600' : 'text-red-600';
-
+            
+                    const textColor = isGreen
+                        ? 'text-green-600'
+                        : isRed
+                            ? 'text-red-600'
+                            : isYellow
+                                ? 'text-yellow-600'
+                                : 'text-gray-500';
+            
                     return (
                         <span className={`flex items-center font-bold ${textColor}`}>
                             <span

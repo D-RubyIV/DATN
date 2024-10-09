@@ -67,7 +67,7 @@ const VoucherNew =() => {
                         <div className="flex items-center">
                             <span className="mx-2">/</span>
                             <Link to="/manage/voucher" className="text-gray-700 hover:text-blue-600">
-                                Quản Lý
+                               Phiếu Giảm Giá
                             </Link>
                         </div>
                     </li>
