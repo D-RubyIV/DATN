@@ -100,7 +100,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-
     @Override
     public CustomerDetailDTO updateCustomer(Integer id, CustomerDetailDTO customerDetailDTO) {
         Optional<Customer> customerOptional = customerRepository.findById(id);
@@ -185,10 +184,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public AddressDTO addAddressToCustomer(Integer customerId, AddressDTO addressDTO) {
+
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found width id " + customerId));
 
-        // Tao va thiet lap dia chi moi
+        // Tạo và thiết lập địa chỉ mới
         Address newAddress = new Address();
         newAddress.setName(addressDTO.getName());
         newAddress.setPhone(addressDTO.getPhone());
@@ -198,13 +198,17 @@ public class CustomerServiceImpl implements CustomerService {
         newAddress.setDetail(addressDTO.getDetail());
         newAddress.setDefaultAddress(addressDTO.getIsDefault());
 
+        // Liên kết địa chỉ mới với khách hàng
+        newAddress.setCustomer(customer);
+
+        // Lưu địa chỉ trước
         addressRepository.save(newAddress);
 
-        // Cap nhat thong tin Customer
+        // Cập nhật danh sách địa chỉ của khách hàng và lưu khách hàng
         customer.getAddresses().add(newAddress);
         customerRepository.save(customer);
 
-        // tra ve AddressDTO
+        // Trả về AddressDTO
         return CustomerMapper.toAddressDTO(newAddress);
     }
 

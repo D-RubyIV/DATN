@@ -81,8 +81,6 @@ public class CustomerMapper {
             customer.setCode(dto.getCode());
         }
 
-
-
         // Cập nhật danh sách địa chỉ
         if (dto.getAddressDTOS() != null) {
             for (AddressDTO addressDTO : dto.getAddressDTOS()) {
@@ -97,7 +95,12 @@ public class CustomerMapper {
                 } else {
                     // Thêm địa chỉ mới nếu không tồn tại
                     Address newAddress = toEntityAddress(addressDTO);
-                    newAddress.setCustomer(customer); // Set the customer on the new address
+                    newAddress.setCustomer(customer);
+                    customer.getAddresses().add(newAddress);
+                    // ID khách hàng cho địa chỉ mới
+                    if (newAddress.getCustomer() != null && newAddress.getCustomer().getId() == null) {
+                        newAddress.getCustomer().setId(customer.getId());
+                    }
                     customer.getAddresses().add(newAddress);
                 }
             }
