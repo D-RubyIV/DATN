@@ -284,6 +284,7 @@ const UpdateCustomer = () => {
     const handleAddressSubmit = async (
         mode: 'add' | 'edit',
         address: AddressDTO,
+        addressId: string,
         customerId: string,
         addressIndex: number
     ) => {
@@ -294,10 +295,10 @@ const UpdateCustomer = () => {
                 if (response.status === 200) {
                     setFormModes((prev) => prev.map((m, i) => (i === addressIndex ? 'edit' : m)));
                 }
-                toast.success('Lưu thành công');
+                toast.success('Thêm địa chỉ mới thành công');
             } else {
-                response = await axios.put(`http://localhost:8080/api/v1/address/update/${customerId}`, address);
-                toast.success('Cập nhật thành công');
+                response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, address);
+                toast.success('Cập nhật địa chỉ thành công');
             }
             fetchCustomer(customerId);
         } catch (error) {
@@ -343,7 +344,7 @@ const UpdateCustomer = () => {
 
             // Cập nhật địa chỉ trong state (tạm thời)
             setUpdateCustomer({ ...updateCustomer, addressDTOS: updatedAddresses });
-            toast.success('cập nhật thành công');
+            toast.success('cập nhật địa chỉ mặc định thành công');
             // Gọi API chỉ một lần để cập nhật địa chỉ mặc định và các địa chỉ khác
             await updateDefaultAddress(updateCustomer.addressDTOS[index].id, true);
         } catch (error) {
@@ -577,10 +578,12 @@ const UpdateCustomer = () => {
                                                                 className="mr-4"
                                                                 variant="solid"
                                                                 style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                                                onClick={() => handleAddressSubmit(formModes[index] as 'add' | 'edit', values.addressDTOS[index], values.id, index)}
+                                                                onClick={() => handleAddressSubmit(formModes[index] as 'add' | 'edit', values.addressDTOS[index], address.id, values.id, index)}
                                                             >
                                                                 {formModes[index] === 'add' ? 'Thêm' : 'Cập nhật'}
                                                             </Button>
+
+
                                                             <Button
                                                                 type="button"
                                                                 variant="default"
