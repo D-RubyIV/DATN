@@ -85,10 +85,6 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         return null;
     }
 
-    @Override
-    public OrderDetail create() throws BadRequestException {
-        return null;
-    }
 
     public OrderDetail updateQuantity(Integer integer, int newQuantity) {
         OrderDetail orderDetail = findById(integer);

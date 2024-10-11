@@ -20,6 +20,5 @@ public interface IService<E, ID, RQ> {
 
     E update(ID id, RQ requestDTO)  throws BadRequestException;
 
-    // hung add
-    E create() throws BadRequestException;
+
 }
