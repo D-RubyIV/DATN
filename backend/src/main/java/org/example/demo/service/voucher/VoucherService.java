@@ -1,9 +1,7 @@
 package org.example.demo.service.voucher;
 
 
-import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
-import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
@@ -11,7 +9,6 @@ import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

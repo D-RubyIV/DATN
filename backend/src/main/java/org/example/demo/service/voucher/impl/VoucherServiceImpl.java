@@ -6,7 +6,6 @@ import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.infrastructure.common.AutoGenCode;
@@ -60,12 +59,6 @@ public class VoucherServiceImpl implements VoucherService {
     public List<VoucherResponse> getAll() {
         return voucherRepository.getPublicVoucher();
     }
-
-//    @Override
-//    public PageableObject<VoucherResponse> getAll(VoucherRequest request) {
-//
-//        return new PageableObject<>(voucherRepository.getAllVoucher(request, PageRequest.of(request.getPage() -1 > 0 ? request.getPage()-1 : 0, request.getSizePage())));
-//    }
 
     @Override
     public PageableObject<VoucherResponse> getAll(VoucherRequest request) {

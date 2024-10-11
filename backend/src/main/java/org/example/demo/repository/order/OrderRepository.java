@@ -2,8 +2,6 @@ package org.example.demo.repository.order;
 
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.entity.order.core.Order;
-import org.example.demo.entity.order.enums.Status;
-import org.example.demo.entity.order.enums.Type;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 
 @Repository
@@ -61,4 +58,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'RETURNED'
             "FROM Order o")
     CountStatusOrder getCountStatus();
+
+    Boolean existsByCode(String code);
+
 }

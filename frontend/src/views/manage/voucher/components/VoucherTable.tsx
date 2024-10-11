@@ -158,16 +158,15 @@ const VoucherTable = () => {
                 header: 'Hành động',
                 id: 'action',
                 cell: ({ row }: CellContext<IVoucher, unknown>) => {
-                    const { id, status } = row.original;
-                    const isActive = status === 'Active';
+                    const { id } = row.original;
 
                     return (
                         <div className="flex items-center space-x-1">
                             <Tooltip title="Xoá Phiếu Giảm Giá">
                                 <Switcher
                                     color="green-500"
-                                    checked={isActive}
-                                    onChange={() => softDelete(id)}
+                                    checked={true} // Đặt trạng thái luôn là true
+                                    onChange={() => softDelete(id)} // Gọi hàm xóa
                                     unCheckedContent={<RiMoonClearLine />}
                                     checkedContent={<RiSunLine />}
                                     className="text-sm"
@@ -184,13 +183,14 @@ const VoucherTable = () => {
                 },
                 size: 100,
             },
+
         ],
         [],
     )
 
     const softDelete = async (id: number) => {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/v1/voucher/delete/${id}`);
+            const response = await axios.put(`http://localhost:8080/api/v1/voucher/delete/${id}`);
             if (response.status === 200) {
                 toast.success('Xoá thành công');
                 fetchData();
@@ -334,7 +334,7 @@ const VoucherTable = () => {
                         {loading ? (
                             <p>Đang tải...</p>
                         ) : data.length === 0 ? (
-                            <p>Không có dữ liệu nhân viên.</p>
+                            <p>Không có dữ liệu phiếu giảm giá.</p>
                         ) : (
                             <DataTable
                                 columns={columns}

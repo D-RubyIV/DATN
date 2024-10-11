@@ -1,6 +1,7 @@
 package org.example.demo.service.order_detail;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.properties.OrderDetail;
@@ -52,11 +53,11 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
     @Override
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
-        System.out.println(requestDTO);
         Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailId(requestDTO.getOrderId(), requestDTO.getProductDetailId());
         Optional<ProductDetail> productDetailFound = productDetailRepository.findById(requestDTO.getProductDetailId());
         System.out.println(entityFound.isPresent());
         System.out.println(productDetailFound.isPresent());
+        // chua check nahp so luong < 1
         if (entityFound.isPresent() && productDetailFound.isPresent()) {
             int newCount = entityFound.get().getQuantity() + requestDTO.getQuantity();
             if (newCount > productDetailFound.get().getQuantity()) {
@@ -81,6 +82,11 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
     @Override
     public OrderDetail update(Integer integer, OrderDetailRequestDTO requestDTO) {
+        return null;
+    }
+
+    @Override
+    public OrderDetail create() throws BadRequestException {
         return null;
     }
 

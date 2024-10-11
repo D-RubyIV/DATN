@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.hibernate.validator.constraints.Length;
 
@@ -53,4 +54,14 @@ public class OrderRequestDTO {
 
     @NotNull(message = "NotNull")
     private Customer customer;
+
+    // Author : Ngochungsoftware
+    private Boolean waitPayment;
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    private Integer paymentMethod;
+
+    private String tradingCode;
 }

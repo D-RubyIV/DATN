@@ -1,12 +1,14 @@
 package org.example.demo.controller.order;
 
 import jakarta.validation.Valid;
+import org.apache.coyote.BadRequestException;
 import org.example.demo.controller.IControllerBasic;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
+import org.example.demo.entity.order.core.Order;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.util.phah04.PageableObject;
@@ -54,6 +56,11 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     @PostMapping(value = "")
     public ResponseEntity<OrderResponseDTO> create(@Valid @RequestBody OrderRequestDTO billResponseDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.save(billResponseDTO)));
+    }
+
+    @PostMapping("/hung")
+    public ResponseEntity<Order> createOder() throws BadRequestException {
+        return ResponseEntity.ok(orderService.create());
     }
 
     @Override
