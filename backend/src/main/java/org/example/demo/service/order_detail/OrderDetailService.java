@@ -117,13 +117,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             if (newCount > productDetailFound.get().getQuantity()) {
                 throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
             } else {
-                entityFound.get().setQuantity(newCount);
                 // truonwfg hop hoa don nay chua xong nhunwg thanh toan cho khach sau truoc sau
                 // muon thanh toan lai hoa don cu (tim theo ma , theo trang thai,...)
-                // Tru di so luong san pham trong kho chua ha anh
-                productDetailFound.get().setQuantity(productDetailFound.get().getQuantity() - requestDTO.getQuantity());
-                productDetailRepository.save(productDetailFound.get());
-                // hung code doan nay
+                entityFound.get().setQuantity(newCount);
                 OrderDetail response = orderDetailRepository.save(entityFound.get());
                 orderService.reloadTotalOrder(response.getOrder());
                 return response;
