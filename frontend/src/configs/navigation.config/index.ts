@@ -17,6 +17,16 @@ const navigationConfig: NavigationTree[] = [
         subMenu: [],
     },
     {
+        key: 'manageSell',
+        path: '/manage/sell',
+        title: '',
+        translateKey: 'nav.sellTitle',
+        icon: 'groupSingleMenu',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
+    {
         key: 'collapseMenu',
         path: '',
         title: 'Collapse Menu',

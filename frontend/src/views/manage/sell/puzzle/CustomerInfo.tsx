@@ -5,97 +5,37 @@ import type { MouseEvent } from 'react'
 import Timeline from '@/components/ui/Timeline/Timeline';
 import TimeLineItem from '@/components/ui/Timeline/TimeLineItem';
 import Axios from 'axios';
-import { BillResponseDTO, OrderDetailResponseDTO, ProductOrderDetail } from '../../store';
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import IconText from '@/components/shared/IconText'
 import { HiMail, HiPhone, HiExternalLink, HiPlusCircle, HiOutlineExclamationCircle, HiPencil, HiPencilAlt } from 'react-icons/hi'
 import { Link, useParams } from 'react-router-dom'
-import OrderProducts from '../puzzle/OrderProducts';
-import PaymentSummary, { PaymentSummaryProps } from '../puzzle/PaymentSummary';
-import OrderStep from '../puzzle/OrderStep';
-import OrderInfo from '../puzzle/OderInfo';
 import { Input, Notification, Radio, toast, Tooltip } from '@/components/ui';
 import { inspect } from 'util';
 import instance from '@/axios/CustomAxios';
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal';
 
-interface IProps {
-    selectedId: number,
-    dialogIsOpen: boolean;
-    setIsOpen: (isOpen: boolean) => void;  // Sửa kiểu hàm setIsOpen
+type AddressResponseDTOS = {
+    id: number,
+    phone: string,
+    detail: string
 }
 
-
-
-const OrderDetails = () => {
-
-    const { id } = useParams()
-
-    const [paymentSummaryProp, setPaymentSummaryProp] = useState<PaymentSummaryProps>({
-        data: {
-            subTotal: 10,
-            tax: 10,
-            deliveryFees: 10,
-            total: 1000
-        }
-    });
-
-    const [selectObject, setSelectObject] = useState<BillResponseDTO>()
-    const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
-    useEffect(() => {
-        fetchData()
-    }, [])
-
-    const fetchData = async () => {
-        await instance.get(`/orders/${id}`).then(function (response) {
-            console.log(response)
-            setSelectObject(response.data)
-            setListOrderDetail(response.data.orderDetailResponseDTOS)
-        })
-    }
-
-    useEffect(() => {
-        console.log("Selected Bill: ", selectObject)
-        setPaymentSummaryProp((prev) => ({
-            ...prev,
-            data: {
-                subTotal: selectObject?.subTotal || 0,
-                tax: 0, // Giá trị mặc định cho tax
-                deliveryFees: 10, // Giá trị mặc định cho deliveryFees
-                total: selectObject?.total ?? 0 // Giá trị mặc định cho total
-            }
-        }));
-
-    }, [selectObject])
-
-
-
-
-    return (
-        <div>
-            <div>
-                <div className='grid grid-cols-12 gap-5'>
-                    <div className='col-span-8'>
-                        <div className='flex flex-col gap-5'>
-                            {selectObject !== undefined && <OrderStep selectObject={selectObject} fetchData={fetchData}></OrderStep>}
-                            {selectObject !== undefined && <OrderProducts data={listOrderDetail} fetchData={fetchData} selectObject={selectObject}></OrderProducts>}
-
-                        </div>
-                    </div>
-                    <div className='col-span-4'>
-                        {selectObject !== undefined && <OrderInfo data={selectObject}></OrderInfo>}
-                        {selectObject !== undefined && <CustomerInfo data={selectObject}></CustomerInfo>}
-                        <PaymentSummary data={paymentSummaryProp.data} />
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+type CustomerResponseDTO = {
+    code: string;
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+    deleted: boolean;
+    birthDay: string; // Consider using Date type if applicable
+    addressResponseDTOS: AddressResponseDTOS[]; // Define this type if applicable
 }
 
-
-
+type BillResponseDTO = {
+    address: string;
+    customerResponseDTO: CustomerResponseDTO;
+}
 
 const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState<boolean>(false)
@@ -174,6 +114,3 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
         </Card>
     )
 }
-
-
-export default OrderDetails

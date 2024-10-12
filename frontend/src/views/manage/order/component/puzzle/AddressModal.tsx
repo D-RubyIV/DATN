@@ -1,31 +1,11 @@
+import { IAddress, IDistrict, IProvince, IWard } from "@/@types/address";
 import instanceGHN from "@/axios/GHNAxios";
 import { Button, Input, Select } from "@/components/ui";
 import CloseButton from "@/components/ui/CloseButton";
+import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from "@/services/AddressService";
 import { set } from "lodash";
 import { SetStateAction, useEffect, useState } from "react";
 
-interface IProvince {
-    ProvinceID: string,
-    ProvinceName: string,
-    value: string,
-    label: string,
-}
-
-interface IDistrict {
-    DistrictID: string,
-    DistrictName: string,
-}
-
-interface IWard {
-    WardCode: string,
-    WardName: string,
-}
-interface IAddress {
-    iprovince?: IProvince,
-    idistrict?: IDistrict,
-    iward?: IWard,
-    detail?: string
-}
 
 const AddressModal = ({ onCloseModal }: { onCloseModal: React.Dispatch<SetStateAction<boolean>> }) => {
 
@@ -42,48 +22,17 @@ const AddressModal = ({ onCloseModal }: { onCloseModal: React.Dispatch<SetStateA
 
 
     const handleFindAllProvinces = async () => {
-        instanceGHN.get("shiip/public-api/master-data/province").then(function (response) {
-            if (response.status === 200 && response?.data?.data) {
-                const modifiedProvinces = response.data.data.map((province: IProvince) => ({
-                    ProvinceID: province.ProvinceID,
-                    ProvinceName: province.ProvinceID,
-                    value: province.ProvinceID,  // Thêm thuộc tính `value`
-                    label: province.ProvinceName // Thêm thuộc tính `label`
-                }));
-                setProvinces(modifiedProvinces); // Cập nhật state với mảng đã sửa đổi
-                console.log(modifiedProvinces);
-            }
-        })
+        const modifiedProvinces: IProvince[] = await fetchFindAllProvinces();
+        setProvinces(modifiedProvinces); // Cập nhật state với mảng đã sửa đổi
+        console.log(modifiedProvinces);
     }
     const handleFindAllDistricts = async (idProvince: string) => {
-        instanceGHN.get(`shiip/public-api/master-data/district?province_id=${idProvince}`).then(function (response) {
-            if (response.status === 200 && response?.data?.data) {
-                const modifiedDistricts = response.data.data.map((district: IDistrict) => ({
-                    DistrictID: district.DistrictID,
-                    DistrictName: district.DistrictName,
-                    value: district.DistrictID,  // Thêm thuộc tính `value`
-                    label: district.DistrictName // Thêm thuộc tính `label`
-                }));
-                setDistricts(modifiedDistricts); // Cập nhật state với mảng đã sửa đổi
-                console.log(modifiedDistricts);
-            }
-        })
+        const modifiedDistricts: IDistrict[] = await fetchFindAllDistricts(idProvince);
+        setDistricts(modifiedDistricts);
     }
     const handleFindAllWards = async (idDistrict: string) => {
-        instanceGHN.get(`shiip/public-api/master-data/ward?district_id=${idDistrict}`).then(function (response) {
-            if (response.status === 200 && response?.data?.data) {
-                if (response.status === 200 && response?.data?.data) {
-                    const modifiedDistricts = response.data.data.map((ward: IWard) => ({
-                        DistrictID: ward.WardCode,
-                        DistrictName: ward.WardName,
-                        value: ward.WardCode,  // Thêm thuộc tính `value`
-                        label: ward.WardName // Thêm thuộc tính `label`
-                    }));
-                    setWards(modifiedDistricts); // Cập nhật state với mảng đã sửa đổi
-                    console.log(modifiedDistricts);
-                }
-            }
-        })
+        const modifiedDistricts: IWard[] = await fetchFindAllWards(idDistrict);
+        setWards(modifiedDistricts);
     }
 
     useEffect(() => {

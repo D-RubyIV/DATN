@@ -8,7 +8,6 @@ import { displayDoc, displayLoading } from './util';
 import Document from './Document';
 import { useState } from 'react';
 import CloseButton from '@/components/ui/CloseButton';
-import AddressModal from './AddressModal';
 
 const ff = new FileforgeClient({
     apiKey: '029d0f13-d976-43f8-a3ec-16955667b1d2',
