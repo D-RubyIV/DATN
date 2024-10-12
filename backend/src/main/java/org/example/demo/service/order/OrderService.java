@@ -123,7 +123,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO>,I
 //        if signIn
 //        Integer idStaff = session.getCustomer().getId();
 //        Staff staff = staffRepository.findById(idStaff).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Staff not found"));
-        Optional<Staff> staffDemo = staffRepository.findById(1); // demo nen set mac dinh
+        Optional<Staff> staffDemo = staffRepository.findById(38); // demo nen set mac dinh
+        order.setStaff(staffDemo.get());
         order.setStatus(Status.CREATE_AN_ORDER);
         order.setCode(this.genOrderCode());
         Order orderSaved = orderRepository.save(order);
