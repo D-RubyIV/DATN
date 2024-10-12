@@ -5,6 +5,7 @@ public enum Status {
     WAITING_YOUR_PAYMENT, // Chờ thanh toán
     CONFIRM_PAYMENT, // Xác nhận thông tin thanh toán
     EDIT_AN_ORDER, // Chỉnh sửa đơn hàng
+
     PENDING,    // Chờ xác nhận
     TOSHIP,     // Chờ giao hàng
     TORECEIVE,  // Đang giao hàng
