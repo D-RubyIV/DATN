@@ -4,17 +4,10 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.customer.CustomerDTO;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.repository.customer.CustomerRepository;
-import org.example.demo.service.CustomerService;
-import org.example.demo.service.customer.impl.CustomerServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Component
@@ -23,7 +16,7 @@ public class CustomerValidator {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public void validate(CustomerDTO customerDTO, Integer existingCustomerId) throws BadRequestException {
+    public void validateCustomer(CustomerDTO customerDTO, Integer existingCustomerId) throws BadRequestException {
         if (customerDTO == null) {
             throw new BadRequestException("Dữ liệu khách hàng không để trống");
         }
@@ -31,7 +24,7 @@ public class CustomerValidator {
         validateName(customerDTO.getName());
         validateEmail(customerDTO.getEmail(), existingCustomerId);
         validatePhone(customerDTO.getPhone(), existingCustomerId);
-//        validateBirthDate(customerDTO.getBirthDate() + "");
+//        validateBirthDate(customerDetailDTO.getBirthDate() + "");
 
 
     }

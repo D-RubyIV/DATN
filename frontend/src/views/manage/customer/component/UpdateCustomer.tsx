@@ -251,45 +251,6 @@ const UpdateCustomer = () => {
         }
     };
 
-    // const handleAddressSubmit = async (
-    //     mode: 'add' | 'edit',
-    //     address: AddressDTO,
-    //     customerId: string,
-    //     addressIndex: number,
-    //     setFieldValue: (field: string, value: any) => void,
-    //     values: FormikValues
-    // ) => {
-    //     try {
-    //         let response;
-
-    //         if (mode === 'add') {
-    //             // Gửi yêu cầu POST để thêm địa chỉ
-    //             response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
-    //             if (response.status === 200) {
-    //                 // Cập nhật danh sách địa chỉ để địa chỉ mới hiển thị ở đầu
-    //                 setFieldValue('addressDTOS', [response.data, ...values.addressDTOS]); // Giả sử response.data chứa địa chỉ vừa tạo
-    //                 setFormModes((prev) => prev.map((m, i) => (i === addressIndex ? 'edit' : m))); // Cập nhật chế độ thành 'edit'
-    //                 toast.success('Lưu thành công');
-    //             }
-    //         } else {
-    //             // Gửi yêu cầu PUT để cập nhật địa chỉ
-    //             response = await axios.put(`http://localhost:8080/api/v1/address/update/${customerId}`, address);
-    //             if (response.status === 200) {
-    //                 // Cập nhật danh sách địa chỉ (thay thế địa chỉ đã sửa)
-    //                 const updatedAddresses = [...values.addressDTOS];
-    //                 updatedAddresses[addressIndex] = address; // Cập nhật địa chỉ đã sửa
-    //                 setFieldValue('addressDTOS', updatedAddresses);
-    //                 toast.success('Cập nhật thành công');
-    //             }
-    //         }
-
-    //         // Tải lại thông tin khách hàng (có thể là để lấy danh sách địa chỉ mới)
-    //         fetchCustomer(customerId);
-    //     } catch (error) {
-    //         console.error('Error submitting address:', error);
-    //         alert('Error submitting address. Please try again.');
-    //     }
-    // };
 
 
     // hàm thêm mới địa chỉ cho 1 khách hàng
