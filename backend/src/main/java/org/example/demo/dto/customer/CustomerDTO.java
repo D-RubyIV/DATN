@@ -45,14 +45,6 @@ public class CustomerDTO {
 
     private String status;
 
-    private String newAddress;
-
-    // xac dinh dia chi moi co la mac dinh khong
-    private boolean defaultAddress;
-
-
     private LocalDateTime createdDate;
 
-
-    private LocalDateTime updatedDate;
 }

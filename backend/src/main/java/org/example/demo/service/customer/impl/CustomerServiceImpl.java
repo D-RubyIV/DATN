@@ -9,6 +9,7 @@ import org.example.demo.infrastructure.common.AutoGenCode;
 import org.example.demo.repository.customer.AddressRepository;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.service.customer.CustomerService;
+import org.example.demo.validator.CustomerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private AutoGenCode autoGenCode;
+    @Autowired
+    private CustomerValidator customerValidator;
 
 
     @Override
@@ -59,7 +62,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public Customer saveCustomer(CustomerDTO customerDTO) {
+    public Customer saveCustomer(CustomerDTO customerDTO) throws BadRequestException {
+
+        customerValidator.validate(customerDTO, null);
         // Thiết lập ngày tạo cho khách hàng
         customerDTO.setCreatedDate(LocalDateTime.now());
 
@@ -105,6 +110,9 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if (customerOptional.isPresent()) {
             Customer existingCustomer = customerOptional.get();
+
+            // Gọi validator để kiểm tra dữ liệu
+//            customerValidator.validate(customerDetailDTO, id);
 
             // Cập nhật thông tin khách hàng và địa chỉ dựa trên DTO
             CustomerMapper.updateCustomerFromDTO(customerDetailDTO, existingCustomer);
@@ -211,5 +219,6 @@ public class CustomerServiceImpl implements CustomerService {
         // Trả về AddressDTO
         return CustomerMapper.toAddressDTO(newAddress);
     }
+
 
 }

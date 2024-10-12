@@ -127,7 +127,6 @@ public class CustomerMapper {
         address.setWard(dto.getWard());
         address.setDetail(dto.getDetail());
         address.setDefaultAddress(dto.getIsDefault());
-        // Note: Setting the customer should be handled when adding to the customer's addresses directly
         return address;
     }
 
