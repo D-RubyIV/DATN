@@ -51,6 +51,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
     })
     const handlePaginationChange = (pageIndex: number) => {
         setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
+        setQueryParam((pre) => ({...pre, page: pageIndex}))
     }
     const handleSelectChange = (pageSize: number) => {
         setTableData((prevData) => ({
@@ -58,6 +59,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
             pageSize: pageSize, // Cập nhật pageSize mới
             pageIndex: 1 // Đặt pageIndex về 1
         }));
+        setQueryParam((pre) => ({...pre, size: pageSize}))
     }
     const handleSort = ({ order, key }: OnSortParam) => {
         console.log({ order, key })
@@ -89,21 +91,28 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
             accessorKey: 'email',
         },
         {
+            header: 'Giới tính',
+            accessorKey: 'gender',
+        },
+        {
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
                 <Button size="xs" >
                     Chọn
                 </Button>
-
             ),
         },
     ]
     const [queryParam, setQueryParam] = useState<{
         size: number | undefined,
+        page: number | undefined,
+        query: string | undefined
 
     }>({
-        size: undefined
+        size: 10,
+        page: undefined,
+        query: undefined,
     })
 
     // FUCTION
@@ -111,11 +120,9 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
 
     const fetchDataProduct = async () => {
         setLoading(true)
-        const response = await instance.post('/v2/product', tableData,
-            {
-                params: queryParam
-            }
-        )
+        const response = await instance.get('/customer/search', {
+            params: queryParam
+        });
         setData(response.data.content)
         setLoading(false)
         setTableData((prevData) => ({
@@ -130,12 +137,14 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
 
     const debounceFn = debounce(handleDebounceFn, 500)
     function handleDebounceFn(val: string) {
+        console.log("----------------------")
         console.log(val)
         if (typeof val === 'string' && (val.length > 1 || val.length === 0)) {
             setTableData((prevData) => ({
                 ...prevData,
                 ...{ query: val, pageIndex: 1 },
             }))
+            setQueryParam((pre) => ({...pre, query: val}))
         }
     }
 
@@ -161,7 +170,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
     ])
     return (
         <div className='fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-50'>
-            <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 bg-gray-100 z-20 shadow-md rounded-md'>
+            <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 bg-gray-100 z-20 shadow-md rounded-md'>
                 <div className='p-5 bg-white !h-4/5 rounded-md'>
                     <div className='flex justify-between pb-3'>
                         <div>
@@ -178,7 +187,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
                                 placeholder="Search..."
                                 size="sm"
                                 className="lg:w-full"
-                                onChange={(el) => handleChange}
+                                onChange={(el) => handleChange(el)}
                             />
                         </div>
                         <DataTable

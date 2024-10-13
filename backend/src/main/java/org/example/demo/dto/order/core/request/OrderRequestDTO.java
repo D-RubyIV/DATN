@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.hibernate.validator.constraints.Length;
 
@@ -22,9 +23,9 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class OrderRequestDTO {
 
-    @Length(message = "Length-4-8", min = 4, max = 8)
-    @NotNull(message = "NotNull")
-    @NotBlank(message = "NotBlank")
+//    @Length(message = "Length-4-8", min = 4, max = 8)
+//    @NotNull(message = "NotNull")
+//    @NotBlank(message = "NotBlank")
     private String code;
 
     @Length(message = "Length-5-25", min = 5, max = 25)
@@ -48,9 +49,10 @@ public class OrderRequestDTO {
     @NotNull(message = "NotNull")
     private Double subTotal;
 
+    @NotNull(message = "NotNull")
+    private Type type;
 
     private Voucher voucher;
 
-    @NotNull(message = "NotNull")
     private Customer customer;
 }

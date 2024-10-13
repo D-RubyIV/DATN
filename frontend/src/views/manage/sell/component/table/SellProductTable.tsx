@@ -13,9 +13,9 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { fakeOrderDetail, OrderDetailOverview } from '../..'
-import { Avatar } from '@/components/ui'
+import { Avatar, Button } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
-import { HiMinus, HiPencil, HiPlusCircle } from 'react-icons/hi'
+import { HiDocumentRemove, HiMinus, HiPencil, HiPlusCircle } from 'react-icons/hi'
 
 type Option = {
     value: number
@@ -75,6 +75,18 @@ const SellProductTable = () => {
                 cell: (props) => {
                     const row = props.row.original as OrderDetailOverview;
                     return <PriceAmount amount={row.quantity * row.price} />
+                },
+            },
+            {
+                // accessorKey: 'price',
+                header: 'Hành động',
+                cell: (props) => {
+                    const row = props.row.original as OrderDetailOverview;
+                    return (
+                        <div>
+                            <Button icon={<HiMinus />} variant='plain'></Button>
+                        </div>
+                    )
                 },
             }
         ],
