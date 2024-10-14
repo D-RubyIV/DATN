@@ -16,6 +16,7 @@ import { fakeOrderDetail, OrderDetailOverview } from '../..'
 import { Avatar, Button } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
 import { HiDocumentRemove, HiMinus, HiPencil, HiPlusCircle } from 'react-icons/hi'
+import { BillResponseDTO, OrderDetailResponseDTO } from '@/views/manage/order/store'
 
 type Option = {
     value: number
@@ -34,16 +35,16 @@ const pageSizeOption = [
     { value: 50, label: '50 / page' },
 ]
 
-const columnHelper = createColumnHelper<OrderDetailOverview>()
+const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
-const SellProductTable = () => {
-    const columns = useMemo<ColumnDef<OrderDetailOverview>[]>(
+const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO }) => {
+    const columns = useMemo<ColumnDef<OrderDetailResponseDTO>[]>(
         () => [
             {
                 accessorKey: 'name',
                 header: 'Sản phẩm',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailOverview;
+                    const row = props.row.original as OrderDetailResponseDTO;
                     return <ProductColumn row={row} />;
                 },
             },
@@ -51,7 +52,7 @@ const SellProductTable = () => {
                 accessorKey: 'quantity',
                 header: 'Số lượng',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailOverview;
+                    const row = props.row.original as OrderDetailResponseDTO;
                     return (
                         <div className='flex gap-1 items-center justify-start'>
                             <button className='p-2 text-xl'><HiPlusCircle /></button>
@@ -65,23 +66,23 @@ const SellProductTable = () => {
                 accessorKey: 'price',
                 header: 'Giá',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailOverview;
-                    return <PriceAmount amount={row.price} />
+                    const row = props.row.original as OrderDetailResponseDTO;
+                    return <PriceAmount amount={row.productDetail.price} />
                 },
             },
             {
                 // accessorKey: 'price',
                 header: 'Tổng',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailOverview;
-                    return <PriceAmount amount={row.quantity * row.price} />
+                    const row = props.row.original as OrderDetailResponseDTO;
+                    return <PriceAmount amount={row.quantity * row.productDetail.price} />
                 },
             },
             {
                 // accessorKey: 'price',
                 header: 'Hành động',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailOverview;
+                    const row = props.row.original as OrderDetailResponseDTO;
                     return (
                         <div>
                             <Button icon={<HiMinus />} variant='plain'></Button>
@@ -94,7 +95,7 @@ const SellProductTable = () => {
     )
 
 
-    const [data] = useState(fakeOrderDetail)
+    const [data] = useState(selectedOrder.orderDetailResponseDTOS)
 
     const table = useReactTable({
         data,
@@ -133,19 +134,19 @@ const SellProductTable = () => {
         )
     }
 
-    const ProductColumn = ({ row }: { row: OrderDetailOverview }) => {
+    const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div className="flex">
                 <Avatar size={90} src={"https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png"} />
                 <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.name}</h6>
+                    <h6 className="mb-2">{row.productDetail.name}</h6>
                     <div className="mb-1">
                         <span className="capitalize">Cỡ: </span>
-                        <span className="font-semibold">{"L"}</span>
+                        <span className="font-semibold">{row.productDetail.size.name}</span>
                     </div>
                     <div className="mb-1">
                         <span className="capitalize">Màu: </span>
-                        <span className="font-semibold">{"Xanh"}</span>
+                        <span className="font-semibold">{row.productDetail.color.name}</span>
                     </div>
                 </div>
             </div>

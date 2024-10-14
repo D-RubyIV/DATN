@@ -11,11 +11,10 @@ import instance from "@/axios/CustomAxios";
 import PaymentInfo from "../other/PaymentInfo";
 import { PaymentSummaryProps } from "@/@types/payment";
 
-const TabCard = ({ something }: { something: any }) => {
+const TabCard = ({ idOrder }: { idOrder: number }) => {
 
 
     // init variables
-    const idOrder = 52;
     const [isOpenCustomerModal, setIsOpenCustomerModal] = useState<boolean>(false)
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
     const [listOrderDetailOverview, setListOrderDetailOverview] = useState<OrderDetailOverview[]>([])
@@ -50,7 +49,7 @@ const TabCard = ({ something }: { something: any }) => {
                     <div className="flex justify-between items-center py-2">
                         <div className="font-semibold text-[16px] text-black">
                             <label>
-                                Danh sách sản phẩm {something}
+                                Danh sách sản phẩm
                             </label>
                         </div>
                         <div className="flex gap-4">
@@ -64,7 +63,9 @@ const TabCard = ({ something }: { something: any }) => {
                         </div>
                     </div>
                     <div>
-                        <SellProductTable></SellProductTable>
+                        {
+                            selectedOrder && <SellProductTable selectedOrder={selectedOrder}></SellProductTable>
+                        }
                     </div>
                 </Card>
                 <Card className="2xl:col-span-4">

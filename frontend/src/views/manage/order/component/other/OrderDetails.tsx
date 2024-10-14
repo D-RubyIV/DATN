@@ -100,11 +100,17 @@ const OrderDetails = () => {
 const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState<boolean>(false)
 
+
+    const customer = data?.customerResponseDTO || {};
+    const addresses = customer.addressResponseDTOS || [];
+
     return (
         <Card className='mb-5 h-[450px]'>
             {isOpenEditAddress && <AddressModal onCloseModal={setIsOpenEditAddress}></AddressModal>}
 
-            <h5 className="mb-4">Khách hàng #{data.customerResponseDTO.code}</h5>
+            <h5 className="mb-4">
+                Khách hàng #{customer.code || "Khách lẻ"}
+            </h5>
             <Link
                 className="group flex items-center justify-between"
                 to="/app/crm/customer-details?id=11"
@@ -113,13 +119,10 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                     <Avatar shape="circle" src={"https://th.bing.com/th/id/OIP.QypR4Rt5VeZ3Po2g8HQ2_QAAAA?rs=1&pid=ImgDetMain"} />
                     <div className="ltr:ml-2 rtl:mr-2">
                         <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
-                            {data?.customerResponseDTO.name}
+                            {customer.name || "Khách lẻ"}
                         </div>
                         <span>
-                            <span className="font-semibold">
-                                {1}{' '}
-                            </span>
-                            đơn hàng trước đó
+                            <span className="font-semibold">{customer.code ? 1 : 0}</span> đơn hàng trước đó
                         </span>
                     </div>
                 </div>
@@ -130,10 +133,10 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                 className="mb-4"
                 icon={<HiMail className="text-xl opacity-70" />}
             >
-                <span className="font-semibold">{data?.customerResponseDTO.email}</span>
+                <span className="font-semibold">{customer.email || ""}</span>
             </IconText>
             <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                <span className="font-semibold">{data?.customerResponseDTO.phone}</span>
+                <span className="font-semibold">{customer.phone || ""}</span>
             </IconText>
             <hr className="my-5" />
             <h6 className="mb-4">Địa chỉ nhận hàng</h6>

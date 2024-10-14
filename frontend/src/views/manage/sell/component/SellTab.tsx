@@ -1,6 +1,6 @@
-import Tabs from '@/components/ui/Tabs'
-import { HiOutlineHome, HiOutlineUser, HiOutlinePhone, HiPlusCircle, HiOutlineTrash, HiLockClosed } from 'react-icons/hi'
-const { TabNav, TabList, TabContent } = Tabs
+import Tabs from '@/components/ui/Tabs';
+import { HiOutlineHome, HiOutlineUser, HiOutlinePhone, HiPlusCircle, HiOutlineTrash, HiLockClosed } from 'react-icons/hi';
+const { TabNav, TabList, TabContent } = Tabs;
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui';
@@ -9,6 +9,8 @@ import TabCard from './card/TabCard';
 import { useToast } from 'react-toastify';
 import { useToastContext } from '@/context/ToastContext';
 import CloseButton from '@/components/ui/CloseButton';
+import instance from '@/axios/CustomAxios';
+import { BillResponseDTO } from '../../order/store';
 
 type TabObject = {
     label: string,
@@ -20,7 +22,8 @@ const SellTab = () => {
     const [currentTab, setCurrentTab] = useState('');
     const [tabs, setTabs] = useState<TabObject[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const { openNotification } = useToastContext()
+    const { openNotification } = useToastContext();
+    const [orderIds, setOrderIds] = useState<number[]>([]);
 
     const sleep = (ms: number) => {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -32,7 +35,33 @@ const SellTab = () => {
         setLoading(false);
     }
 
+    const handleCreateNewOrder = async (): Promise<BillResponseDTO> => {
+        let data = {
+            "name": "Hoa Don",
+            "address": "",
+            "phone": "",
+            "deleted": false,
+            "total": 0,
+            "subTotal": 0,
+            "voucher": null,
+            "type": "INSTORE"
+        };
+
+        try {
+            const response = await instance.post("/orders", data);
+
+            console.log("RESPONSE DATA");
+            console.log(response.data);
+
+            return response.data;
+        } catch (error) {
+            console.error("Error creating new order:", error);
+            throw error;
+        }
+    };
+
     const addNewTab = async () => {
+        const newOrder = await handleCreateNewOrder();
         if (tabs.length >= 5) {
             openNotification('Bạn không thể tạo quá 5 đơn hàng.');
             return;
@@ -43,27 +72,48 @@ const SellTab = () => {
         const newTab = {
             value: `tab${newTabIndex}`,
             label: `Đơn hàng ${newTabIndex}`,
-            content: <TabCard something={newTabIndex} /> // Nội dung có thể thay đổi tùy ý
+            content: <TabCard idOrder={newOrder.id} />
         };
         setTabs([...tabs, newTab]);
-        setCurrentTab(newTab.value); // Chuyển đến tab mới
+        setCurrentTab(newTab.value);
+
+        const updatedOrderIds = [...orderIds, newOrder.id];
+        console.log("updatedOrderIds")
+        console.log(updatedOrderIds)
+        setOrderIds(updatedOrderIds);
+        localStorage.setItem('orderIds', JSON.stringify(updatedOrderIds));
     };
 
     const removeTab = (tabValue: string) => {
         const filteredTabs = tabs.filter(tab => tab.value !== tabValue);
         setTabs(filteredTabs);
 
-        // Nếu tab đang active bị xóa, chuyển sang tab khác
+
         if (currentTab === tabValue && filteredTabs.length > 0) {
             setCurrentTab(filteredTabs[0].value);
         } else if (filteredTabs.length === 0) {
-            setCurrentTab(''); // Không có tab nào sau khi xóa
+            setCurrentTab('');
         }
     };
 
     useEffect(() => {
         console.log("Current Tab: ", currentTab);
     }, [currentTab]);
+
+
+    useEffect(() => {
+        const savedIds = JSON.parse(localStorage.getItem('orderIds') || '[]');
+        const newTabs = savedIds.map((id: number, index: number) => ({
+            value: `tab${index + 1}`,
+            label: `Đơn hàng ${index + 1}`,
+            content: <TabCard idOrder={id} />,
+        }));
+        setTabs(newTabs);
+        if (newTabs.length > 0) {
+            setCurrentTab(newTabs[0].value)
+        }
+    }, [])
+
 
     return (
         <div>
@@ -91,14 +141,12 @@ const SellTab = () => {
                                             value={tab.value}
                                             icon={<HiOutlineUser />}
                                             className={`${currentTab === tab.value ? "underline underline-offset-2" : ""} !p-1`}
-                                            
                                         >
                                             {tab.label}
                                         </TabNav>
                                         <CloseButton
                                             className="text-gray-800 text-sm"
                                             onClick={() => removeTab(tab.value)}
-                                            
                                         />
                                         <div>
                                             <p>

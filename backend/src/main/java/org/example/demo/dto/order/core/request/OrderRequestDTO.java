@@ -28,14 +28,14 @@ public class OrderRequestDTO {
 //    @NotBlank(message = "NotBlank")
     private String code;
 
-    @Length(message = "Length-5-25", min = 5, max = 25)
-    @NotNull(message = "NotNull")
-    @NotBlank(message = "NotBlank")
+//    @Length(message = "Length-5-25", min = 5, max = 25)
+//    @NotNull(message = "NotNull")
+//    @NotBlank(message = "NotBlank")
     private String address;
 
-    @Length(message = "Length-5-25", min = 5, max = 25)
-    @NotNull(message = "NotNull")
-    @NotBlank(message = "NotBlank")
+//    @Length(message = "Length-5-25", min = 5, max = 25)
+//    @NotNull(message = "NotNull")
+//    @NotBlank(message = "NotBlank")
     private String phone;
 
     private Boolean deleted;

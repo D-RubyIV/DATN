@@ -10,6 +10,7 @@ import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
+import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
@@ -22,8 +23,10 @@ import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.repository.history.HistoryRepository;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.customer.CustomerRepository;
+import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
+import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -34,6 +37,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author PHAH04
@@ -62,6 +66,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Autowired
     private OrderRequestMapper orderRequestMapper;
+
+    @Autowired
+    private RandomCodeGenerator randomCodeGenerator;
+
+    @Autowired
+    private StaffRepository staffRepository;
 
     public Page<OrderOverviewResponseDTO> findAllOverviewByPage(
             String status,
@@ -93,8 +103,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Transactional
     public Order save(OrderRequestDTO requestDTO) {
         Order entityMapped = orderRequestMapper.toEntity(requestDTO);
+        Staff staffDemo = staffRepository.findById(38).orElse(null); // demo nen set mac dinh
+
         entityMapped.setDeleted(false);
         entityMapped.setStatus(Status.PENDING);
+        entityMapped.setCode(randomCodeGenerator.generateRandomCode());
+        entityMapped.setStaff(staffDemo);
 
         Customer customerSelected = requestDTO.getCustomer();
         Voucher voucherSelected = requestDTO.getVoucher();
