@@ -15,9 +15,11 @@ import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.payment.Payment;
+import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.exception.EntityNotFoundException;
+import org.example.demo.exception.RestApiException;
 import org.example.demo.infrastructure.constant.PaymentMethodConstant;
 import org.example.demo.infrastructure.session.UserSession;
 import org.example.demo.mapper.order.core.request.OrderRequestMapper;
@@ -25,7 +27,9 @@ import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.repository.history.HistoryRepository;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.customer.CustomerRepository;
+import org.example.demo.repository.order_detail.OrderDetailRepository;
 import org.example.demo.repository.payment.PaymentRepository;
+import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
@@ -36,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,9 +70,17 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO>,I
     private OrderResponseMapper orderResponseMapper;
 
     @Autowired
+    private ProductDetailRepository productDetailRepository;
+    
+    @Autowired
     private OrderRequestMapper orderRequestMapper;
+    
     @Autowired
     private StaffRepository staffRepository;
+
+
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
 
     @Autowired
     private UserSession session;
@@ -103,7 +116,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO>,I
 
     @Override
     public Order findById(Integer id) {
-        return orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Bill not found"));
+        return orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("order not found"));
     }
 
     @Override
@@ -136,7 +149,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO>,I
         return orderSaved;
     }
 
-    // day la create bill tuong duong voi update
+    // day la create order tuong duong voi update
     @Override
     @Transactional
     public Order update(Integer id, OrderRequestDTO requestDTO) {
@@ -279,7 +292,72 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO>,I
         return orderRepository.save(entityFound);
     }
 
-    public void reloadTotalOrder(Order order) {
+    @Transactional
+    public Order changeStatusHungTest(Integer id, HistoryRequestDTO requestDTO, boolean isCancel) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + id));
+        History history = new History();
+        history.setOrder(order);
+        history.setNote(requestDTO.getNote());
+
+        List<Payment> payments = paymentRepository.findByOrderIdAndType(order.getId(), PaymentMethodConstant.CUSTOMER_PAYMENT);
+        Double totalPayment = 0.0;
+        for (Payment payment : payments) {
+            totalPayment+= payment.getTotalMoney();
+        }
+        if (isCancel) {
+            for (OrderDetail x : orderDetailRepository.findByOrderId(order.getId())) {
+                ProductDetail productDetail =x.getProductDetail();
+                productDetail.setQuantity(x.getQuantity() + productDetail.getQuantity());
+                productDetailRepository.save(productDetail);
+            }
+            history.setStatus(Status.CANCELED);
+            order.setStatus(Status.CANCELED);
+        } else {
+            if (order.getStatus() == Status.WAITING_YOUR_PAYMENT) {
+                if (Double.valueOf(totalPayment).compareTo(order.getTotal()) < 0) {
+                    throw new RestApiException("Vui lòng hoàn tất thanh toán!");
+                } else {
+                    history.setStatus(Status.DELIVERED);
+                    order.setStatus(Status.DELIVERED);
+                }
+            } else {
+                if (order.getStatus() == Status.PENDING) {
+                    history.setStatus(Status.TOSHIP);
+                    order.setStatus(Status.TOSHIP);
+                } else {
+                    if (order.getStatus() == Status.TORECEIVE) {
+                        if (Double.valueOf(totalPayment).compareTo(order.getTotal()) < 0) {
+                            throw new RestApiException("Vui lòng hoàn tất thanh toán!");
+                        }
+                    }
+                    moveToNextStatus(order, history);
+//                    order.setStatus(order.getStatus() + 1); // tanwf theo cap so
+//                    history.setStatus(order.getStatus());
+                }
+            }
+        }
+        Order orderSave = orderRepository.save(order);
+        
+        return  order;
+    }
+
+    private void moveToNextStatus(Order order, History history) {
+        Status currentStatus = order.getStatus();
+        int currentIndex = currentStatus.ordinal();
+        int nextIndex = currentIndex + 1;
+
+        if (nextIndex < Status.values().length) {
+            Status nextStatus = Status.values()[nextIndex];
+            order.setStatus(nextStatus);
+            history.setStatus(nextStatus);
+        } else {
+            // Xử lý nếu trạng thái đã đạt đến cuối danh sách (tùy chọn)
+            throw new IllegalStateException("Cannot move to the next status. Already at the last status.");
+        }
+    }
+
+
+        public void reloadTotalOrder(Order order) {
         double total = 0;
 
         List<OrderDetail> orderDetailList = order.getOrderDetails();
