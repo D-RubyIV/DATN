@@ -63,25 +63,25 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-    @Override
-    @Transactional
-    public CustomerDTO saveCustomer(CustomerDTO customerDTO) throws BadRequestException {
+        @Override
+        @Transactional
+        public CustomerDTO saveCustomer(CustomerDTO customerDTO) throws BadRequestException {
 
-        customerValidator.validateCustomer(customerDTO, null);
+            customerValidator.validateCustomer(customerDTO, null);
 
-        // Tạo mã khách hàng nếu không có
-        String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
-                ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
+            // Tạo mã khách hàng nếu không có
+            String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
+                    ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
 
-        // Chuyển đổi DTO sang entity Customer
-        Customer customer = CustomerMapper.toEntityCustomer(customerDTO, generatedCode);
+            // Chuyển đổi DTO sang entity Customer
+            Customer customer = CustomerMapper.toEntityCustomer(customerDTO, generatedCode);
 
-        // Lưu Customer vào database
-        Customer savedCustomer = customerRepository.save(customer);
+            // Lưu Customer vào database
+            Customer savedCustomer = customerRepository.save(customer);
 
-        // Chuyển đổi entity Customer đã lưu sang DTO để trả về
-        return CustomerMapper.toCustomerDTO(savedCustomer);
-    }
+            // Chuyển đổi entity Customer đã lưu sang DTO để trả về
+            return CustomerMapper.toCustomerDTO(savedCustomer);
+        }
 
     @Override
     public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) throws BadRequestException {

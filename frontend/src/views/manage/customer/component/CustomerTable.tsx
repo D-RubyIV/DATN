@@ -12,18 +12,19 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { FaFileDownload } from "react-icons/fa";
 
-
-
 type AddressDTO = {
     id: number;
     name: string;
     phone: string;
+    provinceId: string;
     province: string;
+    districtId: string;
     district: string;
+    wardId: string;
     ward: string;
     detail: string;
-    isDefault?: boolean; // Cho phép null và undefined
-}
+    isDefault: boolean;
+};
 
 type CustomerListDTO = {
     id: number;

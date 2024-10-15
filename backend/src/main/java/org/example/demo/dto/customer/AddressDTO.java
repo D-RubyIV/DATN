@@ -17,14 +17,20 @@ public class AddressDTO {
 
     private String phone;
 
+    private String provinceId;
+
     private String province;
 
+    private String districtId;
+
     private String district;
+
+    private String wardId;
 
     private String ward;
 
     private String detail;
 
-    private Boolean  isDefault;
+    private Boolean isDefault;
 
 }
