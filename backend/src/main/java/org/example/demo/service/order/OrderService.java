@@ -1,15 +1,12 @@
 package org.example.demo.service.order;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
-import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
@@ -28,16 +25,17 @@ import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
 import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.phah04.PageableObject;
+import org.example.demo.validate.group.GroupCreate;
+import org.example.demo.validate.group.GroupUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * @author PHAH04
@@ -102,6 +100,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Override
     @Transactional
     public Order save(OrderRequestDTO requestDTO) {
+        History orderHistory = new History();
         Order entityMapped = orderRequestMapper.toEntity(requestDTO);
         Staff staffDemo = staffRepository.findById(38).orElse(null); // demo nen set mac dinh
 
@@ -109,6 +108,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setStatus(Status.PENDING);
         entityMapped.setCode(randomCodeGenerator.generateRandomCode());
         entityMapped.setStaff(staffDemo);
+
+        orderHistory.setNote("Tạo Đơn Hàng");
 
         Customer customerSelected = requestDTO.getCustomer();
         Voucher voucherSelected = requestDTO.getVoucher();
@@ -128,8 +129,32 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Override
     @Transactional
-    public Order update(Integer integer, OrderRequestDTO requestDTO) {
-        return null;
+    public Order update(Integer id, OrderRequestDTO requestDTO) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found with id: " + id));
+        History history = new History();
+        history.setOrder(order);
+        // update customer
+        if (requestDTO.getCustomer() != null) {
+            if (requestDTO.getCustomer().getId() != null) {
+                Customer selectedCustomer = customerRepository.findById(requestDTO.getCustomer().getId()).orElse(null);
+                if (selectedCustomer != null) {
+                    order.setCustomer(selectedCustomer);
+                }
+            }
+            history.setNote("Thêm thông tin khách hàng");
+        }
+        // update voucher
+        if (requestDTO.getVoucher() != null) {
+            if (requestDTO.getVoucher().getId() != null) {
+                Voucher selectedVoucher = voucherRepository.findById(requestDTO.getVoucher().getId()).orElse(null);
+                if (selectedVoucher != null) {
+                    order.setVoucher(selectedVoucher);
+                }
+            }
+            history.setNote("Thêm thông tin khuyến mãi");
+        }
+        // return order
+        return orderRepository.save(order);
     }
 
     @Transactional
@@ -162,4 +187,30 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.getCountStatus();
     }
 
+//    public Order changeInfoCustomer(Integer id, OrderRequestDTO requestDTO) {
+//        Order order = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + id));
+//
+//        Customer existingCustomer = order.getCustomer();
+//        if (existingCustomer == null) {
+//            throw new EntityNotFoundException("Customer not found in the order.");
+//        }
+//        if (requestDTO.getCustomer().getName() != null) {
+//            existingCustomer.setName(requestDTO.getCustomer().getName());
+//        }
+//        if (requestDTO.getCustomer().getAddresses() != null) {
+//            existingCustomer.setAddresses(requestDTO.getCustomer().getAddresses());
+//        }
+//        if (requestDTO.getCustomer().getPhone() != null) {
+//            existingCustomer.setPhone(requestDTO.getCustomer().getPhone());
+//        }
+//        // bug : thay doi dia chi thi phai tinh lai phi ship (Chua lam)
+//        customerRepository.save(existingCustomer);
+//
+//        History history = new History();
+//        history.setOrder(order);
+//        history.setStatus(Status.EDIT_AN_ORDER);
+//        history.setNote("Cập nhật thông tin khách hàng!");
+//        historyRepository.save(history);
+//        return orderRepository.save(order);
+//    }
 }

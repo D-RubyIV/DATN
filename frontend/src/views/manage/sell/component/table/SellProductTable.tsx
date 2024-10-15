@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
@@ -17,6 +17,7 @@ import { Avatar, Button } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
 import { HiDocumentRemove, HiMinus, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { BillResponseDTO, OrderDetailResponseDTO } from '@/views/manage/order/store'
+import instance from '@/axios/CustomAxios'
 
 type Option = {
     value: number
@@ -25,9 +26,10 @@ type Option = {
 
 const { Tr, Th, Td, THead, TBody } = Table
 
-const totalData = fakeOrderDetail.length
+
 
 const pageSizeOption = [
+    { value: 5, label: '5 / page' },
     { value: 10, label: '10 / page' },
     { value: 20, label: '20 / page' },
     { value: 30, label: '30 / page' },
@@ -38,6 +40,35 @@ const pageSizeOption = [
 const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
 const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO }) => {
+    const [data, setData] = useState<OrderDetailResponseDTO[]>([]);
+    const [totalData, setTotalData] = useState(0)
+    const [pageSize, setPageSize] = useState(5)
+
+    useEffect(() => {
+        table.setPageSize(Number(pageSize))
+    }, [pageSize])
+
+
+    const getAllOrderDetailWithIdOrder = async (id: number) => {
+        console.log(table)
+        instance.get(`/order-details/get-by-order/${id}?page=${table.getState().pagination.pageIndex}&size=${table.getState().pagination.pageSize}`).then(function (response) {
+            setData(response.data.content)
+            setTotalData(response.data.totalElements)
+        })
+
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (selectedOrder && selectedOrder.id) {
+                console.log("Thay đổi selectedOrder");
+                await getAllOrderDetailWithIdOrder(selectedOrder.id);
+            }
+        };
+
+        fetchData();
+    }, [selectedOrder]);
+
     const columns = useMemo<ColumnDef<OrderDetailResponseDTO>[]>(
         () => [
             {
@@ -94,9 +125,6 @@ const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO })
         []
     )
 
-
-    const [data] = useState(selectedOrder.orderDetailResponseDTOS)
-
     const table = useReactTable({
         data,
         columns,
@@ -111,7 +139,7 @@ const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO })
     }
 
     const onSelectChange = (value = 0) => {
-        table.setPageSize(Number(value))
+        setPageSize(value)
     }
 
     const ActionColumn = ({ row }: { row: OrderDetailOverview }) => {

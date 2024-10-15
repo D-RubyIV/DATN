@@ -4,12 +4,14 @@ import { HiArrowsExpand, HiPlusCircle, HiQrcode, HiSelector } from "react-icons/
 import { Fragment } from "react/jsx-runtime";
 import { OrderDetailOverview } from "../..";
 import SellProductTable from "../table/SellProductTable";
-import SellCustomerTable from "../table/SellCustomerTable";
+import SellCustomerTable from "../dialog/SellCustomerModal";
 import { BillResponseDTO } from "@/views/manage/order/store";
 import CustomerInfo from "../other/CustomerInfo";
 import instance from "@/axios/CustomAxios";
 import PaymentInfo from "../other/PaymentInfo";
 import { PaymentSummaryProps } from "@/@types/payment";
+import SellProductModal from "../dialog/SellProductModal";
+import SellCustomerModal from "../dialog/SellCustomerModal";
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
 
@@ -33,13 +35,18 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
     const fetchSelectedOrder = async () => {
         await instance.get(`/orders/${idOrder}`).then(function (response) {
             console.log(response)
-            setSelectedOrder(response.data)
+            setSelectedOrder({ ...response.data })
         })
     }
     // 
     useEffect(() => {
         fetchSelectedOrder();
     }, [])
+
+    useEffect(() => {
+        console.log("Thay doi")
+        console.log(selectedOrder)
+    }, [selectedOrder])
 
 
     return (
@@ -59,7 +66,11 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                 variant="solid"
                                 style={{ backgroundColor: 'rgb(79, 70, 229)' }}
                                 className='flex items-center justify-center gap-2 button-bg-important'
-                                icon={<HiPlusCircle />}>Thêm sản phẩm</Button>
+                                icon={<HiPlusCircle />}
+                                onClick={() => {
+                                    setIsOpenProductModal(true)
+                                }}
+                            >Thêm sản phẩm</Button>
                         </div>
                     </div>
                     <div>
@@ -141,7 +152,12 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
             <div>
                 {
-                    isOpenCustomerModal && (<SellCustomerTable setIsOpenModal={setIsOpenCustomerModal}></SellCustomerTable>)
+                    (isOpenCustomerModal && selectedOrder) && (<SellCustomerModal setIsOpenCustomerModal={setIsOpenCustomerModal} selectOrder={selectedOrder} fetchData={fetchSelectedOrder}></SellCustomerModal>)
+                }
+            </div>
+            <div>
+                {
+                    (isOpenProductModal && selectedOrder) && (<SellProductModal setIsOpenProductModal={setIsOpenProductModal} selectOrder={selectedOrder} fetchData={fetchSelectedOrder}></SellProductModal>)
                 }
             </div>
 

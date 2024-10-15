@@ -12,6 +12,8 @@ import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.service.IService;
 import org.example.demo.service.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,5 +102,10 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             orderService.reloadTotalOrder(orderDetail.getOrder());
             return orderDetailRepository.save(orderDetail);
         }
+    }
+
+    public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable){
+        return orderDetailRepository.getPageOrderDetailWithPage(id, pageable);
+
     }
 }

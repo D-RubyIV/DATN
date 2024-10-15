@@ -10,6 +10,8 @@ import org.example.demo.repository.order.OrderProductDetailRepository;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.service.order_detail.OrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -56,5 +58,10 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     @Override
     public ResponseEntity<?> detail(Integer integer) {
         return null;
+    }
+
+    @GetMapping(value = "get-by-order/{id}")
+    public ResponseEntity<?> getAllOrderDetailByOrderId(@PathVariable Integer id, @PageableDefault(page = 0, size = 5) Pageable pageable) {
+        return ResponseEntity.ok(orderDetailService.getPageOrderDetailByIdOrder(id, pageable).map(s -> orderDetailResponseMapper.toDTO(s)));
     }
 }

@@ -69,7 +69,7 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                         </div>
                     </div>
                 </div>
-                <address className="not-italic">
+                <address className="not-italic my-2">
                     <Input
                         disabled
                         value={data?.address || ""}

@@ -134,29 +134,33 @@ const SellTab = () => {
                 {
                     tabs.length > 0 ? (
                         <Tabs value={currentTab} onChange={(val) => setCurrentTab(val)} >
-                            <TabList>
-                                {tabs.map((tab) => (
-                                    <div key={tab.value} className="flex items-center justify-center gap-1">
-                                        <TabNav
-                                            value={tab.value}
-                                            icon={<HiOutlineUser />}
-                                            className={`${currentTab === tab.value ? "underline underline-offset-2" : ""} !p-1`}
-                                        >
-                                            {tab.label}
-                                        </TabNav>
-                                        <CloseButton
-                                            className="text-gray-800 text-sm"
-                                            onClick={() => removeTab(tab.value)}
-                                        />
-                                        <div>
-                                            <p>
-                                                {
-                                                    " | "
-                                                }
-                                            </p>
+                            <TabList className='flex justify-between py-4'>
+                                <div className='flex gap-2'>
+                                    {tabs.map((tab) => (
+                                        <div key={tab.value} className="flex items-center justify-center gap-1">
+                                            <TabNav
+                                                value={tab.value}
+                                                icon={<HiOutlineUser />}
+                                                className={`${currentTab === tab.value ? "underline underline-offset-2" : ""} !p-1`}
+                                            >
+                                                {tab.label}
+                                            </TabNav>
+                                            <CloseButton
+                                                className="text-gray-800 text-[18px] hover:text-red-500 transition-all duration-500"
+                                                onClick={() => removeTab(tab.value)}
+                                            />
+                                            <div>
+                                                <p>
+                                                    {
+                                                        " | "
+                                                    }
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
+
+
                             </TabList>
                             <div className="py-1">
                                 {tabs.map((tab) => (

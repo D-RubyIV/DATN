@@ -21,10 +21,11 @@ import type { MouseEvent } from 'react'
 import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
 import { SellCustomerOverview } from '../..'
+import { BillResponseDTO } from '@/views/manage/order/store'
 
 type Direction = 'top' | 'right' | 'bottom' | 'left'
 
-const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetStateAction<boolean>> }) => {
+const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: { setIsOpenCustomerModal: Dispatch<SetStateAction<boolean>>, selectOrder: BillResponseDTO, fetchData: () => {} }) => {
     const inputRef = useRef(null)
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -51,7 +52,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
     })
     const handlePaginationChange = (pageIndex: number) => {
         setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
-        setQueryParam((pre) => ({...pre, page: pageIndex}))
+        setQueryParam((pre) => ({ ...pre, page: pageIndex }))
     }
     const handleSelectChange = (pageSize: number) => {
         setTableData((prevData) => ({
@@ -59,7 +60,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
             pageSize: pageSize, // Cập nhật pageSize mới
             pageIndex: 1 // Đặt pageIndex về 1
         }));
-        setQueryParam((pre) => ({...pre, size: pageSize}))
+        setQueryParam((pre) => ({ ...pre, size: pageSize }))
     }
     const handleSort = ({ order, key }: OnSortParam) => {
         console.log({ order, key })
@@ -98,7 +99,14 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
-                <Button size="xs" >
+                <Button
+                    size="xs"
+                    onClick={() => {
+                        console.log("Selected id customer: ", props.row.original.id)
+                        handleUpdateCustomerInfoOrder(props.row.original.id)
+
+                    }}
+                >
                     Chọn
                 </Button>
             ),
@@ -117,6 +125,21 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
 
     // FUCTION
     const { openNotification } = useToastContext();
+
+    const handleUpdateCustomerInfoOrder = async (idCustomer: number) => {
+        let data = {
+            "id": selectOrder.id,
+            "customer": {
+                "id": idCustomer
+            }
+        }
+        await instance.put(`/orders/${selectOrder.id}`, data).then(function (response) {
+            console.log(response)
+        })
+        await handleDelayScreen();
+        fetchData();
+        setIsOpenCustomerModal(false)
+    }
 
     const fetchDataProduct = async () => {
         setLoading(true)
@@ -144,7 +167,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
                 ...prevData,
                 ...{ query: val, pageIndex: 1 },
             }))
-            setQueryParam((pre) => ({...pre, query: val}))
+            setQueryParam((pre) => ({ ...pre, query: val }))
         }
     }
 
@@ -177,7 +200,7 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
                             <p className='font-semibold text-xl'>Danh sách khách hàng</p>
                         </div>
                         <div>
-                            <CloseButton onClick={() => setIsOpenModal(false)} className='text-2xl py-1'></CloseButton>
+                            <CloseButton onClick={() => setIsOpenCustomerModal(false)} className='text-2xl py-1'></CloseButton>
                         </div>
                     </div>
                     <div>
@@ -206,4 +229,4 @@ const SellCustomerTable = ({ setIsOpenModal }: { setIsOpenModal: Dispatch<SetSta
     );
 }
 
-export default SellCustomerTable;
+export default SellCustomerModal;

@@ -10,12 +10,15 @@ import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.util.phah04.PageableObject;
+import org.example.demo.validate.group.GroupCreate;
+import org.example.demo.validate.group.GroupUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -52,13 +55,13 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     @Override
     @PostMapping(value = "")
-    public ResponseEntity<OrderResponseDTO> create(@Valid @RequestBody OrderRequestDTO billResponseDTO) {
+    public ResponseEntity<OrderResponseDTO> create(@Validated(GroupCreate.class) @RequestBody OrderRequestDTO billResponseDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.save(billResponseDTO)));
     }
 
     @Override
     @PutMapping(value = {"{id}"})
-    public ResponseEntity<OrderResponseDTO> update(@PathVariable Integer id, OrderRequestDTO orderRequestDTO) {
+    public ResponseEntity<OrderResponseDTO> update(@PathVariable Integer id, @Validated(GroupUpdate.class) @RequestBody OrderRequestDTO orderRequestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.update(id, orderRequestDTO)));
 
     }
