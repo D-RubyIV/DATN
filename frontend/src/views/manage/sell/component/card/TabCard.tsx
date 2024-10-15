@@ -12,10 +12,9 @@ import PaymentInfo from "../other/PaymentInfo";
 import { PaymentSummaryProps } from "@/@types/payment";
 import SellProductModal from "../dialog/SellProductModal";
 import SellCustomerModal from "../dialog/SellCustomerModal";
+import QrCodeScanner from "../scanner/QrCodeScanner";
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
-
-
     // init variables
     const [isOpenCustomerModal, setIsOpenCustomerModal] = useState<boolean>(false)
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
@@ -36,6 +35,14 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
         await instance.get(`/orders/${idOrder}`).then(function (response) {
             console.log(response)
             setSelectedOrder({ ...response.data })
+            setPaymentSummaryProp({
+                data: {
+                    subTotal: response.data.subTotal || 0,
+                    tax: response.data.tax || 0,
+                    deliveryFees: response.data.deliveryFees || 0,
+                    total: response.data.total || 0
+                }
+            });
         })
     }
     // 
@@ -75,7 +82,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     </div>
                     <div>
                         {
-                            selectedOrder && <SellProductTable selectedOrder={selectedOrder}></SellProductTable>
+                            selectedOrder && <SellProductTable fetchData={fetchSelectedOrder} selectedOrder={selectedOrder}></SellProductTable>
                         }
                     </div>
                 </Card>

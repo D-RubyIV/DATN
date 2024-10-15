@@ -13,11 +13,12 @@ import {
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { fakeOrderDetail, OrderDetailOverview } from '../..'
-import { Avatar, Button } from '@/components/ui'
+import { Avatar, Button, Dialog, Notification, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
-import { HiDocumentRemove, HiMinus, HiPencil, HiPlusCircle } from 'react-icons/hi'
+import { HiDocumentRemove, HiMinus, HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { BillResponseDTO, OrderDetailResponseDTO } from '@/views/manage/order/store'
 import instance from '@/axios/CustomAxios'
+import { useToastContext } from '@/context/ToastContext'
 
 type Option = {
     value: number
@@ -39,15 +40,38 @@ const pageSizeOption = [
 
 const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
-const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO }) => {
+const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: BillResponseDTO, fetchData: () => {} }) => {
     const [data, setData] = useState<OrderDetailResponseDTO[]>([]);
     const [totalData, setTotalData] = useState(0)
     const [pageSize, setPageSize] = useState(5)
 
-    useEffect(() => {
-        table.setPageSize(Number(pageSize))
-    }, [pageSize])
+    const { openNotification } = useToastContext();
 
+
+    const handleUpdateQuantity = async (id: number, quantity: number) => {
+        await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
+            .then(function (response) {
+                fetchData();
+            })
+            .catch(function (err) {
+                console.error("Error updating quantity:", err);
+                if (err.response) {
+                    console.log("Status code:", err.response.status); // Trạng thái HTTP từ phản hồi
+                    if (err.response.status === 400) {
+                        openNotification(err.response.data.error)
+                    }
+                } else {
+                    console.log("Error message:", err.message); // Nếu không có phản hồi từ máy chủ
+                }
+            });
+    };
+
+
+    const handleConfirmDelete = async (id: number) => {
+        await instance.delete(`/order-details/${id}`).then(function (response) {
+            fetchData();
+        })
+    }
 
     const getAllOrderDetailWithIdOrder = async (id: number) => {
         console.log(table)
@@ -69,6 +93,7 @@ const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO })
         fetchData();
     }, [selectedOrder]);
 
+    
     const columns = useMemo<ColumnDef<OrderDetailResponseDTO>[]>(
         () => [
             {
@@ -86,9 +111,15 @@ const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO })
                     const row = props.row.original as OrderDetailResponseDTO;
                     return (
                         <div className='flex gap-1 items-center justify-start'>
-                            <button className='p-2 text-xl'><HiPlusCircle /></button>
+                            {
+                                (<button className='p-2 text-xl' onClick={() => { handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1) }}><HiPlusCircle /></button>)
+                            }
+
                             <label>{props.row.original.quantity} </label>
-                            <button className='p-2 text-xl'><HiMinus /></button>
+                            {
+                                (<button className='p-2 text-xl' onClick={() => { handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1) }}><HiMinusCircle /></button>)
+                            }
+
                         </div>
                     )
                 },
@@ -116,7 +147,11 @@ const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO })
                     const row = props.row.original as OrderDetailResponseDTO;
                     return (
                         <div>
-                            <Button icon={<HiMinus />} variant='plain'></Button>
+                            <Button
+                                icon={<HiMinus />}
+                                variant='plain'
+                                onClick={() => openDeleteConfirm(row.id)}
+                            ></Button>
                         </div>
                     )
                 },
@@ -133,6 +168,11 @@ const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO })
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
     })
+
+    useEffect(() => {
+        table.setPageSize(Number(pageSize))
+    }, [pageSize, table.initialState.pagination.pageIndex])
+
 
     const onPaginationChange = (page: number) => {
         table.setPageIndex(page - 1)
@@ -178,6 +218,49 @@ const SellProductTable = ({ selectedOrder }: { selectedOrder: BillResponseDTO })
                     </div>
                 </div>
             </div>
+        )
+    }
+
+    const closeNotification = (key: string | Promise<string>) => {
+        if (typeof key !== 'string') {
+            key.then((resolvedValue) => {
+                toast.remove(resolvedValue)
+            })
+        } else {
+            toast.remove(key)
+        }
+    }
+
+    const openDeleteConfirm = (idOrderDetail: number) => {
+        const notificationKey = toast.push(
+            <Notification title="Thông báo" duration={8000}>
+                <div>
+                    Xác nhận xóa sản phẩm này khỏi giỏ hàng ?
+                </div>
+                <div className="text-right mt-3">
+                    <Button
+                        size="sm"
+                        variant="solid"
+                        className="mr-2 bg-indigo-500"
+                        onClick={async () => {
+                            closeNotification(notificationKey as string | Promise<string>)
+                            await instance.delete(`/order-details/${idOrderDetail}`).then(function (response) {
+                                fetchData();
+                            })
+                        }}
+                    >
+                        Xác nhận
+                    </Button>
+                    <Button
+                        size="sm"
+                        onClick={() =>
+                            closeNotification(notificationKey as string | Promise<string>)
+                        }
+                    >
+                        Hủy
+                    </Button>
+                </div>
+            </Notification>
         )
     }
 
