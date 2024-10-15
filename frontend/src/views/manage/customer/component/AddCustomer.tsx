@@ -225,9 +225,7 @@ const AddCustomer = () => {
           selectedAddress.district = null;
           selectedAddress.wardId = "";
           selectedAddress.ward = null;
-          console.log('Id tỉnh: ' + selectedAddress.provinceId)
-          console.log('Tên tỉnh: ' + selectedAddress.province)
-
+        
           // Cập nhật Formik và gọi fetchDistricts
           form.setFieldValue('addressDTOS[0].provinceId', newValue.id);
           form.setFieldValue('addressDTOS[0].province', newValue.full_name);
@@ -295,11 +293,10 @@ const AddCustomer = () => {
   return (
     <Formik
       initialValues={initialCustomerState}
-      validationSchema={null}
-      enableReinitialize={true}
+      validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ setFieldValue, touched, errors, resetForm, isSubmitting }) => (
+      {({ setFieldValue, resetForm, isSubmitting, values, errors, touched }) => (
         <Form>
           <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
             <h1 className="text-center font-semibold text-2xl mb-4 text-transform: uppercase">Thêm khách hàng</h1>
@@ -310,7 +307,7 @@ const AddCustomer = () => {
                   <FormItem
                     asterisk
                     label="Tên khách hàng"
-                    invalid={errors.name && touched.name}
+                    invalid={touched.name && Boolean(errors.name)}
                     errorMessage={errors.name}
                   >
                     <Field
@@ -320,17 +317,13 @@ const AddCustomer = () => {
                       placeholder="Nhập tên khách hàng..."
                       style={{ height: '44px' }}
                       component={Input}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setFieldValue("name", e.target.value);
-                        setNewCustomer((prev) => ({ ...prev, name: e.target.value }));
-                      }}
                     />
                   </FormItem>
 
                   <FormItem
                     asterisk
                     label="Email"
-                    invalid={errors.email && touched.email}
+                    invalid={touched.email && Boolean(errors.email)}
                     errorMessage={errors.email}
                   >
                     <Field
@@ -340,17 +333,13 @@ const AddCustomer = () => {
                       style={{ height: '44px' }}
                       placeholder="Nhập email..."
                       component={Input}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setFieldValue("email", e.target.value);
-                        setNewCustomer((prev) => ({ ...prev, email: e.target.value }));
-                      }}
                     />
                   </FormItem>
 
                   <FormItem
                     asterisk
                     label="Số điện thoại"
-                    invalid={errors.phone && touched.phone}
+                    invalid={touched.phone && Boolean(errors.phone)}
                     errorMessage={errors.phone}
                   >
                     <Field
@@ -360,45 +349,30 @@ const AddCustomer = () => {
                       style={{ height: '44px' }}
                       placeholder="Nhập số điện thoại..."
                       component={Input}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        const value = e.target.value.replace(/[^0-9]/g, ''); // Chỉ cho phép nhập ký tự số
-                        setFieldValue("phone", value);
-                        setNewCustomer((prev) => ({ ...prev, phone: value }));
-                      }}
                     />
                   </FormItem>
 
                   <FormItem
                     asterisk
                     label="Ngày sinh"
-                    invalid={errors.birthDate && touched.birthDate}
+                    invalid={touched.birthDate && Boolean(errors.birthDate)}
                     errorMessage={errors.birthDate}
                   >
-
                     <DatePicker
                       inputtable
                       inputtableBlurClose={false}
                       placeholder="Chọn ngày sinh..."
-                      value={newCustomer.birthDate ? dayjs(newCustomer.birthDate, 'YYYY-MM-DD').toDate() : null}
-                      className="custom-datepicker"
+                      // Utilizes Formik's values for date display
+                      value={values.birthDate ? dayjs(values.birthDate, 'YYYY-MM-DD').toDate() : null}
                       onChange={(date) => {
-                        if (date) {
-                          const formattedDate = dayjs(date).format('YYYY-MM-DD');
-                          setFieldValue('birthDate', formattedDate);
-                          setNewCustomer((prev) => ({
-                            ...prev,
-                            birthDate: formattedDate
-                          }));
-                        } else {
-                          setFieldValue('birthDate', '');
-                          setNewCustomer((prev) => ({
-                            ...prev,
-                            birthDate: ''
-                          }));
-                        }
+                        const formattedDate = date ? dayjs(date).format('YYYY-MM-DD') : '';
+                        setFieldValue('birthDate', formattedDate);
+                      }}
+                      // Prevents selection of future dates
+                      disableDate={(current) => {
+                        return dayjs(current).isAfter(dayjs().endOf('day'));
                       }}
                     />
-
                   </FormItem>
 
                   <FormItem asterisk label="Giới tính">
@@ -433,21 +407,12 @@ const AddCustomer = () => {
                   <FormItem
                     asterisk
                     label="Tỉnh/thành phố"
-                  // invalid={!!(Array.isArray(errors.addressDTOS) &&
-                  //   errors.addressDTOS[0] &&
-                  //   typeof errors.addressDTOS[0] === 'object' &&
-                  //   errors.addressDTOS[0].province &&
-                  //   touched.addressDTOS?.[0]?.province)}
-                  // errorMessage={Array.isArray(errors.addressDTOS) &&
-                  //   errors.addressDTOS[0] &&
-                  //   typeof errors.addressDTOS[0] === 'object' ?
-                  //   errors.addressDTOS[0].province : undefined}
                   >
                     <Field name="addressDTOS[0].province">
                       {({ field, form }: FieldProps<CustomerDTO>) => (
                         <Select
                           isDisabled={loadingProvinces}
-                          value={provinces.find(prov => prov.full_name === newCustomer.addressDTOS[0].province) || null}
+                          value={provinces.find(prov => prov.full_name === values.addressDTOS[0].province) || null}
                           placeholder="Chọn tỉnh/thành phố..."
                           style={{ height: '40px' }}
                           getOptionLabel={(option) => option.full_name}
@@ -465,14 +430,12 @@ const AddCustomer = () => {
                   <FormItem
                     asterisk
                     label="Quận/huyện"
-                  // invalid={!!(errors.addressDTOS && errors.addressDTOS[0] && touched.addressDTOS?.[0]?.province)}
-                  // errorMessage={errors.addressDTOS?.[0]?.province}
                   >
                     <Field name="addressDTOS[0].district">
                       {({ form }: FieldProps<CustomerDTO>) => (
                         <Select
                           isDisabled={loadingDistricts}
-                          value={districts.find(prov => prov.full_name === newCustomer.addressDTOS[0].district) || null}
+                          value={districts.find(prov => prov.full_name === values.addressDTOS[0].district) || null}
                           placeholder="Chọn quận/huyện..."
                           style={{ height: '40px' }}
                           getOptionLabel={(option) => option.full_name}
@@ -485,19 +448,16 @@ const AddCustomer = () => {
                         />
                       )}
                     </Field>
-
                   </FormItem>
                   <FormItem
                     asterisk
                     label="Xã/phường/thị trấn"
-                  // invalid={errors.ward && touched.ward}
-                  // errorMessage={errors.ward}
                   >
                     <Field name="addressDTOS[0].ward">
                       {({ form }: FieldProps<CustomerDTO>) => (
                         <Select
                           isDisabled={loadingWards}
-                          value={wards.find(prov => prov.full_name === newCustomer.addressDTOS[0].ward) || null}
+                          value={wards.find(prov => prov.full_name === values.addressDTOS[0].ward) || null}
                           placeholder="Chọn xã/phường/thị trấn..."
                           style={{ height: '40px' }}
                           getOptionLabel={(option) => option.full_name}
@@ -510,13 +470,10 @@ const AddCustomer = () => {
                         />
                       )}
                     </Field>
-
                   </FormItem>
                   <FormItem
                     asterisk
                     label="Địa chỉ cụ thể"
-                  // invalid={errors.addressDTOS?.[0]?.detail && touched.addressDTOS?.[0]?.detail}
-                  // errorMessage={errors.addressDTOS?.[0]?.detail}
                   >
                     <Field
                       type="text"
@@ -525,18 +482,6 @@ const AddCustomer = () => {
                       style={{ height: '44px' }}
                       placeholder="Nhập địa chỉ cụ thể..."
                       component={Input}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setFieldValue("addressDTOS[0].detail", e.target.value); // Cập nhật để phản ánh đúng cấu trúc
-                        setNewCustomer((prev) => ({
-                          ...prev,
-                          addressDTOS: [
-                            {
-                              ...prev.addressDTOS[0],
-                              detail: e.target.value, // Cập nhật detail trong đối tượng addressDTOS
-                            },
-                          ],
-                        }));
-                      }}
                     />
                   </FormItem>
                   <FormItem>

@@ -82,7 +82,7 @@ const UpdateCustomer = () => {
         wardId: "",
         ward: null,
         detail: '',
-        isDefault: true,
+        isDefault: false,
     };
 
     const initialCustomerState: CustomerDTO = {
