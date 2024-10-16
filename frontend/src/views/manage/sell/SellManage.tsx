@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Fragment } from "react/jsx-runtime";
 import IndexView from "./IndexView";
 
 const SellManage = () => {

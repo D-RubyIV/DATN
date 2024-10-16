@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
-const QrCodeScanner = () => {
-  const [isScanning, setIsScanning] = useState(false);
+type IProps = {
+  isScanning: boolean;
+  setIsScanning: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const QrCodeScanner: React.FC<IProps> = ({ isScanning, setIsScanning }) => {
   const [scanResult, setScanResult] = useState<string | null>(null);
   const qrRegionId = "qr-reader";
+
+  useEffect(() => {
+    console.log("scanResult: ", scanResult)
+  }, [scanResult])
 
   useEffect(() => {
     let html5QrCodeScanner: Html5QrcodeScanner | null = null;
@@ -14,7 +22,7 @@ const QrCodeScanner = () => {
         qrRegionId,
         {
           fps: 10,
-          qrbox: {width: 900, height: 900},
+          qrbox: { width: 900, height: 900 },
           useBarCodeDetectorIfSupported: true,
           showZoomSliderIfSupported: true,
           defaultZoomValueIfSupported: 5,
@@ -43,13 +51,6 @@ const QrCodeScanner = () => {
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Quét mã QR</h2>
-      <button
-        onClick={() => setIsScanning(true)}
-        style={{ padding: "10px 20px", fontSize: "16px", marginBottom: "20px" }}
-      >
-        Mở Quét Mã QR
-      </button>
       {isScanning && (
         <div
           className="scan-modal"
@@ -77,12 +78,6 @@ const QrCodeScanner = () => {
           >
             Dừng Quét
           </button>
-        </div>
-      )}
-      {scanResult && (
-        <div style={{ marginTop: "20px" }}>
-          <h3>Kết quả quét:</h3>
-          <p>{scanResult}</p>
         </div>
       )}
     </div>

@@ -3,33 +3,18 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
-import axios from 'axios'
-import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/DataTable'
-import { DatePicker, Select } from '@/components/ui'
-import TabList from '@/components/ui/Tabs/TabList'
-import TabNav from '@/components/ui/Tabs/TabNav'
-import { Link } from 'react-router-dom'
-import { HiArrowLeft, HiArrowNarrowLeft, HiPlusCircle, HiRefresh, HiReply } from 'react-icons/hi'
-import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
-import { format } from 'date-fns';
+import type { ColumnDef, OnSortParam} from '@/components/shared/DataTable'
 import CloseButton from '@/components/ui/CloseButton'
 
 
-import Radio from '@/components/ui/Radio'
-import Drawer from '@/components/ui/Drawer'
-import type { MouseEvent } from 'react'
-import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
 import { SellCustomerOverview } from '../..'
 import { BillResponseDTO } from '@/views/manage/order/store'
-
-type Direction = 'top' | 'right' | 'bottom' | 'left'
 
 const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: { setIsOpenCustomerModal: Dispatch<SetStateAction<boolean>>, selectOrder: BillResponseDTO, fetchData: () => {} }) => {
     const inputRef = useRef(null)
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const [seletedProductDetail, setSeletedProductDetail] = useState<SellCustomerOverview>()
 
     const [tableData, setTableData] = useState<{
         pageIndex: number
@@ -124,10 +109,9 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
     })
 
     // FUCTION
-    const { openNotification } = useToastContext();
 
     const handleUpdateCustomerInfoOrder = async (idCustomer: number) => {
-        let data = {
+        const data = {
             "id": selectOrder.id,
             "customer": {
                 "id": idCustomer
@@ -200,7 +184,13 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
                             <p className='font-semibold text-xl'>Danh sách khách hàng</p>
                         </div>
                         <div>
-                            <CloseButton onClick={() => setIsOpenCustomerModal(false)} className='text-2xl py-1'></CloseButton>
+                            <CloseButton
+                                className='text-2xl py-1'
+                                onClick={() => {
+                                    setIsOpenCustomerModal(false)
+                                    document.body.style.overflow = 'auto';
+                                }}
+                            ></CloseButton>
                         </div>
                     </div>
                     <div>

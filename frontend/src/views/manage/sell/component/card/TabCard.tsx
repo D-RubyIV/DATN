@@ -1,10 +1,8 @@
-import { Button, Card, Radio, Switcher } from "@/components/ui";
+import { Button, Card, Radio } from "@/components/ui";
 import { useEffect, useState } from "react";
-import { HiArrowsExpand, HiPlusCircle, HiQrcode, HiSelector } from "react-icons/hi";
+import { HiArrowsExpand, HiPlusCircle, HiQrcode } from "react-icons/hi";
 import { Fragment } from "react/jsx-runtime";
-import { OrderDetailOverview } from "../..";
 import SellProductTable from "../table/SellProductTable";
-import SellCustomerTable from "../dialog/SellCustomerModal";
 import { BillResponseDTO } from "@/views/manage/order/store";
 import CustomerInfo from "../other/CustomerInfo";
 import instance from "@/axios/CustomAxios";
@@ -13,15 +11,18 @@ import { PaymentSummaryProps } from "@/@types/payment";
 import SellProductModal from "../dialog/SellProductModal";
 import SellCustomerModal from "../dialog/SellCustomerModal";
 import QrCodeScanner from "../scanner/QrCodeScanner";
+import { EPaymentMethod } from '@/views/manage/sell'
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
     // init variables
     const [isOpenCustomerModal, setIsOpenCustomerModal] = useState<boolean>(false)
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
-    const [listOrderDetailOverview, setListOrderDetailOverview] = useState<OrderDetailOverview[]>([])
     // order selected
     const [selectedOrder, setSelectedOrder] = useState<BillResponseDTO>()
+    // scanner
+    const [isScanning, setIsScanning] = useState(false);
     // payment
+    const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>(E);
     const [paymentSummaryProp, setPaymentSummaryProp] = useState<PaymentSummaryProps>({
         data: {
             subTotal: 10,
@@ -67,7 +68,11 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             </label>
                         </div>
                         <div className="flex gap-4">
-                            <Button variant="default" icon={<HiQrcode />}>Quét mã QR</Button>
+                            <Button
+                                variant="default"
+                                icon={<HiQrcode />}
+                                onClick={() => setIsScanning(true)}
+                            >Quét mã QR</Button>
                             <Button
                                 size='sm'
                                 variant="solid"
@@ -76,6 +81,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                 icon={<HiPlusCircle />}
                                 onClick={() => {
                                     setIsOpenProductModal(true)
+                                    document.body.style.overflow = 'hidden';
                                 }}
                             >Thêm sản phẩm</Button>
                         </div>
@@ -167,7 +173,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     (isOpenProductModal && selectedOrder) && (<SellProductModal setIsOpenProductModal={setIsOpenProductModal} selectOrder={selectedOrder} fetchData={fetchSelectedOrder}></SellProductModal>)
                 }
             </div>
-
+            <QrCodeScanner isScanning={isScanning} setIsScanning={setIsScanning}></QrCodeScanner>
         </Fragment >
     );
 }

@@ -42,3 +42,7 @@ export const fakeOrderDetail: OrderDetailOverview[] = [
         price: 100                                // Giá (có thể là giá của 1 sản phẩm)
     },
 ];
+export enum EPaymentMethod {
+    transfer = 'sss',
+    cash = 'other'
+}

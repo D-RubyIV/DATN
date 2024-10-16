@@ -24,3 +24,6 @@
 .custom-datepicker {
     height: 44px !important;
 }
+.no-scroll {
+    overflow: hidden;
+}
