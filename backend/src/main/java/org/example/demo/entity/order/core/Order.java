@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
+import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
@@ -30,6 +31,24 @@ public class Order extends BaseEntity {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "provinceCode")
+    private String provinceCode;
+
+    @Column(name = "provinceName")
+    private String provinceName;
+
+    @Column(name = "districtCode")
+    private String districtCode;
+
+    @Column(name = "districtName")
+    private String districtName;
+
+    @Column(name = "wardCode")
+    private String wardCode;
+
+    @Column(name = "wardName")
+    private String wardName;
+
     @Column(name = "phone")
     private String phone;
 
@@ -45,6 +64,10 @@ public class Order extends BaseEntity {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @Column(name = "payment")
+    @Enumerated(EnumType.STRING)
+    private Payment payment;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
