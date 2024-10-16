@@ -3,12 +3,14 @@ import { Card, Radio } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
 import { Fragment } from 'react/jsx-runtime'
 import { EPaymentMethod } from '@/views/manage/sell'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { updateOrder } from '@/services/OrderService'
+import { BillResponseDTO } from '@/views/manage/order/store'
 
-const PaymentInfo = ({ data }: PaymentSummaryProps) => {
+const PaymentInfo = ({ selectedOrder, data }: { selectedOrder: BillResponseDTO, data: PaymentSummaryProps }) => {
     return (
         <Fragment>
-            <PaymentSummary data={data}></PaymentSummary>
+            <PaymentSummary data={data} selectedOrder={selectedOrder}></PaymentSummary>
         </Fragment>
     )
 }
@@ -34,11 +36,17 @@ const PaymentRow = ({ label, value, isLast }: PaymentInfoProps) => {
     )
 }
 
-const PaymentSummary = ({ data }: PaymentSummaryProps) => {
+const PaymentSummary = ({ selectedOrder, data }: { selectedOrder: BillResponseDTO, data: PaymentSummaryProps }) => {
     const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>(EPaymentMethod.CASH)
+
+    useEffect(() => {
+        setPaymentMethod(selectedOrder.payment as EPaymentMethod)
+    }, [data])
 
     const onChangeMethod = (val: EPaymentMethod) => {
         setPaymentMethod(val)
+        const response = updateOrder(selectedOrder.id, { payment: val })
+        console.log(response)
     }
 
     return (

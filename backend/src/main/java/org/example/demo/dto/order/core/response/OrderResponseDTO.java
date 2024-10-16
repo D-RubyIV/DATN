@@ -10,6 +10,7 @@ import org.example.demo.dto.history.response.HistoryResponseDTO;
 import org.example.demo.dto.order.properties.response.OrderDetailResponseDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
+import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
 
@@ -40,6 +41,8 @@ public class OrderResponseDTO {
     private Status status;
     @Enumerated(EnumType.STRING)
     private Type type;
+    @Enumerated(EnumType.STRING)
+    private Payment payment;
     private Double total;
     private Double subTotal;
     private CustomerResponseDTO customerResponseDTO;

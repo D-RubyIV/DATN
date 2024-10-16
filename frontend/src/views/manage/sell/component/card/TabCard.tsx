@@ -22,12 +22,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
     const [isScanning, setIsScanning] = useState(false)
     // payment
     const [paymentSummaryProp, setPaymentSummaryProp] = useState<PaymentSummaryProps>({
-        data: {
-            subTotal: 10,
-            tax: 10,
-            deliveryFees: 10,
-            total: 1000
-        }
+        subTotal: 10,
+        tax: 10,
+        deliveryFees: 10,
+        total: 1000
     })
     // func 
     const fetchSelectedOrder = async () => {
@@ -35,12 +33,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
             console.log(response)
             setSelectedOrder({ ...response.data })
             setPaymentSummaryProp({
-                data: {
-                    subTotal: response.data.subTotal || 0,
-                    tax: response.data.tax || 0,
-                    deliveryFees: response.data.deliveryFees || 0,
-                    total: response.data.total || 0
-                }
+                subTotal: response.data.subTotal || 0,
+                tax: response.data.tax || 0,
+                deliveryFees: response.data.deliveryFees || 0,
+                total: response.data.total || 0
             })
         })
     }
@@ -132,7 +128,8 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     </div>
                     <div className="py-2">
                         {
-                            selectedOrder ? (<PaymentInfo data={paymentSummaryProp.data} />) : (<div></div>)
+                            selectedOrder ? (
+                                <PaymentInfo selectedOrder={selectedOrder} data={paymentSummaryProp} />) : (<div></div>)
                         }
                     </div>
                     <div>

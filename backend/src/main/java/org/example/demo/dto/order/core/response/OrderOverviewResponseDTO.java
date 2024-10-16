@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
 
@@ -31,6 +32,8 @@ public class OrderOverviewResponseDTO {
     private Status status;
     @Enumerated(EnumType.STRING)
     private Type type;
+    @Enumerated(EnumType.STRING)
+    private Payment payment;
     private Double total;
     private Double subTotal;
     private String customerName;

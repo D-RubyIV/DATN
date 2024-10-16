@@ -5,6 +5,7 @@ import { BillResponseDTO } from '@/views/manage/order/store'
 import { useEffect, useState } from 'react'
 import { HiExternalLink, HiMail, HiPencilAlt, HiPhone } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
+import { updateOrder } from '@/services/OrderService'
 
 const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState(false)
@@ -15,11 +16,23 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     const addresses = customer.addressResponseDTOS || []
 
     useEffect(() => {
+        const typeLocal = data.type
+        if (typeLocal === 'ONLINE'){
+            setIsShipping(true)
+        }
+        else {
+            setIsShipping(false)
+        }
+    }, [data])
+
+    useEffect(() => {
         console.log('isShipping: ', isShipping)
     }, [isShipping])
 
     const onChangeMethod = (val: boolean) => {
         setIsShipping(val)
+        const response = updateOrder(data.id, { 'type': val ? 'ONLINE' : 'INSTORE' })
+        console.log(response)
     }
 
     return (
@@ -83,7 +96,7 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                     <address className="not-italic my-2">
                         <Input
                             disabled
-                            value={data?.address || "N/A" + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''}
+                            value={data?.address || 'N/A' + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''}
                             suffix={
                                 <Tooltip title="Chỉnh sửa địa chỉ">
                                     <HiPencilAlt

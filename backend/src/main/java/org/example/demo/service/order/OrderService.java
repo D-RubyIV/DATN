@@ -154,6 +154,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             history.setNote("Thêm thông tin khuyến mãi");
         }
         // UPDATE THEM
+        // payment
+        order.setPayment(requestDTO.getPayment());
+        order.setType(requestDTO.getType());
         // province
         order.setProvinceName(requestDTO.getProvinceName());
         order.setProvinceId(requestDTO.getProvinceId());

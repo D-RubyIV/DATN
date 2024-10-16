@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.enums.Type;
@@ -41,17 +42,21 @@ public class OrderRequestDTO {
 
     private Boolean deleted;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
-
-    @NotNull(message = "NotNull")
+    //    @NotNull(message = "NotNull")
     private Double total;
 
-    @NotNull(message = "NotNull")
+    //    @NotNull(message = "NotNull")
     private Double subTotal;
 
-    @NotNull(message = "NotNull")
+    //    @NotNull(message = "NotNull")
+    @Enumerated(EnumType.STRING)
     private Type type;
+
+    @Enumerated(EnumType.STRING)
+    private Payment payment;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     private String provinceId;
 

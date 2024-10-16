@@ -16,6 +16,7 @@ export type StatusBill = {
 
 export type EBillStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
 export type EBillType = 'INSTORE' | 'ONLINE'; // Add more types if needed
+export type EBillPayment= 'CASH' | 'TRANSFER'; // Add more types if needed
 
 type AddressResponseDTOS = {
     id: number,
@@ -80,6 +81,7 @@ export type BillResponseDTO = {
     deleted: boolean;
     status: EBillStatus;
     type: EBillType;
+    payment: EBillPayment;
     total: number;
     subTotal: number;
     provinceId: string;    // ID của tỉnh

@@ -5,10 +5,8 @@ export type PaymentInfoProps = {
 }
 
 export type PaymentSummaryProps = {
-    data?: {
-        subTotal: number
-        tax: number
-        deliveryFees: number
-        total: number
-    }
+    total: number | undefined
+    deliveryFees: number | undefined
+    subTotal: number | undefined
+    tax: number | undefined
 }
