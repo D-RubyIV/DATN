@@ -31,20 +31,20 @@ public class Order extends BaseEntity {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "provinceCode")
-    private String provinceCode;
+    @Column(name = "province_id")
+    private String provinceId;
 
-    @Column(name = "provinceName")
+    @Column(name = "province_name")
     private String provinceName;
 
-    @Column(name = "districtCode")
-    private String districtCode;
+    @Column(name = "district_id")
+    private String districtId;
 
-    @Column(name = "districtName")
-    private String districtName;
+    @Column(name = "district_name")
+    private String districName;
 
-    @Column(name = "wardCode")
-    private String wardCode;
+    @Column(name = "ward_id")
+    private String wardId;
 
     @Column(name = "wardName")
     private String wardName;

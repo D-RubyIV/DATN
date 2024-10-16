@@ -3045,35 +3045,6 @@
           <Length>1</Length>
           <Precision>1</Precision>
         </Column>
-        <Column Name="end_date">
-          <Checked>true</Checked>
-          <DataType>date</DataType>
-          <GeneratorOptions xsi:type="DateGeneratorOptions">
-            <AllowNulls>false</AllowNulls>
-            <NullProportion>10</NullProportion>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <UseDefault>false</UseDefault>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>65</SeedValue>
-            <SequentialValueTicks>864000000000</SequentialValueTicks>
-            <OffsetFromColumnMaxTimeTicks>10000000</OffsetFromColumnMaxTimeTicks>
-            <OffsetFromColumnMinTimeTicks>10000000</OffsetFromColumnMinTimeTicks>
-            <DateTimeRange>MinMaxDate</DateTimeRange>
-            <UseOffsetDetails>false</UseOffsetDetails>
-            <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
-            <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
-            <MinDate>1970-01-01T00:00:00</MinDate>
-            <MaxDate>2024-10-06T00:00:00</MaxDate>
-            <IsRandomizeDate>true</IsRandomizeDate>
-          </GeneratorOptions>
-          <GeneratorType>SqlDateGenerator</GeneratorType>
-          <GeneratorId>6433a1c1-a207-4cb6-bb6c-b7c113b0160c</GeneratorId>
-          <GeneratorName>date</GeneratorName>
-          <GeneratorDescription>fill with date values</GeneratorDescription>
-          <Length>3</Length>
-          <Precision>10</Precision>
-        </Column>
         <Column Name="max_percent">
           <Checked>true</Checked>
           <DataType>int</DataType>
@@ -3145,35 +3116,6 @@
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
-        <Column Name="start_date">
-          <Checked>true</Checked>
-          <DataType>date</DataType>
-          <GeneratorOptions xsi:type="DateGeneratorOptions">
-            <AllowNulls>false</AllowNulls>
-            <NullProportion>10</NullProportion>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <UseDefault>false</UseDefault>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>66</SeedValue>
-            <SequentialValueTicks>864000000000</SequentialValueTicks>
-            <OffsetFromColumnMaxTimeTicks>10000000</OffsetFromColumnMaxTimeTicks>
-            <OffsetFromColumnMinTimeTicks>10000000</OffsetFromColumnMinTimeTicks>
-            <DateTimeRange>MinMaxDate</DateTimeRange>
-            <UseOffsetDetails>false</UseOffsetDetails>
-            <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
-            <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
-            <MinDate>1970-01-01T00:00:00</MinDate>
-            <MaxDate>2024-10-06T00:00:00</MaxDate>
-            <IsRandomizeDate>true</IsRandomizeDate>
-          </GeneratorOptions>
-          <GeneratorType>SqlDateGenerator</GeneratorType>
-          <GeneratorId>6433a1c1-a207-4cb6-bb6c-b7c113b0160c</GeneratorId>
-          <GeneratorName>date</GeneratorName>
-          <GeneratorDescription>fill with date values</GeneratorDescription>
-          <Length>3</Length>
-          <Precision>10</Precision>
-        </Column>
         <Column Name="created_date">
           <Checked>true</Checked>
           <DataType>datetime2</DataType>
@@ -3194,6 +3136,84 @@
             <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
             <MinDate>1970-01-01T00:00:00</MinDate>
             <MaxDate>2024-10-06T00:00:00</MaxDate>
+            <IsRandomizeDate>true</IsRandomizeDate>
+            <IsRandomizeTime>true</IsRandomizeTime>
+            <MinFraction>0</MinFraction>
+            <MaxFraction>999</MaxFraction>
+            <MaxAllowedFraction>999</MaxAllowedFraction>
+            <IsRandomizeFraction>true</IsRandomizeFraction>
+            <MaxTime>863990000000</MaxTime>
+            <MinTime>10000000</MinTime>
+            <Scale>6</Scale>
+            <Precision>26</Precision>
+          </GeneratorOptions>
+          <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
+          <GeneratorName>datetime2</GeneratorName>
+          <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
+          <Scale>6</Scale>
+          <Length>8</Length>
+          <Precision>26</Precision>
+        </Column>
+        <Column Name="end_date">
+          <Checked>true</Checked>
+          <DataType>datetime2</DataType>
+          <GeneratorOptions xsi:type="DateTime2GeneratorOptions">
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <UseDefault>false</UseDefault>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>66</SeedValue>
+            <SequentialValueTicks>864000000000</SequentialValueTicks>
+            <OffsetFromColumnMaxTimeTicks>10000000</OffsetFromColumnMaxTimeTicks>
+            <OffsetFromColumnMinTimeTicks>10000000</OffsetFromColumnMinTimeTicks>
+            <DateTimeRange>MinMaxDate</DateTimeRange>
+            <UseOffsetDetails>false</UseOffsetDetails>
+            <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
+            <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
+            <MinDate>1970-01-01T00:00:00</MinDate>
+            <MaxDate>2024-10-16T00:00:00</MaxDate>
+            <IsRandomizeDate>true</IsRandomizeDate>
+            <IsRandomizeTime>true</IsRandomizeTime>
+            <MinFraction>0</MinFraction>
+            <MaxFraction>999</MaxFraction>
+            <MaxAllowedFraction>999</MaxAllowedFraction>
+            <IsRandomizeFraction>true</IsRandomizeFraction>
+            <MaxTime>863990000000</MaxTime>
+            <MinTime>10000000</MinTime>
+            <Scale>6</Scale>
+            <Precision>26</Precision>
+          </GeneratorOptions>
+          <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
+          <GeneratorName>datetime2</GeneratorName>
+          <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
+          <Scale>6</Scale>
+          <Length>8</Length>
+          <Precision>26</Precision>
+        </Column>
+        <Column Name="start_date">
+          <Checked>true</Checked>
+          <DataType>datetime2</DataType>
+          <GeneratorOptions xsi:type="DateTime2GeneratorOptions">
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <UseDefault>false</UseDefault>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>67</SeedValue>
+            <SequentialValueTicks>864000000000</SequentialValueTicks>
+            <OffsetFromColumnMaxTimeTicks>10000000</OffsetFromColumnMaxTimeTicks>
+            <OffsetFromColumnMinTimeTicks>10000000</OffsetFromColumnMinTimeTicks>
+            <DateTimeRange>MinMaxDate</DateTimeRange>
+            <UseOffsetDetails>false</UseOffsetDetails>
+            <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
+            <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
+            <MinDate>1970-01-01T00:00:00</MinDate>
+            <MaxDate>2024-10-16T00:00:00</MaxDate>
             <IsRandomizeDate>true</IsRandomizeDate>
             <IsRandomizeTime>true</IsRandomizeTime>
             <MinFraction>0</MinFraction>
@@ -4795,6 +4815,67 @@
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
         </Column>
+        <Column Name="district_id">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>26</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>3303</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
+          <GeneratorName>ID (random)</GeneratorName>
+          <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
+          <Length>255</Length>
+        </Column>
+        <Column Name="district_name">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>26</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>($"USStateCodes.csv[0]")-(\C{2})</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>e4369865-1497-4a9d-9e00-ca1d665a5cbd</GeneratorId>
+          <GeneratorName>US Region</GeneratorName>
+          <GeneratorDescription>NY-IX, IN-FA, OH-BQ, AK-NV, TX-CC, VA-US, KS-EL, ...</GeneratorDescription>
+          <GeneratorCategory>Location</GeneratorCategory>
+          <Length>255</Length>
+        </Column>
+        <Column Name="payment">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="CheckConstraintGeneratorOptions">
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>26</SeedValue>
+            <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
+          </GeneratorOptions>
+          <GeneratorType>CheckConstraintGenerator</GeneratorType>
+          <GeneratorId>dcc70628-0233-4b9a-8f60-5847e17048a3</GeneratorId>
+          <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
+          <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
+          <HasCheckConstraint>true</HasCheckConstraint>
+          <Length>255</Length>
+        </Column>
         <Column Name="phone">
           <Checked>true</Checked>
           <DataType>varchar</DataType>
@@ -4813,6 +4894,48 @@
           <GeneratorId>bc9e562a-8988-4d68-bc3b-62a8793cd377</GeneratorId>
           <GeneratorName>Phone Number (domestic)</GeneratorName>
           <GeneratorDescription>(102) 136-0584, (462) 681-9028, (252) 889-1273, ...</GeneratorDescription>
+          <GeneratorCategory>Personal</GeneratorCategory>
+          <Length>255</Length>
+        </Column>
+        <Column Name="province_id">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>27</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>201</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
+          <GeneratorName>ID (random)</GeneratorName>
+          <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
+          <Length>255</Length>
+        </Column>
+        <Column Name="province_name">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>26</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
+          <GeneratorName>NickName</GeneratorName>
+          <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
           <Length>255</Length>
         </Column>
@@ -4852,6 +4975,48 @@
           <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
           <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
+          <Length>255</Length>
+        </Column>
+        <Column Name="ward_id">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>28</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>\d{5}</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
+          <GeneratorName>ID (random)</GeneratorName>
+          <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
+          <Length>255</Length>
+        </Column>
+        <Column Name="ward_name">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>27</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
+          <GeneratorName>NickName</GeneratorName>
+          <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
+          <GeneratorCategory>Personal</GeneratorCategory>
           <Length>255</Length>
         </Column>
       </Columns>

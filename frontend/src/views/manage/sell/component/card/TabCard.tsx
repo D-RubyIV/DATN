@@ -1,17 +1,16 @@
-import { Button, Card, Radio } from "@/components/ui";
-import { useEffect, useState } from "react";
-import { HiArrowsExpand, HiPlusCircle, HiQrcode } from "react-icons/hi";
-import { Fragment } from "react/jsx-runtime";
-import SellProductTable from "../table/SellProductTable";
-import { BillResponseDTO } from "@/views/manage/order/store";
-import CustomerInfo from "../other/CustomerInfo";
-import instance from "@/axios/CustomAxios";
-import PaymentInfo from "../other/PaymentInfo";
-import { PaymentSummaryProps } from "@/@types/payment";
-import SellProductModal from "../dialog/SellProductModal";
-import SellCustomerModal from "../dialog/SellCustomerModal";
-import QrCodeScanner from "../scanner/QrCodeScanner";
-import { EPaymentMethod } from '@/views/manage/sell'
+import { Button, Card } from '@/components/ui'
+import { useEffect, useState } from 'react'
+import { HiArrowsExpand, HiPlusCircle, HiQrcode } from 'react-icons/hi'
+import { Fragment } from 'react/jsx-runtime'
+import SellProductTable from '../table/SellProductTable'
+import { BillResponseDTO } from '@/views/manage/order/store'
+import CustomerInfo from '../other/CustomerInfo'
+import instance from '@/axios/CustomAxios'
+import PaymentInfo from '../other/PaymentInfo'
+import { PaymentSummaryProps } from '@/@types/payment'
+import SellProductModal from '../dialog/SellProductModal'
+import SellCustomerModal from '../dialog/SellCustomerModal'
+import QrCodeScanner from '../scanner/QrCodeScanner'
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
     // init variables
@@ -20,9 +19,8 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
     // order selected
     const [selectedOrder, setSelectedOrder] = useState<BillResponseDTO>()
     // scanner
-    const [isScanning, setIsScanning] = useState(false);
+    const [isScanning, setIsScanning] = useState(false)
     // payment
-    const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>(E);
     const [paymentSummaryProp, setPaymentSummaryProp] = useState<PaymentSummaryProps>({
         data: {
             subTotal: 10,
@@ -30,10 +28,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
             deliveryFees: 10,
             total: 1000
         }
-    });
+    })
     // func 
     const fetchSelectedOrder = async () => {
-        await instance.get(`/orders/${idOrder}`).then(function (response) {
+        await instance.get(`/orders/${idOrder}`).then(function(response) {
             console.log(response)
             setSelectedOrder({ ...response.data })
             setPaymentSummaryProp({
@@ -43,16 +41,16 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     deliveryFees: response.data.deliveryFees || 0,
                     total: response.data.total || 0
                 }
-            });
+            })
         })
     }
     // 
     useEffect(() => {
-        fetchSelectedOrder();
+        fetchSelectedOrder()
     }, [])
 
     useEffect(() => {
-        console.log("Thay doi")
+        console.log('Thay doi')
         console.log(selectedOrder)
     }, [selectedOrder])
 
@@ -74,21 +72,22 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                 onClick={() => setIsScanning(true)}
                             >Quét mã QR</Button>
                             <Button
-                                size='sm'
+                                size="sm"
                                 variant="solid"
                                 style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                                className='flex items-center justify-center gap-2 button-bg-important'
+                                className="flex items-center justify-center gap-2 button-bg-important"
                                 icon={<HiPlusCircle />}
                                 onClick={() => {
                                     setIsOpenProductModal(true)
-                                    document.body.style.overflow = 'hidden';
+                                    document.body.style.overflow = 'hidden'
                                 }}
                             >Thêm sản phẩm</Button>
                         </div>
                     </div>
                     <div>
                         {
-                            selectedOrder && <SellProductTable fetchData={fetchSelectedOrder} selectedOrder={selectedOrder}></SellProductTable>
+                            selectedOrder && <SellProductTable fetchData={fetchSelectedOrder}
+                                                               selectedOrder={selectedOrder}></SellProductTable>
                         }
                     </div>
                 </Card>
@@ -100,7 +99,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                         <div className="flex gap-3 justify-between">
                             <div>
                                 <Button
-                                    size='sm'
+                                    size="sm"
                                     variant="default"
                                     icon={<HiArrowsExpand />}
                                     onClick={() => setIsOpenCustomerModal(true)}
@@ -109,10 +108,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             </div>
                             <div>
                                 <Button
-                                    size='sm'
+                                    size="sm"
                                     variant="solid"
                                     style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                                    className='flex items-center justify-center gap-2 button-bg-important'
+                                    className="flex items-center justify-center gap-2 button-bg-important"
                                     icon={<HiPlusCircle />}
                                 >Thêm mới</Button>
                             </div>
@@ -129,20 +128,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                         <div className="font-semibold text-[16px] text-black">
                             <label>Thông tin thanh toán</label>
                         </div>
-                        <div className="flex gap-3 justify-between">
-                            <div>
-                                <div className="text-black">
-                                    <div className="font-semibold">
-                                        <Radio className="mr-4" name="simpleRadioExample">
-                                            Chuyển khoản
-                                        </Radio>
-                                        <Radio defaultChecked name="simpleRadioExample">
-                                            Tiền mặt
-                                        </Radio>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                     <div className="py-2">
                         {
@@ -152,10 +138,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     <div>
                         <Button
                             block
-                            size='sm'
+                            size="sm"
                             variant="solid"
                             style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                            className='flex items-center justify-center gap-2 button-bg-important'
+                            className="flex items-center justify-center gap-2 button-bg-important"
                         >
                             Xác nhận đơn hàng
                         </Button>
@@ -165,17 +151,21 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
             <div>
                 {
-                    (isOpenCustomerModal && selectedOrder) && (<SellCustomerModal setIsOpenCustomerModal={setIsOpenCustomerModal} selectOrder={selectedOrder} fetchData={fetchSelectedOrder}></SellCustomerModal>)
+                    (isOpenCustomerModal && selectedOrder) && (
+                        <SellCustomerModal setIsOpenCustomerModal={setIsOpenCustomerModal} selectOrder={selectedOrder}
+                                           fetchData={fetchSelectedOrder}></SellCustomerModal>)
                 }
             </div>
             <div>
                 {
-                    (isOpenProductModal && selectedOrder) && (<SellProductModal setIsOpenProductModal={setIsOpenProductModal} selectOrder={selectedOrder} fetchData={fetchSelectedOrder}></SellProductModal>)
+                    (isOpenProductModal && selectedOrder) && (
+                        <SellProductModal setIsOpenProductModal={setIsOpenProductModal} selectOrder={selectedOrder}
+                                          fetchData={fetchSelectedOrder}></SellProductModal>)
                 }
             </div>
             <QrCodeScanner isScanning={isScanning} setIsScanning={setIsScanning}></QrCodeScanner>
-        </Fragment >
-    );
+        </Fragment>
+    )
 }
 
-export default TabCard;
+export default TabCard

@@ -43,6 +43,6 @@ export const fakeOrderDetail: OrderDetailOverview[] = [
     },
 ];
 export enum EPaymentMethod {
-    transfer = 'sss',
-    cash = 'other'
+    TRANSFER = 'TRANSFER',
+    CASH = 'CASH'
 }

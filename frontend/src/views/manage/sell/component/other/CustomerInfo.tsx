@@ -2,16 +2,25 @@ import { IconText } from '@/components/shared'
 import { Avatar, Card, Input, Radio, Tooltip } from '@/components/ui'
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal'
 import { BillResponseDTO } from '@/views/manage/order/store'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HiExternalLink, HiMail, HiPencilAlt, HiPhone } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 
 const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState(false)
 
-    const [isShipping, setIsShipping] = useState<boolean>(false)
+    // Đặt giá trị mặc định của isShipping là false để "Tại quầy" được chọn
+    const [isShipping, setIsShipping] = useState<boolean>(true);
     const customer = data?.customerResponseDTO || {}
     const addresses = customer.addressResponseDTOS || []
+
+    useEffect(() => {
+        console.log("isShipping: ", isShipping)
+    }, [isShipping])
+
+    const onChangeMethod = (val: boolean) => {
+        setIsShipping(val)
+    }
 
     return (
         <Card className={`mb-5 ${!isShipping ? 'h-[225px]' : 'h-[400px]'} duration-700 transition-all`}>
@@ -61,19 +70,11 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                     </div>
                     <div className="text-black">
                         <div className="font-semibold">
-                            <Radio
-                                checked={!isShipping}
-                                className="mr-4"
-                                name="simpleRadioExample"
-                                onClick={() => setIsShipping(false)}>
-                                Tại quầy
-                            </Radio>
-                            <Radio
-                                checked={isShipping}
-                                name="simpleRadioExample"
-                                onClick={() => setIsShipping(true)}>
-                                Giao hàng
-                            </Radio>
+                            {/* Sử dụng onChange để xử lý sự kiện */}
+                            <Radio.Group value={isShipping} onChange={onChangeMethod}>
+                                <Radio value={false}>Giao hàng</Radio>
+                                <Radio value={true}>Tại quầy</Radio>
+                            </Radio.Group>
                         </div>
                     </div>
                 </div>
@@ -112,3 +113,5 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
 }
 
 export default CustomerInfo
+
+
