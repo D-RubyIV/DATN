@@ -10,8 +10,8 @@ import dayjs from 'dayjs';
 import { SingleValue } from 'react-select';
 import { toast } from 'react-toastify';
 
-// Types
-type CustomerDetailDTO = {
+
+type CustomerDTO = {
     id: string;
     code: string;
     name: string;
@@ -19,9 +19,6 @@ type CustomerDetailDTO = {
     phone: string;
     birthDate: string;
     gender: string;
-    province: string | null;
-    district: string | null;
-    ward: string | null;
     addressDTOS: AddressDTO[];
     status: string;
 };
@@ -30,6 +27,9 @@ type AddressDTO = {
     id: string;
     name: string;
     phone: string;
+    provinceId: number;
+    districtId: number;
+    wardId: number;
     province: string | null;
     district: string | null;
     ward: string | null;
@@ -38,21 +38,22 @@ type AddressDTO = {
 };
 
 interface Province {
-    id: string;
-    name: string;
-    full_name: string;
+    ProvinceID: number;
+    ProvinceName: string;
+    NameExtension: string[];
 }
 
 interface District {
-    id: string;
-    name: string;
-    full_name: string;
+    DistrictID: number;
+    ProvinceID: number;
+    DistrictName: string;
 }
 
+
 interface Ward {
-    id: string;
-    name: string;
-    full_name: string;
+    WardCode: number;
+    DistrictID: number;
+    WardName: string;
 }
 
 const validationSchema = Yup.object({
@@ -78,37 +79,41 @@ const UpdateCustomer = () => {
         id: '',
         name: '',
         phone: '',
+        provinceId: 0,
         province: null,
+        districtId: 0,
         district: null,
+        wardId: 0,
         ward: null,
         detail: '',
         isDefault: false,
     };
 
-    const initialCustomerState: CustomerDetailDTO = {
+    const initialCustomerState: CustomerDTO = {
         id: '',
         code: '',
         name: '',
         email: '',
         phone: '',
         birthDate: '',
-        gender: '',
-        province: null,
-        district: null,
-        ward: null,
+        gender: 'Nữ',
         addressDTOS: [initialAddressDTO],
-        status: '',
-    };
+        status: 'Active',
+    }
 
-    const [updateCustomer, setUpdateCustomer] = useState<CustomerDetailDTO>(initialCustomerState);
+    const [updateCustomer, setUpdateCustomer] = useState<CustomerDTO>(initialCustomerState);
+    const [provinces, setProvinces] = useState<Province[]>([]);
     const [districts, setDistricts] = useState<District[]>([]);
     const [wards, setWards] = useState<Ward[]>([]);
-    const [provinces, setProvinces] = useState<Province[]>([]);
+    const [loadingProvinces, setLoadingProvinces] = useState(false);
+    const [loadingDistricts, setLoadingDistricts] = useState(false);
+    const [loadingWards, setLoadingWards] = useState(false);
     const navigate = useNavigate();
     const { id } = useParams();
     const [formModes, setFormModes] = useState<string[]>([]);
 
     useEffect(() => {
+        console.log('Effect running');
         if (id) {
             fetchCustomer(id);
         }
@@ -116,33 +121,43 @@ const UpdateCustomer = () => {
     }, [id]);
 
     useEffect(() => {
-        if (updateCustomer.province) {
-            const province = provinces.find((prov) => prov.full_name === updateCustomer.province);
-            if (province) {
-                fetchDistricts(province.id);
-            } else {
-                setDistricts([]);
-            }
-        }
-    }, [updateCustomer.province, provinces]);
+        if (updateCustomer.addressDTOS.length > 0) {
+            const newDistricts: District[] = [];
+            const newWards: Ward[] = []; // Lưu trữ các phường được lấy cho mỗi địa chỉ
 
-    useEffect(() => {
-        if (updateCustomer.district) {
-            const district = districts.find((dist) => dist.full_name === updateCustomer.district);
-            if (district) {
-                fetchWards(district.id);
-            } else {
-                setWards([]);
-            }
-        }
-    }, [updateCustomer.district, districts]);
+            // Lấy các quận và phường cho mỗi địa chỉ
+            const fetchAddressesData = async () => {
+                await Promise.all(
+                    updateCustomer.addressDTOS.map(async (address) => {
+                        // Lấy các quận dựa vào provinceId
+                        if (address.provinceId) {
+                            const districtsData = await fetchDistricts(address.provinceId);
+                            newDistricts.push(...districtsData);
+                        }
 
-    // API calls
+                        // Lấy các phường dựa vào districtId
+                        if (address.districtId) {
+                            const wardsData = await fetchWards(address.districtId);
+                            newWards.push(...wardsData); // Lưu các phường đã lấy
+                        }
+                    })
+                );
+                // Cập nhật trạng thái sau khi tất cả các lần truy xuất hoàn tất
+                setDistricts(newDistricts);
+                setWards(newWards);
+            };
+
+            fetchAddressesData();
+        }
+    }, [updateCustomer]);
+
+    // Hàm lấy khách hàng theo ID
     const fetchCustomer = async (id: string) => {
         try {
             const response = await axios.get(`http://localhost:8080/api/v1/customer/${id}`);
             if (response.status === 200) {
                 setUpdateCustomer(response.data);
+                console.log('Customer data:', response.data);
                 setFormModes(response.data.addressDTOS.map(() => 'edit'));
             } else {
                 console.error('Failed to fetch customer data:', response.statusText);
@@ -152,78 +167,145 @@ const UpdateCustomer = () => {
         }
     };
 
-    const fetchProvinces = async () => {
-        const response = await axios.get('https://esgoo.net/api-tinhthanh/1/0.htm');
-        if (response.data.error === 0) {
-            return response.data.data;
-        } else {
-            console.error('Error fetching provinces:', response.data);
+    // Hàm lấy dữ liệu tỉnh
+    const fetchProvinces = async (): Promise<Province[]> => {
+        console.log('Fetching provinces...'); // Log thêm
+        setLoadingProvinces(true);
+
+        try {
+            const response = await axios.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/province", {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
+                }
+            });
+            console.log('API Province Response: ', response);
+            if (response.data.code === 200) {
+                return response.data.data; // Trả về dữ liệu tỉnh
+            } else {
+                console.log('Error fetching province: ', response.data.message);
+                alert('Không thể tải danh sách tỉnh. Vui lòng thử lại sau.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching province:', error);
+            alert('Đã xảy ra lỗi khi tải danh sách tỉnh. Vui lòng thử lại.');
             return [];
+        } finally {
+            setLoadingProvinces(false);
         }
     };
 
-    const fetchDistricts = async (provinceId: string) => {
-        const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
-        if (response.data.error === 0) {
-            return response.data.data;
-        } else {
-            console.error('Error fetching districts:', response.data);
+
+    // Hàm lấy thông tin quận
+    const fetchDistricts = async (provinceId: number): Promise<District[]> => {
+        setLoadingDistricts(true);
+        try {
+            const response = await axios.get(`https://online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
+                },
+                params: { province_id: provinceId }
+            });
+            console.log('API District Response: ', response);
+            if (response.data.code === 200) {
+                return response.data.data; // Trả về dữ liệu quận
+            } else {
+                console.log('Error fetching district: ', response.data.message);
+                alert('Không thể tải danh sách huyện. Vui lòng thử lại sau.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching districts:', error);
+            alert('Đã xảy ra lỗi khi tải danh sách huyện. Vui lòng thử lại.');
             return [];
+        } finally {
+            setLoadingDistricts(false);
         }
     };
 
-    const fetchWards = async (districtId: string) => {
-        const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
-        if (response.data.error === 0) {
-            return response.data.data;
-        } else {
-            console.error('Error fetching wards:', response.data);
+
+    // Hàm lấy thông tin xã
+    const fetchWards = async (districtId: number): Promise<Ward[]> => {
+        setLoadingWards(true);
+        try {
+            const response = await axios.get(`https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
+                },
+                params: { district_id: districtId }
+            });
+            console.log('API Ward Response: ', response);
+            if (response.data.code === 200) {
+                return response.data.data; // Trả về dữ liệu phường
+            } else {
+                console.log('Error fetching ward: ', response.data.message);
+                alert('Không thể tải danh sách xã. Vui lòng thử lại sau.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching wards:', error);
+            alert('Đã xảy ra lỗi khi tải danh sách xã. Vui lòng thử lại.');
             return [];
+        } finally {
+            setLoadingWards(false);
         }
     };
 
-    const handleLocationChange = (
+
+    // Hàm sử lý người dùng khi thay đổi tỉnh quận xã
+    const handleLocationChange = async (
         type: 'province' | 'district' | 'ward',
         newValue: Province | District | Ward | null,
-        form: FormikProps<CustomerDetailDTO>,
-        addressIndex: number
+        form: FormikProps<CustomerDTO>,
+        index: number
     ) => {
+        // Thiết lập giá trị cho địa chỉ tương ứng
         if (newValue) {
-            const fieldBase = `addressDTOS[${addressIndex}]`;
-            if (type === 'province') {
-                form.setFieldValue(`${fieldBase}.province`, newValue.full_name);
-                form.setFieldValue(`${fieldBase}.district`, '');
-                form.setFieldValue(`${fieldBase}.ward`, '');
-                fetchDistricts(newValue.id).then((data) => {
-                    setDistricts(data);
-                });
-            } else if (type === 'district') {
-                form.setFieldValue(`${fieldBase}.district`, newValue.full_name);
-                form.setFieldValue(`${fieldBase}.ward`, '');
-                fetchWards(newValue.id).then((data) => {
-                    setWards(data);
-                });
-            } else if (type === 'ward') {
-                form.setFieldValue(`${fieldBase}.ward`, newValue.full_name);
+            if (type === 'province' && 'ProvinceID' && 'ProvinceName' in newValue) {
+                form.setFieldValue(`addressDTOS[${index}].province`, newValue.NameExtension[1] || '');
+                const districtsData = await fetchDistricts(newValue.ProvinceID);
+                setDistricts(districtsData);
+                form.setFieldValue(`addressDTOS[${index}].district`, ''); // Reset district
+                form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
+                setWards([]); // Reset wards
+            } else if (type === 'district' && 'DistrictID' && 'DistrictName' in newValue) {
+                form.setFieldValue(`addressDTOS[${index}].district`, newValue.DistrictName || '');
+                const wardsData = await fetchWards(newValue.DistrictID);
+                setWards(wardsData);
+                form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
+            } else if (type === 'ward' && 'WardName' in newValue) {
+                form.setFieldValue(`addressDTOS[${index}].ward`, newValue.WardName || '');
             }
+        } else {
+            // Nếu newValue là null, thiết lập giá trị mặc định
+            form.setFieldValue(`addressDTOS[${index}].${type}`, '');
         }
     };
 
     const loadProvinces = async () => {
+        console.log('Loading provinces...'); // Log để kiểm tra loadProvinces
         const cachedProvinces = localStorage.getItem('provinces');
         if (cachedProvinces) {
+            console.log('Using cached provinces.'); // Log nếu có cached
             setProvinces(JSON.parse(cachedProvinces));
         } else {
+            console.log('Fetching provinces from API...'); // Log thêm
             const data = await fetchProvinces();
+            console.log('Fetched provinces:', data); // Log để kiểm tra dữ liệu
             setProvinces(data);
             localStorage.setItem('provinces', JSON.stringify(data));
         }
     };
 
-    const handleUpdate = async (values: CustomerDetailDTO, { setSubmitting }: FormikHelpers<CustomerDetailDTO>) => {
+
+    const handleUpdate = async (values: CustomerDTO, { setSubmitting }: FormikHelpers<CustomerDTO>) => {
         try {
             const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, values);
             if (response.status === 200) {
+                toast.success('Cập nhật thành công');
                 navigate('/manage/customer');
             } else {
                 alert('Failed to update customer. Please try again.');
@@ -236,9 +318,13 @@ const UpdateCustomer = () => {
         }
     };
 
+
+
+    // hàm thêm mới địa chỉ cho 1 khách hàng
     const handleAddressSubmit = async (
         mode: 'add' | 'edit',
         address: AddressDTO,
+        addressId: string,
         customerId: string,
         addressIndex: number
     ) => {
@@ -249,10 +335,10 @@ const UpdateCustomer = () => {
                 if (response.status === 200) {
                     setFormModes((prev) => prev.map((m, i) => (i === addressIndex ? 'edit' : m)));
                 }
-                toast.success('Lưu thành công');
+                toast.success('Thêm địa chỉ mới thành công');
             } else {
-                response = await axios.put(`http://localhost:8080/api/v1/address/update/${customerId}`, address);
-                toast.success('Cập nhật thành công');
+                response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, address);
+                toast.success('Cập nhật địa chỉ thành công');
             }
             fetchCustomer(customerId);
         } catch (error) {
@@ -298,7 +384,7 @@ const UpdateCustomer = () => {
 
             // Cập nhật địa chỉ trong state (tạm thời)
             setUpdateCustomer({ ...updateCustomer, addressDTOS: updatedAddresses });
-            toast.success('cập nhật thành công');
+            toast.success('cập nhật địa chỉ mặc định thành công');
             // Gọi API chỉ một lần để cập nhật địa chỉ mặc định và các địa chỉ khác
             await updateDefaultAddress(updateCustomer.addressDTOS[index].id, true);
         } catch (error) {
@@ -365,7 +451,7 @@ const UpdateCustomer = () => {
                                             className="custom-datepicker"
                                             onChange={(date) => {
                                                 if (date) {
-                                                    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+                                                    const formattedDate = dayjs(date).format('DD-MM-YYYY');
                                                     setFieldValue('birthDate', formattedDate);
                                                     setUpdateCustomer((prev) => ({
                                                         ...prev,
@@ -385,7 +471,7 @@ const UpdateCustomer = () => {
 
                                     <FormItem asterisk label="Giới tính">
                                         <Field name="gender">
-                                            {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                            {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                 <>
                                                     <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'} onChange={() => form.setFieldValue('gender', 'Nam')}>
                                                         Nam
@@ -446,12 +532,12 @@ const UpdateCustomer = () => {
                                                             <div className="w-1/3 pr-4">
                                                                 <FormItem asterisk label="Tỉnh/Thành phố">
                                                                     <Field name={`addressDTOS[${index}].province`}>
-                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
-                                                                                value={provinces.find((prov) => prov.full_name === field.value) || null}
+                                                                                value={provinces.find(prov => prov.NameExtension[1] === field.value) || null}
                                                                                 placeholder="Chọn tỉnh/thành phố..."
-                                                                                getOptionLabel={(option) => option.full_name}
-                                                                                getOptionValue={(option) => option.full_name}
+                                                                                getOptionLabel={(option: Province) => option.NameExtension[1]}
+                                                                                getOptionValue={(option: Province) => String(option.ProvinceID)}
                                                                                 options={provinces}
                                                                                 onChange={(newValue: SingleValue<Province> | null) => {
                                                                                     handleLocationChange('province', newValue, form, index);
@@ -466,13 +552,13 @@ const UpdateCustomer = () => {
                                                             <div className="w-1/3 pr-4">
                                                                 <FormItem asterisk label="Quận/huyện">
                                                                     <Field name={`addressDTOS[${index}].district`}>
-                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
-                                                                                isDisabled={!values.addressDTOS[index].province}
-                                                                                value={districts.find((dist) => dist.full_name === field.value) || null}
+                                                                                isDisabled={!address.province}
+                                                                                value={districts.find(prov => prov.DistrictName === field.value) || null}
                                                                                 placeholder="Chọn quận/huyện..."
-                                                                                getOptionLabel={(option) => option.full_name || option.name}
-                                                                                getOptionValue={(option) => option.full_name}
+                                                                                getOptionLabel={(option: District) => option.DistrictName}
+                                                                                getOptionValue={(option: District) => String(option.DistrictID)}
                                                                                 options={districts}
                                                                                 onChange={(newValue: SingleValue<District> | null) => {
                                                                                     handleLocationChange('district', newValue, form, index);
@@ -487,13 +573,13 @@ const UpdateCustomer = () => {
                                                             <div className="w-1/3">
                                                                 <FormItem asterisk label="Xã/phường/thị trấn">
                                                                     <Field name={`addressDTOS[${index}].ward`}>
-                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
-                                                                                isDisabled={!values.addressDTOS[index].district}
-                                                                                value={wards.find((ward) => ward.full_name === field.value) || null}
+                                                                                isDisabled={!address.district}
+                                                                                value={wards.find(prov => prov.WardName === field.value) || null}
                                                                                 placeholder="Chọn xã/phường/thị trấn..."
-                                                                                getOptionLabel={(option) => option.full_name}
-                                                                                getOptionValue={(option) => option.full_name}
+                                                                                getOptionLabel={(option: Ward) => option.WardName}
+                                                                                getOptionValue={(option: Ward) => String(option.WardCode)}
                                                                                 options={wards}
                                                                                 onChange={(newValue: SingleValue<Ward> | null) => {
                                                                                     handleLocationChange('ward', newValue, form, index);
@@ -532,10 +618,12 @@ const UpdateCustomer = () => {
                                                                 className="mr-4"
                                                                 variant="solid"
                                                                 style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                                                onClick={() => handleAddressSubmit(formModes[index] as 'add' | 'edit', values.addressDTOS[index], values.id, index)}
+                                                                onClick={() => handleAddressSubmit(formModes[index] as 'add' | 'edit', values.addressDTOS[index], address.id, values.id, index)}
                                                             >
                                                                 {formModes[index] === 'add' ? 'Thêm' : 'Cập nhật'}
                                                             </Button>
+
+
                                                             <Button
                                                                 type="button"
                                                                 variant="default"

@@ -3,12 +3,12 @@ package org.example.demo.dto.customer;
 import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.customer.Customer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CustomerMapper {
 
+    // Chuyển đổi từ Customer sang CustomerListDTO
     public static CustomerListDTO toCustomerListDTO(Customer customer) {
         Address defaultAddress = customer.getAddresses().stream()
                 .filter(Address::getDefaultAddress)
@@ -29,27 +29,40 @@ public class CustomerMapper {
         );
     }
 
-    public static Customer toEntityCustomer(CustomerDetailDTO dto) {
+    // Chuyển đổi từ CustomerDTO sang Customer entity
+    public static Customer toEntityCustomer(CustomerDTO dto, String generatedCode) {
         Customer customer = new Customer();
         customer.setId(dto.getId());
-        customer.setCode(dto.getCode());
+        customer.setCode(generatedCode);
         customer.setName(dto.getName());
         customer.setEmail(dto.getEmail());
         customer.setPhone(dto.getPhone());
         customer.setGender(dto.getGender());
         customer.setBirthDate(dto.getBirthDate());
         customer.setStatus(dto.getStatus());
+        customer.setDeleted(false);
 
+        // Chuyển đổi danh sách AddressDTO sang Address entity
         List<Address> addresses = dto.getAddressDTOS().stream()
-                .map(CustomerMapper::toEntityAddress)
+                .map(addressDTO -> {
+                    Address address = CustomerMapper.toEntityAddress(addressDTO);
+                    // Thiết lập name và phone của Address từ Customer
+                    address.setName(customer.getName());
+                    address.setPhone(customer.getPhone());
+                    return address;
+                })
                 .collect(Collectors.toList());
+
+        // Gán mỗi địa chỉ với customer trước khi thiết lập danh sách địa chỉ cho customer
+        addresses.forEach(address -> address.setCustomer(customer));
         customer.setAddresses(addresses);
 
         return customer;
     }
 
-    public static CustomerDetailDTO toCustomerDetailDTO(Customer customer) {
-        CustomerDetailDTO dto = new CustomerDetailDTO();
+    // Chuyển đổi từ Customer entity sang CustomerDTO
+    public static CustomerDTO toCustomerDTO(Customer customer) {
+        CustomerDTO dto = new CustomerDTO();
         dto.setId(customer.getId());
         dto.setCode(customer.getCode());
         dto.setName(customer.getName());
@@ -58,7 +71,9 @@ public class CustomerMapper {
         dto.setGender(customer.getGender());
         dto.setBirthDate(customer.getBirthDate());
         dto.setStatus(customer.getStatus());
+        dto.setCreatedDate(customer.getCreatedDate());
 
+        // Chuyển đổi danh sách Address entity sang AddressDTO
         if (customer.getAddresses() != null) {
             List<AddressDTO> addressDTOS = customer.getAddresses().stream()
                     .map(CustomerMapper::toAddressDTO)
@@ -69,7 +84,8 @@ public class CustomerMapper {
         return dto;
     }
 
-    public static void updateCustomerFromDTO(CustomerDetailDTO dto, Customer customer) {
+    // Cập nhật thông tin khách hàng từ CustomerDTO
+    public static void updateCustomerFromDTO(CustomerDTO dto, Customer customer) {
         customer.setName(dto.getName());
         customer.setEmail(dto.getEmail());
         customer.setPhone(dto.getPhone());
@@ -91,48 +107,61 @@ public class CustomerMapper {
 
                 if (existingAddress != null) {
                     // Cập nhật địa chỉ hiện có
-                    updateAddressFromDTO(addressDTO, existingAddress);
+                    updateEntityAddress(existingAddress, addressDTO);
                 } else {
                     // Thêm địa chỉ mới nếu không tồn tại
                     Address newAddress = toEntityAddress(addressDTO);
-                    newAddress.setCustomer(customer); // Set the customer on the new address
+                    newAddress.setCustomer(customer);
+                    customer.getAddresses().add(newAddress);
+                    // ID khách hàng cho địa chỉ mới
+                    if (newAddress.getCustomer() != null && newAddress.getCustomer().getId() == null) {
+                        newAddress.getCustomer().setId(customer.getId());
+                    }
                     customer.getAddresses().add(newAddress);
                 }
             }
         }
     }
 
-    public static void updateAddressFromDTO(AddressDTO dto, Address address) {
-        address.setName(dto.getName());
-        address.setPhone(dto.getPhone());
-        address.setProvince(dto.getProvince());
-        address.setDistrict(dto.getDistrict());
-        address.setWard(dto.getWard());
-        address.setDetail(dto.getDetail());
-        address.setDefaultAddress(dto.getIsDefault());
-    }
-
+    // Chuyển đổi từ AddressDTO sang Address(Tạo mới)
     public static Address toEntityAddress(AddressDTO dto) {
         Address address = new Address();
         address.setId(dto.getId());
         address.setName(dto.getName());
         address.setPhone(dto.getPhone());
+        address.setProvinceId(dto.getProvinceId());
         address.setProvince(dto.getProvince());
+        address.setDistrictId(dto.getDistrictId());
         address.setDistrict(dto.getDistrict());
+        address.setWardId(dto.getWardId());
         address.setWard(dto.getWard());
         address.setDetail(dto.getDetail());
         address.setDefaultAddress(dto.getIsDefault());
-        // Note: Setting the customer should be handled when adding to the customer's addresses directly
         return address;
     }
 
+    // Cập nhật thực thể Address từ AddressDTO (dùng cho cập nhật)
+    public static void updateEntityAddress(Address existingAddress, AddressDTO dto) {
+        existingAddress.setName(dto.getName());
+        existingAddress.setPhone(dto.getPhone());
+        existingAddress.setProvince(dto.getProvince());
+        existingAddress.setDistrict(dto.getDistrict());
+        existingAddress.setWard(dto.getWard());
+        existingAddress.setDetail(dto.getDetail());
+        existingAddress.setDefaultAddress(dto.getIsDefault());
+    }
+
+    // Chuyển đổi Address sang AddressDTO
     public static AddressDTO toAddressDTO(Address address) {
         AddressDTO dto = new AddressDTO();
         dto.setId(address.getId());
         dto.setName(address.getName());
         dto.setPhone(address.getPhone());
+        dto.setProvinceId(address.getProvinceId());
         dto.setProvince(address.getProvince());
+        dto.setDistrictId(address.getDistrictId());
         dto.setDistrict(address.getDistrict());
+        dto.setWardId(address.getWardId());
         dto.setWard(address.getWard());
         dto.setDetail(address.getDetail());
         dto.setIsDefault(address.getDefaultAddress());

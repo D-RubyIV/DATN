@@ -3,10 +3,8 @@ package org.example.demo.controller.customer;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.customer.AddressDTO;
 import org.example.demo.dto.customer.CustomerDTO;
-import org.example.demo.dto.customer.CustomerDetailDTO;
 import org.example.demo.dto.customer.CustomerListDTO;
 import org.example.demo.entity.human.customer.Address;
-import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.service.customer.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,38 +46,35 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDetailDTO> getCustomerDetailById(@PathVariable("id") Integer id) {
-        CustomerDetailDTO customerDetailDTO = customerService.getCustomerDetailById(id);
-        return ResponseEntity.ok(customerDetailDTO);
+    public ResponseEntity<CustomerDTO> getCustomerDetailById(@PathVariable("id") Integer id) {
+        CustomerDTO customerDTO = customerService.getCustomerDetailById(id);
+        return ResponseEntity.ok(customerDTO);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<Customer> saveCustomer(@RequestBody CustomerDTO customerCreateDTO) throws BadRequestException {
-        Customer customer = customerService.saveCustomer(customerCreateDTO);
-        return new ResponseEntity<>(customer, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/{id}/address")
-    public ResponseEntity<AddressDTO> addAddressToCustomer(@PathVariable int id, @RequestBody AddressDTO addressDTO) {
-        AddressDTO newAddress = customerService.addAddressToCustomer(id, addressDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<CustomerDetailDTO> updateCustomer(@PathVariable Integer id, @RequestBody CustomerDetailDTO customerDetailDTO) {
+    public ResponseEntity<CustomerDTO> saveCustomer(@RequestBody CustomerDTO customerDTO) throws BadRequestException {
         try {
-            CustomerDetailDTO updatedCustomer = customerService.updateCustomer(id, customerDetailDTO);
-            return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+            CustomerDTO customer = customerService.saveCustomer(customerDTO);
+            return new ResponseEntity<>(customer, HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
+    @PostMapping("/{id}/address")
+    public ResponseEntity<AddressDTO> addAddressToCustomer(@PathVariable int id, @RequestBody AddressDTO addressDTO) throws BadRequestException {
+        AddressDTO newAddress = customerService.addAddressToCustomer(id, addressDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
+    }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Integer id) {
-        customerService.deleteCustomerById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable Integer id, @RequestBody CustomerDTO customerDTO) throws BadRequestException {
+        try {
+            CustomerDTO updatedCustomer = customerService.updateCustomer(id, customerDTO);
+            return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PatchMapping("/status/{id}")
@@ -98,6 +92,12 @@ public class CustomerController {
         // Gọi service để cập nhật địa chỉ mặc định
         Address updatedAddress = customerService.updateAddressDefault(customerId, addressId, defaultAddress);
         return ResponseEntity.ok(updatedAddress);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Integer id) {
+        customerService.deleteCustomerById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 

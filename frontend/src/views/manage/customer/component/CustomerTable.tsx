@@ -13,18 +13,19 @@ import { saveAs } from 'file-saver';
 import { FaFileDownload } from "react-icons/fa";
 import { HiPencil, HiPlusCircle } from 'react-icons/hi';
 
-
-
 type AddressDTO = {
     id: number;
     name: string;
     phone: string;
+    provinceId: string;
     province: string;
+    districtId: string;
     district: string;
+    wardId: string;
     ward: string;
     detail: string;
-    isDefault?: boolean; // Cho phép null và undefined
-}
+    isDefault: boolean;
+};
 
 type CustomerListDTO = {
     id: number;
@@ -99,7 +100,23 @@ const CustomerTable = () => {
     };
 
     const exportToExcel = () => {
-        const worksheet = XLSX.utils.json_to_sheet(data);
+        // Transform the data to include flattened address fields
+        const exportData = data.map((customer) => {
+            return {
+                STT: (pageIndex - 1) * pageSize + data.indexOf(customer) + 1, // Add serial number
+                Name: customer.name,
+                Email: customer.email,
+                Phone: customer.phone,
+                BirthDate: customer.birthDate,
+                Gender: customer.gender,
+                Status: customer.status,
+                Address: customer.defaultAddress
+                    ? `${customer.defaultAddress.detail}, ${customer.defaultAddress.ward}, ${customer.defaultAddress.district}, ${customer.defaultAddress.province}`
+                    : 'N/A',
+            };
+        });
+    
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Customer');
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
