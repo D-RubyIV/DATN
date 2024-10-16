@@ -11,8 +11,7 @@ import { SingleValue } from 'react-select';
 import { toast } from 'react-toastify';
 
 
-// Types
-type CustomerDetailDTO = {
+type CustomerDTO = {
     id: string;
     code: string;
     name: string;
@@ -28,8 +27,11 @@ type AddressDTO = {
     id: string;
     name: string;
     phone: string;
+    provinceId: string;
     province: string | null;
+    districtId: string;
     district: string | null;
+    wardId: string;
     ward: string | null;
     detail: string;
     isDefault: boolean;
@@ -37,19 +39,16 @@ type AddressDTO = {
 
 interface Province {
     id: string;
-    name: string;
     full_name: string;
 }
 
 interface District {
     id: string;
-    name: string;
     full_name: string;
 }
 
 interface Ward {
     id: string;
-    name: string;
     full_name: string;
 }
 
@@ -76,26 +75,29 @@ const UpdateCustomer = () => {
         id: '',
         name: '',
         phone: '',
+        provinceId: "",
         province: null,
+        districtId: "",
         district: null,
+        wardId: "",
         ward: null,
         detail: '',
         isDefault: false,
     };
 
-    const initialCustomerState: CustomerDetailDTO = {
+    const initialCustomerState: CustomerDTO = {
         id: '',
         code: '',
         name: '',
         email: '',
         phone: '',
         birthDate: '',
-        gender: '',
+        gender: 'Nữ',
         addressDTOS: [initialAddressDTO],
-        status: '',
-    };
+        status: 'Active',
+    }
 
-    const [updateCustomer, setUpdateCustomer] = useState<CustomerDetailDTO>(initialCustomerState);
+    const [updateCustomer, setUpdateCustomer] = useState<CustomerDTO>(initialCustomerState);
     const [districts, setDistricts] = useState<District[]>([]);
     const [wards, setWards] = useState<Ward[]>([]);
     const [provinces, setProvinces] = useState<Province[]>([]);
@@ -200,7 +202,7 @@ const UpdateCustomer = () => {
     const handleLocationChange = async (
         type: 'province' | 'district' | 'ward',
         newValue: Province | District | Ward | null,
-        form: FormikProps<CustomerDetailDTO>,
+        form: FormikProps<CustomerDTO>,
         index: number
     ) => {
         // Cập nhật giá trị của tỉnh, quận hoặc xã trong state
@@ -234,7 +236,7 @@ const UpdateCustomer = () => {
         }
     };
 
-    const handleUpdate = async (values: CustomerDetailDTO, { setSubmitting }: FormikHelpers<CustomerDetailDTO>) => {
+    const handleUpdate = async (values: CustomerDTO, { setSubmitting }: FormikHelpers<CustomerDTO>) => {
         try {
             const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, values);
             if (response.status === 200) {
@@ -251,47 +253,9 @@ const UpdateCustomer = () => {
         }
     };
 
-    // const handleAddressSubmit = async (
-    //     mode: 'add' | 'edit',
-    //     address: AddressDTO,
-    //     customerId: string,
-    //     addressIndex: number,
-    //     setFieldValue: (field: string, value: any) => void,
-    //     values: FormikValues
-    // ) => {
-    //     try {
-    //         let response;
-
-    //         if (mode === 'add') {
-    //             // Gửi yêu cầu POST để thêm địa chỉ
-    //             response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
-    //             if (response.status === 200) {
-    //                 // Cập nhật danh sách địa chỉ để địa chỉ mới hiển thị ở đầu
-    //                 setFieldValue('addressDTOS', [response.data, ...values.addressDTOS]); // Giả sử response.data chứa địa chỉ vừa tạo
-    //                 setFormModes((prev) => prev.map((m, i) => (i === addressIndex ? 'edit' : m))); // Cập nhật chế độ thành 'edit'
-    //                 toast.success('Lưu thành công');
-    //             }
-    //         } else {
-    //             // Gửi yêu cầu PUT để cập nhật địa chỉ
-    //             response = await axios.put(`http://localhost:8080/api/v1/address/update/${customerId}`, address);
-    //             if (response.status === 200) {
-    //                 // Cập nhật danh sách địa chỉ (thay thế địa chỉ đã sửa)
-    //                 const updatedAddresses = [...values.addressDTOS];
-    //                 updatedAddresses[addressIndex] = address; // Cập nhật địa chỉ đã sửa
-    //                 setFieldValue('addressDTOS', updatedAddresses);
-    //                 toast.success('Cập nhật thành công');
-    //             }
-    //         }
-
-    //         // Tải lại thông tin khách hàng (có thể là để lấy danh sách địa chỉ mới)
-    //         fetchCustomer(customerId);
-    //     } catch (error) {
-    //         console.error('Error submitting address:', error);
-    //         alert('Error submitting address. Please try again.');
-    //     }
-    // };
 
 
+    // hàm thêm mới địa chỉ cho 1 khách hàng
     const handleAddressSubmit = async (
         mode: 'add' | 'edit',
         address: AddressDTO,
@@ -442,7 +406,7 @@ const UpdateCustomer = () => {
 
                                     <FormItem asterisk label="Giới tính">
                                         <Field name="gender">
-                                            {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                            {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                 <>
                                                     <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'} onChange={() => form.setFieldValue('gender', 'Nam')}>
                                                         Nam
@@ -503,7 +467,7 @@ const UpdateCustomer = () => {
                                                             <div className="w-1/3 pr-4">
                                                                 <FormItem asterisk label="Tỉnh/Thành phố">
                                                                     <Field name={`addressDTOS[${index}].province`}>
-                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
                                                                                 value={provinces.find((prov) => prov.full_name === field.value) || null}
                                                                                 placeholder="Chọn tỉnh/thành phố..."
@@ -523,7 +487,7 @@ const UpdateCustomer = () => {
                                                             <div className="w-1/3 pr-4">
                                                                 <FormItem asterisk label="Quận/huyện">
                                                                     <Field name={`addressDTOS[${index}].district`}>
-                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
                                                                                 isDisabled={!address.province}
                                                                                 value={districts.find((dist) => dist.full_name === field.value) || null}
@@ -544,7 +508,7 @@ const UpdateCustomer = () => {
                                                             <div className="w-1/3">
                                                                 <FormItem asterisk label="Xã/phường/thị trấn">
                                                                     <Field name={`addressDTOS[${index}].ward`}>
-                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDetailDTO>>) => (
+                                                                        {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
                                                                                 isDisabled={!address.district}
                                                                                 value={wards.find((ward) => ward.full_name === field.value) || null}

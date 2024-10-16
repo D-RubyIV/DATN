@@ -1,5 +1,6 @@
 package org.example.demo.controller.customer;
 
+import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.customer.AddressDTO;
 import org.example.demo.entity.human.customer.Address;
 import org.example.demo.service.customer.AddressService;
@@ -22,7 +23,7 @@ public class AddressController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<AddressDTO> update(@PathVariable Integer id, @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity<AddressDTO> update(@PathVariable Integer id, @RequestBody AddressDTO addressDTO) throws BadRequestException {
         try {
 
             AddressDTO updatedAddress = addressService.updateAddress(id, addressDTO);
@@ -31,7 +32,6 @@ public class AddressController {
             return ResponseEntity.badRequest().build();
         }
     }
-
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {

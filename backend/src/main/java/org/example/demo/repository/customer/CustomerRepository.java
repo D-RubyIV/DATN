@@ -32,6 +32,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     @Query("SELECT c FROM Customer c ORDER BY c.createdDate DESC")
     Page<Customer> findAllCustomers(Pageable pageable);
 
+    List<Customer> findCustomerByEmail(String email);
+
+    List<Customer> findCustomerByPhone(String phone);
+
 
 }
 

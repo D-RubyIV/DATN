@@ -9,14 +9,14 @@ import org.example.demo.infrastructure.common.AutoGenCode;
 import org.example.demo.repository.customer.AddressRepository;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.service.customer.CustomerService;
+import org.example.demo.validator.AddressValidator;
+import org.example.demo.validator.CustomerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +31,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private AutoGenCode autoGenCode;
+
+    @Autowired
+    private CustomerValidator customerValidator;
+
+    @Autowired
+    private AddressValidator addressValidator;
 
 
     @Override
@@ -50,68 +56,48 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDetailDTO getCustomerDetailById(Integer id) {
+    public CustomerDTO getCustomerDetailById(Integer id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
-        return CustomerMapper.toCustomerDetailDTO(customer);
+        return CustomerMapper.toCustomerDTO(customer);
     }
 
 
-    @Override
-    @Transactional
-    public Customer saveCustomer(CustomerDTO customerDTO) {
-        // Thiết lập ngày tạo cho khách hàng
-        customerDTO.setCreatedDate(LocalDateTime.now());
+        @Override
+        @Transactional
+        public CustomerDTO saveCustomer(CustomerDTO customerDTO) throws BadRequestException {
 
-        // Tạo mã khách hàng nếu không có
-        String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
-                ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
+            customerValidator.validateCustomer(customerDTO, null);
 
-        // Tạo đối tượng Customer từ DTO
-        Customer customer = new Customer();
-        customer.setCode(generatedCode);
-        customer.setName(customerDTO.getName());
-        customer.setEmail(customerDTO.getEmail());
-        customer.setPhone(customerDTO.getPhone());
-        customer.setBirthDate(customerDTO.getBirthDate());
-        customer.setGender(customerDTO.getGender());
-        customer.setStatus(customerDTO.getStatus());
-        customer.setDeleted(false); // Mặc định là không bị xóa
-        customer.setCreatedDate(customerDTO.getCreatedDate()); // Thiết lập ngày tạo
+            // Tạo mã khách hàng nếu không có
+            String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
+                    ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
 
-        // Lưu Customer vào database
-        Customer savedCustomer = customerRepository.save(customer);
+            // Chuyển đổi DTO sang entity Customer
+            Customer customer = CustomerMapper.toEntityCustomer(customerDTO, generatedCode);
 
-        // Tạo và lưu địa chỉ mặc định
-        Address defaultAddress = new Address();
-        defaultAddress.setName(customerDTO.getName());
-        defaultAddress.setPhone(customerDTO.getPhone());
-        defaultAddress.setProvince(customerDTO.getProvince());
-        defaultAddress.setDistrict(customerDTO.getDistrict());
-        defaultAddress.setWard(customerDTO.getWard());
-        defaultAddress.setDetail(customerDTO.getDetail());
-        defaultAddress.setCustomer(savedCustomer);
-        defaultAddress.setDefaultAddress(true); // Đặt địa chỉ này là mặc định
+            // Lưu Customer vào database
+            Customer savedCustomer = customerRepository.save(customer);
 
-        // Lưu địa chỉ
-        addressRepository.save(defaultAddress);
-
-        return savedCustomer;
-    }
-
+            // Chuyển đổi entity Customer đã lưu sang DTO để trả về
+            return CustomerMapper.toCustomerDTO(savedCustomer);
+        }
 
     @Override
-    public CustomerDetailDTO updateCustomer(Integer id, CustomerDetailDTO customerDetailDTO) {
+    public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) throws BadRequestException {
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if (customerOptional.isPresent()) {
             Customer existingCustomer = customerOptional.get();
 
+            // Gọi validator để kiểm tra dữ liệu
+            customerValidator.validateCustomer(customerDTO, id);
+
             // Cập nhật thông tin khách hàng và địa chỉ dựa trên DTO
-            CustomerMapper.updateCustomerFromDTO(customerDetailDTO, existingCustomer);
+            CustomerMapper.updateCustomerFromDTO(customerDTO, existingCustomer);
 
             // Lưu khách hàng đã cập nhật
             Customer updatedCustomer = customerRepository.save(existingCustomer);
-            return CustomerMapper.toCustomerDetailDTO(updatedCustomer);
+            return CustomerMapper.toCustomerDTO(updatedCustomer);
         } else {
             throw new RuntimeException("Không tìm thấy khách hàng với id: " + id);
         }
@@ -183,26 +169,17 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public AddressDTO addAddressToCustomer(Integer customerId, AddressDTO addressDTO) {
+    public AddressDTO addAddressToCustomer(Integer customerId, AddressDTO addressDTO) throws BadRequestException {
+        addressValidator.validateAddress(addressDTO, null);
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found width id " + customerId));
 
         // Tạo và thiết lập địa chỉ mới
-        Address newAddress = new Address();
-        newAddress.setName(addressDTO.getName());
-        newAddress.setPhone(addressDTO.getPhone());
-        newAddress.setProvince(addressDTO.getProvince());
-        newAddress.setDistrict(addressDTO.getDistrict());
-        newAddress.setWard(addressDTO.getWard());
-        newAddress.setDetail(addressDTO.getDetail());
-        newAddress.setDefaultAddress(addressDTO.getIsDefault());
+        Address newAddress = CustomerMapper.toEntityAddress(addressDTO);
 
         // Liên kết địa chỉ mới với khách hàng
         newAddress.setCustomer(customer);
-
-        // Lưu địa chỉ trước
-        addressRepository.save(newAddress);
 
         // Cập nhật danh sách địa chỉ của khách hàng và lưu khách hàng
         customer.getAddresses().add(newAddress);
@@ -211,5 +188,6 @@ public class CustomerServiceImpl implements CustomerService {
         // Trả về AddressDTO
         return CustomerMapper.toAddressDTO(newAddress);
     }
+
 
 }

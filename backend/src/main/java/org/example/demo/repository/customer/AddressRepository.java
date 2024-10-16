@@ -10,4 +10,7 @@ import java.util.List;
 public interface AddressRepository extends JpaRepository<Address, Integer> {
     // Tìm tất cả địa chỉ của khách hàng dựa trên customerId
     List<Address> findByCustomerId(Integer customerId);
+
+    // check trùng sdt
+    List<Address> findAddressByPhone(String phone);
 }
