@@ -9,6 +9,8 @@ import org.example.demo.entity.human.customer.Customer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface CustomerService {
 
     Page<CustomerListDTO> search(String searchTerm, Pageable pageable);
@@ -29,5 +31,4 @@ public interface CustomerService {
 
     AddressDTO addAddressToCustomer(Integer customerId, AddressDTO addressDTO) throws BadRequestException;
 
-    Optional<Customer> getCustomerById(Integer id);
 }

@@ -188,6 +188,4 @@ public class CustomerServiceImpl implements CustomerService {
         // Trả về AddressDTO
         return CustomerMapper.toAddressDTO(newAddress);
     }
-
-
 }
