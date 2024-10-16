@@ -41,7 +41,7 @@ public class Order extends BaseEntity {
     private String districtId;
 
     @Column(name = "district_name")
-    private String districName;
+    private String districtName;
 
     @Column(name = "ward_id")
     private String wardId;

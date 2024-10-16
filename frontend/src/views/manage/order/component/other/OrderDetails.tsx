@@ -1,32 +1,17 @@
 import { useEffect, useState } from 'react'
-import Button from '@/components/ui/Button'
-import Dialog from '@/components/ui/Dialog'
-import type { MouseEvent } from 'react'
-import Timeline from '@/components/ui/Timeline/Timeline';
-import TimeLineItem from '@/components/ui/Timeline/TimeLineItem';
-import Axios from 'axios';
-import { BillResponseDTO, OrderDetailResponseDTO, ProductOrderDetail } from '../../store';
+import { BillResponseDTO, OrderDetailResponseDTO } from '../../store';
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import IconText from '@/components/shared/IconText'
-import { HiMail, HiPhone, HiExternalLink, HiPlusCircle, HiOutlineExclamationCircle, HiPencil, HiPencilAlt } from 'react-icons/hi'
+import { HiMail, HiPhone, HiExternalLink, HiPencilAlt } from 'react-icons/hi'
 import { Link, useParams } from 'react-router-dom'
 import OrderProducts from '../puzzle/OrderProducts';
 import PaymentSummary, { PaymentSummaryProps } from '../puzzle/PaymentSummary';
 import OrderStep from '../puzzle/OrderStep';
 import OrderInfo from '../puzzle/OderInfo';
-import { Input, Notification, Radio, toast, Tooltip } from '@/components/ui';
-import { inspect } from 'util';
+import { Input, Radio, Tooltip } from '@/components/ui';
 import instance from '@/axios/CustomAxios';
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal';
-
-interface IProps {
-    selectedId: number,
-    dialogIsOpen: boolean;
-    setIsOpen: (isOpen: boolean) => void;  // Sửa kiểu hàm setIsOpen
-}
-
-
 
 const OrderDetails = () => {
 
@@ -102,11 +87,10 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
 
 
     const customer = data?.customerResponseDTO || {};
-    const addresses = customer.addressResponseDTOS || [];
 
     return (
         <Card className='mb-5 h-[450px]'>
-            {isOpenEditAddress && <AddressModal onCloseModal={setIsOpenEditAddress}></AddressModal>}
+            {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress}></AddressModal>}
 
             <h5 className="mb-4">
                 Khách hàng #{customer.code || "Khách lẻ"}

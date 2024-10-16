@@ -3156,79 +3156,15 @@
           <Precision>26</Precision>
         </Column>
         <Column Name="end_date">
-          <Checked>true</Checked>
+          <Checked>false</Checked>
           <DataType>datetime2</DataType>
-          <GeneratorOptions xsi:type="DateTime2GeneratorOptions">
-            <AllowNulls>false</AllowNulls>
-            <NullProportion>10</NullProportion>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <UseDefault>false</UseDefault>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>66</SeedValue>
-            <SequentialValueTicks>864000000000</SequentialValueTicks>
-            <OffsetFromColumnMaxTimeTicks>10000000</OffsetFromColumnMaxTimeTicks>
-            <OffsetFromColumnMinTimeTicks>10000000</OffsetFromColumnMinTimeTicks>
-            <DateTimeRange>MinMaxDate</DateTimeRange>
-            <UseOffsetDetails>false</UseOffsetDetails>
-            <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
-            <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
-            <MinDate>1970-01-01T00:00:00</MinDate>
-            <MaxDate>2024-10-16T00:00:00</MaxDate>
-            <IsRandomizeDate>true</IsRandomizeDate>
-            <IsRandomizeTime>true</IsRandomizeTime>
-            <MinFraction>0</MinFraction>
-            <MaxFraction>999</MaxFraction>
-            <MaxAllowedFraction>999</MaxAllowedFraction>
-            <IsRandomizeFraction>true</IsRandomizeFraction>
-            <MaxTime>863990000000</MaxTime>
-            <MinTime>10000000</MinTime>
-            <Scale>6</Scale>
-            <Precision>26</Precision>
-          </GeneratorOptions>
-          <GeneratorType>DateTime2Generator</GeneratorType>
-          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
-          <GeneratorName>datetime2</GeneratorName>
-          <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
           <Length>8</Length>
           <Precision>26</Precision>
         </Column>
         <Column Name="start_date">
-          <Checked>true</Checked>
+          <Checked>false</Checked>
           <DataType>datetime2</DataType>
-          <GeneratorOptions xsi:type="DateTime2GeneratorOptions">
-            <AllowNulls>false</AllowNulls>
-            <NullProportion>10</NullProportion>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <UseDefault>false</UseDefault>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>67</SeedValue>
-            <SequentialValueTicks>864000000000</SequentialValueTicks>
-            <OffsetFromColumnMaxTimeTicks>10000000</OffsetFromColumnMaxTimeTicks>
-            <OffsetFromColumnMinTimeTicks>10000000</OffsetFromColumnMinTimeTicks>
-            <DateTimeRange>MinMaxDate</DateTimeRange>
-            <UseOffsetDetails>false</UseOffsetDetails>
-            <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
-            <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
-            <MinDate>1970-01-01T00:00:00</MinDate>
-            <MaxDate>2024-10-16T00:00:00</MaxDate>
-            <IsRandomizeDate>true</IsRandomizeDate>
-            <IsRandomizeTime>true</IsRandomizeTime>
-            <MinFraction>0</MinFraction>
-            <MaxFraction>999</MaxFraction>
-            <MaxAllowedFraction>999</MaxAllowedFraction>
-            <IsRandomizeFraction>true</IsRandomizeFraction>
-            <MaxTime>863990000000</MaxTime>
-            <MinTime>10000000</MinTime>
-            <Scale>6</Scale>
-            <Precision>26</Precision>
-          </GeneratorOptions>
-          <GeneratorType>DateTime2Generator</GeneratorType>
-          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
-          <GeneratorName>datetime2</GeneratorName>
-          <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
           <Length>8</Length>
           <Precision>26</Precision>
@@ -4989,7 +4925,7 @@
             <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>\d{5}</Expression>
+            <Expression>1B2729</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
@@ -5083,6 +5019,30 @@
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
+        <Column Name="district_id">
+          <Checked>true</Checked>
+          <DataType>int</DataType>
+          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Increment xsi:type="xsd:int">1</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>2</SeedValue>
+            <MinValue>1</MinValue>
+            <MaxValue>2147483647</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
+          </GeneratorOptions>
+          <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
+          <GeneratorName>ID (sequential)</GeneratorName>
+          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
+          <Length>4</Length>
+          <Precision>10</Precision>
+        </Column>
         <Column Name="is_default">
           <Checked>true</Checked>
           <DataType>bit</DataType>
@@ -5102,6 +5062,54 @@
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
           <Precision>1</Precision>
+        </Column>
+        <Column Name="province_id">
+          <Checked>true</Checked>
+          <DataType>int</DataType>
+          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Increment xsi:type="xsd:int">1</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>3</SeedValue>
+            <MinValue>1</MinValue>
+            <MaxValue>2147483647</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
+          </GeneratorOptions>
+          <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
+          <GeneratorName>ID (sequential)</GeneratorName>
+          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
+          <Length>4</Length>
+          <Precision>10</Precision>
+        </Column>
+        <Column Name="ward_id">
+          <Checked>true</Checked>
+          <DataType>int</DataType>
+          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Increment xsi:type="xsd:int">1</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>4</SeedValue>
+            <MinValue>1</MinValue>
+            <MaxValue>2147483647</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
+          </GeneratorOptions>
+          <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
+          <GeneratorName>ID (sequential)</GeneratorName>
+          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
+          <Length>4</Length>
+          <Precision>10</Precision>
         </Column>
         <Column Name="created_date">
           <Checked>true</Checked>
@@ -5193,12 +5201,13 @@
             <SeedValue>1</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[0-9A-Z]+</Expression>
+            <Expression>(([1-9]\d{1,2})|([1-3]\d{3})) (((New|Old|Hidden|West|South|East|North|White|Red|E|(S)?W|NW|S(E)?|N(E)?) )?((((Ski|Chapel|Hunting|Fox|Rose|Riddle|Rock|Prospect|Sharp) Hill)|Front|Hope|Mount|Church|Social|Riverside|Highland|(Wood(land|bridge|hurst|side|row|fort|cock))|((Deep|Iron|Rush|Edge|Park|Hazel|Bur|Glen|Rock|Quail|Stone|Flint|Button|Beach|Ash|Brent)wood)|Lake|(Cedar|Pine) Tree|Oak|((Water|Meadow|Farm|River|Bay)view)|Town|Market|Mountain|Monument))|((1st|2nd|3rd|[4-9]\d?th))) (St(reet)?|Ave(nue)?|Dr(ive)?|R(oa)?d|Ct|C(our)?t|Ln|Lane|Blvd|Cir(cle)?|Hwy|Highway|Loop|Way|Pkwy|Parkway)</Expression>
           </GeneratorOptions>
-          <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
-          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
-          <GeneratorName>Reg Exp</GeneratorName>
-          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>2f6b95be-74bf-4b5c-a079-8dc8b456a94e</GeneratorId>
+          <GeneratorName>US Address Line 1</GeneratorName>
+          <GeneratorDescription>3581 South Ironwood Lane, 24 NW Lake Blvd, 1063 97th Street, ...</GeneratorDescription>
+          <GeneratorCategory>Location</GeneratorCategory>
           <Length>255</Length>
         </Column>
         <Column Name="district">
@@ -5213,7 +5222,7 @@
             <SeedValue>1</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>($"USStateCodes.csv[0]")-(\C{2})</Expression>
+            <Expression>3303</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorId>e4369865-1497-4a9d-9e00-ca1d665a5cbd</GeneratorId>
@@ -5267,26 +5276,21 @@
         <Column Name="province">
           <Checked>true</Checked>
           <DataType>varchar</DataType>
-          <GeneratorOptions xsi:type="TextFileGeneratorOptions">
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>2</SeedValue>
-            <IsLoop>true</IsLoop>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <FileName>AUCities.txt</FileName>
-            <TrimLeft>false</TrimLeft>
-            <TrimRight>false</TrimRight>
-            <CodePage>-1</CodePage>
+            <Expression>201</Expression>
           </GeneratorOptions>
-          <GeneratorType>SqlTextFileGenerator</GeneratorType>
-          <GeneratorId>11d5ca85-2a99-4e32-ade7-c2b9ee2fc3eb</GeneratorId>
-          <GeneratorName>AU City</GeneratorName>
-          <GeneratorDescription>Sydney, Alice Springs, Hamilton, Victoria Point, ...</GeneratorDescription>
-          <GeneratorCategory>Location</GeneratorCategory>
+          <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
         </Column>
         <Column Name="ward">
@@ -5301,7 +5305,7 @@
             <SeedValue>3</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>($"CAProvinceCodes.csv[1]")</Expression>
+            <Expression>1B2729</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorId>397070a6-1aea-4e32-831c-57e1541fddab</GeneratorId>
@@ -5981,6 +5985,7 @@
   </Tables>
   <SynchronizationOptions xsi:type="SqlDataSynchronizationOptions">
     <SynchronizeType>File</SynchronizeType>
+    <AppendTimestamp>false</AppendTimestamp>
     <SynchronizationFileName>C:\Users\phah0\Desktop\DATN\Data for final (local).sql</SynchronizationFileName>
     <ExecuteCustomScriptTypeBefore>None UseEmbeddedScript</ExecuteCustomScriptTypeBefore>
     <ExecuteCustomScriptTypeAfter>None UseEmbeddedScript</ExecuteCustomScriptTypeAfter>

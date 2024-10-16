@@ -82,6 +82,12 @@ export type BillResponseDTO = {
     type: EBillType;
     total: number;
     subTotal: number;
+    provinceId: string;    // ID của tỉnh
+    provinceName: string;  // Tên của tỉnh
+    districtId: string;    // ID của quận/huyện
+    districtName: string;  // Tên của quận/huyện
+    wardId: string;        // ID của phường/xã
+    wardName: string;      // Tên của phường/xã
     customerResponseDTO: CustomerResponseDTO;
     staffResponseDTO: StaffResponseDTO;
     voucherResponseDTO: VoucherResponseDTO;

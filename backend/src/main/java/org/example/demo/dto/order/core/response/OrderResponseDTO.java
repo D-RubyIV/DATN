@@ -27,6 +27,14 @@ public class OrderResponseDTO {
     private String code;
     private String address;
     private String phone;
+    //
+    private String provinceId;
+    private String provinceName;
+    private String districtId;
+    private String districtName;
+    private String wardId;
+    private String wardName;
+    //
     private Boolean deleted;
     @Enumerated(EnumType.STRING)
     private Status status;

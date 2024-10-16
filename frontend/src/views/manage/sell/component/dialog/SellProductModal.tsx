@@ -3,20 +3,9 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
-import axios from 'axios'
-import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/DataTable'
-import { DatePicker, Select } from '@/components/ui'
-import TabList from '@/components/ui/Tabs/TabList'
-import TabNav from '@/components/ui/Tabs/TabNav'
-import { Link } from 'react-router-dom'
-import { HiArrowLeft, HiArrowNarrowLeft, HiPlusCircle, HiRefresh, HiReply } from 'react-icons/hi'
-import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
-import { format } from 'date-fns'
+import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
+import { HiPlusCircle } from 'react-icons/hi'
 import CloseButton from '@/components/ui/CloseButton'
-
-
-import Radio from '@/components/ui/Radio'
-import Drawer from '@/components/ui/Drawer'
 import type { MouseEvent } from 'react'
 import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
@@ -54,7 +43,6 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         { name: 'Bottom', value: 'bottom' },
         { name: 'Left', value: 'left' }
     ]
-    const [placement, setPlacement] = useState<Direction>(placementList[1].value)
     const [tableData, setTableData] = useState<{
         pageIndex: number
         pageSize: number
@@ -205,6 +193,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         fetchData()
         openNotification('Thêm thành công!')
         setIsOpenProductModal(false)
+        document.body.style.overflow = 'auto'
     }
 
     const handleDelayScreen = async () => {
@@ -213,18 +202,11 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         setLoading(false)
     }
 
-    const openDrawer = () => {
-        setIsOpenPlacement(true)
-    }
-
     const onDrawerClose = (e: MouseEvent) => {
         console.log('onDrawerClose', e)
         setIsOpenPlacement(false)
     }
 
-    const onPlacementChange = (val: Direction) => {
-        setPlacement(val)
-    }
     // HOOK
     useEffect(() => {
         fetchDataProduct()
@@ -297,7 +279,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                 placeholder="Search..."
                                 size="sm"
                                 className="lg:w-full"
-                                onChange={(el) => handleChange}
+                                onChange={() => handleChange}
                             />
                         </div>
                         <DataTable

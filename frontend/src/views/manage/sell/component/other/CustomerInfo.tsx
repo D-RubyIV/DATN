@@ -10,12 +10,12 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState(false)
 
     // Đặt giá trị mặc định của isShipping là false để "Tại quầy" được chọn
-    const [isShipping, setIsShipping] = useState<boolean>(true);
+    const [isShipping, setIsShipping] = useState<boolean>(true)
     const customer = data?.customerResponseDTO || {}
     const addresses = customer.addressResponseDTOS || []
 
     useEffect(() => {
-        console.log("isShipping: ", isShipping)
+        console.log('isShipping: ', isShipping)
     }, [isShipping])
 
     const onChangeMethod = (val: boolean) => {
@@ -23,8 +23,9 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     }
 
     return (
-        <Card className={`mb-5 ${!isShipping ? 'h-[225px]' : 'h-[400px]'} duration-700 transition-all`}>
-            {isOpenEditAddress && <AddressModal onCloseModal={setIsOpenEditAddress} />}
+        <Card
+            className={`mb-5 ${!isShipping ? (customer.code ? 'h-[300px]' : 'h-[225px]') : 'h-[400px]'} duration-700 transition-all`}>
+            {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress} />}
 
             <h5 className="mb-4">
                 Khách hàng #{customer.code || 'Khách lẻ'}
@@ -72,8 +73,8 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                         <div className="font-semibold">
                             {/* Sử dụng onChange để xử lý sự kiện */}
                             <Radio.Group value={isShipping} onChange={onChangeMethod}>
-                                <Radio value={false}>Giao hàng</Radio>
-                                <Radio value={true}>Tại quầy</Radio>
+                                <Radio value={true}>Giao hàng</Radio>
+                                <Radio value={false}>Tại quầy</Radio>
                             </Radio.Group>
                         </div>
                     </div>
@@ -82,7 +83,7 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                     <address className="not-italic my-2">
                         <Input
                             disabled
-                            value={data?.address || ''}
+                            value={data?.address || "N/A" + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''}
                             suffix={
                                 <Tooltip title="Chỉnh sửa địa chỉ">
                                     <HiPencilAlt

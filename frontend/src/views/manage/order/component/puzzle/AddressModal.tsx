@@ -1,13 +1,25 @@
-import { IAddress, IDistrict, IProvince, IWard } from "@/@types/address";
-import instanceGHN from "@/axios/GHNAxios";
-import { Button, Input, Select } from "@/components/ui";
-import CloseButton from "@/components/ui/CloseButton";
-import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from "@/services/AddressService";
-import { set } from "lodash";
-import { SetStateAction, useEffect, useState } from "react";
+import { IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
+import { Button, Input, Select } from '@/components/ui'
+import CloseButton from '@/components/ui/CloseButton'
+import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
+import { SetStateAction, useEffect, useState } from 'react'
+import instance from '@/axios/CustomAxios'
+import { BillResponseDTO } from '@/views/manage/order/store'
 
 
-const AddressModal = ({ onCloseModal }: { onCloseModal: React.Dispatch<SetStateAction<boolean>> }) => {
+type AddressInfo = {
+    provinceId: string;    // ID của tỉnh
+    provinceName: string;  // Tên của tỉnh
+    districtId: string;    // ID của quận/huyện
+    districtName: string;  // Tên của quận/huyện
+    wardId: string;        // ID của phường/xã
+    wardName: string;      // Tên của phường/xã
+};
+
+const AddressModal = ({ selectedOrder, onCloseModal }: {
+    selectedOrder: BillResponseDTO,
+    onCloseModal: React.Dispatch<SetStateAction<boolean>>
+}) => {
 
     const [IAddress, setIAddress] = useState<IAddress>({})
     const [provinces, setProvinces] = useState<IProvince[]>([])
@@ -15,24 +27,22 @@ const AddressModal = ({ onCloseModal }: { onCloseModal: React.Dispatch<SetStateA
     const [wards, setWards] = useState<IWard[]>([])
 
     useEffect(() => {
-        console.log("IAddress")
+        console.log('IAddress')
         console.log(IAddress)
     }, [IAddress])
 
 
-
     const handleFindAllProvinces = async () => {
-        const modifiedProvinces: IProvince[] = await fetchFindAllProvinces();
-        setProvinces(modifiedProvinces); // Cập nhật state với mảng đã sửa đổi
-        console.log(modifiedProvinces);
+        const modifiedProvinces: IProvince[] = await fetchFindAllProvinces()
+        setProvinces(modifiedProvinces) // Cập nhật state với mảng đã sửa đổi
     }
     const handleFindAllDistricts = async (idProvince: string) => {
-        const modifiedDistricts: IDistrict[] = await fetchFindAllDistricts(idProvince);
-        setDistricts(modifiedDistricts);
+        const modifiedDistricts: IDistrict[] = await fetchFindAllDistricts(idProvince)
+        setDistricts(modifiedDistricts)
     }
     const handleFindAllWards = async (idDistrict: string) => {
-        const modifiedDistricts: IWard[] = await fetchFindAllWards(idDistrict);
-        setWards(modifiedDistricts);
+        const modifiedDistricts: IWard[] = await fetchFindAllWards(idDistrict)
+        setWards(modifiedDistricts)
     }
 
     useEffect(() => {
@@ -40,16 +50,32 @@ const AddressModal = ({ onCloseModal }: { onCloseModal: React.Dispatch<SetStateA
     }, [])
     useEffect(() => {
         if (IAddress.iprovince) {
-            handleFindAllDistricts(IAddress.iprovince.ProvinceID);
+            handleFindAllDistricts(IAddress.iprovince.ProvinceID)
             if (IAddress.idistrict) {
-                handleFindAllWards(IAddress.idistrict.DistrictID);
+                handleFindAllWards(IAddress.idistrict.DistrictID)
             }
         }
     }, [IAddress])
 
+    const handleSubmitForm = async () => {
+        console.log('OK')
+        const data: AddressInfo = {
+            provinceId: IAddress.iprovince?.ProvinceID || '',
+            provinceName: IAddress.iprovince?.ProvinceName || '',
+            districtId: IAddress.idistrict?.DistrictID || '',
+            districtName: IAddress.idistrict?.DistrictName || '',
+            wardId: IAddress.iward?.WardCode || '',
+            wardName: IAddress.iward?.WardName || ''
+        }
+        instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
+            console.log(response)
+        })
+    }
+
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-50">
-            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl md:w-2/5 p-5 rounded-md z-51">
+            <div
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl w-3/5 xl:w-2/5 p-5 rounded-md z-51">
                 <div className="flex justify-between py-3 text-[18px] font-semibold">
                     <div>
                         <label>Edit</label>
@@ -69,7 +95,7 @@ const AddressModal = ({ onCloseModal }: { onCloseModal: React.Dispatch<SetStateA
                             onChange={(el) =>
                                 setIAddress((prev) => ({ ...prev, iprovince: (el as IProvince) }))
                             }
-                        // Dưới đây là đoạn mã đã được chỉnh sửa
+                            // Dưới đây là đoạn mã đã được chỉnh sửa
                         >
                         </Select>
 
@@ -114,12 +140,16 @@ const AddressModal = ({ onCloseModal }: { onCloseModal: React.Dispatch<SetStateA
                         </Input>
                     </div>
                     <div>
-                        <Button block variant="twoTone">Xác nhận</Button>
+                        <Button
+                            block
+                            variant="twoTone"
+                            onClick={handleSubmitForm}
+                        >Xác nhận</Button>
                     </div>
                 </div>
-            </div >
+            </div>
         </div>
-    );
+    )
 }
 
-export default AddressModal;
+export default AddressModal

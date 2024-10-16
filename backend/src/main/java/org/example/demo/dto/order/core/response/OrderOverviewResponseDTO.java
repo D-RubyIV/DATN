@@ -35,4 +35,12 @@ public class OrderOverviewResponseDTO {
     private Double subTotal;
     private String customerName;
     private String staffName;
+    //
+    private String provinceId;
+    private String provinceName;
+    private String districtId;
+    private String districtName;
+    private String wardId;
+    private String wardName;
+    //
 }

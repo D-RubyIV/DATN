@@ -153,6 +153,16 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             }
             history.setNote("Thêm thông tin khuyến mãi");
         }
+        // UPDATE THEM
+        // province
+        order.setProvinceName(requestDTO.getProvinceName());
+        order.setProvinceId(requestDTO.getProvinceId());
+        // district
+        order.setDistrictName(requestDTO.getDistrictName());
+        order.setDistrictId(requestDTO.getDistrictName());
+        // ward
+        order.setWardName(requestDTO.getWardName());
+        order.setWardId(requestDTO.getWardId());
         // return order
         return orderRepository.save(order);
     }

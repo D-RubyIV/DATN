@@ -123,6 +123,7 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
         await handleDelayScreen();
         fetchData();
         setIsOpenCustomerModal(false)
+        document.body.style.overflow = 'auto';
     }
 
     const fetchDataProduct = async () => {

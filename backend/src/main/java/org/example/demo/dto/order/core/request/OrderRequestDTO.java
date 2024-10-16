@@ -1,5 +1,6 @@
 package org.example.demo.dto.order.core.request;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -51,6 +52,18 @@ public class OrderRequestDTO {
 
     @NotNull(message = "NotNull")
     private Type type;
+
+    private String provinceId;
+
+    private String provinceName;
+
+    private String districtId;
+
+    private String districtName;
+
+    private String wardId;
+
+    private String wardName;
 
     private Voucher voucher;
 
