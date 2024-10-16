@@ -27,29 +27,33 @@ type AddressDTO = {
     id: string;
     name: string;
     phone: string;
-    provinceId: string;
+    provinceId: number;
+    districtId: number;
+    wardId: number;
     province: string | null;
-    districtId: string;
     district: string | null;
-    wardId: string;
     ward: string | null;
     detail: string;
     isDefault: boolean;
 };
 
 interface Province {
-    id: string;
-    full_name: string;
+    ProvinceID: number;
+    ProvinceName: string;
+    NameExtension: string[];
 }
 
 interface District {
-    id: string;
-    full_name: string;
+    DistrictID: number;
+    ProvinceID: number;
+    DistrictName: string;
 }
 
+
 interface Ward {
-    id: string;
-    full_name: string;
+    WardCode: number;
+    DistrictID: number;
+    WardName: string;
 }
 
 const validationSchema = Yup.object({
@@ -75,11 +79,11 @@ const UpdateCustomer = () => {
         id: '',
         name: '',
         phone: '',
-        provinceId: "",
+        provinceId: 0,
         province: null,
-        districtId: "",
+        districtId: 0,
         district: null,
-        wardId: "",
+        wardId: 0,
         ward: null,
         detail: '',
         isDefault: false,
@@ -98,14 +102,18 @@ const UpdateCustomer = () => {
     }
 
     const [updateCustomer, setUpdateCustomer] = useState<CustomerDTO>(initialCustomerState);
+    const [provinces, setProvinces] = useState<Province[]>([]);
     const [districts, setDistricts] = useState<District[]>([]);
     const [wards, setWards] = useState<Ward[]>([]);
-    const [provinces, setProvinces] = useState<Province[]>([]);
+    const [loadingProvinces, setLoadingProvinces] = useState(false);
+    const [loadingDistricts, setLoadingDistricts] = useState(false);
+    const [loadingWards, setLoadingWards] = useState(false);
     const navigate = useNavigate();
     const { id } = useParams();
     const [formModes, setFormModes] = useState<string[]>([]);
 
     useEffect(() => {
+        console.log('Effect running');
         if (id) {
             fetchCustomer(id);
         }
@@ -121,22 +129,16 @@ const UpdateCustomer = () => {
             const fetchAddressesData = async () => {
                 await Promise.all(
                     updateCustomer.addressDTOS.map(async (address) => {
-                        // Lấy các quận của tỉnh
-                        if (address.province) {
-                            const province = provinces.find((prov) => prov.full_name === address.province);
-                            if (province) {
-                                const districtsData = await fetchDistricts(province.id);
-                                newDistricts.push(...districtsData); // Thêm các quận đã lấy
-                            }
+                        // Lấy các quận dựa vào provinceId
+                        if (address.provinceId) {
+                            const districtsData = await fetchDistricts(address.provinceId);
+                            newDistricts.push(...districtsData);
                         }
 
-                        // Lấy phường cho quận
-                        if (address.district) {
-                            const district = newDistricts.find((dist) => dist.full_name === address.district);
-                            if (district) {
-                                const wardsData = await fetchWards(district.id);
-                                newWards.push(...wardsData); // Thêm các phường đã lấy
-                            }
+                        // Lấy các phường dựa vào districtId
+                        if (address.districtId) {
+                            const wardsData = await fetchWards(address.districtId);
+                            newWards.push(...wardsData); // Lưu các phường đã lấy
                         }
                     })
                 );
@@ -147,13 +149,9 @@ const UpdateCustomer = () => {
 
             fetchAddressesData();
         }
-    }, [updateCustomer, provinces]);
+    }, [updateCustomer]);
 
-
-
-
-
-    // API calls
+    // Hàm lấy khách hàng theo ID
     const fetchCustomer = async (id: string) => {
         try {
             const response = await axios.get(`http://localhost:8080/api/v1/customer/${id}`);
@@ -169,72 +167,139 @@ const UpdateCustomer = () => {
         }
     };
 
-    const fetchProvinces = async () => {
-        const response = await axios.get('https://esgoo.net/api-tinhthanh/1/0.htm');
-        if (response.data.error === 0) {
-            return response.data.data;
-        } else {
-            console.error('Error fetching provinces:', response.data);
+    // Hàm lấy dữ liệu tỉnh
+    const fetchProvinces = async (): Promise<Province[]> => {
+        console.log('Fetching provinces...'); // Log thêm
+        setLoadingProvinces(true);
+
+        try {
+            const response = await axios.get("https://online-gateway.ghn.vn/shiip/public-api/master-data/province", {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
+                }
+            });
+            console.log('API Province Response: ', response);
+            if (response.data.code === 200) {
+                return response.data.data; // Trả về dữ liệu tỉnh
+            } else {
+                console.log('Error fetching province: ', response.data.message);
+                alert('Không thể tải danh sách tỉnh. Vui lòng thử lại sau.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching province:', error);
+            alert('Đã xảy ra lỗi khi tải danh sách tỉnh. Vui lòng thử lại.');
             return [];
+        } finally {
+            setLoadingProvinces(false);
         }
     };
 
-    const fetchDistricts = async (provinceId: string) => {
-        const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
-        if (response.data.error === 0) {
-            return response.data.data;
-        } else {
-            console.error('Error fetching districts:', response.data);
+
+    // Hàm lấy thông tin quận
+    const fetchDistricts = async (provinceId: number): Promise<District[]> => {
+        setLoadingDistricts(true);
+        try {
+            const response = await axios.get(`https://online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
+                },
+                params: { province_id: provinceId }
+            });
+            console.log('API District Response: ', response);
+            if (response.data.code === 200) {
+                return response.data.data; // Trả về dữ liệu quận
+            } else {
+                console.log('Error fetching district: ', response.data.message);
+                alert('Không thể tải danh sách huyện. Vui lòng thử lại sau.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching districts:', error);
+            alert('Đã xảy ra lỗi khi tải danh sách huyện. Vui lòng thử lại.');
             return [];
+        } finally {
+            setLoadingDistricts(false);
         }
     };
 
-    const fetchWards = async (districtId: string) => {
-        const response = await axios.get(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
-        if (response.data.error === 0) {
-            return response.data.data;
-        } else {
-            console.error('Error fetching wards:', response.data);
+
+    // Hàm lấy thông tin xã
+    const fetchWards = async (districtId: number): Promise<Ward[]> => {
+        setLoadingWards(true);
+        try {
+            const response = await axios.get(`https://online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
+                },
+                params: { district_id: districtId }
+            });
+            console.log('API Ward Response: ', response);
+            if (response.data.code === 200) {
+                return response.data.data; // Trả về dữ liệu phường
+            } else {
+                console.log('Error fetching ward: ', response.data.message);
+                alert('Không thể tải danh sách xã. Vui lòng thử lại sau.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching wards:', error);
+            alert('Đã xảy ra lỗi khi tải danh sách xã. Vui lòng thử lại.');
             return [];
+        } finally {
+            setLoadingWards(false);
         }
     };
 
+
+    // Hàm sử lý người dùng khi thay đổi tỉnh quận xã
     const handleLocationChange = async (
         type: 'province' | 'district' | 'ward',
         newValue: Province | District | Ward | null,
         form: FormikProps<CustomerDTO>,
         index: number
     ) => {
-        // Cập nhật giá trị của tỉnh, quận hoặc xã trong state
-        form.setFieldValue(`addressDTOS[${index}].${type}`, newValue ? newValue.full_name : '');
-
-        if (type === 'province' && newValue) {
-            // Nếu chọn tỉnh, gọi API lấy danh sách quận
-            const districtsData = await fetchDistricts(newValue.id);
-            setDistricts(districtsData);
-
-            // Reset ward khi tỉnh thay đổi
-            setWards([]);
-        } else if (type === 'district' && newValue) {
-            // Nếu chọn quận, gọi API lấy danh sách xã
-            const wardsData = await fetchWards(newValue.id);
-            setWards(wardsData);
+        // Thiết lập giá trị cho địa chỉ tương ứng
+        if (newValue) {
+            if (type === 'province' && 'ProvinceID' && 'ProvinceName' in newValue) {
+                form.setFieldValue(`addressDTOS[${index}].province`, newValue.NameExtension[1] || '');
+                const districtsData = await fetchDistricts(newValue.ProvinceID);
+                setDistricts(districtsData);
+                form.setFieldValue(`addressDTOS[${index}].district`, ''); // Reset district
+                form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
+                setWards([]); // Reset wards
+            } else if (type === 'district' && 'DistrictID' && 'DistrictName' in newValue) {
+                form.setFieldValue(`addressDTOS[${index}].district`, newValue.DistrictName || '');
+                const wardsData = await fetchWards(newValue.DistrictID);
+                setWards(wardsData);
+                form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
+            } else if (type === 'ward' && 'WardName' in newValue) {
+                form.setFieldValue(`addressDTOS[${index}].ward`, newValue.WardName || '');
+            }
+        } else {
+            // Nếu newValue là null, thiết lập giá trị mặc định
+            form.setFieldValue(`addressDTOS[${index}].${type}`, '');
         }
     };
 
-
-
-
     const loadProvinces = async () => {
+        console.log('Loading provinces...'); // Log để kiểm tra loadProvinces
         const cachedProvinces = localStorage.getItem('provinces');
         if (cachedProvinces) {
+            console.log('Using cached provinces.'); // Log nếu có cached
             setProvinces(JSON.parse(cachedProvinces));
         } else {
+            console.log('Fetching provinces from API...'); // Log thêm
             const data = await fetchProvinces();
+            console.log('Fetched provinces:', data); // Log để kiểm tra dữ liệu
             setProvinces(data);
             localStorage.setItem('provinces', JSON.stringify(data));
         }
     };
+
 
     const handleUpdate = async (values: CustomerDTO, { setSubmitting }: FormikHelpers<CustomerDTO>) => {
         try {
@@ -469,10 +534,10 @@ const UpdateCustomer = () => {
                                                                     <Field name={`addressDTOS[${index}].province`}>
                                                                         {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
-                                                                                value={provinces.find((prov) => prov.full_name === field.value) || null}
+                                                                                value={provinces.find(prov => prov.NameExtension[1] === field.value) || null}
                                                                                 placeholder="Chọn tỉnh/thành phố..."
-                                                                                getOptionLabel={(option) => option.full_name}
-                                                                                getOptionValue={(option) => option.id}
+                                                                                getOptionLabel={(option: Province) => option.NameExtension[1]}
+                                                                                getOptionValue={(option: Province) => String(option.ProvinceID)}
                                                                                 options={provinces}
                                                                                 onChange={(newValue: SingleValue<Province> | null) => {
                                                                                     handleLocationChange('province', newValue, form, index);
@@ -490,10 +555,10 @@ const UpdateCustomer = () => {
                                                                         {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
                                                                                 isDisabled={!address.province}
-                                                                                value={districts.find((dist) => dist.full_name === field.value) || null}
+                                                                                value={districts.find(prov => prov.DistrictName === field.value) || null}
                                                                                 placeholder="Chọn quận/huyện..."
-                                                                                getOptionLabel={(option) => option.full_name}
-                                                                                getOptionValue={(option) => option.id}
+                                                                                getOptionLabel={(option: District) => option.DistrictName}
+                                                                                getOptionValue={(option: District) => String(option.DistrictID)}
                                                                                 options={districts}
                                                                                 onChange={(newValue: SingleValue<District> | null) => {
                                                                                     handleLocationChange('district', newValue, form, index);
@@ -511,10 +576,10 @@ const UpdateCustomer = () => {
                                                                         {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                                             <Select
                                                                                 isDisabled={!address.district}
-                                                                                value={wards.find((ward) => ward.full_name === field.value) || null}
+                                                                                value={wards.find(prov => prov.WardName === field.value) || null}
                                                                                 placeholder="Chọn xã/phường/thị trấn..."
-                                                                                getOptionLabel={(option) => option.full_name}
-                                                                                getOptionValue={(option) => option.id}
+                                                                                getOptionLabel={(option: Ward) => option.WardName}
+                                                                                getOptionValue={(option: Ward) => String(option.WardCode)}
                                                                                 options={wards}
                                                                                 onChange={(newValue: SingleValue<Ward> | null) => {
                                                                                     handleLocationChange('ward', newValue, form, index);

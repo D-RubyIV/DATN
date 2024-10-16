@@ -17,15 +17,15 @@ public class AddressDTO {
 
     private String phone;
 
-    private String provinceId;
+    private Integer provinceId;
 
     private String province;
 
-    private String districtId;
+    private Integer districtId;
 
     private String district;
 
-    private String wardId;
+    private Integer wardId;
 
     private String ward;
 
