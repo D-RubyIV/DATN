@@ -4,7 +4,9 @@ import CloseButton from '@/components/ui/CloseButton'
 import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
 import { SetStateAction, useEffect, useState } from 'react'
 import instance from '@/axios/CustomAxios'
-import { BillResponseDTO } from '@/views/manage/order/store'
+import { OrderResponseDTO } from '@/@types/order'
+import { useToastContext } from '@/context/ToastContext'
+import { useLoadingContext } from '@/context/LoadingContext'
 
 
 type AddressInfo = {
@@ -16,15 +18,18 @@ type AddressInfo = {
     wardName: string;      // Tên của phường/xã
 };
 
-const AddressModal = ({ selectedOrder, onCloseModal }: {
-    selectedOrder: BillResponseDTO,
-    onCloseModal: React.Dispatch<SetStateAction<boolean>>
+const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
+    selectedOrder: OrderResponseDTO,
+    onCloseModal: React.Dispatch<SetStateAction<boolean>>,
+    fetchData?: () => Promise<void>
 }) => {
 
     const [IAddress, setIAddress] = useState<IAddress>({})
     const [provinces, setProvinces] = useState<IProvince[]>([])
     const [districts, setDistricts] = useState<IDistrict[]>([])
     const [wards, setWards] = useState<IWard[]>([])
+    const { openNotification } = useToastContext()
+    const { sleep, setIsLoadingComponent } = useLoadingContext()
 
     useEffect(() => {
         console.log('IAddress')
@@ -59,6 +64,7 @@ const AddressModal = ({ selectedOrder, onCloseModal }: {
 
     const handleSubmitForm = async () => {
         console.log('OK')
+        setIsLoadingComponent(true)
         const data: AddressInfo = {
             provinceId: IAddress.iprovince?.ProvinceID || '',
             provinceName: IAddress.iprovince?.ProvinceName || '',
@@ -67,9 +73,16 @@ const AddressModal = ({ selectedOrder, onCloseModal }: {
             wardId: IAddress.iward?.WardCode || '',
             wardName: IAddress.iward?.WardName || ''
         }
-        instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
+        await instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
             console.log(response)
         })
+        onCloseModal(false)
+        if (fetchData) {
+            await fetchData()
+        }
+        await sleep(500)
+        setIsLoadingComponent(false)
+        openNotification('Thay đổi địa chỉ thành công')
     }
 
     return (

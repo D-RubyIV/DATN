@@ -9,6 +9,7 @@ import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.core.Order;
+import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.properties.History;
@@ -23,6 +24,7 @@ import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
+import org.example.demo.util.DataUtils;
 import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.phah04.PageableObject;
 import org.example.demo.validate.group.GroupCreate;
@@ -106,6 +108,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         entityMapped.setDeleted(false);
         entityMapped.setStatus(Status.PENDING);
+        entityMapped.setPayment(Payment.CASH);
         entityMapped.setCode(randomCodeGenerator.generateRandomCode());
         entityMapped.setStaff(staffDemo);
 
@@ -153,19 +156,33 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             }
             history.setNote("Thêm thông tin khuyến mãi");
         }
-        // UPDATE THEM
         // payment
-        order.setPayment(requestDTO.getPayment());
-        order.setType(requestDTO.getType());
+        if(requestDTO.getPayment() != null){
+            order.setPayment(requestDTO.getPayment());
+        }
+        // type
+        if (requestDTO.getType() != null){
+            order.setType(requestDTO.getType());
+        }
+        // type
+        if (requestDTO.getStatus() != null){
+            order.setStatus(requestDTO.getStatus());
+        }
         // province
-        order.setProvinceName(requestDTO.getProvinceName());
-        order.setProvinceId(requestDTO.getProvinceId());
+        if (!DataUtils.isNullOrEmpty(requestDTO.getProvinceId())  && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())){
+            order.setProvinceName(requestDTO.getProvinceName());
+            order.setProvinceId(requestDTO.getProvinceId());
+        }
         // district
-        order.setDistrictName(requestDTO.getDistrictName());
-        order.setDistrictId(requestDTO.getDistrictName());
+        if (!DataUtils.isNullOrEmpty(requestDTO.getDistrictId())  && !DataUtils.isNullOrEmpty(requestDTO.getDistrictName())){
+            order.setDistrictName(requestDTO.getDistrictName());
+            order.setDistrictId(requestDTO.getDistrictId());
+        }
         // ward
-        order.setWardName(requestDTO.getWardName());
-        order.setWardId(requestDTO.getWardId());
+        if (!DataUtils.isNullOrEmpty(requestDTO.getWardId())  && !DataUtils.isNullOrEmpty(requestDTO.getWardName())){
+            order.setWardName(requestDTO.getWardName());
+            order.setWardId(requestDTO.getWardId());
+        }
         // return order
         return orderRepository.save(order);
     }
@@ -199,31 +216,4 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     public CountStatusOrder getCountStatusAnyOrder() {
         return orderRepository.getCountStatus();
     }
-
-//    public Order changeInfoCustomer(Integer id, OrderRequestDTO requestDTO) {
-//        Order order = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + id));
-//
-//        Customer existingCustomer = order.getCustomer();
-//        if (existingCustomer == null) {
-//            throw new EntityNotFoundException("Customer not found in the order.");
-//        }
-//        if (requestDTO.getCustomer().getName() != null) {
-//            existingCustomer.setName(requestDTO.getCustomer().getName());
-//        }
-//        if (requestDTO.getCustomer().getAddresses() != null) {
-//            existingCustomer.setAddresses(requestDTO.getCustomer().getAddresses());
-//        }
-//        if (requestDTO.getCustomer().getPhone() != null) {
-//            existingCustomer.setPhone(requestDTO.getCustomer().getPhone());
-//        }
-//        // bug : thay doi dia chi thi phai tinh lai phi ship (Chua lam)
-//        customerRepository.save(existingCustomer);
-//
-//        History history = new History();
-//        history.setOrder(order);
-//        history.setStatus(Status.EDIT_AN_ORDER);
-//        history.setNote("Cập nhật thông tin khách hàng!");
-//        historyRepository.save(history);
-//        return orderRepository.save(order);
-//    }
 }

@@ -25,30 +25,18 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class OrderRequestDTO {
 
-//    @Length(message = "Length-4-8", min = 4, max = 8)
-//    @NotNull(message = "NotNull")
-//    @NotBlank(message = "NotBlank")
     private String code;
 
-//    @Length(message = "Length-5-25", min = 5, max = 25)
-//    @NotNull(message = "NotNull")
-//    @NotBlank(message = "NotBlank")
     private String address;
 
-//    @Length(message = "Length-5-25", min = 5, max = 25)
-//    @NotNull(message = "NotNull")
-//    @NotBlank(message = "NotBlank")
     private String phone;
 
     private Boolean deleted;
 
-    //    @NotNull(message = "NotNull")
     private Double total;
 
-    //    @NotNull(message = "NotNull")
     private Double subTotal;
 
-    //    @NotNull(message = "NotNull")
     @Enumerated(EnumType.STRING)
     private Type type;
 

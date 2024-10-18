@@ -1,30 +1,45 @@
-import { string } from "yup";
 
-export type typeEnums = "" | "ONLINE" | "INSTORE"
-export type statusEnums = "" | "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
 
-export type TypeBill = {
-    label: string,
-    value: typeEnums
-}
-
-export type StatusBill = {
-    label: string,
-    value: statusEnums,
-    badge: string
-}
-
-export type EBillStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
-export type EBillType = 'INSTORE' | 'ONLINE'; // Add more types if needed
-export type EBillPayment= 'CASH' | 'TRANSFER'; // Add more types if needed
-
-type AddressResponseDTOS = {
+// private
+type OrderAddressResponseDTOS = {
     id: number,
     phone: string,
     detail: string
 }
+// public
+export type EOrderTypeEnums = "" | "ONLINE" | "INSTORE"
 
-export type CustomerResponseDTO = {
+export enum EOrderStatusEnums {
+    EMPTY = "",
+    PENDING = "PENDING",
+    TOSHIP = "TOSHIP",
+    TORECEIVE = "TORECEIVE",
+    DELIVERED = "DELIVERED",
+    CANCELED = "CANCELED",
+    RETURNED = "RETURNED",
+    PAID = "PAID",
+    UNPAID = "UNPAID",
+}
+
+
+export type OrderTypeBill = {
+    label: string,
+    value: EOrderTypeEnums
+}
+
+export type StatusBill = {
+    label: string,
+    value: EOrderStatusEnums,
+    badge: string
+}
+
+export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED" | "PAID" | "UNPAID"
+
+export type EOrderType = 'INSTORE' | 'ONLINE'; // Add more types if needed
+
+export type EOrderPayment = 'CASH' | 'TRANSFER'; // Add more types if needed
+
+export type OrderCustomerResponseDTO = {
     code: string;
     name: string;
     email: string;
@@ -32,10 +47,10 @@ export type CustomerResponseDTO = {
     password: string;
     deleted: boolean;
     birthDay: string; // Consider using Date type if applicable
-    addressResponseDTOS: AddressResponseDTOS[]; // Define this type if applicable
+    addressResponseDTOS: OrderAddressResponseDTOS[]; // Define this type if applicable
 }
 
-export type StaffResponseDTO = {
+export type OrderStaffResponseDTO = {
     code: string;
     name: string;
     email: string;
@@ -52,7 +67,7 @@ export type StaffResponseDTO = {
     deleted: boolean;
 }
 
-export type VoucherResponseDTO = {
+export type OrderVoucherResponseDTO = {
     code: string;
     name: string;
     quantity: number;
@@ -64,24 +79,22 @@ export type VoucherResponseDTO = {
     deleted: boolean;
 }
 
-export type HistoryResponseDTO = {
-    id: number;
-    status: EBillStatus;
+export type OrderHistoryResponseDTO = {
+    id?: number;
+    status: EOrderStatus;
     note: string;
-    createdBy: string
+    createdBy?: string
 }
 
-// Combine all types into one main type
-
-export type BillResponseDTO = {
+export type OrderResponseDTO = {
     id: number;
     code: string;
     address: string;
     phone: string;
     deleted: boolean;
-    status: EBillStatus;
-    type: EBillType;
-    payment: EBillPayment;
+    status: EOrderStatus;
+    type: EOrderType;
+    payment: EOrderPayment;
     total: number;
     subTotal: number;
     provinceId: string;    // ID của tỉnh
@@ -90,11 +103,11 @@ export type BillResponseDTO = {
     districtName: string;  // Tên của quận/huyện
     wardId: string;        // ID của phường/xã
     wardName: string;      // Tên của phường/xã
-    customerResponseDTO: CustomerResponseDTO;
-    staffResponseDTO: StaffResponseDTO;
-    voucherResponseDTO: VoucherResponseDTO;
+    customerResponseDTO: OrderCustomerResponseDTO;
+    staffResponseDTO: OrderStaffResponseDTO;
+    voucherResponseDTO: OrderVoucherResponseDTO;
     orderDetailResponseDTOS: OrderDetailResponseDTO[];
-    historyResponseDTOS: HistoryResponseDTO[];
+    historyResponseDTOS: OrderHistoryResponseDTO[];
 }
 
 export type Entity = {
@@ -106,7 +119,7 @@ export type Entity = {
     deleted: boolean;
 };
 
-export type ProductDetail = Entity & {
+export type OrderProductDetail = Entity & {
     price: number;
     quantity: number;
     size: Entity;
@@ -127,7 +140,7 @@ export type ProductDetail = Entity & {
 export type OrderDetailResponseDTO = {
     id: number;
     quantity: number;
-    productDetail: ProductDetail;
+    productDetail: OrderProductDetail;
 };
 
 export type ProductOrderDetail = {

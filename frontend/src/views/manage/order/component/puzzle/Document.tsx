@@ -1,6 +1,6 @@
 import { Footnote, PageBottom, Tailwind } from "@fileforge/react-print";
-import { BillResponseDTO } from "../../store";
-const Document = ({ billDTO }: { billDTO: BillResponseDTO }) => {
+import { OrderResponseDTO } from "../../../../../@types/order";
+const Document = ({ billDTO }: { billDTO: OrderResponseDTO }) => {
     return (
         <Tailwind>
             <div>

@@ -1,16 +1,28 @@
 import { PaymentInfoProps, PaymentSummaryProps } from '@/@types/payment'
-import { Card, Radio } from '@/components/ui'
+import { Button, Card, Radio } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
 import { Fragment } from 'react/jsx-runtime'
 import { EPaymentMethod } from '@/views/manage/sell'
-import { useEffect, useState } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 import { updateOrder } from '@/services/OrderService'
-import { BillResponseDTO } from '@/views/manage/order/store'
+import { OrderResponseDTO } from '@/@types/order'
+import { Input } from '@/components/ui/Input'
+import { HiTicket } from 'react-icons/hi'
 
-const PaymentInfo = ({ selectedOrder, data }: { selectedOrder: BillResponseDTO, data: PaymentSummaryProps }) => {
+const PaymentInfo = ({ setIsOpenVoucherModal, selectedOrder, data, fetchSelectedOrder }: {
+    setIsOpenVoucherModal: React.Dispatch<SetStateAction<boolean>>,
+    selectedOrder: OrderResponseDTO,
+    data: PaymentSummaryProps,
+    fetchSelectedOrder: () => Promise<void>
+}) => {
     return (
         <Fragment>
-            <PaymentSummary data={data} selectedOrder={selectedOrder}></PaymentSummary>
+            <PaymentSummary
+                data={data}
+                selectedOrder={selectedOrder}
+                fetchSelectedOrder={fetchSelectedOrder}
+                setIsOpenVoucherModal={setIsOpenVoucherModal}
+            />
         </Fragment>
     )
 }
@@ -36,21 +48,27 @@ const PaymentRow = ({ label, value, isLast }: PaymentInfoProps) => {
     )
 }
 
-const PaymentSummary = ({ selectedOrder, data }: { selectedOrder: BillResponseDTO, data: PaymentSummaryProps }) => {
+const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVoucherModal }: {
+    selectedOrder: OrderResponseDTO,
+    data: PaymentSummaryProps,
+    fetchSelectedOrder: () => Promise<void>,
+    setIsOpenVoucherModal: React.Dispatch<SetStateAction<boolean>>,
+}) => {
     const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>(EPaymentMethod.CASH)
 
     useEffect(() => {
         setPaymentMethod(selectedOrder.payment as EPaymentMethod)
     }, [data])
 
-    const onChangeMethod = (val: EPaymentMethod) => {
+    const onChangeMethod = async (val: EPaymentMethod) => {
         setPaymentMethod(val)
-        const response = updateOrder(selectedOrder.id, { payment: val })
+        const response = await updateOrder(selectedOrder.id, { payment: val })
         console.log(response)
+        fetchSelectedOrder()
     }
 
     return (
-        <Card className="mb-4 h-[205px]">
+        <Card className="mb-4 h-[245px]">
             <div className="flex justify-between">
                 <div>
                     <h5 className="mb-4">Thông tin thanh toán</h5>
@@ -71,7 +89,13 @@ const PaymentSummary = ({ selectedOrder, data }: { selectedOrder: BillResponseDT
             <ul>
                 <PaymentRow label="Tổng tiền" value={data?.subTotal} />
                 <PaymentRow label="Phí vận chuyển" value={data?.deliveryFees} />
-                <hr className="mb-3" />
+                <div className={'pb-4'}>
+                    <Input placeholder={'Nhập mã giảm giá nếu có'} suffix={
+                        (<Button className={'cursor-pointer'} variant={'plain'} icon={<HiTicket />} onClick={() => setIsOpenVoucherModal(true)}>
+
+                        </Button>)
+                    }></Input>
+                </div>
                 <PaymentRow isLast label="Tổng thanh toán" value={data?.total} />
             </ul>
         </Card>

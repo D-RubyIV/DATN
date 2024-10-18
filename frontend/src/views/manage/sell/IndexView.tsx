@@ -1,14 +1,18 @@
-import { Fragment } from "react/jsx-runtime";
-import SellBody from "./SellBody";
-import SellHeader from "./SellHeader";
+import React, { Fragment, Suspense, lazy } from "react";
+import { Loading } from '@/components/shared'
+
+// Dynamically import components using React.lazy
+const SellHeader = lazy(() => import("./SellHeader"));
+const SellBody = lazy(() => import("./SellBody"));
 
 const IndexView = () => {
     return (
         <Fragment>
             {/* // header */}
-            <SellHeader></SellHeader>
-            {/* // body */}
-            <SellBody></SellBody>
+            <Suspense fallback={<Loading type={"cover"} loading={true}/>}>
+                <SellHeader />
+                <SellBody />
+            </Suspense>
         </Fragment>
     );
 }

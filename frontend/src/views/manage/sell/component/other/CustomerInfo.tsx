@@ -1,13 +1,13 @@
 import { IconText } from '@/components/shared'
 import { Avatar, Card, Input, Radio, Tooltip } from '@/components/ui'
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal'
-import { BillResponseDTO } from '@/views/manage/order/store'
+import { OrderResponseDTO } from '@/@types/order'
 import { useEffect, useState } from 'react'
 import { HiExternalLink, HiMail, HiPencilAlt, HiPhone } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 import { updateOrder } from '@/services/OrderService'
 
-const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
+const CustomerInfo = ({ data, fetchSelectedOrder }: { data: OrderResponseDTO, fetchSelectedOrder: () => Promise<void> }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState(false)
 
     // Đặt giá trị mặc định của isShipping là false để "Tại quầy" được chọn
@@ -38,7 +38,7 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
     return (
         <Card
             className={`mb-5 ${!isShipping ? (customer.code ? 'h-[300px]' : 'h-[225px]') : 'h-[400px]'} duration-700 transition-all`}>
-            {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress} />}
+            {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress} fetchData={fetchSelectedOrder}/>}
 
             <h5 className="mb-4">
                 Khách hàng #{customer.code || 'Khách lẻ'}

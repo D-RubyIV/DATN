@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { BillResponseDTO, OrderDetailResponseDTO } from '../../store';
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import IconText from '@/components/shared/IconText'
@@ -12,6 +11,7 @@ import OrderInfo from '../puzzle/OderInfo';
 import { Input, Radio, Tooltip } from '@/components/ui';
 import instance from '@/axios/CustomAxios';
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal';
+import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 
 const OrderDetails = () => {
 
@@ -26,7 +26,7 @@ const OrderDetails = () => {
         }
     });
 
-    const [selectObject, setSelectObject] = useState<BillResponseDTO>()
+    const [selectObject, setSelectObject] = useState<OrderResponseDTO>()
     const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
     useEffect(() => {
         fetchData()
@@ -82,7 +82,7 @@ const OrderDetails = () => {
 
 
 
-const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
+const CustomerInfo = ({ data }: { data: OrderResponseDTO }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState<boolean>(false)
 
 

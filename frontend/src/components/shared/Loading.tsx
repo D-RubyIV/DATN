@@ -71,21 +71,21 @@ const CoveredLoading = (props: BaseLoadingProps) => {
     )
 }
 
-const Loading = ({ type, ...rest }: LoadingProps) => {
+const Loading = ({
+                     type = 'default', // Thay đổi ở đây
+                     loading = false, // Thay đổi ở đây
+                     asElement: Component = 'div', // Thay đổi ở đây
+                     ...rest
+                 }: LoadingProps) => {
     switch (type) {
         case 'default':
-            return <DefaultLoading {...rest} />
+            return <DefaultLoading loading={loading} asElement={Component} {...rest} />;
         case 'cover':
-            return <CoveredLoading {...rest} />
+            return <CoveredLoading loading={loading} asElement={Component} {...rest} />;
         default:
-            return <DefaultLoading {...rest} />
+            return <DefaultLoading loading={loading} asElement={Component} {...rest} />;
     }
-}
+};
 
-Loading.defaultProps = {
-    loading: false,
-    type: 'default',
-    asElement: 'div',
-}
 
 export default Loading

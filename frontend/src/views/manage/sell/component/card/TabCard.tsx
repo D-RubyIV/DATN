@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { HiArrowsExpand, HiPlusCircle, HiQrcode } from 'react-icons/hi'
 import { Fragment } from 'react/jsx-runtime'
 import SellProductTable from '../table/SellProductTable'
-import { BillResponseDTO } from '@/views/manage/order/store'
+import { OrderResponseDTO } from '@/@types/order'
 import CustomerInfo from '../other/CustomerInfo'
 import instance from '@/axios/CustomAxios'
 import PaymentInfo from '../other/PaymentInfo'
@@ -11,13 +11,18 @@ import { PaymentSummaryProps } from '@/@types/payment'
 import SellProductModal from '../dialog/SellProductModal'
 import SellCustomerModal from '../dialog/SellCustomerModal'
 import QrCodeScanner from '../scanner/QrCodeScanner'
+import { getUrlPayment } from '@/services/PaymentService'
+import { EPaymentMethod } from '@/views/manage/sell'
+import { useLoadingContext } from '@/context/LoadingContext'
+import SellVocherModal from '@/views/manage/sell/component/dialog/SellVocherModal'
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
     // init variables
     const [isOpenCustomerModal, setIsOpenCustomerModal] = useState<boolean>(false)
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
+    const [isOpenVoucherModal, setIsOpenVoucherModal] = useState<boolean>(false)
     // order selected
-    const [selectedOrder, setSelectedOrder] = useState<BillResponseDTO>()
+    const [selectedOrder, setSelectedOrder] = useState<OrderResponseDTO>()
     // scanner
     const [isScanning, setIsScanning] = useState(false)
     // payment
@@ -27,8 +32,21 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
         deliveryFees: 10,
         total: 1000
     })
+    // hook
+    useEffect(() => {
+        if(isOpenCustomerModal || isOpenVoucherModal || isOpenProductModal){
+            document.body.style.overflow = 'hidden'
+        }
+    }, [
+        isOpenVoucherModal,
+        isOpenCustomerModal,
+        isOpenProductModal
+    ])
+    // context
+    const { sleep, setIsLoadingComponent } = useLoadingContext()
     // func 
     const fetchSelectedOrder = async () => {
+        setIsLoadingComponent(true)
         await instance.get(`/orders/${idOrder}`).then(function(response) {
             console.log(response)
             setSelectedOrder({ ...response.data })
@@ -39,17 +57,39 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                 total: response.data.total || 0
             })
         })
+        await sleep(500)
+        setIsLoadingComponent(false)
     }
     // 
     useEffect(() => {
-        fetchSelectedOrder()
+        fetchSelectedOrder().then(() => {
+            console.log("Fetch SelectedOrder Done")
+        })
     }, [])
 
     useEffect(() => {
-        console.log('Thay doi')
         console.log(selectedOrder)
     }, [selectedOrder])
 
+    const handleSubmitForm = async () => {
+        console.log('PAYMENT')
+        if (selectedOrder?.payment === EPaymentMethod.TRANSFER) {
+            setIsLoadingComponent(true)
+            try {
+                const response = await getUrlPayment(selectedOrder.id)
+                console.log('Confirm payment')
+                console.log(response)
+                const url = response?.data?.data?.paymentUrl
+                console.log(url)
+                if (url) {
+                    window.location.href = url // Mở đường dẫn mới
+                }
+            } catch (error) {
+                console.log(error)
+            }
+            setIsLoadingComponent(false)
+        }
+    }
 
     return (
         <Fragment>
@@ -58,7 +98,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     <div className="flex justify-between items-center py-2">
                         <div className="font-semibold text-[16px] text-black">
                             <label>
-                                Danh sách sản phẩm
+                                Danh sách sản phẩm - Đơn hàng {selectedOrder?.code}
                             </label>
                         </div>
                         <div className="flex gap-4">
@@ -75,7 +115,6 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                 icon={<HiPlusCircle />}
                                 onClick={() => {
                                     setIsOpenProductModal(true)
-                                    document.body.style.overflow = 'hidden'
                                 }}
                             >Thêm sản phẩm</Button>
                         </div>
@@ -115,7 +154,9 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     </div>
                     <div className="py-2">
                         {
-                            selectedOrder ? (<CustomerInfo data={selectedOrder} />) : (<div></div>)
+                            selectedOrder ? (
+                                <CustomerInfo data={selectedOrder} fetchSelectedOrder={fetchSelectedOrder} />) : (
+                                <div></div>)
                         }
                     </div>
 
@@ -129,7 +170,12 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     <div className="py-2">
                         {
                             selectedOrder ? (
-                                <PaymentInfo selectedOrder={selectedOrder} data={paymentSummaryProp} />) : (<div></div>)
+                                <PaymentInfo
+                                    setIsOpenVoucherModal={setIsOpenVoucherModal}
+                                    selectedOrder={selectedOrder}
+                                    data={paymentSummaryProp}
+                                    fetchSelectedOrder={fetchSelectedOrder} />
+                            ) : (<div></div>)
                         }
                     </div>
                     <div>
@@ -139,6 +185,8 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             variant="solid"
                             style={{ backgroundColor: 'rgb(79, 70, 229)' }}
                             className="flex items-center justify-center gap-2 button-bg-important"
+                            onClick={handleSubmitForm}
+                            disabled={selectedOrder?.orderDetailResponseDTOS.length === 0}
                         >
                             Xác nhận đơn hàng
                         </Button>
@@ -158,6 +206,13 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     (isOpenProductModal && selectedOrder) && (
                         <SellProductModal setIsOpenProductModal={setIsOpenProductModal} selectOrder={selectedOrder}
                                           fetchData={fetchSelectedOrder}></SellProductModal>)
+                }
+            </div>
+            <div>
+                {
+                    (isOpenVoucherModal && selectedOrder) && (
+                        <SellVocherModal setIsOpenVoucherModal={setIsOpenVoucherModal} selectOrder={selectedOrder}
+                                          fetchData={fetchSelectedOrder}></SellVocherModal>)
                 }
             </div>
             <QrCodeScanner isScanning={isScanning} setIsScanning={setIsScanning}></QrCodeScanner>

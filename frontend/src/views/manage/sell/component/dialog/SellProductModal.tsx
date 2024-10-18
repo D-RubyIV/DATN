@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch } from 'react'
+import { useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch, Fragment } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
@@ -10,22 +10,20 @@ import type { MouseEvent } from 'react'
 import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
 import ProductInfomation from '@/views/manage/order/component/puzzle/ProductInfomation'
-import { BillResponseDTO, ProductDetailOverviewPhah04 } from '@/views/manage/order/store'
-
-type Direction = 'top' | 'right' | 'bottom' | 'left'
-
+import { OrderResponseDTO, ProductDetailOverviewPhah04 } from '@/@types/order'
+import { useLoadingContext } from '@/context/LoadingContext'
 
 const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     setIsOpenProductModal: Dispatch<SetStateAction<boolean>>,
-    selectOrder: BillResponseDTO,
-    fetchData: () => {}
+    selectOrder: OrderResponseDTO,
+    fetchData: () => Promise<void>
 }) => {
     const inputRef = useRef(null)
     const quantityRef = useRef(null)
     const [data, setData] = useState([])
-    const [loading, setLoading] = useState(false)
+    const { sleep, isLoadingComponent, setIsLoadingComponent } = useLoadingContext()
     const [isOpenPlacement, setIsOpenPlacement] = useState(false)
-    const [seletedProductDetail, setSeletedProductDetail] = useState<ProductDetailOverviewPhah04>()
+    const [selectedProductDetail, setSelectedProductDetail] = useState<ProductDetailOverviewPhah04>()
     const [orderDetailRequest, setOrderDetailRequest] = useState<{
         quantity?: number;
         orderId: number;
@@ -34,15 +32,6 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         orderId: selectOrder.id,
         quantity: 1
     })
-    const placementList: {
-        name: string,
-        value: Direction,
-    }[] = [
-        { name: 'Top', value: 'top' },
-        { name: 'Right', value: 'right' },
-        { name: 'Bottom', value: 'bottom' },
-        { name: 'Left', value: 'left' }
-    ]
     const [tableData, setTableData] = useState<{
         pageIndex: number
         pageSize: number
@@ -148,12 +137,12 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
 
     const setSelectProductDetailAndOpenDrawer = (productDetail: ProductDetailOverviewPhah04, isOpen: boolean) => {
         setIsOpenPlacement(true)
-        setSeletedProductDetail(productDetail)
+        setSelectedProductDetail(productDetail)
         setOrderDetailRequest((pre) => ({ ...pre, productDetailId: productDetail.id }))
     }
 
     const fetchDataProduct = async () => {
-        setLoading(true)
+        setIsLoadingComponent(true)
         const response = await instance.post('/v2/product', tableData,
             {
                 params: queryParam
@@ -164,8 +153,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             ...prevData,
             ...{ total: response.data.totalElements }
         }))
-        fetchData()
-        setLoading(false)
+        await fetchData()
+        setIsLoadingComponent(false)
     }
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         debounceFn(e.target.value)
@@ -174,7 +163,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
 
     function handleDebounceFn(val: string) {
         console.log(val)
-        if (typeof val === 'string' && (val.length > 1 || val.length === 0)) {
+        if ((val.length > 1 || val.length === 0)) {
             setTableData((prevData) => ({
                 ...prevData,
                 ...{ query: val, pageIndex: 1 }
@@ -182,25 +171,16 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         }
     }
 
-    const sleep = (ms: number) => {
-        return new Promise(resolve => setTimeout(resolve, ms))
-    }
-
     const addOrderDetail = async () => {
         await instance.post('/order-details', orderDetailRequest)
         setIsOpenPlacement(false)
-        await handleDelayScreen()
-        fetchData()
-        openNotification('Thêm thành công!')
         setIsOpenProductModal(false)
+        await fetchData()
+        await sleep(500)
+        openNotification('Thêm thành công!')
         document.body.style.overflow = 'auto'
     }
 
-    const handleDelayScreen = async () => {
-        setLoading(true)
-        await sleep(500)
-        setLoading(false)
-    }
 
     const onDrawerClose = (e: MouseEvent) => {
         console.log('onDrawerClose', e)
@@ -217,6 +197,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         tableData.query,
         queryParam
     ])
+
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-50">
             <div
@@ -236,8 +217,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         </div>
                         <hr></hr>
                         <div>
-                            {seletedProductDetail &&
-                                <ProductInfomation seletedProductDetail={seletedProductDetail}></ProductInfomation>}
+                            {selectedProductDetail &&
+                                <ProductInfomation seletedProductDetail={selectedProductDetail}></ProductInfomation>}
                             <div className="py-5">
                                 <label>Vui lòng nhập số lượng</label>
                                 <Input
@@ -245,20 +226,21 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     size="sm"
                                     type="number"
                                     min={1}
-                                    max={seletedProductDetail?.quantity}
+                                    max={selectedProductDetail?.quantity}
                                     onChange={(el) => setOrderDetailRequest({
                                         ...orderDetailRequest,
                                         quantity: Number(el.target.value)
                                     })}
                                 />
-                                <Button onClick={() => addOrderDetail()} block variant="solid" size="sm"
-                                        className="bg-indigo-500 w-full mt-5" icon={<HiPlusCircle />}>
+                                <Button block variant="solid" size="sm" className="bg-indigo-500 w-full mt-5"
+                                        icon={<HiPlusCircle />} onClick={() => addOrderDetail()}>
                                     Thêm sản phẩm
                                 </Button>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <div className="p-5 bg-white !h-4/5 rounded-md">
                     <div className="flex justify-between pb-3">
                         <div>
@@ -285,7 +267,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         <DataTable
                             columns={columns}
                             data={data}
-                            loading={loading}
+                            loading={isLoadingComponent}
                             pagingData={tableData}
                             onPaginationChange={handlePaginationChange}
                             onSelectChange={handleSelectChange}
@@ -293,6 +275,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         />
                     </div>
                 </div>
+
             </div>
         </div>
     )

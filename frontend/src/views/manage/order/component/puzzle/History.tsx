@@ -5,7 +5,7 @@ import Card from '@/components/ui/Card'
 import Tag from '@/components/ui/Tag'
 import { HiTag } from 'react-icons/hi'
 import type { AvatarProps } from '@/components/ui/Avatar'
-import { BillResponseDTO } from '../../store'
+import { OrderResponseDTO } from '../../../../../@types/order'
 
 type TimelineAvatarProps = AvatarProps
 
@@ -17,7 +17,7 @@ const TimelineAvatar = ({ children, ...rest }: TimelineAvatarProps) => {
     )
 }
 
-const History = ({ selectObject }: { selectObject: BillResponseDTO }) => {
+const History = ({ selectObject }: { selectObject: OrderResponseDTO }) => {
     return (
         <div className="max-w-[700px]">
             <Timeline>

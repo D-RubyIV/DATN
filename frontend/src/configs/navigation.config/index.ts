@@ -14,21 +14,21 @@ const navigationConfig: NavigationTree[] = [
         icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
-        subMenu: [],
+        subMenu: []
     },
     {
         key: 'manageSell',
-        path: '/manage/sell',
-        title: '',
+        path: '/admin/manage/sell',
+        title: 'Home',
         translateKey: 'nav.sellTitle',
-        icon: 'groupSingleMenu',
+        icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
-        subMenu: [],
+        subMenu: []
     },
     {
         key: 'collapseMenu',
-        path: '',
+        path: 'admin',
         title: 'Collapse Menu',
         translateKey: 'nav.manageTitle',
         icon: 'collapseMenu',
@@ -37,55 +37,55 @@ const navigationConfig: NavigationTree[] = [
         subMenu: [
             {
                 key: 'customerManager',
-                path: '/manage/customer',
+                path: 'manage/customer',
                 title: 'Collapse menu item 1',
                 translateKey: 'nav.customerTitle',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: [],
+                subMenu: []
             },
             {
                 key: 'voucherManager',
-                path: '/manage/voucher',
+                path: 'manage/voucher',
                 title: 'Collapse menu item 2',
                 translateKey: 'nav.voucherTitle',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: [],
+                subMenu: []
             },
             {
                 key: 'productManage',
-                path: '/manage/product',
+                path: 'manage/product',
                 title: 'Collapse menu item 2',
                 translateKey: 'nav.productTitle',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: [],
+                subMenu: []
             },
             {
                 key: 'staffManager',
-                path: '/manage/staff',
+                path: 'manage/staff',
                 title: 'Collapse menu item 2',
                 translateKey: 'nav.staffTitle',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: [],
+                subMenu: []
             },
             {
                 key: 'orderManager',
-                path: '/manage/order',
+                path: 'manage/order',
                 title: 'Collapse menu item 2',
                 translateKey: 'nav.orderTitle',
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: [],
-            },
-        ],
+                subMenu: []
+            }
+        ]
     },
     {
         key: 'setting',
@@ -104,7 +104,7 @@ const navigationConfig: NavigationTree[] = [
                 icon: 'groupSingleMenu',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: [],
+                subMenu: []
             },
             {
                 key: 'groupMenu.collapse',
@@ -123,7 +123,7 @@ const navigationConfig: NavigationTree[] = [
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [],
-                        subMenu: [],
+                        subMenu: []
                     },
                     {
                         key: 'groupMenu.collapse.item2',
@@ -133,12 +133,12 @@ const navigationConfig: NavigationTree[] = [
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [],
-                        subMenu: [],
-                    },
-                ],
-            },
-        ],
-    },
+                        subMenu: []
+                    }
+                ]
+            }
+        ]
+    }
 ]
 
 export default navigationConfig

@@ -1,6 +1,6 @@
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
-import { BillResponseDTO } from '../../store'
+import { OrderResponseDTO } from '../../../../../@types/order'
 import { compile } from "@fileforge/react-print";
 import { Button } from '@/components/ui';
 import { FileforgeClient } from '@fileforge/client';
@@ -15,7 +15,7 @@ const ff = new FileforgeClient({
 
 
 
-const OrderInfo = ({ data }: { data: BillResponseDTO }) => {
+const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
     const [viewInvoice, setViewInvoice] = useState<boolean>(false)
 
     const run = async () => {

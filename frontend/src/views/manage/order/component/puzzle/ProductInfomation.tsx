@@ -1,4 +1,4 @@
-import { ProductDetailOverviewPhah04 } from "../../store";
+import { ProductDetailOverviewPhah04 } from "../../../../../@types/order";
 
 const ProductInfomation = ({ seletedProductDetail }: { seletedProductDetail: ProductDetailOverviewPhah04 }) => {
     return (

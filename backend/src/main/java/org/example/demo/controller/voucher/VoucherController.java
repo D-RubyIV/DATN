@@ -29,7 +29,6 @@ public class VoucherController {
     public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id, VoucherRequest request) {
         return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id, request));
     }
-
     @GetMapping
     public ResponseEntity<Page<VoucherResponseDTO>> getAllNhanVien(
             @RequestParam(name = "limit", defaultValue = "5") int limit,
@@ -58,7 +57,6 @@ public class VoucherController {
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
-
 
     @GetMapping("/get-all")
     public ResponseEntity<List<VoucherResponse>> getAll() {

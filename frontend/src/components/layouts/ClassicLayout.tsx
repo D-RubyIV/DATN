@@ -4,7 +4,8 @@ import SidePanel from '@/components/template/SidePanel'
 import MobileNav from '@/components/template/MobileNav'
 import UserDropdown from '@/components/template/UserDropdown'
 import SideNav from '@/components/template/SideNav'
-import View from '@/views'
+import { Route, Routes } from 'react-router-dom'
+import { AdminViews, AuthViews, ClientViews, PublicViews } from '@/views'
 
 const HeaderActionsStart = () => {
     return (
@@ -24,7 +25,7 @@ const HeaderActionsEnd = () => {
     )
 }
 
-const ClassicLayout = () => {
+const AdminLayout = () => {
     return (
         <div className="app-layout-classic flex flex-auto flex-col">
             <div className="flex flex-auto min-w-0">
@@ -36,12 +37,59 @@ const ClassicLayout = () => {
                         headerEnd={<HeaderActionsEnd />}
                     />
                     <div className="h-full flex flex-auto flex-col">
-                        <View />
+                        <AdminViews />
                     </div>
                 </div>
             </div>
         </div>
     )
 }
+const ClientLayout = () => {
+    return (
+        <div className="app-layout-classic flex flex-auto flex-col">
+            <div className="flex flex-auto min-w-0">
+                <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
+                    <div className="h-full flex flex-auto flex-col">
+                        <ClientViews />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+const PublicLayout = () => {
+    return (
+        <div className="app-layout-classic flex flex-auto flex-col">
+            <div className="flex flex-auto min-w-0">
+                <div className="h-full flex flex-auto flex-col">
+                    <PublicViews />
+                </div>
+            </div>
+        </div>
+    )
+}
+const SecurityLayout = () => {
+    return (
+        <div className="app-layout-classic flex flex-auto flex-col">
+            <div className="flex flex-auto min-w-0">
+                <div className="h-full flex flex-auto flex-col">
+                    <AuthViews />
+                </div>
+            </div>
+        </div>
+    )
+}
 
-export default ClassicLayout
+const RootLayout = () => {
+    return (
+        <Routes>
+            <Route path="/admin/*" element={<AdminLayout />} />
+            <Route path="/security/*" element={<SecurityLayout />} />
+            <Route path="/client/*" element={<ClientLayout />} />
+            <Route path="/*" element={<PublicLayout />} />
+            {/*<Route path="*" element={<Navigate replace to="/sign-in" />} />*/}
+        </Routes>
+    )
+}
+
+export default RootLayout

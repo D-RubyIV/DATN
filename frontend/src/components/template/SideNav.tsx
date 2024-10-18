@@ -7,7 +7,7 @@ import {
     NAV_MODE_THEMED,
     NAV_MODE_TRANSPARENT,
     SIDE_NAV_CONTENT_GUTTER,
-    LOGO_X_GUTTER,
+    LOGO_X_GUTTER
 } from '@/constants/theme.constant'
 import Logo from '@/components/template/Logo'
 import navigationConfig from '@/configs/navigation.config'
@@ -17,15 +17,16 @@ import { useAppSelector } from '@/store'
 
 const sideNavStyle = {
     width: SIDE_NAV_WIDTH,
-    minWidth: SIDE_NAV_WIDTH,
+    minWidth: SIDE_NAV_WIDTH
 }
 
 const sideNavCollapseStyle = {
     width: SIDE_NAV_COLLAPSED_WIDTH,
-    minWidth: SIDE_NAV_COLLAPSED_WIDTH,
+    minWidth: SIDE_NAV_COLLAPSED_WIDTH
 }
 
 const SideNav = () => {
+
     const themeColor = useAppSelector((state) => state.theme.themeColor)
     const primaryColorLevel = useAppSelector(
         (state) => state.theme.primaryColorLevel

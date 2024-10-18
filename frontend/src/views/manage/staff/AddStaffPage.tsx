@@ -91,7 +91,7 @@ const initialStaffState: Staff = {
 };
 
 // Thành phần chính của trang thêm nhân viên
-const AddStaffPage = ({ form }: { form: FormikProps<Staff> }) => {
+const AddStaffPage = () => {
     const [newStaff, setNewStaff] = useState<Staff>(initialStaffState); // Trạng thái cho nhân viên mới
     const [provinces, setProvinces] = useState<Province[]>([]); // Trạng thái cho danh sách tỉnh
     const [districts, setDistricts] = useState<District[]>([]); // Trạng thái cho danh sách huyện

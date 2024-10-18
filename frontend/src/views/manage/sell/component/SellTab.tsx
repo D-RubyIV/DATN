@@ -8,7 +8,7 @@ import TabCard from './card/TabCard'
 import { useToastContext } from '@/context/ToastContext'
 import CloseButton from '@/components/ui/CloseButton'
 import instance from '@/axios/CustomAxios'
-import { BillResponseDTO } from '../../order/store'
+import { OrderResponseDTO } from '../../../../@types/order'
 
 const { TabNav, TabList, TabContent } = Tabs
 
@@ -35,7 +35,7 @@ const SellTab = () => {
         setLoading(false)
     }
 
-    const handleCreateNewOrder = async (): Promise<BillResponseDTO> => {
+    const handleCreateNewOrder = async (): Promise<OrderResponseDTO> => {
         let data = {
             'name': 'Hoa Don',
             'address': '',
@@ -120,7 +120,7 @@ const SellTab = () => {
             <Loading loading={loading} type="cover">
                 <div className="flex justify-between">
                     <div>
-                        <h1 className="font-semibold text-xl text-black text-transform: uppercase">Quản lý đơn hàng</h1>
+                        <h1 className="font-semibold text-xl text-black text-transform: uppercase">Quản lý bán hàng</h1>
                     </div>
                     <div>
                         <Button

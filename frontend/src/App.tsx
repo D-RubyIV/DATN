@@ -4,10 +4,9 @@ import { PersistGate } from 'redux-persist/integration/react';
 import store, { persistor } from './store';
 import Theme from '@/components/template/Theme';
 import Layout from '@/components/layouts';
-import appConfig from '@/configs/app.config';
 import './locales';
-import { ToastContainer } from 'react-toastify'; // Nhập ToastContainer
-import 'react-toastify/dist/ReactToastify.css'; // Nhập các kiểu dáng mặc định
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const environment = process.env.NODE_ENV;
 

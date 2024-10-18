@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch, setSideNavCollapse } from '@/store'
 import useResponsive from '@/utils/hooks/useResponsive'
 import NavToggle from '@/components/shared/NavToggle'
 import type { CommonProps } from '@/@types/common'
+import { useEffect } from 'react'
 
 const _SideNavToggle = ({ className }: CommonProps) => {
     const sideNavCollapse = useAppSelector(
@@ -14,7 +15,14 @@ const _SideNavToggle = ({ className }: CommonProps) => {
 
     const onCollapse = () => {
         dispatch(setSideNavCollapse(!sideNavCollapse))
+        localStorage.setItem('sideNavCollapse', String(!sideNavCollapse))
     }
+
+    useEffect(() => {
+        const isSideNavCollapseInStorage = localStorage.getItem('sideNavCollapse')
+        const isSideNavCollapse = isSideNavCollapseInStorage ? Boolean(isSideNavCollapseInStorage) : false
+        dispatch(setSideNavCollapse(isSideNavCollapse))
+    }, [])
 
     return (
         <>

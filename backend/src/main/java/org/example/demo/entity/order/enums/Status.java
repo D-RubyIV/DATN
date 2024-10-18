@@ -6,5 +6,7 @@ public enum Status {
     TORECEIVE,  // Đang giao hàng
     DELIVERED,  // Hoàn thành
     CANCELED,   // Đã hủy
-    RETURNED    // Trả hàng
+    RETURNED,   // Trả hàng
+    UNPAID,     // Chờ thanh toán
+    PAID        // Đã thanh toán
 }

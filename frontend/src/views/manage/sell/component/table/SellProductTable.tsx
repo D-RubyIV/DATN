@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useEffect } from 'react'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
@@ -9,14 +8,14 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     flexRender,
-    createColumnHelper,
+    createColumnHelper
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
-import { fakeOrderDetail, OrderDetailOverview } from '../..'
-import { Avatar, Button, Dialog, Notification, toast } from '@/components/ui'
+import { OrderDetailOverview } from '../..'
+import { Avatar, Button, Notification, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
-import { HiDocumentRemove, HiMinus, HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
-import { BillResponseDTO, OrderDetailResponseDTO } from '@/views/manage/order/store'
+import { HiMinus, HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
+import { OrderResponseDTO, OrderDetailResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 
@@ -28,54 +27,47 @@ type Option = {
 const { Tr, Th, Td, THead, TBody } = Table
 
 
-
 const pageSizeOption = [
     { value: 5, label: '5 / page' },
     { value: 10, label: '10 / page' },
     { value: 20, label: '20 / page' },
     { value: 30, label: '30 / page' },
     { value: 40, label: '40 / page' },
-    { value: 50, label: '50 / page' },
+    { value: 50, label: '50 / page' }
 ]
 
 const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
-const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: BillResponseDTO, fetchData: () => {} }) => {
-    const [data, setData] = useState<OrderDetailResponseDTO[]>([]);
+const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: OrderResponseDTO, fetchData: () => Promise<void> }) => {
+    const [data, setData] = useState<OrderDetailResponseDTO[]>([])
     const [totalData, setTotalData] = useState(0)
     const [pageSize, setPageSize] = useState(5)
 
-    const { openNotification } = useToastContext();
+    const { openNotification } = useToastContext()
 
 
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
-            .then(function (response) {
-                fetchData();
+            .then(function(response) {
+                fetchData()
             })
-            .catch(function (err) {
-                console.error("Error updating quantity:", err);
+            .catch(function(err) {
+                console.error('Error updating quantity:', err)
                 if (err.response) {
-                    console.log("Status code:", err.response.status); // Trạng thái HTTP từ phản hồi
+                    console.log('Status code:', err.response.status) // Trạng thái HTTP từ phản hồi
                     if (err.response.status === 400) {
                         openNotification(err.response.data.error)
                     }
                 } else {
-                    console.log("Error message:", err.message); // Nếu không có phản hồi từ máy chủ
+                    console.log('Error message:', err.message) // Nếu không có phản hồi từ máy chủ
                 }
-            });
-    };
-
-
-    const handleConfirmDelete = async (id: number) => {
-        await instance.delete(`/order-details/${id}`).then(function (response) {
-            fetchData();
-        })
+            })
     }
+
 
     const getAllOrderDetailWithIdOrder = async (id: number) => {
         console.log(table)
-        instance.get(`/order-details/get-by-order/${id}?page=${table.getState().pagination.pageIndex}&size=${table.getState().pagination.pageSize}`).then(function (response) {
+        instance.get(`/order-details/get-by-order/${id}?page=${table.getState().pagination.pageIndex}&size=${table.getState().pagination.pageSize}`).then(function(response) {
             setData(response.data.content)
             setTotalData(response.data.totalElements)
         })
@@ -85,76 +77,80 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: BillRes
     useEffect(() => {
         const fetchData = async () => {
             if (selectedOrder && selectedOrder.id) {
-                console.log("Thay đổi selectedOrder");
-                await getAllOrderDetailWithIdOrder(selectedOrder.id);
+                console.log('Thay đổi selectedOrder')
+                await getAllOrderDetailWithIdOrder(selectedOrder.id)
             }
-        };
+        }
 
-        fetchData();
-    }, [selectedOrder]);
+        fetchData()
+    }, [selectedOrder])
 
-    
+
     const columns = useMemo<ColumnDef<OrderDetailResponseDTO>[]>(
         () => [
             {
                 accessorKey: 'name',
                 header: 'Sản phẩm',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailResponseDTO;
-                    return <ProductColumn row={row} />;
-                },
+                    const row = props.row.original as OrderDetailResponseDTO
+                    return <ProductColumn row={row} />
+                }
             },
             {
                 accessorKey: 'quantity',
                 header: 'Số lượng',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailResponseDTO;
+                    const row = props.row.original as OrderDetailResponseDTO
                     return (
-                        <div className='flex gap-1 items-center justify-start'>
+                        <div className="flex gap-1 items-center justify-start">
                             {
-                                (<button className='p-2 text-xl' onClick={() => { handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1) }}><HiPlusCircle /></button>)
+                                (<button className="p-2 text-xl" onClick={() => {
+                                    handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
+                                }}><HiPlusCircle /></button>)
                             }
 
                             <label>{props.row.original.quantity} </label>
                             {
-                                (<button className='p-2 text-xl' onClick={() => { handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1) }}><HiMinusCircle /></button>)
+                                (<button className="p-2 text-xl" onClick={() => {
+                                    handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
+                                }}><HiMinusCircle /></button>)
                             }
 
                         </div>
                     )
-                },
+                }
             },
             {
                 accessorKey: 'price',
                 header: 'Giá',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailResponseDTO;
+                    const row = props.row.original as OrderDetailResponseDTO
                     return <PriceAmount amount={row.productDetail.price} />
-                },
+                }
             },
             {
                 // accessorKey: 'price',
                 header: 'Tổng',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailResponseDTO;
+                    const row = props.row.original as OrderDetailResponseDTO
                     return <PriceAmount amount={row.quantity * row.productDetail.price} />
-                },
+                }
             },
             {
                 // accessorKey: 'price',
                 header: 'Hành động',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailResponseDTO;
+                    const row = props.row.original as OrderDetailResponseDTO
                     return (
                         <div>
                             <Button
                                 icon={<HiMinus />}
-                                variant='plain'
+                                variant="plain"
                                 onClick={() => openDeleteConfirm(row.id)}
                             ></Button>
                         </div>
                     )
-                },
+                }
             }
         ],
         []
@@ -166,7 +162,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: BillRes
         // Pipeline
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        getPaginationRowModel: getPaginationRowModel()
     })
 
     useEffect(() => {
@@ -185,8 +181,8 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: BillRes
     const ActionColumn = ({ row }: { row: OrderDetailOverview }) => {
         return (
             <div className="flex gap-2">
-                <button><HiPencil size={20} ></HiPencil></button>
-                <button><HiMinus size={20}></HiMinus ></button>
+                <button><HiPencil size={20}></HiPencil></button>
+                <button><HiMinus size={20}></HiMinus></button>
             </div>
         )
     }
@@ -205,7 +201,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: BillRes
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div className="flex">
-                <Avatar size={90} src={"https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png"} />
+                <Avatar size={90} src={'https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png'} />
                 <div className="ltr:ml-2 rtl:mr-2">
                     <h6 className="mb-2">{row.productDetail.name}</h6>
                     <div className="mb-1">
@@ -244,8 +240,8 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: BillRes
                         className="mr-2 bg-indigo-500"
                         onClick={async () => {
                             closeNotification(notificationKey as string | Promise<string>)
-                            await instance.delete(`/order-details/${idOrderDetail}`).then(function (response) {
-                                fetchData();
+                            await instance.delete(`/order-details/${idOrderDetail}`).then(function(response) {
+                                fetchData()
                             })
                         }}
                     >
