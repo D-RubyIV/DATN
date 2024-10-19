@@ -24,9 +24,6 @@ public class CustomerValidator {
         validateName(customerDTO.getName());
         validateEmail(customerDTO.getEmail(), existingCustomerId);
         validatePhone(customerDTO.getPhone(), existingCustomerId);
-//        validateBirthDate(customerDetailDTO.getBirthDate() + "");
-
-
     }
 
     private void validateName(String name) throws BadRequestException {
@@ -70,6 +67,13 @@ public class CustomerValidator {
                 throw new BadRequestException("Số điện thoại đã tồn tại");
             }
         }
+    }
 
+    public boolean isEmailExists(String email) {
+        return !customerRepository.findCustomerByEmail(email).isEmpty();
+    }
+
+    public boolean isPhoneExists(String phone) {
+        return !customerRepository.findCustomerByPhone(phone).isEmpty();
     }
 }

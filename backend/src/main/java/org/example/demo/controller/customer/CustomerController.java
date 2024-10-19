@@ -6,6 +6,8 @@ import org.example.demo.dto.customer.CustomerDTO;
 import org.example.demo.dto.customer.CustomerListDTO;
 import org.example.demo.entity.human.customer.Address;
 import org.example.demo.service.customer.CustomerService;
+import org.example.demo.validator.AddressValidator;
+import org.example.demo.validator.CustomerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Map;
 
 @RestController
@@ -22,6 +25,7 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
+
 
     @GetMapping("/search")
     public ResponseEntity<Page<CustomerListDTO>> getCustomersSearch(
@@ -49,6 +53,21 @@ public class CustomerController {
     public ResponseEntity<CustomerDTO> getCustomerDetailById(@PathVariable("id") Integer id) {
         CustomerDTO customerDTO = customerService.getCustomerDetailById(id);
         return ResponseEntity.ok(customerDTO);
+    }
+
+
+    // API kiểm tra email có tồn tại hay không
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
+        boolean exists = customerService.isEmailExists(email);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
+    }
+
+    // API kiểm tra số điện thoại có tồn tại hay không
+    @GetMapping("/check-phone")
+    public ResponseEntity<Map<String, Boolean>> checkPhone(@RequestParam String phone) {
+        boolean exists = customerService.isPhoneExists(phone);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 
     @PostMapping("/save")
