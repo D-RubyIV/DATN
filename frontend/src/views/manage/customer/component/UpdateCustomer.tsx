@@ -308,28 +308,42 @@ const UpdateCustomer = () => {
     form: FormikProps<CustomerDTO>,
     index: number
   ) => {
-    // Thiết lập giá trị cho địa chỉ tương ứng
     if (newValue) {
-      if (type === 'province' && 'ProvinceID' && 'ProvinceName' in newValue) {
+      if (type === 'province' && 'ProvinceID' in newValue && 'ProvinceName' in newValue) {
+        // Cập nhật giá trị cho tỉnh
         form.setFieldValue(`addressDTOS[${index}].province`, newValue.NameExtension[1] || '');
+        form.setFieldValue(`addressDTOS[${index}].provinceId`, newValue.ProvinceID); // Cập nhật ID tỉnh
+
+        // Lấy danh sách quận dựa trên tỉnh được chọn
         const districtsData = await fetchDistricts(newValue.ProvinceID);
         setDistricts(districtsData);
         form.setFieldValue(`addressDTOS[${index}].district`, ''); // Reset district
+        form.setFieldValue(`addressDTOS[${index}].districtId`, 0); // Reset ID district
         form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
+        form.setFieldValue(`addressDTOS[${index}].wardId`, 0);   // Reset ID ward
         setWards([]); // Reset wards
-      } else if (type === 'district' && 'DistrictID' && 'DistrictName' in newValue) {
+      } else if (type === 'district' && 'DistrictID' in newValue && 'DistrictName' in newValue) {
+        // Cập nhật giá trị cho quận
         form.setFieldValue(`addressDTOS[${index}].district`, newValue.DistrictName || '');
+        form.setFieldValue(`addressDTOS[${index}].districtId`, newValue.DistrictID); // Cập nhật ID district
+
+        // Lấy danh sách xã dựa trên quận được chọn
         const wardsData = await fetchWards(newValue.DistrictID);
         setWards(wardsData);
         form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
+        form.setFieldValue(`addressDTOS[${index}].wardId`, 0);   // Reset ID ward
       } else if (type === 'ward' && 'WardName' in newValue) {
+        // Cập nhật giá trị cho xã
         form.setFieldValue(`addressDTOS[${index}].ward`, newValue.WardName || '');
+        form.setFieldValue(`addressDTOS[${index}].wardId`, newValue.WardCode); // Cập nhật ID ward
       }
     } else {
       // Nếu newValue là null, thiết lập giá trị mặc định
       form.setFieldValue(`addressDTOS[${index}].${type}`, '');
+      form.setFieldValue(`addressDTOS[${index}].${type}Id`, 0); // Reset ID tương ứng
     }
   };
+
 
   const loadProvinces = async () => {
     console.log('Loading provinces...'); // Log để kiểm tra loadProvinces
@@ -458,7 +472,12 @@ const UpdateCustomer = () => {
         }
         toast.success('Thêm địa chỉ mới thành công');
       } else {
-        response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, address);
+        // Gửi yêu cầu cập nhật với các trường ID quận và xã
+        response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, {
+          ...address, // Bao gồm cả districtId và wardId
+          districtId: address.districtId, // Đảm bảo ID quận được gửi
+          wardId: address.wardId // Đảm bảo ID xã được gửi
+        });
         toast.success('Cập nhật địa chỉ thành công');
       }
       fetchCustomer(customerId);
