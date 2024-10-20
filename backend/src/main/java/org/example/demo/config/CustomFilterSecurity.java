@@ -27,10 +27,5 @@ public class CustomFilterSecurity {
     }
 
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 
 }

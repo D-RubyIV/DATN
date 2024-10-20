@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
@@ -32,6 +33,12 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     // Loc theo status
     @Query("SELECT c FROM Customer c WHERE c.status = :status")
     Page<Customer> findByStatus(@Param("status") String status, Pageable pageable);
+
+    Optional<Customer> findByEmail(String email);
+
+
+    boolean existsByEmail(String email);
+
 
 }
 

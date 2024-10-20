@@ -2,6 +2,7 @@ package org.example.demo.dto.staff.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -57,10 +58,21 @@ public class StaffRequestDTO {
     private Boolean deleted; // Consider setting this to false by default in the service
     private Boolean gender;
 
+    private String status; // Hoặc sử dụng kiểu dữ liệu phù hợp
+
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDay;
 
     //    @NotNull(message = "NotNull")
-    private Role role; // Assume Role is included directly, or you might want to use roleId instead
+//    private Role role; // Assume Role is included directly, or you might want to use roleId instead
+
+    @JsonProperty("role_id")
+    private Integer roleId;
+
+    @JsonProperty("retype_password")
+    @NotBlank(message = "Retype password must not be empty")
+    private String retypePassword;
+
 }
 

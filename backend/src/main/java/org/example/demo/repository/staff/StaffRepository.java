@@ -40,4 +40,8 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
                                @Param("status") String status,
                                @Param("citizenId") String citizenId,
                                Pageable pageable);
+
+    Optional<Staff> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }
