@@ -26,9 +26,8 @@ import java.io.InputStream;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.time.ZoneId;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -122,7 +121,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         return staffRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Staff with id " + id + " not found"));
     }
 
-    private static final String DEFAULT_NV = "defaultnv";
+    private static final String DEFAULT_NV = "default";
     private static final Random RANDOM = new Random();
 
     private String removeVietnameseTones(String str) {
@@ -215,15 +214,19 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     }
 
     @Transactional
-    public void importFromExcel(MultipartFile file) throws IOException {
-        List<Staff> staffList = new ArrayList<>();
+    public List<Map<String, String>> importFromExcel(MultipartFile file) throws IOException {
+        List<Map<String, String>> responseList = new ArrayList<>(); // Danh sách chứa mã và mật khẩu
+        List<Staff> staffList = new ArrayList<>(); // Danh sách nhân viên để lưu vào DB
+
         try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
 
+            // Bắt đầu từ dòng thứ 2 (index = 1) để bỏ qua tiêu đề
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
+                // Khởi tạo đối tượng Staff và gán dữ liệu từ Excel
                 Staff staff = new Staff();
                 staff.setName(getCellValue(row.getCell(1)));
                 staff.setEmail(getCellValue(row.getCell(2)));
@@ -234,23 +237,42 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
                 staff.setProvince(getCellValue(row.getCell(7)));
                 staff.setStatus(getCellValue(row.getCell(8)));
 
-                if (DateUtil.isCellDateFormatted(row.getCell(9))) {
-                    LocalDate birthDate = row.getCell(9).getDateCellValue().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                if (row.getCell(9) != null && DateUtil.isCellDateFormatted(row.getCell(9))) {
+                    LocalDate birthDate = row.getCell(9).getDateCellValue().toInstant()
+                            .atZone(ZoneId.systemDefault()).toLocalDate();
                     staff.setBirthDay(birthDate);
                 }
 
                 staff.setGender("Male".equalsIgnoreCase(getCellValue(row.getCell(10))));
                 staff.setCitizenId(getCellValue(row.getCell(11)));
                 staff.setNote(getCellValue(row.getCell(12)));
+                staff.setDeleted("False".equalsIgnoreCase(getCellValue(row.getCell(13))));
 
-                staff.setCode(generateRandomMaNV(staff.getName()));
-                staff.setPassword(generateRandomPassword());
 
+                // Tạo mã nhân viên và mật khẩu
+                String code = generateRandomMaNV(staff.getName());
+                String password = generateRandomPassword();
+                staff.setCode(code);
+                staff.setPassword(password);
+
+                // Thêm mã và mật khẩu vào danh sách phản hồi
+                Map<String, String> responseData = new HashMap<>();
+                responseData.put("name", staff.getName());
+                responseData.put("email", staff.getEmail());
+                responseData.put("code", code);
+                responseData.put("password", password);
+                responseList.add(responseData);
+
+                // Thêm nhân viên vào danh sách để lưu vào DB
                 staffList.add(staff);
             }
 
+            // Lưu tất cả nhân viên vào DB
             staffRepository.saveAll(staffList);
         }
+
+        // Trả về danh sách mã và mật khẩu
+        return responseList;
     }
 
     private String getCellValue(Cell cell) {
@@ -270,6 +292,5 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
             default -> "";
         };
     }
-
 
 }

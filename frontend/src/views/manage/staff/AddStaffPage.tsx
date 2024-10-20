@@ -103,7 +103,6 @@ const AddStaffPage = () => {
     const scannerRef = useRef<any>(null); // Tham chiếu cho scanner mã QR
     const [snackbarOpen, setSnackbarOpen] = useState(false); // Trạng thái hiển thị snackbar
     const [snackbarMessage, setSnackbarMessage] = useState(''); // Thông điệp snackbar
-
     const navigate = useNavigate(); // Khởi tạo hàm điều hướng
 
     // Fetch tỉnh khi trang được tải
@@ -250,19 +249,6 @@ const AddStaffPage = () => {
     });
 
 
-    const checkEmailDuplicate = async (email: string) => {
-        // Gọi API hoặc kiểm tra email trùng lặp trong cơ sở dữ liệu
-        const response = await axios.get(`/api/check-email?email=${email}`);
-        return response.data.isDuplicate;
-    };
-
-    const checkPhoneDuplicate = async (phone: string) => {
-        // Gọi API hoặc kiểm tra số điện thoại trùng lặp trong cơ sở dữ liệu
-        const response = await axios.get(`/api/check-phone?phone=${phone}`);
-        return response.data.isDuplicate;
-    };
-
-
     // Hàm xử lý khi gửi biểu mẫu
     const handleSubmit = async (
         values: Staff,
@@ -308,7 +294,7 @@ const AddStaffPage = () => {
 
                 // Gửi email
                 await emailjs.send(serviceId, templateId, templateParams, publicKey);
-                toast.success('Nhân viên đã được thêm thành công!');
+                toast.success('Nhân viên đã thêm thành công! Thông tin đã gửi qua email.');
 
                 resetForm(); // Reset biểu mẫu
                 navigate("/manage/staff"); // Điều hướng đến trang quản lý nhân viên
@@ -360,7 +346,7 @@ const AddStaffPage = () => {
     useEffect(() => {
         if (openDialog && scannerRef.current) {
             const html5QrCodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 350 }, false);
-
+    
             html5QrCodeScanner.render(
                 async (data: string) => {
                     const cccdParts = data.split('|');
@@ -371,51 +357,58 @@ const AddStaffPage = () => {
                         const gender = cccdParts[4] === 'Nam';
                         const diaChi = cccdParts[5];
                         const diaChiSplit = diaChi.split(",");
-
+    
                         if (!birthDay) {
                             console.error('Invalid date format in QR code');
                             return;
                         }
-
+    
                         const soNha = diaChiSplit[0];
-                        const tinhOBJ = provinces.find((s: Province) => s.full_name.toLowerCase().includes(diaChiSplit[3].toLowerCase()));
-
-                        if (tinhOBJ?.id) {
+                        const tinhName = diaChiSplit[3] || ''; // check to prevent undefined
+                        const foundTinh = provinces.find((province) =>
+                            province.full_name.toLowerCase().includes(tinhName.toLowerCase())
+                        );
+    
+                        if (foundTinh && foundTinh.id) {
                             try {
-                                const districtResponse = await axios.get(`https://esgoo.net/api-tinhthanh/2/${tinhOBJ.id}.htm`);
+                                const districtResponse = await axios.get(`https://esgoo.net/api-tinhthanh/2/${foundTinh.id}.htm`);
                                 if (districtResponse.status === 200) {
                                     setDistricts(districtResponse.data.data);
-                                    const foundQuanOBJ = districtResponse.data.data.find((s: District) => s.full_name.toLowerCase().includes(diaChiSplit[2].toLowerCase()));
-
-                                    if (foundQuanOBJ?.id) {
+                                    const foundQuanOBJ = districtResponse.data.data.find((district: District) =>
+                                        district.full_name.toLowerCase().includes((diaChiSplit[2] || '').toLowerCase())
+                                    );
+    
+                                    if (foundQuanOBJ && foundQuanOBJ.id) {
                                         const wardResponse = await axios.get(`https://esgoo.net/api-tinhthanh/3/${foundQuanOBJ.id}.htm`);
                                         if (wardResponse.status === 200) {
                                             setWards(wardResponse.data.data);
-                                            const foundPhuongOBJ = wardResponse.data.data.find((s: Ward) => s.full_name.toLowerCase().includes(diaChiSplit[1].toLowerCase()));
-
+                                            const foundPhuongOBJ = wardResponse.data.data.find((ward : Ward) =>
+                                                ward.full_name.toLowerCase().includes((diaChiSplit[1] || '').toLowerCase())
+                                            );
+    
                                             setNewStaff(prevState => ({
                                                 ...prevState,
                                                 citizenId,
                                                 name,
                                                 birthDay,
                                                 address: soNha,
-                                                province: tinhOBJ.full_name || "",
+                                                province: foundTinh.full_name || "",
                                                 district: foundQuanOBJ.full_name || "",
                                                 ward: foundPhuongOBJ?.full_name || "",
                                                 gender,
                                             }));
-
-                                            form.setFieldValue("province", tinhOBJ.full_name || "");
+    
+                                            form.setFieldValue("province", foundTinh.full_name || "");
                                             form.setFieldValue("district", foundQuanOBJ.full_name || "");
                                             form.setFieldValue("ward", foundPhuongOBJ?.full_name || "");
                                         }
                                     }
                                 }
                             } catch (error) {
-                                // Xử lý lỗi khi fetch dữ liệu
+                                console.error(error); // Add proper error handling
                             }
                         } else {
-                            // Xử lý trường hợp không tìm thấy tỉnh
+                            console.error('Province not found');
                             setNewStaff(prevState => ({
                                 ...prevState,
                                 citizenId,
@@ -426,20 +419,20 @@ const AddStaffPage = () => {
                                 gender,
                             }));
                         }
-
-                        setOpenDialog(false); // Đóng hộp thoại sau khi quét xong
-                        html5QrCodeScanner.clear(); // Xóa scanner
+    
+                        setOpenDialog(false); // Close dialog after scanning
+                        html5QrCodeScanner.clear(); // Clear the scanner
                     } else {
-                        console.error('Dữ liệu mã QR không đúng định dạng');
+                        console.error('Invalid QR code format');
                     }
                 },
                 (error: unknown) => {
-                    console.error(error); // Xử lý lỗi quét
+                    console.error(error); // Handle scan error
                 }
             );
-
+    
             return () => {
-                html5QrCodeScanner.clear(); // Dọn dẹp khi component bị hủy
+                html5QrCodeScanner.clear(); // Cleanup when the component is unmounted
             };
         }
     }, [openDialog, provinces]);
