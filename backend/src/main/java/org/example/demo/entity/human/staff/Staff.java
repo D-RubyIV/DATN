@@ -70,4 +70,6 @@ public class Staff extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+
 }

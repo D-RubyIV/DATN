@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -117,20 +119,25 @@ public class StaffController {
     }
 
     @PostMapping("/upload-excel")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<List<Map<String, String>>> uploadFile(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty() || !file.getContentType().equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file format or empty file");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
         }
 
         try {
-            staffService.importFromExcel(file);
-            return ResponseEntity.ok("File uploaded and data imported successfully");
+            List<Map<String, String>> result = staffService.importFromExcel(file);  // Trả về danh sách mã và mật khẩu
+            return ResponseEntity.ok(result);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while reading file");
+            // Log lỗi
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Unable to upload file");
+            // Log lỗi
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(Collections.emptyList());
         }
     }
+
 
 
 }
