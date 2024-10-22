@@ -323,7 +323,7 @@ const AddCustomer = () => {
       toast.success('Lưu thành công');
       resetForm();
       if (response.status === 201) {
-        navigate('/manage/customer');
+        navigate('/admin/manage/customer');
       }
     } catch {
 

@@ -115,6 +115,13 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             )
         },
         {
+            header: 'Số lương',
+            accessorKey: 'quantity',
+            cell: (props) => (
+                props.row.original.quantity
+            )
+        },
+        {
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
@@ -173,9 +180,9 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
 
     const addOrderDetail = async () => {
         await instance.post('/order-details', orderDetailRequest)
+        await fetchData()
         setIsOpenPlacement(false)
         setIsOpenProductModal(false)
-        await fetchData()
         await sleep(500)
         openNotification('Thêm thành công!')
         document.body.style.overflow = 'auto'
@@ -199,7 +206,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     ])
 
     return (
-        <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-50">
+        <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 bg-gray-100 z-20 shadow-md rounded-md">
                 <div className="flex-wrap inline-flex xl:flex items-center gap-2 !w-[500px]">

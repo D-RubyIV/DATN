@@ -11,6 +11,24 @@ import instance from '@/axios/CustomAxios'
 import { SellCustomerOverview } from '../..'
 import { OrderResponseDTO } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
+import axios from 'axios'
+import { useToastContext } from '@/context/ToastContext'
+
+type VoucherDTO = {
+    id: number;
+    name: string;
+    code: string;
+    startDate: string; // hoặc Date nếu bạn muốn xử lý dưới dạng đối tượng Date
+    endDate: string; // hoặc Date nếu bạn muốn xử lý dưới dạng đối tượng Date
+    status: string,
+    quantity: number;
+    maxPercent: number;
+    minAmount: number;
+    typeTicket: string;
+    customerId: number | null; // Có thể là number hoặc null
+    customerName: string | null; // Có thể là string hoặc null
+    customerEmail: string | null; // Có thể là string hoặc null
+};
 
 const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
     setIsOpenVoucherModal: Dispatch<SetStateAction<boolean>>,
@@ -21,6 +39,7 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const { sleep } = useLoadingContext()
+    const { openNotification } = useToastContext()
 
     const [tableData, setTableData] = useState<{
         pageIndex: number
@@ -63,7 +82,7 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
             }
         }))
     }
-    const columns: ColumnDef<SellCustomerOverview>[] = [
+    const columns: ColumnDef<VoucherDTO>[] = [
         {
             header: '#',
             cell: (props) => (
@@ -75,16 +94,30 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
             accessorKey: 'name'
         },
         {
-            header: 'Số điện thoại',
-            accessorKey: 'phone'
+            header: 'Ngày bắt đầu',
+            accessorKey: 'startDate'
         },
         {
-            header: 'Email',
-            accessorKey: 'email'
+            header: 'Ngày kết thúc',
+            accessorKey: 'endDate',
+
         },
         {
-            header: 'Giới tính',
-            accessorKey: 'gender'
+            header: 'Số lượng',
+            accessorKey: 'quantity'
+        },
+        {
+            header: 'Phần trăm giảm tối đa',
+            accessorKey: 'maxPercent'
+        },
+        {
+            accessorKey: 'minAmount',
+            header: 'Hóa đơn tối thiểu',
+            cell: (props => (
+                <p>
+                    {props.row.original.minAmount.toLocaleString("vi") + "đ"}
+                </p>
+            ))
         },
         {
             header: 'Hành động',
@@ -93,8 +126,8 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
                 <Button
                     size="xs"
                     onClick={() => {
-                        console.log('Selected id customer: ', props.row.original.id)
-                        handleUpdateCustomerInfoOrder(props.row.original.id)
+                        console.log('Selected id voucher: ', props.row.original.id)
+                        handleUseVoucher(props.row.original.id)
 
                     }}
                 >
@@ -116,25 +149,31 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
 
     // FUCTION
 
-    const handleUpdateCustomerInfoOrder = async (idCustomer: number) => {
+    const handleUseVoucher = async (idVoucher: number) => {
         const data = {
-            'id': selectOrder.id,
-            'customer': {
-                'id': idCustomer
+            idOrder: selectOrder.id,
+            idVoucher: idVoucher
+        }
+        try {
+            const response = await instance.post(`/orders/use-voucher`, data)
+            console.log(response)
+
+            await handleDelayScreen()
+            fetchData()
+            setIsOpenVoucherModal(false)
+            document.body.style.overflow = 'auto'
+        } catch (error) {
+            if (axios.isAxiosError(error) && error?.response?.status === 400) {
+                openNotification(error.response.data?.error)
+
             }
         }
-        await instance.put(`/orders/${selectOrder.id}`, data).then(function(response) {
-            console.log(response)
-        })
-        await handleDelayScreen()
-        fetchData()
-        setIsOpenVoucherModal(false)
-        document.body.style.overflow = 'auto'
     }
+
 
     const fetchDataProduct = async () => {
         setLoading(true)
-        const response = await instance.get('/customer/search', {
+        const response = await instance.get('/voucher/page', {
             params: queryParam
         })
         setData(response.data.content)
@@ -179,7 +218,7 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
         queryParam
     ])
     return (
-        <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-50">
+        <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 bg-gray-100 z-20 shadow-md rounded-md">
                 <div className="p-5 bg-white !h-4/5 rounded-md">

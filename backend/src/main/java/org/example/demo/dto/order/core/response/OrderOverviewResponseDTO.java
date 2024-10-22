@@ -35,7 +35,9 @@ public class OrderOverviewResponseDTO {
     @Enumerated(EnumType.STRING)
     private Payment payment;
     private Double total;
+    private Double deliveryFee;
     private Double subTotal;
+    private Double discount;
     private String customerName;
     private String staffName;
     //

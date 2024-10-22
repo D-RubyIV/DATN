@@ -83,7 +83,7 @@ const adminRoute: Routes = [
     },
     {
         key: 'productManage',
-        path: `/manage/product`,
+        path: `manage/product`,
         component: lazy(() => import('@/views/manage/product/productList')),
         authority: []
     },

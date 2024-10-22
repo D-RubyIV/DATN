@@ -44,6 +44,8 @@ public class OrderResponseDTO {
     @Enumerated(EnumType.STRING)
     private Payment payment;
     private Double total;
+    private Double deliveryFee;
+    private Double discount;
     private Double subTotal;
     private CustomerResponseDTO customerResponseDTO;
     private StaffResponseDTO staffResponseDTO;

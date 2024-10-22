@@ -1,8 +1,8 @@
 import Tabs from '@/components/ui/Tabs'
 import { HiOutlineUser, HiPlusCircle } from 'react-icons/hi'
 
-import React, { useEffect, useState } from 'react'
-import { Button } from '@/components/ui'
+import React, { ReactNode, useEffect, useState } from 'react'
+import { Badge, Button } from '@/components/ui'
 import { DoubleSidedImage, Loading } from '@/components/shared'
 import TabCard from './card/TabCard'
 import { useToastContext } from '@/context/ToastContext'
@@ -15,7 +15,7 @@ const { TabNav, TabList, TabContent } = Tabs
 type TabObject = {
     label: string,
     value: string,
-    content: any
+    content: ReactNode
 }
 
 const SellTab = () => {
@@ -36,7 +36,7 @@ const SellTab = () => {
     }
 
     const handleCreateNewOrder = async (): Promise<OrderResponseDTO> => {
-        let data = {
+        const data = {
             'name': 'Hoa Don',
             'address': '',
             'phone': '',
@@ -69,10 +69,12 @@ const SellTab = () => {
 
         await handleDelayScreen()
         const newTabIndex = tabs.length + 1
+        const value = `tab${newTabIndex}`
         const newTab = {
-            value: `tab${newTabIndex}`,
+            value: value,
             label: `Đơn hàng ${newTabIndex}`,
-            content: <TabCard idOrder={newOrder.id} />
+            orderId: newOrder.id,
+            content: <TabCard idOrder={newOrder.id} removeCurrentTab={() => removeTab(value)} />
         }
         setTabs([...tabs, newTab])
         setCurrentTab(newTab.value)
@@ -106,7 +108,8 @@ const SellTab = () => {
         const newTabs = savedIds.map((id: number, index: number) => ({
             value: `tab${index + 1}`,
             label: `Đơn hàng ${index + 1}`,
-            content: <TabCard idOrder={id} />
+            orderId: id,
+            content: <TabCard idOrder={id} removeCurrentTab={() => removeTab(`tab${index + 1}`)} />
         }))
         setTabs(newTabs)
         if (newTabs.length > 0) {
@@ -134,17 +137,23 @@ const SellTab = () => {
                 {
                     tabs.length > 0 ? (
                         <Tabs value={currentTab} onChange={(val) => setCurrentTab(val)}>
-                            <TabList className="flex justify-between py-4">
-                                <div className="flex gap-2">
+                            <TabList className="flex justify-between py-2">
+                                <div className="flex">
                                     {tabs.map((tab) => (
                                         <div key={tab.value} className="flex items-center justify-center gap-1">
-                                            <TabNav
-                                                value={tab.value}
-                                                icon={<HiOutlineUser />}
-                                                className={`${currentTab === tab.value ? 'underline underline-offset-2' : ''} !p-1`}
-                                            >
-                                                {tab.label}
-                                            </TabNav>
+                                            <Badge
+                                                className="mr-1"
+                                                content={10}
+                                                maxCount={9}
+                                                innerClass="bg-red-50 text-red-500">
+                                                <TabNav
+                                                    value={tab.value}
+                                                    icon={<HiOutlineUser />}
+                                                    className={`${currentTab === tab.value ? 'underline underline-offset-4' : ''} !p-1`}
+                                                >
+                                                    {tab.label}
+                                                </TabNav>
+                                            </Badge>
                                             <CloseButton
                                                 className="text-gray-800 text-[18px] hover:text-red-500 transition-all duration-500"
                                                 onClick={() => removeTab(tab.value)}
@@ -159,8 +168,6 @@ const SellTab = () => {
                                         </div>
                                     ))}
                                 </div>
-
-
                             </TabList>
                             <div className="py-1">
                                 {tabs.map((tab) => (

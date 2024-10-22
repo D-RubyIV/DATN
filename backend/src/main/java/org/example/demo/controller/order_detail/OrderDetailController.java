@@ -52,7 +52,7 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     @Override
     @DeleteMapping(value = "{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        return ResponseEntity.ok(orderDetailService.delete(id));
+        return ResponseEntity.ok(orderDetailResponseMapper.toDTO(orderDetailService.delete(id)));
     }
 
     @Override

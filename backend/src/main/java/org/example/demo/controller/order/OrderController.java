@@ -1,12 +1,14 @@
 package org.example.demo.controller.order;
 
 import jakarta.validation.Valid;
+import lombok.Data;
 import org.example.demo.controller.IControllerBasic;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
+import org.example.demo.dto.order.other.UseVoucherDTO;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.util.phah04.PageableObject;
@@ -78,10 +80,19 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.findById(id)));
     }
 
-
     @PutMapping(value = "status/change/{id}")
     public ResponseEntity<OrderResponseDTO> changeStatus(@PathVariable Integer id, @RequestBody HistoryRequestDTO requestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeStatus(id, requestDTO)));
+    }
+
+    @PostMapping(value = "use-voucher")
+    public ResponseEntity<OrderResponseDTO> addVoucher(@Valid @RequestBody UseVoucherDTO requestDTO) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.addVoucher(requestDTO)));
+    }
+
+    @GetMapping(value = "calculate-fee/{id}")
+    public ResponseEntity<?> calculateFee(@PathVariable Integer id){
+        return ResponseEntity.ok(orderService.calculateFee(id));
     }
 
     // OTHER

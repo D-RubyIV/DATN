@@ -22,4 +22,6 @@ public class CountStatusOrder {
     private Long countDelivered;
     private Long countCancelled;
     private Long countReturned;
+    private Long countPaid;
+    private Long countUnPaid;
 }

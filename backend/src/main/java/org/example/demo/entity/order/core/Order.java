@@ -32,19 +32,19 @@ public class Order extends BaseEntity {
     private String address;
 
     @Column(name = "province_id")
-    private String provinceId;
+    private Integer provinceId;
 
     @Column(name = "province_name")
     private String provinceName;
 
     @Column(name = "district_id")
-    private String districtId;
+    private Integer districtId;
 
     @Column(name = "district_name")
     private String districtName;
 
     @Column(name = "ward_id")
-    private String wardId;
+    private Integer wardId;
 
     @Column(name = "wardName")
     private String wardName;
@@ -57,6 +57,12 @@ public class Order extends BaseEntity {
 
     @Column(name = "total")
     private Double total;
+
+    @Column(name = "delivery_fee")
+    private Double deliveryFee;
+
+    @Column(name = "discount")
+    private Double discount;
 
     @Column(name = "sub_total")
     private Double subTotal;

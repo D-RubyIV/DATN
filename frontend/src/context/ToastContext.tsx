@@ -10,7 +10,7 @@ const ToastContext = createContext<ContextType | undefined>(undefined)
 const ToastProvider = ({ children }: { children: ReactNode }) => {
     function openNotification(message: string) {
         const toastNotification = (
-            <Notification closable title="Thông báo mới" className="font-semibold">
+            <Notification closable title="Thông báo mới" className="font-semibold z-50"  >
                 <p className="text-black font-normal">
                     {message}
                 </p>

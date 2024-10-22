@@ -7,14 +7,12 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    flexRender,
-    createColumnHelper
+    flexRender
 } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
-import { OrderDetailOverview } from '../..'
 import { Avatar, Button, Notification, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
-import { HiMinus, HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
+import { HiMinus, HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
 import { OrderResponseDTO, OrderDetailResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
@@ -36,9 +34,10 @@ const pageSizeOption = [
     { value: 50, label: '50 / page' }
 ]
 
-const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
-
-const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: OrderResponseDTO, fetchData: () => Promise<void> }) => {
+const SellProductTable = ({ selectedOrder, fetchData }: {
+    selectedOrder: OrderResponseDTO,
+    fetchData: () => Promise<void>
+}) => {
     const [data, setData] = useState<OrderDetailResponseDTO[]>([])
     const [totalData, setTotalData] = useState(0)
     const [pageSize, setPageSize] = useState(5)
@@ -48,7 +47,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: OrderRe
 
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
-            .then(function(response) {
+            .then(function() {
                 fetchData()
             })
             .catch(function(err) {
@@ -100,7 +99,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: OrderRe
                 accessorKey: 'quantity',
                 header: 'Số lượng',
                 cell: (props) => {
-                    const row = props.row.original as OrderDetailResponseDTO
                     return (
                         <div className="flex gap-1 items-center justify-start">
                             {
@@ -178,15 +176,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: OrderRe
         setPageSize(value)
     }
 
-    const ActionColumn = ({ row }: { row: OrderDetailOverview }) => {
-        return (
-            <div className="flex gap-2">
-                <button><HiPencil size={20}></HiPencil></button>
-                <button><HiMinus size={20}></HiMinus></button>
-            </div>
-        )
-    }
-
     const PriceAmount = ({ amount }: { amount: number }) => {
         return (
             <NumericFormat
@@ -227,7 +216,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: OrderRe
         }
     }
 
-    const openDeleteConfirm = (idOrderDetail: number) => {
+    const openDeleteConfirm = async (idOrderDetail: number) => {
         const notificationKey = toast.push(
             <Notification title="Thông báo" duration={8000}>
                 <div>
@@ -237,12 +226,11 @@ const SellProductTable = ({ selectedOrder, fetchData }: { selectedOrder: OrderRe
                     <Button
                         size="sm"
                         variant="solid"
-                        className="mr-2 bg-indigo-500"
+                        className="mr-2 bg-red-600"
                         onClick={async () => {
                             closeNotification(notificationKey as string | Promise<string>)
-                            await instance.delete(`/order-details/${idOrderDetail}`).then(function(response) {
-                                fetchData()
-                            })
+                            await instance.delete(`/order-details/${idOrderDetail}`)
+                            await fetchData()
                         }}
                     >
                         Xác nhận

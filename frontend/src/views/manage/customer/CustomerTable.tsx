@@ -113,12 +113,12 @@ const CustomerTable = () => {
 
     // ham chuyen sang trang add
     const handleAddClick = () => {
-        navigate('/manage/customer/add');
+        navigate('admin/manage/customer/add');
     }
 
     // ham chuyen sang trang update
     const handleUpdateClick = (customerId: number) => {
-        navigate(`/manage/customer/update/${customerId}`);
+        navigate(`admin/manage/customer/update/${customerId}`);
     }
 
     // Ham xu ly phan trang

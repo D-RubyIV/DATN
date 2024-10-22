@@ -122,7 +122,7 @@ function useAuth() {
     }
 
     return {
-        authenticated: false,
+        authenticated: true,
         signIn,
         signUp,
         signOut,

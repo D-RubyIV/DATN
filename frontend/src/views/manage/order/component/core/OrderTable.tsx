@@ -20,7 +20,9 @@ type BadgeType =
     | 'countToReceive'
     | 'countDelivered'
     | 'countCancelled'
-    | 'countReturned';
+    | 'countReturned'
+    | 'countPaid'
+    | 'countUnPaid'
 
 interface ICountStatus {
     countAll: number;    // Số lượng hóa đơn chờ xác nhận
@@ -30,6 +32,8 @@ interface ICountStatus {
     countDelivered: number;  // Số lượng hóa đơn đang giao hàng
     countCancelled: number;  // Số lượng hóa đơn đã hủy
     countReturned: number;   // Số lượng hóa đơn trả hàng
+    countPaid: number;   // Số lượng hóa đơn trả hàng
+    countUnPaid: number;   // Số lượng hóa đơn trả hàng
 }
 
 type IOveriewBill = {
@@ -56,7 +60,9 @@ export const OrderTable = () => {
         countCancelled: 0,
         countDelivered: 0,
         countReturned: 0,
-        countToReceive: 0
+        countToReceive: 0,
+        countPaid: 0,
+        countUnPaid: 0
     })
     const [queryParam, setQueryParam] = useState<{
         type: EOrderTypeEnums,
@@ -301,11 +307,13 @@ export const OrderTable = () => {
     const statusBills: StatusBill[] = [
         { label: 'TẤT CẢ', value: EOrderStatusEnums.EMPTY, badge: 'countAll' },
         { label: 'CHỜ XÁC NHẬN', value: EOrderStatusEnums.PENDING, badge: 'countPending' },
+        { label: 'CHỜ THANH TOÁN', value: EOrderStatusEnums.UNPAID, badge: 'countUnPaid' },
+        { label: 'ĐÃ THANH TOÁN', value: EOrderStatusEnums.PAID, badge: 'countPaid' },
         { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
         { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
         { label: 'ĐÃ GIAO', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },
         { label: 'ĐÃ HỦY', value: EOrderStatusEnums.CANCELED, badge: 'countCancelled' },
-        { label: 'ĐÃ TRẢ', value: EOrderStatusEnums.RETURNED, badge: 'countReturned' }
+        { label: 'TRẢ HÀNG', value: EOrderStatusEnums.RETURNED, badge: 'countReturned' }
     ]
 
     const handlePaginationChange = (pageIndex: number) => {

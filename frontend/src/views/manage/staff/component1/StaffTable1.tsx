@@ -83,7 +83,7 @@ const StaffTableStaff = () => {
   };
 
   const handleUpdateClick = (id: number) => {
-    navigate(`/manage/staff/update/${id}`);
+    navigate(`/admin/manage/staff/update/${id}`);
   };
 
   const handlePaginationChange = (pageIndex: number) => {
@@ -420,7 +420,7 @@ const StaffTableStaff = () => {
                 className="h-10 flex items-center justify-center"
                 variant="solid"
                 color="blue-600"
-                onClick={() => navigate('/manage/staff/add')}
+                onClick={() => navigate('/admin/manage/staff/add')}
                 style={{ height: '38px', width: '155px', marginBottom: '8px' }}
               >
                 <MdOutlineAddCircle className="mr-2" />

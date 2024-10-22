@@ -306,7 +306,7 @@ const UpdateCustomer = () => {
             const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, values);
             if (response.status === 200) {
                 toast.success('Cập nhật thành công');
-                navigate('/manage/customer');
+                navigate('/admin/manage/customer');
             } else {
                 alert('Failed to update customer. Please try again.');
             }

@@ -1,8 +1,8 @@
 package org.example.demo.service.order_detail;
 
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
-import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.exception.CustomExceptions;
@@ -34,6 +34,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
     public List<OrderDetail> findAll() {
         return orderDetailRepository.findAll();
     }
@@ -48,7 +51,8 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     public OrderDetail delete(Integer integer) {
         OrderDetail orderDetail = findById(integer);
         orderDetailRepository.delete(orderDetail);
-        orderService.reloadTotalOrder(orderDetail.getOrder());
+        entityManager.flush();
+        orderService.reloadSubTotalOrder(orderDetail.getOrder());
         return orderDetail;
     }
 
@@ -66,7 +70,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             } else {
                 entityFound.get().setQuantity(newCount);
                 OrderDetail response = orderDetailRepository.save(entityFound.get());
-                orderService.reloadTotalOrder(response.getOrder());
+                orderService.reloadSubTotalOrder(response.getOrder());
                 return response;
             }
         } else {
@@ -76,7 +80,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             orderDetail.setOrder(orderService.findById(requestDTO.getOrderId()));
             orderDetail.setProductDetail(orderProductDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found")));
             OrderDetail response = orderDetailRepository.save(orderDetail);
-            orderService.reloadTotalOrder(orderDetail.getOrder());
+            orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return response;
         }
     }
@@ -95,16 +99,16 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
         } else if (newQuantity == 0) {
             orderDetailRepository.delete(orderDetail);
-            orderService.reloadTotalOrder(orderDetail.getOrder());
+            orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return orderDetail;
         } else {
             orderDetail.setQuantity(newQuantity);
-            orderService.reloadTotalOrder(orderDetail.getOrder());
+            orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return orderDetailRepository.save(orderDetail);
         }
     }
 
-    public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable){
+    public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable) {
         return orderDetailRepository.getPageOrderDetailWithPage(id, pageable);
 
     }

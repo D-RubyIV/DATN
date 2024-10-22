@@ -27,7 +27,7 @@ const PaymentInfo = ({ setIsOpenVoucherModal, selectedOrder, data, fetchSelected
     )
 }
 
-const PaymentRow = ({ label, value, isLast }: PaymentInfoProps) => {
+const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
     return (
         <li
             className={`flex items-center justify-between${!isLast ? ' mb-3' : ''
@@ -40,8 +40,10 @@ const PaymentRow = ({ label, value, isLast }: PaymentInfoProps) => {
                     value={(Math.round((value as number) * 100) / 100).toFixed(
                         2
                     )}
+                    prefix={prefix}
                     suffix={'₫'}
                     thousandSeparator={true}
+                    allowNegative={false}
                 />
             </span>
         </li>
@@ -88,10 +90,12 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
             </div>
             <ul>
                 <PaymentRow label="Tổng tiền" value={data?.subTotal} />
-                <PaymentRow label="Phí vận chuyển" value={data?.deliveryFees} />
+                <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
+                <PaymentRow label="Giảm giá" value={data?.discount} prefix={' - '} />
                 <div className={'pb-4'}>
                     <Input placeholder={'Nhập mã giảm giá nếu có'} suffix={
-                        (<Button className={'cursor-pointer'} variant={'plain'} icon={<HiTicket />} onClick={() => setIsOpenVoucherModal(true)}>
+                        (<Button className={'cursor-pointer'} variant={'plain'} icon={<HiTicket />}
+                                 onClick={() => setIsOpenVoucherModal(true)}>
 
                         </Button>)
                     }></Input>

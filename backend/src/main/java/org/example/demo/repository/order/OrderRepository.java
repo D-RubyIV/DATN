@@ -1,18 +1,16 @@
 package org.example.demo.repository.order;
 
+import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.entity.order.core.Order;
-import org.example.demo.entity.order.enums.Status;
-import org.example.demo.entity.order.enums.Type;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
@@ -58,7 +56,19 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
             "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
             "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END), " + // Đếm số đơn hàng 'CANCELED'
-            "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'RETURNED'
+            "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END)," + // Đếm số đơn hàng 'RETURNED'
+            "SUM(CASE WHEN o.status = 'PAID' THEN 1 ELSE 0 END), " + // Đếm số đơn hàng 'PAID'
+            "SUM(CASE WHEN o.status = 'UNPAID' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'UNPAID'
             "FROM Order o")
     CountStatusOrder getCountStatus();
+
+
+    @Query("SELECT new org.example.demo.dto.order.core.response.CountOrderDetailInOrder( " +
+            "ord.id, COUNT(orderDetail.id), ord.code) " +
+            "FROM Order ord " +
+            "JOIN ord.orderDetails orderDetail " +
+            "WHERE ord.id IN :ids " +
+            "GROUP BY ord.id, ord.code")
+    CountOrderDetailInOrder getCountOrderDetailByIds(@Param("ids") List<Integer> ids);
+
 }

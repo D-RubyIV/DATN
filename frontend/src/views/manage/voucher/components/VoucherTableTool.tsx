@@ -18,7 +18,7 @@ const VoucherTableTool = () => {
             </Link>
             <Link
                 className="block lg:inline-block md:mb-0 mb-4"
-                to="/manage/voucher/voucher-new"
+                to="/admin/manage/voucher/voucher-new"
             >
                 <Button block variant="solid" size="sm" color='blue' icon={<HiPlusCircle />}>
                     Thêm Mới 

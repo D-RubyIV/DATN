@@ -46,15 +46,15 @@ public class OrderRequestDTO {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    private String provinceId;
+    private Integer provinceId;
 
     private String provinceName;
 
-    private String districtId;
+    private Integer districtId;
 
     private String districtName;
 
-    private String wardId;
+    private Integer wardId;
 
     private String wardName;
 

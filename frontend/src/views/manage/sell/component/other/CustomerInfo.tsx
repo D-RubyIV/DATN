@@ -7,7 +7,10 @@ import { HiExternalLink, HiMail, HiPencilAlt, HiPhone } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 import { updateOrder } from '@/services/OrderService'
 
-const CustomerInfo = ({ data, fetchSelectedOrder }: { data: OrderResponseDTO, fetchSelectedOrder: () => Promise<void> }) => {
+const CustomerInfo = ({ data, fetchSelectedOrder }: {
+    data: OrderResponseDTO,
+    fetchSelectedOrder: () => Promise<void>
+}) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState(false)
 
     // Đặt giá trị mặc định của isShipping là false để "Tại quầy" được chọn
@@ -17,10 +20,9 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: { data: OrderResponseDTO, fe
 
     useEffect(() => {
         const typeLocal = data.type
-        if (typeLocal === 'ONLINE'){
+        if (typeLocal === 'ONLINE') {
             setIsShipping(true)
-        }
-        else {
+        } else {
             setIsShipping(false)
         }
     }, [data])
@@ -29,16 +31,21 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: { data: OrderResponseDTO, fe
         console.log('isShipping: ', isShipping)
     }, [isShipping])
 
-    const onChangeMethod = (val: boolean) => {
+    const onChangeMethod = async (val: boolean) => {
         setIsShipping(val)
-        const response = updateOrder(data.id, { 'type': val ? 'ONLINE' : 'INSTORE' })
+        const response = await updateOrder(data.id, { 'type': val ? 'ONLINE' : 'INSTORE' })
+        await fetchSelectedOrder()
         console.log(response)
     }
 
     return (
         <Card
-            className={`mb-5 ${!isShipping ? (customer.code ? 'h-[300px]' : 'h-[225px]') : 'h-[400px]'} duration-700 transition-all`}>
-            {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress} fetchData={fetchSelectedOrder}/>}
+            className={`mb-5`}>
+            {isOpenEditAddress && <AddressModal
+                selectedOrder={data}
+                fetchData={fetchSelectedOrder}
+                onCloseModal={setIsOpenEditAddress}
+            />}
 
             <h5 className="mb-4">
                 Khách hàng #{customer.code || 'Khách lẻ'}
@@ -92,11 +99,15 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: { data: OrderResponseDTO, fe
                         </div>
                     </div>
                 </div>
-                <div hidden={!isShipping}>
+                <div
+                    className={`${!isShipping ? (customer.code ? 'max-h-[0px]' : 'max-h-[0px]') : 'max-h-[600px]'} overflow-hidden duration-700 transition-all`}
+                >
                     <address className="not-italic my-2">
                         <Input
                             disabled
-                            value={data?.address || 'N/A' + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''}
+                            value={
+                                data?.address || 'N/A' + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''
+                            }
                             suffix={
                                 <Tooltip title="Chỉnh sửa địa chỉ">
                                     <HiPencilAlt
@@ -116,11 +127,12 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: { data: OrderResponseDTO, fe
                             ))
                         ) : (
                             <div className="flex justify-center items-center">
-                                <p className="py-2">Không có bất kì địa chỉ nào khác</p>
+                                <p className="py-2">Không có bất kỳ địa chỉ nào khác</p>
                             </div>
                         )}
                     </Radio.Group>
                 </div>
+
             </div>
         </Card>
     )

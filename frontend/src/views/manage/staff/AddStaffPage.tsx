@@ -297,7 +297,7 @@ const AddStaffPage = () => {
                 toast.success('Nhân viên đã thêm thành công! Thông tin đã gửi qua email.');
 
                 resetForm(); // Reset biểu mẫu
-                navigate("/manage/staff"); // Điều hướng đến trang quản lý nhân viên
+                navigate("/admin/manage/staff"); // Điều hướng đến trang quản lý nhân viên
             }
         } catch (error) {
             toast.error(`Lỗi lưu nhân viên`); // Hiển thị lỗi
