@@ -1,14 +1,4 @@
 import { useState, useMemo, useEffect } from 'react'
-import Table from '@/components/ui/Table'
-import Pagination from '@/components/ui/Pagination'
-import Select from '@/components/ui/Select'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    flexRender
-} from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Avatar, Button, Notification, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
@@ -16,33 +6,32 @@ import { HiMinus, HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
 import { OrderResponseDTO, OrderDetailResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
-
-type Option = {
-    value: number
-    label: string
-}
-
-const { Tr, Th, Td, THead, TBody } = Table
-
-
-const pageSizeOption = [
-    { value: 5, label: '5 / page' },
-    { value: 10, label: '10 / page' },
-    { value: 20, label: '20 / page' },
-    { value: 30, label: '30 / page' },
-    { value: 40, label: '40 / page' },
-    { value: 50, label: '50 / page' }
-]
+import DataTable, { type OnSortParam } from '../../../../../components/shared/DataTable'
 
 const SellProductTable = ({ selectedOrder, fetchData }: {
     selectedOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
 }) => {
     const [data, setData] = useState<OrderDetailResponseDTO[]>([])
-    const [totalData, setTotalData] = useState(0)
-    const [pageSize, setPageSize] = useState(5)
-    const [pageIndex, setPageIndex] = useState(0)
-
+    const [tableData, setTableData] = useState<{
+        pageIndex: number
+        pageSize: number
+        sort: {
+            order: '' | 'asc' | 'desc'
+            key: string | number;
+        };
+        query: string
+        total: number
+    }>({
+        total: 0,
+        pageIndex: 1,
+        pageSize: 5,
+        query: '',
+        sort: {
+            order: '',
+            key: ''
+        }
+    })
     const { openNotification } = useToastContext()
 
 
@@ -66,24 +55,26 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
 
     const getAllOrderDetailWithIdOrder = async (id: number) => {
-        console.log(table)
-        instance.get(`/order-details/get-by-order/${id}?page=${pageIndex-1}&size=${pageSize}`).then(function(response) {
+        instance.get(`/order-details/get-by-order/${id}?page=${tableData.pageIndex - 1}&size=${tableData.pageSize}`).then(function(response) {
             setData(response.data.content)
-            setTotalData(response.data.totalElements)
+            setTableData((prevData) => ({
+                ...prevData,
+                ...{
+                    total: response.data.totalElements,
+                }
+            }))
         })
 
     }
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (selectedOrder && selectedOrder.id) {
-                console.log('Thay đổi selectedOrder')
-                await getAllOrderDetailWithIdOrder(selectedOrder.id)
-            }
+    const fetchOrderData = async () => {
+        if (selectedOrder && selectedOrder.id) {
+            console.log('Thay đổi selectedOrder')
+            await getAllOrderDetailWithIdOrder(selectedOrder.id)
         }
-
-        fetchData()
-    }, [selectedOrder])
+    }
+    useEffect(() => {
+        fetchOrderData()
+    }, [selectedOrder, tableData.pageSize, tableData.pageIndex])
 
 
     const columns = useMemo<ColumnDef<OrderDetailResponseDTO>[]>(
@@ -155,32 +146,29 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         []
     )
 
-    const table = useReactTable({
-        data,
-        columns,
-        // Pipeline
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel()
-    })
 
-    useEffect(() => {
-        table.setPageSize(Number(pageSize))
-    }, [pageSize, table.initialState.pagination.pageIndex])
-
-    useEffect(() => {
-        getAllOrderDetailWithIdOrder(selectedOrder.id)
-    }, [pageSize, pageIndex])
-
-    const onPaginationChange = (page: number) => {
-        // table.setPageIndex(page - 1)
-        setPageIndex(page)
+    const handlePaginationChange = (pageIndex: number) => {
+        setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
     }
 
-    const onSelectChange = (value = 0) => {
-        setPageSize(value)
+    const handleSelectChange = (pageSize: number) => {
+        setTableData((prevData) => ({
+            ...prevData,
+            pageSize: pageSize, // Cập nhật pageSize mới
+            pageIndex: 1 // Đặt pageIndex về 1
+        }))
     }
 
+    const handleSort = ({ order, key }: OnSortParam) => {
+        console.log({ order, key })
+        setTableData((prevData) => ({
+            ...prevData,
+            sort: {
+                order,
+                key: (key as string).replace('___', '.')
+            }
+        }))
+    }
     const PriceAmount = ({ amount }: { amount: number }) => {
         return (
             <NumericFormat
@@ -234,8 +222,11 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                         className="mr-2 bg-red-600"
                         onClick={async () => {
                             closeNotification(notificationKey as string | Promise<string>)
-                            await instance.delete(`/order-details/${idOrderDetail}`)
-                            await fetchData()
+                            const response = await instance.delete(`/order-details/${idOrderDetail}`)
+                            if (response.status === 200) {
+                                console.log('response', response)
+                                await getAllOrderDetailWithIdOrder(selectedOrder.id)
+                            }
                         }}
                     >
                         Xác nhận
@@ -255,66 +246,14 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
     return (
         <div>
-            <Table>
-                <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
-                                return (
-                                    <Th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </Th>
-                                )
-                            })}
-                        </Tr>
-                    ))}
-                </THead>
-                <TBody>
-                    {table.getRowModel().rows.map((row) => {
-                        return (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => {
-                                    return (
-                                        <Td key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </Td>
-                                    )
-                                })}
-                            </Tr>
-                        )
-                    })}
-                </TBody>
-            </Table>
-            <div className="flex items-center justify-between mt-4">
-                <Pagination
-                    pageSize={table.getState().pagination.pageSize}
-                    currentPage={table.getState().pagination.pageIndex + 1}
-                    total={totalData}
-                    onChange={onPaginationChange}
-                />
-                <div style={{ minWidth: 130 }}>
-                    <Select<Option>
-                        size="sm"
-                        isSearchable={false}
-                        value={pageSizeOption.filter(
-                            (option) =>
-                                option.value ===
-                                table.getState().pagination.pageSize
-                        )}
-                        options={pageSizeOption}
-                        onChange={(option) => onSelectChange(option?.value)}
-                    />
-                </div>
-            </div>
+            <DataTable
+                columns={columns}
+                data={data}
+                pagingData={tableData}
+                onPaginationChange={handlePaginationChange}
+                onSelectChange={handleSelectChange}
+                onSort={handleSort}
+            />
         </div>
     )
 }

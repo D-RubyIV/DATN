@@ -16,8 +16,9 @@ import { useLoadingContext } from '@/context/LoadingContext'
 import SellVocherModal from '@/views/manage/sell/component/dialog/SellVocherModal'
 import { changeOrderStatus } from '@/services/OrderService'
 import { useToastContext } from '@/context/ToastContext'
+import { useSellContext } from '@/views/manage/sell/context/SellContext'
 
-const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrentTab: () => void }) => {
+const TabCard = ({ idOrder }: { idOrder: number }) => {
     // init variables
     const [isOpenCustomerModal, setIsOpenCustomerModal] = useState<boolean>(false)
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
@@ -48,11 +49,11 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
     // context
     const { openNotification } = useToastContext()
     const { sleep, setIsLoadingComponent } = useLoadingContext()
+    const { removeTab } = useSellContext()
     // func 
     const fetchSelectedOrder = async () => {
         setIsLoadingComponent(true)
         await instance.get(`/orders/${idOrder}`).then(function(response) {
-            console.log(response)
             setSelectedOrder({ ...response.data })
             setPaymentSummaryProp({
                 subTotal: response.data.subTotal || 0,
@@ -71,11 +72,6 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
             console.log('Fetch SelectedOrder Done')
         })
     }, [])
-
-    useEffect(() => {
-        console.log(selectedOrder)
-    }, [selectedOrder])
-
 
     const handleSubmitForm = async () => {
         console.log('PAYMENT')
@@ -106,7 +102,7 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
                 if (response.status === 200) {
                     await sleep(200)
                     openNotification('Xác nhận thành công')
-                    removeCurrentTab();
+                    removeTab(selectedOrder.id)
                 }
                 console.log('Confirm payment')
             } catch (error) {
@@ -114,7 +110,7 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
             }
             setIsLoadingComponent(false)
             setIsOpenConfirmOrder(false)
-     
+
         }
     }
 

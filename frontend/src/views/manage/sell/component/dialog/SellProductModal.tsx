@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch, Fragment } from 'react'
+import { useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
@@ -9,7 +9,7 @@ import CloseButton from '@/components/ui/CloseButton'
 import type { MouseEvent } from 'react'
 import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
-import ProductInfomation from '@/views/manage/order/component/puzzle/ProductInfomation'
+import ProductInformation from '@/views/manage/order/component/puzzle/ProductInfomation'
 import { OrderResponseDTO, ProductDetailOverviewPhah04 } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 
@@ -23,7 +23,26 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const [data, setData] = useState([])
     const { sleep, isLoadingComponent, setIsLoadingComponent } = useLoadingContext()
     const [isOpenPlacement, setIsOpenPlacement] = useState(false)
-    const [selectedProductDetail, setSelectedProductDetail] = useState<ProductDetailOverviewPhah04>()
+    const [selectedProductDetail, setSelectedProductDetail] = useState<ProductDetailOverviewPhah04>({
+        id: 0,
+        code: "",
+        name: "",
+        deleted: false,
+        quantity: 1,
+        price: 0,
+        sizeName: "",
+        colorName: "",
+        productName: "",
+        textureName: "",
+        originName: "",
+        brandName: "",
+        collarName: "",
+        sleeveName: "",
+        materialName: "",
+        thicknessName: "",
+        elasticityName: ""
+    });
+
     const [orderDetailRequest, setOrderDetailRequest] = useState<{
         quantity?: number;
         orderId: number;
@@ -145,7 +164,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const setSelectProductDetailAndOpenDrawer = (productDetail: ProductDetailOverviewPhah04, isOpen: boolean) => {
         setIsOpenPlacement(true)
         setSelectedProductDetail(productDetail)
-        setOrderDetailRequest((pre) => ({ ...pre, productDetailId: productDetail.id }))
+        setOrderDetailRequest((pre) => ({ ...pre, productDetailId: productDetail.id, quantity: 1 }))
     }
 
     const fetchDataProduct = async () => {
@@ -208,14 +227,14 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 bg-gray-100 z-20 shadow-md rounded-md">
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/5 bg-gray-100 z-20 shadow-md rounded-md">
                 <div className="flex-wrap inline-flex xl:flex items-center gap-2 !w-[500px]">
                     <div
                         title="Thêm sản phẩm"
-                        className={`${!isOpenPlacement ? 'hidden' : ''} w-3/5 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl p-5`}
+                        className={`${!isOpenPlacement ? 'hidden' : ''} w-3/5 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl p-5 z-50`}
                     >
                         <div className="flex justify-between py-2 text-xl">
-                            <div className="font-semibold">
+                            <div className="font-semibold text-black">
                                 <label>Thêm mới</label>
                             </div>
                             <div>
@@ -225,7 +244,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         <hr></hr>
                         <div>
                             {selectedProductDetail &&
-                                <ProductInfomation seletedProductDetail={selectedProductDetail}></ProductInfomation>}
+                                <ProductInformation seletedProductDetail={selectedProductDetail}></ProductInformation>}
                             <div className="py-5">
                                 <label>Vui lòng nhập số lượng</label>
                                 <Input
@@ -234,6 +253,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     type="number"
                                     min={1}
                                     max={selectedProductDetail?.quantity}
+                                    value={orderDetailRequest.quantity}
                                     onChange={(el) => setOrderDetailRequest({
                                         ...orderDetailRequest,
                                         quantity: Number(el.target.value)

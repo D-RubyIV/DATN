@@ -354,7 +354,6 @@ export const OrderTable = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-
             setLoading(true)
             const response = await instance.post('/orders/overview', tableData,
                 {

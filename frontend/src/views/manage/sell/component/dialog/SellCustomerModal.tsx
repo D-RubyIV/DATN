@@ -145,7 +145,6 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
 
     const debounceFn = debounce(handleDebounceFn, 500)
     function handleDebounceFn(val: string) {
-        console.log("----------------------")
         console.log(val)
         if (typeof val === 'string' && (val.length > 1 || val.length === 0)) {
             setTableData((prevData) => ({
