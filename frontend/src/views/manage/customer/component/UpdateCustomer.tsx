@@ -1,15 +1,15 @@
-import {useState, useEffect} from 'react';
-import {Button, Input, Radio, Select, Switcher} from '@/components/ui';
-import {useNavigate, useParams} from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Button, Input, Radio, Select, Switcher } from '@/components/ui';
+import { useNavigate, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
-import {FormItem, FormContainer} from '@/components/ui/Form';
-import {Field, FieldArray, FieldProps, Form, Formik, FormikHelpers, FormikProps} from 'formik';
+import { FormItem, FormContainer } from '@/components/ui/Form';
+import { Field, FieldArray, FieldProps, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import DatePicker from '@/components/ui/DatePicker';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import {SingleValue} from 'react-select';
-import {toast} from 'react-toastify';
+import { SingleValue } from 'react-select';
+import { toast } from 'react-toastify';
 
 
 type CustomerDTO = {
@@ -93,7 +93,7 @@ const UpdateCustomer = () => {
     const [loadingDistricts, setLoadingDistricts] = useState(false);
     const [loadingWards, setLoadingWards] = useState(false);
     const navigate = useNavigate();
-    const {id} = useParams();
+    const { id } = useParams();
     const [formModes, setFormModes] = useState<string[]>([]);
 
     // State riêng để lưu email và phone ban đầu
@@ -155,7 +155,7 @@ const UpdateCustomer = () => {
                 if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra email có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, {params: {email}});
+                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
                 return !response.data.exists; // Nếu email đã tồn tại, trả về false
             }),
 
@@ -166,7 +166,7 @@ const UpdateCustomer = () => {
                 if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra số điện thoại có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, {params: {phone}});
+                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
                 return !response.data.exists; // Nếu phone đã tồn tại, trả về false
             }),
 
@@ -199,7 +199,7 @@ const UpdateCustomer = () => {
                         if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                         // Gọi API kiểm tra số điện thoại có trùng không
-                        const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, {params: {phone}});
+                        const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
                         return !response.data.exists; // Nếu phone đã tồn tại, trả về false
                     }),
 
@@ -251,7 +251,7 @@ const UpdateCustomer = () => {
                     'Content-Type': 'application/json',
                     'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
                 },
-                params: {province_id: provinceId}
+                params: { province_id: provinceId }
             });
             console.log('API District Response: ', response);
             if (response.data.code === 200) {
@@ -280,7 +280,7 @@ const UpdateCustomer = () => {
                     'Content-Type': 'application/json',
                     'Token': '718f2008-46b7-11ef-b4a4-2ec170e33d11'
                 },
-                params: {district_id: districtId}
+                params: { district_id: districtId }
             });
             console.log('API Ward Response: ', response);
             if (response.data.code === 200) {
@@ -409,7 +409,7 @@ const UpdateCustomer = () => {
         }
     };
 
-    const handleUpdate = async (values: CustomerDTO, {setSubmitting}: FormikHelpers<CustomerDTO>) => {
+    const handleUpdate = async (values: CustomerDTO, { setSubmitting }: FormikHelpers<CustomerDTO>) => {
         try {
             // Kiểm tra ngày sinh trước khi định dạng
             if (!dayjs(values.birthDate, 'YYYY-MM-DD', true).isValid()) {
@@ -467,6 +467,7 @@ const UpdateCustomer = () => {
             let response;
             if (mode === 'add') {
                 response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
+                console.log('Dữ liệu địa chỉ vừa thêm:', response.data);
                 if (response.status === 200) {
                     // Thêm địa chỉ mới vào đầu danh sách sau khi thành công
                     setFieldValue('addressDTOS', [response.data, ...values.addressDTOS]);
@@ -483,6 +484,7 @@ const UpdateCustomer = () => {
                 const updatedAddressDTOS = [...values.addressDTOS];
                 updatedAddressDTOS[addressIndex] = response.data;
                 setFieldValue('addressDTOS', updatedAddressDTOS); // Cập nhật lại danh sách sau khi chỉnh sửa
+                console.log('dữ liệu cập nhật lại địa chỉ: ', updatedAddressDTOS)
                 toast.success('Cập nhật địa chỉ thành công');
             }
             fetchCustomer(customerId);
@@ -491,6 +493,7 @@ const UpdateCustomer = () => {
             alert('Error submitting address. Please try again.');
         }
     };
+
 
     // Hàm cập nhật địa chỉ mặc định
     const updateDefaultAddress = async (addressId: string, isDefault: boolean) => {
@@ -528,7 +531,7 @@ const UpdateCustomer = () => {
             }));
 
             // Cập nhật địa chỉ trong state (tạm thời)
-            setUpdateCustomer({...updateCustomer, addressDTOS: updatedAddresses});
+            setUpdateCustomer({ ...updateCustomer, addressDTOS: updatedAddresses });
             toast.success('cập nhật địa chỉ mặc định thành công');
             // Gọi API chỉ một lần để cập nhật địa chỉ mặc định và các địa chỉ khác
             await updateDefaultAddress(updateCustomer.addressDTOS[index].id, true);
@@ -559,7 +562,7 @@ const UpdateCustomer = () => {
             enableReinitialize={true}
             onSubmit={handleUpdate}
         >
-            {({values, setFieldValue, touched, errors, resetForm, isSubmitting, setFieldTouched}) => (
+            {({ values, setFieldValue, touched, errors, resetForm, isSubmitting, setFieldTouched }) => (
                 <Form>
                     <div className='w-full bg-white p-6 shadow-md rounded-lg'>
                         <h1 className="text-center font-semibold text-2xl mb-4 uppercase">Cập nhật khách hàng</h1>
@@ -573,8 +576,8 @@ const UpdateCustomer = () => {
                                         invalid={errors.name && touched.name}
                                         errorMessage={errors.name}
                                     >
-                                        <Field type="text" autoComplete="off" name="name" style={{height: '44px'}}
-                                               placeholder="Tên khách hàng..." component={Input}/>
+                                        <Field type="text" autoComplete="off" name="name" style={{ height: '44px' }}
+                                            placeholder="Tên khách hàng..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -583,8 +586,8 @@ const UpdateCustomer = () => {
                                         invalid={errors.email && touched.email}
                                         errorMessage={errors.email}
                                     >
-                                        <Field type="text" autoComplete="off" name="email" style={{height: '44px'}}
-                                               placeholder="Email..." component={Input}/>
+                                        <Field type="text" autoComplete="off" name="email" style={{ height: '44px' }}
+                                            placeholder="Email..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -593,8 +596,8 @@ const UpdateCustomer = () => {
                                         invalid={errors.phone && touched.phone}
                                         errorMessage={errors.phone}
                                     >
-                                        <Field type="text" autoComplete="off" name="phone" style={{height: '44px'}}
-                                               placeholder="Số điện thoại..." component={Input}/>
+                                        <Field type="text" autoComplete="off" name="phone" style={{ height: '44px' }}
+                                            placeholder="Số điện thoại..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -635,14 +638,14 @@ const UpdateCustomer = () => {
 
                                     <FormItem asterisk label="Giới tính">
                                         <Field name="gender">
-                                            {({field, form}: FieldProps<string, FormikProps<CustomerDTO>>) => (
+                                            {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                 <>
                                                     <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'}
-                                                           onChange={() => form.setFieldValue('gender', 'Nam')}>
+                                                        onChange={() => form.setFieldValue('gender', 'Nam')}>
                                                         Nam
                                                     </Radio>
                                                     <Radio value="Nữ" checked={field.value === 'Nữ'}
-                                                           onChange={() => form.setFieldValue('gender', 'Nữ')}>
+                                                        onChange={() => form.setFieldValue('gender', 'Nữ')}>
                                                         Nữ
                                                     </Radio>
                                                 </>
@@ -652,16 +655,16 @@ const UpdateCustomer = () => {
 
                                     <FormItem>
                                         <Button type="reset" className="ltr:mr-2 rtl:ml-2"
-                                                style={{backgroundColor: '#fff', height: '40px'}}
-                                                disabled={isSubmitting} onClick={() => {
-                                            resetForm();
-                                            resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
-                                        }}>
+                                            style={{ backgroundColor: '#fff', height: '40px' }}
+                                            disabled={isSubmitting} onClick={() => {
+                                                resetForm();
+                                                resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
+                                            }}>
                                             Tải lại
                                         </Button>
                                         <Button variant="solid" type="submit"
-                                                style={{backgroundColor: 'rgb(79, 70, 229)', height: '40px'}}
-                                                disabled={isSubmitting}>
+                                            style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                            disabled={isSubmitting}>
                                             Cập nhật
                                         </Button>
                                     </FormItem>
@@ -671,13 +674,16 @@ const UpdateCustomer = () => {
                             <div className="w-full lg:w-2/3 bg-white p-6 shadow-md rounded-lg">
                                 <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
                                 <FieldArray name="addressDTOS">
-                                    {({insert, remove}) => (
+                                    {({ insert, remove, unshift }) => (
                                         <div>
                                             <Button
                                                 type="button"
                                                 className="mb-4 mt-4"
                                                 onClick={() => {
-                                                    insert(0, initialAddressDTO);
+                                                    // Thêm một địa chỉ mới vào đầu mảng
+                                                    unshift(initialAddressDTO); // Gọi unshift với initialAddressDTO
+
+                                                    // Cập nhật trạng thái formModes
                                                     setFormModes(['add', ...formModes]);
                                                 }}
                                             >
@@ -700,7 +706,7 @@ const UpdateCustomer = () => {
                                                                     <Field
                                                                         type="text"
                                                                         name={`addressDTOS[${index}].name`}
-                                                                        style={{height: '44px'}}
+                                                                        style={{ height: '44px' }}
                                                                         placeholder="Nhập tên..."
                                                                         component={Input}
                                                                     />
@@ -716,7 +722,7 @@ const UpdateCustomer = () => {
                                                                     <Field
                                                                         type="text"
                                                                         name={`addressDTOS[${index}].phone`}
-                                                                        style={{height: '44px'}}
+                                                                        style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
                                                                     />
@@ -734,24 +740,30 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].province`}>
                                                                         {({
-                                                                              field,
-                                                                              form
-                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => (
-                                                                            <Select
-                                                                                value={provinces.find(prov => prov.NameExtension[1] === field.value) || null}
-                                                                                placeholder="Chọn tỉnh/thành phố..."
-                                                                                getOptionLabel={(option: Province) => option.NameExtension[1]}
-                                                                                getOptionValue={(option: Province) => String(option.ProvinceID)}
-                                                                                options={provinces}
-                                                                                onChange={(newValue: SingleValue<Province> | null) => {
-                                                                                    handleLocationChange('province', newValue, form, index);
-                                                                                }}
-                                                                                onBlur={() => form.setFieldTouched(`addressDTOS[${index}].province`, true)}
-                                                                            />
-                                                                        )}
+                                                                            field,
+                                                                            form
+                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                            // Log giá trị tỉnh/thành phố hiện tại
+                                                                            console.log('Dữ liệu tỉnh:', field.value);
+
+                                                                            return (
+                                                                                <Select
+                                                                                    value={provinces.find(prov => prov.NameExtension[1] === field.value) || null}
+                                                                                    placeholder="Chọn tỉnh/thành phố..."
+                                                                                    getOptionLabel={(option: Province) => option.NameExtension[1]}
+                                                                                    getOptionValue={(option: Province) => String(option.ProvinceID)}
+                                                                                    options={provinces}
+                                                                                    onChange={(newValue: SingleValue<Province> | null) => {
+                                                                                        handleLocationChange('province', newValue, form, index);
+                                                                                    }}
+                                                                                    onBlur={() => form.setFieldTouched(field.value, true)}
+                                                                                />
+                                                                            );
+                                                                        }}
                                                                     </Field>
                                                                 </FormItem>
                                                             </div>
+
 
                                                             <div className="w-1/3 pr-4">
                                                                 <FormItem
@@ -762,22 +774,25 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].district`}>
                                                                         {({
-                                                                              field,
-                                                                              form
-                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => (
-                                                                            <Select
-                                                                                isDisabled={!address.province}
-                                                                                value={districts.find(prov => prov.DistrictName === field.value) || null}
-                                                                                placeholder="Chọn quận/huyện..."
-                                                                                getOptionLabel={(option: District) => option.DistrictName}
-                                                                                getOptionValue={(option: District) => String(option.DistrictID)}
-                                                                                options={districts}
-                                                                                onChange={(newValue: SingleValue<District> | null) => {
-                                                                                    handleLocationChange('district', newValue, form, index);
-                                                                                }}
-                                                                                onBlur={() => form.setFieldTouched(`addressDTOS[${index}].district`, true)}
-                                                                            />
-                                                                        )}
+                                                                            field,
+                                                                            form
+                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                            console.log('Dữ liệu quận:', field.value);
+                                                                            return (
+                                                                                <Select
+                                                                                    isDisabled={!address.province}
+                                                                                    value={districts.find(prov => prov.DistrictName === field.value) || null}
+                                                                                    placeholder="Chọn quận/huyện..."
+                                                                                    getOptionLabel={(option: District) => option.DistrictName}
+                                                                                    getOptionValue={(option: District) => String(option.DistrictID)}
+                                                                                    options={districts}
+                                                                                    onChange={(newValue: SingleValue<District> | null) => {
+                                                                                        handleLocationChange('district', newValue, form, index);
+                                                                                    }}
+                                                                                    onBlur={() => form.setFieldTouched(field.value, true)}
+                                                                                />
+                                                                            );
+                                                                        }}
                                                                     </Field>
                                                                 </FormItem>
                                                             </div>
@@ -791,22 +806,28 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].ward`}>
                                                                         {({
-                                                                              field,
-                                                                              form
-                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => (
-                                                                            <Select
-                                                                                isDisabled={!address.district}
-                                                                                value={wards.find(prov => prov.WardName === field.value) || null}
-                                                                                placeholder="Chọn xã/phường/thị trấn..."
-                                                                                getOptionLabel={(option: Ward) => option.WardName}
-                                                                                getOptionValue={(option: Ward) => String(option.WardCode)}
-                                                                                options={wards}
-                                                                                onChange={(newValue: SingleValue<Ward> | null) => {
-                                                                                    handleLocationChange('ward', newValue, form, index);
-                                                                                }}
-                                                                                onBlur={() => form.setFieldTouched(`addressDTOS[${index}].ward`, true)}
-                                                                            />
-                                                                        )}
+                                                                            field,
+                                                                            form
+                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                            console.log('Dữ liệu xã:', field.value);
+
+                                                                            return (
+
+                                                                                <Select
+                                                                                    isDisabled={!address.district}
+                                                                                    value={wards.find(prov => prov.WardName === field.value) || null}
+                                                                                    placeholder="Chọn xã/phường/thị trấn..."
+                                                                                    getOptionLabel={(option: Ward) => option.WardName}
+                                                                                    getOptionValue={(option: Ward) => String(option.WardCode)}
+                                                                                    options={wards}
+                                                                                    onChange={(newValue: SingleValue<Ward> | null) => {
+                                                                                        handleLocationChange('ward', newValue, form, index);
+                                                                                    }}
+                                                                                    onBlur={() => form.setFieldTouched(field.value, true)}
+                                                                                />
+                                                                            )
+
+                                                                        }}
                                                                     </Field>
                                                                 </FormItem>
                                                             </div>
@@ -819,14 +840,14 @@ const UpdateCustomer = () => {
                                                             errorMessage={errors.addressDTOS?.[index]?.detail}
                                                         >
                                                             <Field type="text" name={`addressDTOS[${index}].detail`}
-                                                                   style={{height: '44px'}}
-                                                                   placeholder="Nhập địa chỉ chi tiết"
-                                                                   component={Input}/>
+                                                                style={{ height: '44px' }}
+                                                                placeholder="Nhập địa chỉ chi tiết"
+                                                                component={Input} />
                                                         </FormItem>
 
                                                         <FormItem label="Địa chỉ mặc định">
                                                             <Field name={`addressDTOS[${index}].isDefault`}>
-                                                                {({field}) => (
+                                                                {({ field }) => (
                                                                     <Switcher
                                                                         color='blue-600'
                                                                         checked={field.value}
@@ -858,7 +879,7 @@ const UpdateCustomer = () => {
                                                             <Button
                                                                 type="button"
                                                                 variant="default"
-                                                                style={{backgroundColor: '#fff', height: '40px'}}
+                                                                style={{ backgroundColor: '#fff', height: '40px' }}
                                                                 onClick={() => {
                                                                     remove(index);
                                                                     setFormModes((prev) => prev.filter((_, i) => i !== index));
@@ -877,10 +898,10 @@ const UpdateCustomer = () => {
                         </div>
                     </div>
 
-                </Form>
+                </Form >
             )
             }
-        </Formik>
+        </Formik >
     );
 };
 

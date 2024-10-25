@@ -144,6 +144,9 @@ public class CustomerMapper {
     public static void updateEntityAddress(Address existingAddress, AddressDTO dto) {
         existingAddress.setName(dto.getName());
         existingAddress.setPhone(dto.getPhone());
+        existingAddress.setProvinceId(dto.getProvinceId());
+        existingAddress.setDistrictId(dto.getDistrictId());
+        existingAddress.setWardId(dto.getWardId());
         existingAddress.setProvince(dto.getProvince());
         existingAddress.setDistrict(dto.getDistrict());
         existingAddress.setWard(dto.getWard());
@@ -157,12 +160,12 @@ public class CustomerMapper {
         dto.setId(address.getId());
         dto.setName(address.getName());
         dto.setPhone(address.getPhone());
-        dto.setProvinceId(address.getProvinceId());
         dto.setProvince(address.getProvince());
-        dto.setDistrictId(address.getDistrictId());
         dto.setDistrict(address.getDistrict());
-        dto.setWardId(address.getWardId());
         dto.setWard(address.getWard());
+        dto.setProvinceId(address.getProvinceId());
+        dto.setDistrictId(address.getDistrictId());
+        dto.setWardId(address.getWardId());
         dto.setDetail(address.getDetail());
         dto.setIsDefault(address.getDefaultAddress());
         return dto;
