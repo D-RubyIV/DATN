@@ -17,8 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -63,25 +65,25 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
 
-        @Override
-        @Transactional
-        public CustomerDTO saveCustomer(CustomerDTO customerDTO) throws BadRequestException {
+    @Override
+    @Transactional
+    public CustomerDTO saveCustomer(CustomerDTO customerDTO) throws BadRequestException {
 
-            customerValidator.validateCustomer(customerDTO, null);
+        customerValidator.validateCustomer(customerDTO, null);
 
-            // Tạo mã khách hàng nếu không có
-            String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
-                    ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
+        // Tạo mã khách hàng nếu không có
+        String generatedCode = customerDTO.getCode() == null || customerDTO.getCode().isEmpty()
+                ? autoGenCode.genarateUniqueCode() : customerDTO.getCode();
 
-            // Chuyển đổi DTO sang entity Customer
-            Customer customer = CustomerMapper.toEntityCustomer(customerDTO, generatedCode);
+        // Chuyển đổi DTO sang entity Customer
+        Customer customer = CustomerMapper.toEntityCustomer(customerDTO, generatedCode);
 
-            // Lưu Customer vào database
-            Customer savedCustomer = customerRepository.save(customer);
+        // Lưu Customer vào database
+        Customer savedCustomer = customerRepository.save(customer);
 
-            // Chuyển đổi entity Customer đã lưu sang DTO để trả về
-            return CustomerMapper.toCustomerDTO(savedCustomer);
-        }
+        // Chuyển đổi entity Customer đã lưu sang DTO để trả về
+        return CustomerMapper.toCustomerDTO(savedCustomer);
+    }
 
     @Override
     public CustomerDTO updateCustomer(Integer id, CustomerDTO customerDTO) throws BadRequestException {
@@ -101,6 +103,36 @@ public class CustomerServiceImpl implements CustomerService {
         } else {
             throw new RuntimeException("Không tìm thấy khách hàng với id: " + id);
         }
+    }
+
+    @Override
+    public CustomerDTO getCustomerWithPagedAddresses(Integer customerId, int page, int size) {
+        Optional<Customer> customerOptional = customerRepository.findById(customerId);
+        if (customerOptional.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy khách hàng với id: " + customerId);
+        }
+
+        Customer customer = customerOptional.get();
+
+        // Phân trang địa chỉ của khách hàng
+        List<Address> allAddresses = customer.getAddresses();
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, allAddresses.size());
+        List<Address> pagedAddresses = allAddresses.subList(startIndex, endIndex);
+
+        // Chuyển đổi thành DTO
+        List<AddressDTO> pagedAddressDTOS = pagedAddresses.stream()
+                .map(CustomerMapper::toAddressDTO)
+                .collect(Collectors.toList());
+
+        // Trả về DTO của khách hàng với các địa chỉ được phân trang
+        CustomerDTO customerDTO = CustomerMapper.toCustomerDTO(customer);
+        customerDTO.setAddressDTOS(pagedAddressDTOS);
+
+        // Bạn có thể thêm thông tin về tổng số trang hoặc địa chỉ tại đây nếu cần
+        customerDTO.setTotalAddresses(allAddresses.size());
+
+        return customerDTO;
     }
 
 
@@ -177,15 +209,35 @@ public class CustomerServiceImpl implements CustomerService {
 
         // Tạo và thiết lập địa chỉ mới
         Address newAddress = CustomerMapper.toEntityAddress(addressDTO);
-
+        newAddress.setCreatedDate(LocalDateTime.now());
         // Liên kết địa chỉ mới với khách hàng
         newAddress.setCustomer(customer);
 
         // Cập nhật danh sách địa chỉ của khách hàng và lưu khách hàng
-        customer.getAddresses().add(newAddress);
+        customer.getAddresses().add(0, newAddress);
         customerRepository.save(customer);
 
         // Trả về AddressDTO
         return CustomerMapper.toAddressDTO(newAddress);
+    }
+
+    @Override
+    public AddressDTO findDefaultAddressByCustomerId(Integer customerId) {
+        return customerRepository.findById(customerId)
+                .map(customer -> customer.getAddresses().stream()
+                        .filter(Address::getDefaultAddress) // Lọc địa chỉ mặc định
+                        .findFirst()
+                        .map(CustomerMapper::toAddressDTO) // Ánh xạ sang AddressDTO
+                        .orElse(null))
+                .orElse(null);
+    }
+
+    // Các phương thức kiểm tra trực tiếp
+    public boolean isEmailExists(String email) {
+        return customerValidator.isEmailExists(email);
+    }
+
+    public boolean isPhoneExists(String phone) {
+        return customerValidator.isPhoneExists(phone);
     }
 }

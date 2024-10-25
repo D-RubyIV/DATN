@@ -24,14 +24,18 @@ public class CustomerValidator {
         validateName(customerDTO.getName());
         validateEmail(customerDTO.getEmail(), existingCustomerId);
         validatePhone(customerDTO.getPhone(), existingCustomerId);
-//        validateBirthDate(customerDetailDTO.getBirthDate() + "");
-
-
     }
 
     private void validateName(String name) throws BadRequestException {
         if (!StringUtils.hasText(name)) {
             throw new BadRequestException("Tên không để trống");
+        }
+        // Kiểm tra khoảng trắng thừa
+        if (!name.trim().equals(name) || name.contains("  ")) {
+            throw new BadRequestException("Tên không được chứa khoảng trắng ở đầu, cuối hoặc nhiều khoảng trắng liên tiếp");
+        }
+        if (!name.matches("^[\\p{L}\\s]+$")) {
+            throw new BadRequestException("Tên không được chứa ký tự đặc biệt hoặc số");
         }
         if (name.length() < 5 || name.length() > 100) {
             throw new BadRequestException("Tên phải lớn hơn 5 ký tự và không quá 100 ký tự");
@@ -42,6 +46,7 @@ public class CustomerValidator {
         if (!StringUtils.hasText(email)) {
             throw new BadRequestException("Email không để trống");
         }
+        email = email.trim(); // xoa khoang trang o dau va cuoi
         if (!email.matches("^[\\w-\\.]+@[\\w-]+\\.[a-zA-Z]{2,4}$")) {
             throw new BadRequestException("Email không đúng định dạng");
         }
@@ -70,6 +75,13 @@ public class CustomerValidator {
                 throw new BadRequestException("Số điện thoại đã tồn tại");
             }
         }
+    }
 
+    public boolean isEmailExists(String email) {
+        return !customerRepository.findCustomerByEmail(email).isEmpty();
+    }
+
+    public boolean isPhoneExists(String phone) {
+        return !customerRepository.findCustomerByPhone(phone).isEmpty();
     }
 }

@@ -57,14 +57,43 @@ interface Ward {
   WardName: string;
 }
 
+// Hàm Check validator
 const validationSchema = Yup.object({
-  name: Yup.string().required('Họ tên khách hàng là bắt buộc'),
+
+  name: Yup.string().required('Họ tên khách hàng là bắt buộc')
+    .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+    .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+    .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => {
+      // kiểm tra khoảng trắng thừa
+      return value.trim() === value && !value.includes('  ')
+    })
+    .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', (value) => {
+      // Kiểm tra ký tự đặc biệt và số
+      return /^[\p{L}\s]+$/u.test(value); // sử dụng regex để kiểm tra
+    }),
+
   email: Yup.string()
     .email("Email không hợp lệ")
-    .required("Email là bắt buộc"),
+    .required("Email là bắt buộc")
+    .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
+      return value.trim() === value
+    })
+    .test("email-unique", "Email đã tồn tại", async (email: string) => {
+      // Gọi API kiểm tra email có trùng hay không
+      const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
+      // Đảo ngược giá trị trả về: exists: true nghĩa là email tồn tại, nên bạn trả về false để không hợp lệ
+      return !response.data.exists; // API trả về { exists: true: chưa tồn tại / false: chưa tồn tại }
+    }),
+
   phone: Yup.string()
     .required("Số điện thoại là bắt buộc")
-    .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ"),
+    .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
+    .test("phone-unique", "Số điện thoại đã tồn tại", async (phone: string) => {
+      // Gọi API kiểm tra phone có trùng không
+      const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
+      return !response.data.exists; // API trả về { exists: true: Tồn tại / false: chưa tồn tại }
+    }),
+
   birthDate: Yup.date()
     .required("Ngày sinh là bắt buộc")
     .max(new Date(), "Ngày sinh không được là tương lai")
@@ -76,17 +105,19 @@ const validationSchema = Yup.object({
         return age >= 5 && age <= 100;
       }
     ),
+
   gender: Yup.string()
     .required('Vui lòng chọn giới tính')
     .oneOf(['Nam', 'Nữ'], 'Giới tính không hợp lệ'),
+
   addressDTOS: Yup.array().of(
     Yup.object().shape({
-      province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
-      district: Yup.string().required("Quận/Huyện là bắt buộc"),
-      ward: Yup.string().required("Phường/Xã là bắt buộc"),
-      detail: Yup.string().required('Địa chỉ chi tiết là bắt buộc'),
+      province: Yup.string().required('Vui lòng chọn tỉnh/thành phố'),
+      district: Yup.string().required('Vui lòng chọn quận/huyện'),
+      ward: Yup.string().required('Vui lòng chọn xã/phường/thị trấn'),
+      detail: Yup.string().required('Vui lòng nhập địa chỉ cụ thể'),
     })
-  ).min(1, "Cần ít nhất một địa chỉ").required("Danh sách địa chỉ là bắt buộc"), // Kiểm tra ít nhất 1 địa chỉ,
+  ),
 })
 
 const AddCustomer = () => {
@@ -95,10 +126,10 @@ const AddCustomer = () => {
     name: '',
     phone: '',
     provinceId: 0,
-    province: null,
     districtId: 0,
-    district: null,
     wardId: 0,
+    province: null,
+    district: null,
     ward: null,
     detail: '',
     isDefault: true,
@@ -348,7 +379,7 @@ const AddCustomer = () => {
                 <FormContainer>
                   <FormItem
                     asterisk
-                    label="Tên khách hàng"
+                    label="Họ tên khách hàng"
                     invalid={touched.name && Boolean(errors.name)}
                     errorMessage={errors.name}
                   >
@@ -356,7 +387,7 @@ const AddCustomer = () => {
                       type="text"
                       autoComplete="on"
                       name="name"
-                      placeholder="Nhập tên khách hàng..."
+                      placeholder="Nhập họ tên khách hàng..."
                       style={{ height: '44px' }}
                       component={Input}
                     />
@@ -391,6 +422,11 @@ const AddCustomer = () => {
                       style={{ height: '44px' }}
                       placeholder="Nhập số điện thoại..."
                       component={Input}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                        setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                        setNewCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state newCustomer
+                      }}
                     />
                   </FormItem>
 
@@ -449,6 +485,8 @@ const AddCustomer = () => {
                   <FormItem
                     asterisk
                     label="Tỉnh/thành phố"
+                    invalid={touched.addressDTOS?.[0]?.province && Boolean(errors.addressDTOS?.[0]?.province)}
+                    errorMessage={errors.addressDTOS?.[0]?.province}
                   >
                     <Field name="addressDTOS[0].province">
                       {({ field, form }: FieldProps<CustomerDTO>) => (
@@ -462,6 +500,7 @@ const AddCustomer = () => {
                           options={provinces}
                           onChange={(newValue: SingleValue<Province> | null) => {
                             handleLocationChange('province', newValue, form);
+                            form.setFieldTouched(field.name, true, false); // Đánh dấu trường là đã được tương tác
                           }}
                           onBlur={() => form.setFieldTouched(field.name, true)}
                         />
@@ -472,12 +511,14 @@ const AddCustomer = () => {
                   <FormItem
                     asterisk
                     label="Quận/huyện"
+                    invalid={touched.addressDTOS?.[0]?.district && Boolean(errors.addressDTOS?.[0]?.district)}
+                    errorMessage={errors.addressDTOS?.[0]?.district}
                   >
                     <Field name="addressDTOS[0].district">
                       {({ form }: FieldProps<CustomerDTO>) => (
                         <Select
                           isDisabled={loadingDistricts}
-                          value={districts.find(prov => prov.DistrictName === values.addressDTOS[0].district) || null}
+                          value={districts.find(district => district.DistrictName === values.addressDTOS[0].district) || null}
                           placeholder="Chọn quận/huyện..."
                           style={{ height: '40px' }}
                           getOptionLabel={(option: District) => option.DistrictName}
@@ -485,21 +526,27 @@ const AddCustomer = () => {
                           options={districts}
                           onChange={(newValue: SingleValue<District> | null) => {
                             handleLocationChange('district', newValue, form);
+                            // Đánh dấu trường là đã được tương tác và thiết lập giá trị mới
+                            form.setFieldValue("addressDTOS[0].district", newValue ? newValue.DistrictName : '');
+                            form.setFieldTouched("addressDTOS[0].district", true, false); // Đánh dấu trường đã tương tác
                           }}
-                          onBlur={() => form.setFieldTouched("addressDTOS[0].district", true)}
+                          onBlur={() => form.setFieldTouched("addressDTOS[0].district", true)} // Đánh dấu khi mất focus
                         />
                       )}
                     </Field>
                   </FormItem>
+
                   <FormItem
                     asterisk
                     label="Xã/phường/thị trấn"
+                    invalid={touched.addressDTOS?.[0]?.ward && Boolean(errors.addressDTOS?.[0]?.ward)}
+                    errorMessage={errors.addressDTOS?.[0]?.ward}
                   >
                     <Field name="addressDTOS[0].ward">
                       {({ form }: FieldProps<CustomerDTO>) => (
                         <Select
                           isDisabled={loadingWards}
-                          value={wards.find(prov => prov.WardName === values.addressDTOS[0].ward) || null}
+                          value={wards.find(ward => ward.WardName === values.addressDTOS[0].ward) || null}
                           placeholder="Chọn xã/phường/thị trấn..."
                           style={{ height: '40px' }}
                           getOptionLabel={(option: Ward) => option.WardName}
@@ -507,15 +554,21 @@ const AddCustomer = () => {
                           options={wards}
                           onChange={(newValue: SingleValue<Ward> | null) => {
                             handleLocationChange('ward', newValue, form);
+                            // Đánh dấu trường là đã được tương tác và thiết lập giá trị mới
+                            form.setFieldValue("addressDTOS[0].ward", newValue ? newValue.WardName : '');
+                            form.setFieldTouched("addressDTOS[0].ward", true, false); // Đánh dấu trường đã tương tác
                           }}
-                          onBlur={() => form.setFieldTouched("addressDTOS[0].ward", true)}
+                          onBlur={() => form.setFieldTouched("addressDTOS[0].ward", true)} // Đánh dấu khi mất focus
                         />
                       )}
                     </Field>
                   </FormItem>
+
                   <FormItem
                     asterisk
                     label="Địa chỉ cụ thể"
+                    invalid={touched.addressDTOS?.[0]?.detail && Boolean(errors.addressDTOS?.[0]?.detail)}
+                    errorMessage={errors.addressDTOS?.[0]?.detail}
                   >
                     <Field
                       type="text"
@@ -532,7 +585,17 @@ const AddCustomer = () => {
                       style={{ backgroundColor: '#fff', height: '40px' }}
                       className="ltr:mr-2 rtl:ml-2"
                       disabled={isSubmitting}
-                      onClick={() => resetForm()}
+                      onClick={() => {
+                        // Reset form values to initial state
+                        resetForm({ values: initialCustomerState });
+
+                        // Reset the related state values for districts and wards
+                        setDistricts([]);
+                        setWards([]);
+
+                        // Optionally, reset province selection as well if needed
+                        setFieldValue('addressDTOS[0].province', null);
+                      }}
                     >
                       Tải lại
                     </Button>

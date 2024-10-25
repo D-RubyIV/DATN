@@ -6,6 +6,8 @@ import org.example.demo.dto.customer.CustomerDTO;
 import org.example.demo.dto.customer.CustomerListDTO;
 import org.example.demo.entity.human.customer.Address;
 import org.example.demo.service.customer.CustomerService;
+import org.example.demo.validator.AddressValidator;
+import org.example.demo.validator.CustomerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,6 +26,7 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
+
 
     @GetMapping("/search")
     public ResponseEntity<Page<CustomerListDTO>> getCustomersSearch(
@@ -51,6 +56,42 @@ public class CustomerController {
         return ResponseEntity.ok(customerDTO);
     }
 
+
+    // API kiểm tra email có tồn tại hay không
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
+        boolean exists = customerService.isEmailExists(email);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
+    }
+
+    // API kiểm tra số điện thoại có tồn tại hay không
+    @GetMapping("/check-phone")
+    public ResponseEntity<Map<String, Boolean>> checkPhone(@RequestParam String phone) {
+        boolean exists = customerService.isPhoneExists(phone);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
+    }
+
+    @GetMapping("/customer/{id}/addresses")
+    public ResponseEntity<CustomerDTO> getCustomerWithPagedAddresses(
+            @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        CustomerDTO customerDTO = customerService.getCustomerWithPagedAddresses(id, page, size);
+        return ResponseEntity.ok(customerDTO);
+    }
+
+    // lấy địa chỉ mặc định của 1 khách hàng
+    @GetMapping("/{customerId}/default-address")
+    public ResponseEntity<AddressDTO> getDefaultAddress(@PathVariable Integer customerId) {
+        AddressDTO defaultAddress = customerService.findDefaultAddressByCustomerId(customerId);
+
+        if (defaultAddress != null) {
+            return ResponseEntity.ok(defaultAddress);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PostMapping("/save")
     public ResponseEntity<CustomerDTO> saveCustomer(@RequestBody CustomerDTO customerDTO) throws BadRequestException {
         try {
@@ -62,9 +103,9 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/address")
-    public ResponseEntity<AddressDTO> addAddressToCustomer(@PathVariable int id, @RequestBody AddressDTO addressDTO) throws BadRequestException {
+    public ResponseEntity<List<AddressDTO>> addAddressToCustomer(@PathVariable int id, @RequestBody AddressDTO addressDTO) throws BadRequestException {
         AddressDTO newAddress = customerService.addAddressToCustomer(id, addressDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
+        return ResponseEntity.ok(Collections.singletonList(newAddress));
     }
 
     @PutMapping("/update/{id}")

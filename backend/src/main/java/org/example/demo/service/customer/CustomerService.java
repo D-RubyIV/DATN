@@ -31,4 +31,11 @@ public interface CustomerService {
 
     AddressDTO addAddressToCustomer(Integer customerId, AddressDTO addressDTO) throws BadRequestException;
 
+    boolean isEmailExists(String email);
+
+    boolean isPhoneExists(String phone);
+
+    CustomerDTO getCustomerWithPagedAddresses(Integer id, int page, int size);
+
+    AddressDTO findDefaultAddressByCustomerId(Integer customerId);
 }

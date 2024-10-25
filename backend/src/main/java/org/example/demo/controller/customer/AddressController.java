@@ -25,7 +25,6 @@ public class AddressController {
     @PutMapping("/update/{id}")
     public ResponseEntity<AddressDTO> update(@PathVariable Integer id, @RequestBody AddressDTO addressDTO) throws BadRequestException {
         try {
-
             AddressDTO updatedAddress = addressService.updateAddress(id, addressDTO);
             return ResponseEntity.ok(updatedAddress);
         } catch (IllegalArgumentException e) {
