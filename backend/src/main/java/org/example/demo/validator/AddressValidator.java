@@ -31,6 +31,13 @@ public class AddressValidator {
         if (!StringUtils.hasText(name)) {
             throw new BadRequestException("Tên không để trống");
         }
+        // Kiểm tra khoảng trắng thừa
+        if (!name.trim().equals(name) || name.contains("  ")) {
+            throw new BadRequestException("Tên không được chứa khoảng trắng ở đầu, cuối hoặc nhiều khoảng trắng liên tiếp");
+        }
+        if (!name.matches("^[\\p{L}\\s]+$")) {
+            throw new BadRequestException("Tên không được chứa ký tự đặc biệt hoặc số");
+        }
         if (name.length() < 5 || name.length() > 100) {
             throw new BadRequestException("Tên phải lớn hơn 5 ký tự và không quá 100 ký tự");
         }

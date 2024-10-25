@@ -62,11 +62,22 @@ const validationSchema = Yup.object({
 
   name: Yup.string().required('Họ tên khách hàng là bắt buộc')
     .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
-    .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự"),
+    .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+    .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => {
+      // kiểm tra khoảng trắng thừa
+      return value.trim() === value && !value.includes('  ')
+    })
+    .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', (value) => {
+      // Kiểm tra ký tự đặc biệt và số
+      return /^[\p{L}\s]+$/u.test(value); // sử dụng regex để kiểm tra
+    }),
 
   email: Yup.string()
     .email("Email không hợp lệ")
     .required("Email là bắt buộc")
+    .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
+      return value.trim() === value
+    })
     .test("email-unique", "Email đã tồn tại", async (email: string) => {
       // Gọi API kiểm tra email có trùng hay không
       const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });

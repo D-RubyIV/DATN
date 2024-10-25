@@ -154,8 +154,16 @@ const UpdateCustomer = () => {
     const validationSchema = Yup.object({
 
         name: Yup.string().required('Họ tên khách hàng là bắt buộc')
-            .min(5, "Tên khách hàng phải có ít nhất 5 ký tự")
-            .max(100, "Tên khách hàng không vượt quá 100 ký tự"),
+            .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+            .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+            .test('no-whitespace', 'Họ tên không được chứa nhiều khoảng trắng', value => {
+                // kiểm tra khoảng trắng thừa
+                return value.trim() === value && !value.includes('  ')
+            })
+            .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', (value) => {
+                // Kiểm tra ký tự đặc biệt và số
+                return /^[\p{L}\s]+$/u.test(value); // sử dụng regex để kiểm tra
+            }),
 
         email: Yup.string()
             .email("Email không hợp lệ")
@@ -197,9 +205,17 @@ const UpdateCustomer = () => {
 
         addressDTOS: Yup.array().of(
             Yup.object().shape({
-                name: Yup.string().required('Họ tên khách hàng là bắt buộc')
-                    .min(5, "Tên khách hàng phải có ít nhất 5 ký tự")
-                    .max(100, "Tên khách hàng không vượt quá 100 ký tự"),
+                name: Yup.string().required('Họ và tên khách hàng là bắt buộc')
+                    .min(5, "Họ tên khách hàng phải có ít nhất 5 ký tự")
+                    .max(100, "Họ tên khách hàng không vượt quá 100 ký tự")
+                    .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => {
+                        // kiểm tra khoảng trắng thừa
+                        return value.trim() === value && !value.includes('  ')
+                    })
+                    .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', (value) => {
+                        // Kiểm tra ký tự đặc biệt và số
+                        return /^[\p{L}\s]+$/u.test(value); // sử dụng regex để kiểm tra
+                    }),
 
                 phone: Yup.string()
                     .required("Số điện thoại là bắt buộc")
@@ -620,7 +636,12 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.phone}
                                     >
                                         <Field type="text" autoComplete="off" name="phone" style={{ height: '44px' }}
-                                            placeholder="Số điện thoại..." component={Input} />
+                                            placeholder="Số điện thoại..." component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                            }} />
                                     </FormItem>
 
                                     <FormItem
@@ -750,6 +771,11 @@ const UpdateCustomer = () => {
                                                                         style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
+                                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                            const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                                            setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                                            setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                                                        }}
                                                                     />
                                                                 </FormItem>
                                                             </div>
