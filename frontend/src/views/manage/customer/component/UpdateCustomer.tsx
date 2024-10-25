@@ -10,6 +10,8 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { SingleValue } from 'react-select';
 import { toast } from 'react-toastify';
+import { Pagination } from 'antd';
+
 
 
 type CustomerDTO = {
@@ -22,6 +24,7 @@ type CustomerDTO = {
     gender: string;
     addressDTOS: AddressDTO[];
     status: string;
+    totalAddresses: number;
 };
 
 type AddressDTO = {
@@ -83,6 +86,7 @@ const UpdateCustomer = () => {
         gender: 'Nữ',
         addressDTOS: [initialAddressDTO],
         status: 'Active',
+        totalAddresses: 0,
     }
 
     const [updateCustomer, setUpdateCustomer] = useState<CustomerDTO>(initialCustomerState);
@@ -92,6 +96,11 @@ const UpdateCustomer = () => {
     const [loadingProvinces, setLoadingProvinces] = useState(false);
     const [loadingDistricts, setLoadingDistricts] = useState(false);
     const [loadingWards, setLoadingWards] = useState(false);
+    const [page, setPage] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [totalAddresses, setTotalAddresses] = useState<number>(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize: number = 2;
     const navigate = useNavigate();
     const { id } = useParams();
     const [formModes, setFormModes] = useState<string[]>([]);
@@ -105,10 +114,10 @@ const UpdateCustomer = () => {
     useEffect(() => {
         console.log('Effect running');
         if (id) {
-            fetchCustomer(id);
+            fetchCustomer(id, page);
         }
         loadProvinces();
-    }, [id]);
+    }, [id, page]);
 
     useEffect(() => {
         if (updateCustomer.addressDTOS.length > 0) {
@@ -360,24 +369,32 @@ const UpdateCustomer = () => {
     };
 
     dayjs.extend(customParseFormat);
+
     // Hàm lấy khách hàng theo ID
-    const fetchCustomer = async (id: string) => {
+    const fetchCustomer = async (id: string, currentPage: number) => {
         try {
 
-            const response = await axios.get(`http://localhost:8080/api/v1/customer/${id}`);
+            const response = await axios.get(`http://localhost:8080/api/v1/customer/customer/${id}/addresses`, {
+                params: {
+                    page: currentPage,
+                    size: pageSize
+                }
+            });
             if (response.status === 200) {
 
                 const customerData = response.data;
 
-                // Set giá trị vào state của khách hàng
-                setUpdateCustomer(customerData);
+                // Cập nhật tổng số địa chỉ và số trang
+                if (customerData.totalAddresses) {
+                    setTotalAddresses(customerData.totalAddresses);
+                    setTotalPages(Math.ceil(customerData.totalAddresses / pageSize));
+                }
 
-                // Lưu email và phone hiện tại để kiểm tra trùng lặp
+                // Cập nhật thông tin email và phone của khách hàng
                 setInitialContact({
                     currentEmail: customerData.email,
                     currentPhone: customerData.phone,
                 });
-
                 // Log giá trị birthDate từ backend
                 console.log('Giá trị birthDate từ backend:', customerData.birthDate);
 
@@ -407,6 +424,11 @@ const UpdateCustomer = () => {
         } catch (error) {
             console.error('Error fetching customer data:', error);
         }
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage - 1); // -1 vì Spring Boot bắt đầu từ 0
+        setCurrentPage(newPage)
     };
 
     const handleUpdate = async (values: CustomerDTO, { setSubmitting }: FormikHelpers<CustomerDTO>) => {
@@ -468,9 +490,10 @@ const UpdateCustomer = () => {
             if (mode === 'add') {
                 response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
                 console.log('Dữ liệu địa chỉ vừa thêm:', response.data);
-                if (response.status === 200) {
+                if (response.status === 201) {
                     // Thêm địa chỉ mới vào đầu danh sách sau khi thành công
                     setFieldValue('addressDTOS', [response.data, ...values.addressDTOS]);
+
                     setFormModes((prev) => ['edit', ...prev]); // Cập nhật formModes
                 }
                 toast.success('Thêm địa chỉ mới thành công');
@@ -487,7 +510,7 @@ const UpdateCustomer = () => {
                 console.log('dữ liệu cập nhật lại địa chỉ: ', updatedAddressDTOS)
                 toast.success('Cập nhật địa chỉ thành công');
             }
-            fetchCustomer(customerId);
+            // fetchCustomer(customerId, currentPage);
         } catch (error) {
             console.error('Error submitting address:', error);
             alert('Error submitting address. Please try again.');
@@ -511,7 +534,7 @@ const UpdateCustomer = () => {
             );
             if (response.status === 200) {
                 console.log('Địa chỉ đã được cập nhật thành công:', response.data);
-                fetchCustomer(updateCustomer.id); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
+                fetchCustomer(updateCustomer.id, currentPage); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
             } else {
                 console.error('Cập nhật địa chỉ không thành công:', response.statusText);
             }
@@ -535,6 +558,7 @@ const UpdateCustomer = () => {
             toast.success('cập nhật địa chỉ mặc định thành công');
             // Gọi API chỉ một lần để cập nhật địa chỉ mặc định và các địa chỉ khác
             await updateDefaultAddress(updateCustomer.addressDTOS[index].id, true);
+
         } catch (error) {
             console.error('Lỗi khi cập nhật địa chỉ mặc định:', error);
         }
@@ -553,7 +577,6 @@ const UpdateCustomer = () => {
             }
         }
     };
-
 
     return (
         <Formik
@@ -672,6 +695,7 @@ const UpdateCustomer = () => {
                             </div>
 
                             <div className="w-full lg:w-2/3 bg-white p-6 shadow-md rounded-lg">
+
                                 <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
                                 <FieldArray name="addressDTOS">
                                     {({ insert, remove, unshift }) => (
@@ -693,8 +717,9 @@ const UpdateCustomer = () => {
                                             {values.addressDTOS.map((address, index) => (
                                                 <div key={index} className="bg-white p-6 shadow-md rounded-lg mb-6">
                                                     <FormContainer>
-                                                        <h4 className="text-lg font-medium mb-2">Địa
-                                                            chỉ {index + 1}</h4>
+                                                        <h4 className="text-lg font-medium mb-2">
+                                                            Địa chỉ {(currentPage - 1) * pageSize + index + 1}
+                                                        </h4>
                                                         <div className="flex w-full flex-wrap mb-4">
                                                             <div className="w-1/2 pr-4">
                                                                 <FormItem
@@ -894,14 +919,26 @@ const UpdateCustomer = () => {
                                         </div>
                                     )}
                                 </FieldArray>
+                                <div>
+                                    <Pagination
+                                        current={page + 1} // +1 vì thư viện phân trang bắt đầu từ 1
+                                        pageSize={pageSize}
+                                        total={totalAddresses}
+                                        onChange={handlePageChange}
+                                    />
+                                </div>
+
                             </div>
                         </div>
                     </div>
 
                 </Form >
+
             )
             }
+
         </Formik >
+
     );
 };
 

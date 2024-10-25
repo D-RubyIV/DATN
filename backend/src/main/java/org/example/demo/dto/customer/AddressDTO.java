@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,4 +32,5 @@ public class AddressDTO {
 
     private Boolean isDefault;
 
+    private LocalDateTime createdDate;
 }

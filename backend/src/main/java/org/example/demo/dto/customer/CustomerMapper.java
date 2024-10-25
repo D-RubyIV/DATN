@@ -109,15 +109,16 @@ public class CustomerMapper {
                     // Cập nhật địa chỉ hiện có
                     updateEntityAddress(existingAddress, addressDTO);
                 } else {
-                    // Thêm địa chỉ mới nếu không tồn tại
-                    Address newAddress = toEntityAddress(addressDTO);
-                    newAddress.setCustomer(customer);
-                    customer.getAddresses().add(newAddress);
-                    // ID khách hàng cho địa chỉ mới
-                    if (newAddress.getCustomer() != null && newAddress.getCustomer().getId() == null) {
-                        newAddress.getCustomer().setId(customer.getId());
-                    }
-                    customer.getAddresses().add(newAddress);
+                    return;
+//                    // Thêm địa chỉ mới nếu không tồn tại
+//                    Address newAddress = toEntityAddress(addressDTO);
+//                    newAddress.setCustomer(customer);
+//                    customer.getAddresses().add(newAddress);
+//                    // ID khách hàng cho địa chỉ mới
+//                    if (newAddress.getCustomer() != null && newAddress.getCustomer().getId() == null) {
+//                        newAddress.getCustomer().setId(customer.getId());
+//                    }
+//                    customer.getAddresses().add(newAddress);
                 }
             }
         }
@@ -137,6 +138,7 @@ public class CustomerMapper {
         address.setWard(dto.getWard());
         address.setDetail(dto.getDetail());
         address.setDefaultAddress(dto.getIsDefault());
+//        address.setCreatedDate(dto.getCreatedDate());
         return address;
     }
 
@@ -168,6 +170,7 @@ public class CustomerMapper {
         dto.setWardId(address.getWardId());
         dto.setDetail(address.getDetail());
         dto.setIsDefault(address.getDefaultAddress());
+        dto.setCreatedDate(address.getCreatedDate());
         return dto;
     }
 }

@@ -3,6 +3,7 @@ package org.example.demo.entity.human.customer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.example.demo.entity.BaseEntity;
@@ -49,6 +50,7 @@ public class Customer extends BaseEntity {
     private LocalDate birthDate;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OrderBy("defaultAddress DESC, createdDate ASC")
     private List<Address> addresses;
 
 }

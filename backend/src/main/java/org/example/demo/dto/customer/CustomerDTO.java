@@ -33,4 +33,7 @@ public class CustomerDTO {
     private List<AddressDTO> addressDTOS;
 
     private LocalDateTime createdDate;
+
+    private int totalAddresses;
+
 }

@@ -61,8 +61,8 @@ interface Ward {
 const validationSchema = Yup.object({
 
   name: Yup.string().required('Họ tên khách hàng là bắt buộc')
-    .min(5, "Tên khách hàng phải có ít nhất 5 ký tự")
-    .max(100, "Tên khách hàng không vượt quá 100 ký tự"),
+    .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+    .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự"),
 
   email: Yup.string()
     .email("Email không hợp lệ")
@@ -368,7 +368,7 @@ const AddCustomer = () => {
                 <FormContainer>
                   <FormItem
                     asterisk
-                    label="Tên khách hàng"
+                    label="Họ tên khách hàng"
                     invalid={touched.name && Boolean(errors.name)}
                     errorMessage={errors.name}
                   >
@@ -376,7 +376,7 @@ const AddCustomer = () => {
                       type="text"
                       autoComplete="on"
                       name="name"
-                      placeholder="Nhập tên khách hàng..."
+                      placeholder="Nhập họ tên khách hàng..."
                       style={{ height: '44px' }}
                       component={Input}
                     />
