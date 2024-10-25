@@ -5,11 +5,13 @@ import lombok.Data;
 import org.example.demo.controller.IControllerBasic;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
+import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.dto.order.other.UseVoucherDTO;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
+import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.util.phah04.PageableObject;
 import org.example.demo.validate.group.GroupCreate;
@@ -24,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -91,7 +94,7 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     }
 
     @GetMapping(value = "calculate-fee/{id}")
-    public ResponseEntity<?> calculateFee(@PathVariable Integer id){
+    public ResponseEntity<?> calculateFee(@PathVariable Integer id) {
         return ResponseEntity.ok(orderService.calculateFee(id));
     }
 
@@ -99,5 +102,10 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     @GetMapping(value = "count-any-status")
     public ResponseEntity<CountStatusOrder> getCountAnyStatus() {
         return ResponseEntity.ok(orderService.getCountStatusAnyOrder());
+    }
+
+    @GetMapping(value = "count-order-detail")
+    public ResponseEntity<List<ICountOrderDetailInOrder>> getCountOrder(@RequestParam("ids") List<Integer> ids) {
+        return ResponseEntity.ok(orderService.getCountOrderDetailInOrder(ids));
     }
 }

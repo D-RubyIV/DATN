@@ -70,7 +70,7 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
     }
 
     return (
-        <Card className="mb-4 h-[245px]">
+        <Card className="mb-4 h-auto">
             <div className="flex justify-between">
                 <div>
                     <h5 className="mb-4">Thông tin thanh toán</h5>
@@ -90,7 +90,7 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
             </div>
             <ul>
                 <PaymentRow label="Tổng tiền" value={data?.subTotal} />
-                <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
+                <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '}/>
                 <PaymentRow label="Giảm giá" value={data?.discount} prefix={' - '} />
                 <div className={'pb-4'}>
                     <Input placeholder={'Nhập mã giảm giá nếu có'} suffix={

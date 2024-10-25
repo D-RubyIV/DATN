@@ -38,6 +38,12 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
         console.log(response)
     }
 
+    const handleChangeAddress = async (val) => {
+        // await instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
+        //     console.log(response)
+        // })
+    }
+
     return (
         <Card
             className={`mb-5`}>
@@ -106,7 +112,7 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                         <Input
                             disabled
                             value={
-                                data?.address || 'N/A' + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''
+                                (data?.address || 'N/A') + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''
                             }
                             suffix={
                                 <Tooltip title="Chỉnh sửa địa chỉ">
@@ -121,7 +127,7 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                     <Radio.Group vertical>
                         {addresses.length ? (
                             addresses.map((item, index) => (
-                                <Radio key={index} value={item.id}>
+                                <Radio key={index} value={item.id} onClick={() => handleChangeAddress(item)}>
                                     {item.phone} - {item.detail}
                                 </Radio>
                             ))

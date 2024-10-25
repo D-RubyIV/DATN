@@ -41,6 +41,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
     const [data, setData] = useState<OrderDetailResponseDTO[]>([])
     const [totalData, setTotalData] = useState(0)
     const [pageSize, setPageSize] = useState(5)
+    const [pageIndex, setPageIndex] = useState(0)
 
     const { openNotification } = useToastContext()
 
@@ -66,7 +67,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
     const getAllOrderDetailWithIdOrder = async (id: number) => {
         console.log(table)
-        instance.get(`/order-details/get-by-order/${id}?page=${table.getState().pagination.pageIndex}&size=${table.getState().pagination.pageSize}`).then(function(response) {
+        instance.get(`/order-details/get-by-order/${id}?page=${pageIndex-1}&size=${pageSize}`).then(function(response) {
             setData(response.data.content)
             setTotalData(response.data.totalElements)
         })
@@ -167,9 +168,13 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         table.setPageSize(Number(pageSize))
     }, [pageSize, table.initialState.pagination.pageIndex])
 
+    useEffect(() => {
+        getAllOrderDetailWithIdOrder(selectedOrder.id)
+    }, [pageSize, pageIndex])
 
     const onPaginationChange = (page: number) => {
-        table.setPageIndex(page - 1)
+        // table.setPageIndex(page - 1)
+        setPageIndex(page)
     }
 
     const onSelectChange = (value = 0) => {

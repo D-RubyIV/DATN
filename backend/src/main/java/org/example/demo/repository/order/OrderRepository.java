@@ -3,6 +3,7 @@ package org.example.demo.repository.order;
 import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.entity.order.core.Order;
+import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,31 +16,30 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query(value = """
-            SELECT DISTINCT b FROM Order b
-            LEFT JOIN FETCH b.customer bc
-            LEFT JOIN FETCH b.staff bs
-            LEFT JOIN FETCH b.voucher bv
-            LEFT JOIN FETCH bs.role
-            LEFT JOIN FETCH bv.customers
-            WHERE
-            (
-                (:query IS NULL OR LOWER(b.code) LIKE LOWER(CONCAT('%', :query, '%')))
-                OR
-                (:query IS NULL OR LOWER(b.phone) LIKE LOWER(CONCAT('%', :query, '%')))
-                OR
-                (:query IS NULL OR LOWER(b.customer.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                OR
-                (:query IS NULL OR LOWER(b.staff.name) LIKE LOWER(CONCAT('%', :query, '%')))
-            )
-            AND
-            (:status IS NULL OR LOWER(b.status) LIKE LOWER(CONCAT('%', :status, '%')))
-            AND
-            (:type IS NULL OR LOWER(b.type) LIKE LOWER(CONCAT('%', :type, '%')))
-            AND
-            (:createdFrom IS NULL OR b.createdDate >= :createdFrom)
-            AND
-            (:createdTo IS NULL OR b.createdDate <= :createdTo)
-            """)
+        SELECT DISTINCT b FROM Order b
+        LEFT JOIN FETCH b.customer bc
+        LEFT JOIN FETCH b.staff bs
+        LEFT JOIN FETCH b.voucher bv
+        LEFT JOIN FETCH bs.role
+        LEFT JOIN FETCH bv.customers
+        WHERE
+        (
+            :query IS NULL OR 
+            LOWER(b.code) LIKE LOWER(CONCAT('%', :query, '%')) OR
+            LOWER(b.phone) LIKE LOWER(CONCAT('%', :query, '%')) OR
+            LOWER(b.customer.name) LIKE LOWER(CONCAT('%', :query, '%')) OR
+            LOWER(b.staff.name) LIKE LOWER(CONCAT('%', :query, '%'))
+        )
+        AND
+        (:status IS NULL OR :status = '' OR LOWER(b.status) LIKE LOWER(:status))
+        AND
+        (:type IS NULL OR LOWER(b.type) LIKE LOWER(CONCAT('%', :type, '%')))
+        AND
+        (:createdFrom IS NULL OR b.createdDate >= :createdFrom)
+        AND
+        (:createdTo IS NULL OR b.createdDate <= :createdTo)
+        """)
+
     Page<Order> findAllByPageWithQuery(
             @Param("query") String query,
             @Param("status") String status,
@@ -63,12 +63,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     CountStatusOrder getCountStatus();
 
 
-    @Query("SELECT new org.example.demo.dto.order.core.response.CountOrderDetailInOrder( " +
-            "ord.id, COUNT(orderDetail.id), ord.code) " +
-            "FROM Order ord " +
-            "JOIN ord.orderDetails orderDetail " +
-            "WHERE ord.id IN :ids " +
-            "GROUP BY ord.id, ord.code")
-    CountOrderDetailInOrder getCountOrderDetailByIds(@Param("ids") List<Integer> ids);
+    @Query(value = "select count(od.id) as quantity, o.code as code, o.id as id from Order o left join OrderDetail od on od.order.id = o.id where o.id in :ids group by o.id, o.code")
+    List<ICountOrderDetailInOrder> getCountOrderDetailByIds(@Param("ids") List<Integer> ids);
 
 }

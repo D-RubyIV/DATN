@@ -11,7 +11,6 @@ import { PaymentSummaryProps } from '@/@types/payment'
 import SellProductModal from '../dialog/SellProductModal'
 import SellCustomerModal from '../dialog/SellCustomerModal'
 import QrCodeScanner from '../scanner/QrCodeScanner'
-import { getUrlPayment } from '@/services/PaymentService'
 import { EPaymentMethod } from '@/views/manage/sell'
 import { useLoadingContext } from '@/context/LoadingContext'
 import SellVocherModal from '@/views/manage/sell/component/dialog/SellVocherModal'
@@ -63,7 +62,7 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
                 total: response.data.total || 0
             })
         })
-        await sleep(500)
+        await sleep(200)
         setIsLoadingComponent(false)
     }
     // 
@@ -80,23 +79,23 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
 
     const handleSubmitForm = async () => {
         console.log('PAYMENT')
-        if (selectedOrder?.payment === EPaymentMethod.TRANSFER) {
-            setIsLoadingComponent(true)
-            try {
-                const response = await getUrlPayment(selectedOrder.id)
-                console.log('Confirm payment')
-                console.log(response)
-                const url = response?.data?.data?.paymentUrl
-                console.log(url)
-                if (url) {
-                    window.location.href = url // Mở đường dẫn mới
-                }
-            } catch (error) {
-                console.log(error)
-            }
-            setIsLoadingComponent(false)
-        }
-        if (selectedOrder?.payment === EPaymentMethod.CASH) {
+        // if (selectedOrder) {
+        //     setIsLoadingComponent(true)
+        //     try {
+        //         const response = await getUrlPayment(selectedOrder.id)
+        //         console.log('Confirm payment')
+        //         console.log(response)
+        //         const url = response?.data?.data?.paymentUrl
+        //         console.log(url)
+        //         if (url) {
+        //             window.location.href = url // Mở đường dẫn mới
+        //         }
+        //     } catch (error) {
+        //         console.log(error)
+        //     }
+        //     setIsLoadingComponent(false)
+        // }
+        if (selectedOrder) {
             setIsLoadingComponent(true)
             try {
                 const data: OrderHistoryResponseDTO = {
@@ -105,15 +104,17 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
                 }
                 const response = await changeOrderStatus(selectedOrder.id, data)
                 if (response.status === 200) {
-                    await sleep(500)
-                    removeCurrentTab()
+                    await sleep(200)
                     openNotification('Xác nhận thành công')
+                    removeCurrentTab();
                 }
                 console.log('Confirm payment')
             } catch (error) {
                 console.log(error)
             }
             setIsLoadingComponent(false)
+            setIsOpenConfirmOrder(false)
+     
         }
     }
 
@@ -246,9 +247,29 @@ const TabCard = ({ idOrder, removeCurrentTab }: { idOrder: number, removeCurrent
             <div className={'h-full'}>
                 <Dialog isOpen={dialogIsOpenConfirmOrder} closable={true}>
                     <h5 className="mb-4">Xác nhận đơn hàng</h5>
-                    <p>
-                        Xác nhận đơn hàng ?
-                    </p>
+
+                    {
+                        selectedOrder && selectedOrder.payment === EPaymentMethod.TRANSFER ? (
+                            <div className="py-5">
+                                <div>
+                                    <p className="font-semibold text-xl text-center py-2">QR THANH TOÁN</p>
+                                </div>
+                                <div>
+                                    <img
+                                        src={`https://img.vietqr.io/image/970436-1037904766-bank.png?amount=${
+                                            Math.round(selectedOrder?.total ?? 0)
+                                        }&addInfo=THANH TOAN DON HANG&accountName=Pham Ha Anh`}
+                                        width={500}
+                                        height={500}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <p>Xác nhận đơn hàng?</p>
+                        )
+                    }
+
+
                     <div className="text-right mt-6">
                         <Button
                             className="ltr:mr-2 rtl:ml-2"

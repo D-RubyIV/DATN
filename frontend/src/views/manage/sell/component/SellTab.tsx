@@ -9,29 +9,61 @@ import { useToastContext } from '@/context/ToastContext'
 import CloseButton from '@/components/ui/CloseButton'
 import instance from '@/axios/CustomAxios'
 import { OrderResponseDTO } from '../../../../@types/order'
+import { useLoadingContext } from '@/context/LoadingContext'
 
 const { TabNav, TabList, TabContent } = Tabs
 
 type TabObject = {
+    orderId: number,
     label: string,
     value: string,
     content: ReactNode
 }
+type QuantityInOrder = {
+    id: number,
+    code: string,
+    quantity: number
+}
 
 const SellTab = () => {
+    const listIndexTab = [1, 2, 3, 4, 5]
     const [currentTab, setCurrentTab] = useState('')
     const [tabs, setTabs] = useState<TabObject[]>([])
     const [loading, setLoading] = useState<boolean>(false)
     const { openNotification } = useToastContext()
     const [orderIds, setOrderIds] = useState<number[]>([])
+    const [quantityInOrder, setQuantityInOrder] = useState<QuantityInOrder[]>([])
 
+    const { isLoadingComponent } = useLoadingContext()
     const sleep = (ms: number) => {
         return new Promise(resolve => setTimeout(resolve, ms))
     }
 
+    const getIndex = () => {
+        
+    }
+
+    useEffect(() => {
+        if (tabs.length > 0) {
+            setCurrentTab(tabs[tabs.length-1].value)
+        }
+    }, [tabs])
+    
+    useEffect(() => {
+        reloadQuantityInOrder()
+    }, [currentTab, tabs, isLoadingComponent])
+
+    const reloadQuantityInOrder = async () => {
+        const ids = tabs.map((s) => s.orderId)
+        await instance.get(`/orders/count-order-detail?ids=${ids}`).then(function(response) {
+            console.log(response)
+            setQuantityInOrder(response.data)
+        })
+    }
+
     const handleDelayScreen = async () => {
         setLoading(true)
-        await sleep(500)
+        await sleep(200)
         setLoading(false)
     }
 
@@ -77,25 +109,29 @@ const SellTab = () => {
             content: <TabCard idOrder={newOrder.id} removeCurrentTab={() => removeTab(value)} />
         }
         setTabs([...tabs, newTab])
-        setCurrentTab(newTab.value)
 
         const updatedOrderIds = [...orderIds, newOrder.id]
-        console.log('updatedOrderIds')
-        console.log(updatedOrderIds)
-        setOrderIds(updatedOrderIds)
         localStorage.setItem('orderIds', JSON.stringify(updatedOrderIds))
+        setOrderIds(updatedOrderIds)
     }
 
     const removeTab = (tabValue: string) => {
+        console.log("TAB VALUE: ", tabValue)
+        console.log("tabs: ", tabs)
         const filteredTabs = tabs.filter(tab => tab.value !== tabValue)
+        console.log("LIST: ", filteredTabs)
         setTabs(filteredTabs)
 
+        const updatedOrderIds = filteredTabs.map(s => s.orderId)
+        setOrderIds(updatedOrderIds)
+        localStorage.setItem('orderIds', JSON.stringify(updatedOrderIds))
 
         if (currentTab === tabValue && filteredTabs.length > 0) {
-            setCurrentTab(filteredTabs[0].value)
+            setCurrentTab(filteredTabs[filteredTabs.length - 1].value)
         } else if (filteredTabs.length === 0) {
             setCurrentTab('')
         }
+        reloadTab()
     }
 
     useEffect(() => {
@@ -103,8 +139,10 @@ const SellTab = () => {
     }, [currentTab])
 
 
-    useEffect(() => {
+    const reloadTab = () => {
         const savedIds = JSON.parse(localStorage.getItem('orderIds') || '[]')
+        setOrderIds(savedIds)
+        
         const newTabs = savedIds.map((id: number, index: number) => ({
             value: `tab${index + 1}`,
             label: `Đơn hàng ${index + 1}`,
@@ -112,9 +150,10 @@ const SellTab = () => {
             content: <TabCard idOrder={id} removeCurrentTab={() => removeTab(`tab${index + 1}`)} />
         }))
         setTabs(newTabs)
-        if (newTabs.length > 0) {
-            setCurrentTab(newTabs[0].value)
-        }
+    }
+
+    useEffect(() => {
+        reloadTab()
     }, [])
 
 
@@ -143,15 +182,15 @@ const SellTab = () => {
                                         <div key={tab.value} className="flex items-center justify-center gap-1">
                                             <Badge
                                                 className="mr-1"
-                                                content={10}
-                                                maxCount={9}
+                                                content={quantityInOrder.find((s) => s.id === tab.orderId)?.quantity}
+                                                // maxCount={tab.orderId}
                                                 innerClass="bg-red-50 text-red-500">
                                                 <TabNav
                                                     value={tab.value}
                                                     icon={<HiOutlineUser />}
-                                                    className={`${currentTab === tab.value ? 'underline underline-offset-4' : ''} !p-1`}
+                                                    className={`${currentTab === tab.value ? 'text-[15px]' : ''} !p-1`}
                                                 >
-                                                    {tab.label}
+                                                    {tab.label} - HD{tab.orderId}
                                                 </TabNav>
                                             </Badge>
                                             <CloseButton

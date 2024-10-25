@@ -8,6 +8,7 @@ import org.example.demo.dto.ghn.FeeDTO;
 import org.example.demo.dto.ghn.ItemDTO;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
+import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.other.UseVoucherDTO;
@@ -22,6 +23,7 @@ import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.order.core.request.OrderRequestMapper;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
+import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.example.demo.repository.history.HistoryRepository;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.customer.CustomerRepository;
@@ -34,6 +36,7 @@ import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -113,7 +116,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setDeleted(false);
         entityMapped.setStatus(Status.PENDING);
         entityMapped.setPayment(Payment.CASH);
-        entityMapped.setCode(randomCodeGenerator.generateRandomCode());
+        entityMapped.setCode("HD" + randomCodeGenerator.generateRandomCode());
         entityMapped.setStaff(staffDemo);
 
         entityMapped.setSubTotal(0.0);
@@ -192,6 +195,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         if (requestDTO.getWardId() != null && !DataUtils.isNullOrEmpty(requestDTO.getWardName())) {
             order.setWardName(requestDTO.getWardName());
             order.setWardId(requestDTO.getWardId());
+        }
+        // address
+        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
+            order.setAddress(requestDTO.getAddress());
+            order.setAddress(requestDTO.getAddress());
         }
         // return order
         reloadSubTotalOrder(order);
@@ -283,6 +291,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     public CountStatusOrder getCountStatusAnyOrder() {
         return orderRepository.getCountStatus();
+    }
+
+    public List<ICountOrderDetailInOrder> getCountOrderDetailInOrder(List<Integer> ids) {
+        return orderRepository.getCountOrderDetailByIds(ids);
     }
 
     public JsonNode calculateFee(Integer idOrder) {

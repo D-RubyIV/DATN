@@ -20,5 +20,5 @@ export interface IAddress {
     iprovince?: IProvince,
     idistrict?: IDistrict,
     iward?: IWard,
-    detail?: string
+    address?: string
 }
