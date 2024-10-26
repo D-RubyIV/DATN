@@ -1,61 +1,25 @@
 import { lazy } from 'react'
-import authRoute from './authRoute'
 import type { Routes } from '@/@types/routes'
-import manageRoute from './manageRoute'
-import orderRoute from './orderRoute'
-import tuanRoute from './tuanRoute'
+import adminRoute from '@/configs/routes.config/adminRoute'
+import publicRoute from '@/configs/routes.config/publicRoute'
+import authRoute from '@/configs/routes.config/authRoute'
+import clientRoute from '@/configs/routes.config/clientRoute'
 
-export const publicRoutes: Routes = [...authRoute]
-
-export const protectedRoutes = [
+export const publicRoutes: Routes = [
+    ...publicRoute
+]
+export const authRoutes: Routes = [
+    ...authRoute
+]
+export const clientRoutes: Routes = [
+    ...clientRoute
+]
+export const adminRoutes = [
     {
         key: 'home',
         path: '/home',
         component: lazy(() => import('@/views/Home')),
-        authority: [],
+        authority: []
     },
-    /** Example purpose only, please remove */
-    {
-        key: 'singleMenuItem',
-        path: '/single-menu-view',
-        component: lazy(() => import('@/views/demo/SingleMenuView')),
-        authority: [],
-    },
-    {
-        key: 'collapseMenu.item1',
-        path: '/collapse-menu-item-view-1',
-        component: lazy(() => import('@/views/demo/CollapseMenuItemView1')),
-        authority: [],
-    },
-    {
-        key: 'collapseMenu.item2',
-        path: '/collapse-menu-item-view-2',
-        component: lazy(() => import('@/views/demo/CollapseMenuItemView2')),
-        authority: [],
-    },
-    {
-        key: 'groupMenu.single',
-        path: '/group-single-menu-item-view',
-        component: lazy(() => import('@/views/demo/GroupSingleMenuItemView')),
-        authority: [],
-    },
-    {
-        key: 'groupMenu.collapse.item1',
-        path: '/group-collapse-menu-item-view-1',
-        component: lazy(
-            () => import('@/views/demo/GroupCollapseMenuItemView1'),
-        ),
-        authority: [],
-    },
-    {
-        key: 'groupMenu.collapse.item2',
-        path: '/group-collapse-menu-item-view-2',
-        component: lazy(
-            () => import('@/views/demo/GroupCollapseMenuItemView2'),
-        ),
-        authority: [],
-    },
-    ...manageRoute,
-    ...orderRoute,
-    ...tuanRoute
+    ...adminRoute,
 ]

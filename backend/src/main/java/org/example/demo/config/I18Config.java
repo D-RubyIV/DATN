@@ -27,10 +27,10 @@ public class I18Config {
         return messageSource;
     }
 
-    @Bean
-    public LocaleResolver localeResolver() {
-        AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-        localeResolver.setDefaultLocale(Locale.US);
-        return localeResolver;
-    }
+//    @Bean
+//    public LocaleResolver localeResolver() {
+//        AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
+//        localeResolver.setDefaultLocale(Locale.US);
+//        return localeResolver;
+//    }
 }

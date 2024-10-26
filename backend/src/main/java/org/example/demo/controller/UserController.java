@@ -13,7 +13,6 @@ import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.security.Token;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.exception.InvalidPasswordException;
-import org.example.demo.mapper.staff.request.StaffRequestMapper;
 import org.example.demo.mapper.staff.response.StaffResponseMapper;
 import org.example.demo.model.ResponseObject;
 import org.example.demo.service.login.IUserService;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
 public class UserController {
 

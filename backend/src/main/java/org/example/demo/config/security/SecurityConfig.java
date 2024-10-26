@@ -1,4 +1,4 @@
-package org.example.demo.security;
+package org.example.demo.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.example.demo.entity.human.customer.Customer;
