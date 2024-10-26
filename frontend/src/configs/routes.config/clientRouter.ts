@@ -3,8 +3,8 @@ import { lazy } from 'react'
 const clientRoutes = [
     {
         key: 'home',
-        path: `/payment/callback`,
-        component: lazy(() => import('@/views/manage/sell/component/payment/PaymentCallback')),
+        path: `/`,
+        component: lazy(() => import('@/views/client/Dashboard')),
         authority: []
     }
 ]

@@ -75,12 +75,12 @@ const adminRoute: Routes = [
         component: lazy(() => import('@/views/manage/order/component/other/OrderDetails')),
         authority: []
     },
-    {
-        key: 'manageSell',
-        path: `manage/sell`,
-        component: lazy(() => import('@/views/manage/sell/SellManage')),
-        authority: []
-    },
+    // {
+    //     key: 'manageSell',
+    //     path: `manage/sell`,
+    //     component: lazy(() => import('@/views/manage/sell/SellManage')),
+    //     authority: []
+    // },
     {
         key: 'productManage',
         path: `/manage/product`,
@@ -93,12 +93,12 @@ const adminRoute: Routes = [
         component: lazy(() => import('@/views/manage/product/productDetailList')),
         authority: []
     },
-    {
-        key: 'payment',
-        path: `manage/payment/callback`,
-        component: lazy(() => import('@/views/manage/sell/component/payment/PaymentCallback')),
-        authority: []
-    }
+    // {
+    //     key: 'payment',
+    //     path: `manage/payment/callback`,
+    //     component: lazy(() => import('@/views/manage/sell/component/payment/PaymentCallback')),
+    //     authority: []
+    // }
 ]
 
 export default adminRoute
