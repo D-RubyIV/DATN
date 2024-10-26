@@ -10,8 +10,9 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import { StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '../../../../../@types/order'
 import { Link } from 'react-router-dom'
 import { HiEye, HiOutlineSearch } from 'react-icons/hi'
-import { format } from 'date-fns'
 import instance from '@/axios/CustomAxios'
+import { formatDistanceToNow, parse, format, subHours } from 'date-fns'
+import { vi } from 'date-fns/locale';
 
 type BadgeType =
     'countAll'
@@ -142,23 +143,40 @@ export const OrderTable = () => {
         debounceFn(e.target.value)
     }
 
+    const calculateDistanceTime = (formattedDate: string) => {
+        const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date());
+        const dateMinus12Hours = subHours(date, -12);
+        const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi });
+        return distance;
+    };
+
+
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
+
+
     const handleRangePickerChange = (date: [Date | null, Date | null]) => {
-        console.log('Selected range date', date)
+        console.log('Selected range date', date);
+
         if (date[0]) {
-            console.log(format(date[0], 'dd-MM-yyyy'))
-            setFromDateParam(format(date[0], 'dd-MM-yyyy'))
+            const formattedFromDate = format(date[0], "yyyy-MM-dd'T'HH:mm:ss");
+            console.log(formattedFromDate);
+            setFromDateParam(formattedFromDate);
         } else {
-            setFromDateParam('')
+            setFromDateParam('');
         }
+
         if (date[1]) {
-            console.log(format(date[1], 'dd-MM-yyyy'))
-            setToDateParam(format(date[1], 'dd-MM-yyyy'))
+            const formattedToDate = format(date[1], "yyyy-MM-dd'T'HH:mm:ss");
+            console.log(formattedToDate);
+            setToDateParam(formattedToDate);
         } else {
-            setToDateParam('')
+            setToDateParam('');
         }
-        setDateRange(date)
-    }
+
+        setDateRange(date);
+    };
+
+
 
     const columns: ColumnDef<IOveriewBill>[] = [
         {
@@ -175,32 +193,35 @@ export const OrderTable = () => {
             header: 'Khách hàng',
             accessorKey: 'customer___name',
             cell: (props) => (
-                props.row.original.customerName
+                props.row.original.customerName ?? "N/a"
             )
         },
         {
             header: 'Nhân viên',
             accessorKey: 'staff___name',
             cell: (props) => (
-                props.row.original.staffName
+                props.row.original.staffName ?? "N/a"
             )
         },
         {
             header: 'SĐT',
-            accessorKey: 'phone'
-        },
-        {
-            header: 'Tổng tiền',
-            accessorKey: 'subTotal',
+            accessorKey: 'phone',
             cell: (props) => (
-                props.row.original.subTotal
+                props.row.original.phone || "N/a"
             )
         },
         {
-            header: 'Ngày tạo',
+            header: 'Tổng tiền',
+            accessorKey: 'total',
+            cell: (props) => (
+                Math.round(props.row.original.total).toLocaleString('vi') + "đ"
+            )
+        },
+        {
+            header: 'Thời gian tạo',
             accessorKey: 'createdDate',
             cell: (props) => (
-                props.row.original.createdDate
+                calculateDistanceTime(props.row.original.createdDate)
             )
         },
         {
@@ -228,7 +249,7 @@ export const OrderTable = () => {
                                                 : props.row.original.status === 'UNPAID'
                                                     ? '!text-pink-500'
                                                     : '!text-gray-500'
-                        }`}
+                    }`}
                 >
                     <span className={`flex items-center font-bold`}>
                         <span
@@ -249,7 +270,7 @@ export const OrderTable = () => {
                                                         : props.row.original.status === 'UNPAID'
                                                             ? '!bg-pink-500'
                                                             : '!bg-gray-500'
-                                }`}></span>
+                            }`}></span>
                         <span>
                             <p>
                                 {props.row.original.status === 'PENDING'
@@ -310,7 +331,7 @@ export const OrderTable = () => {
             cell: (props) => (
                 <Button size="xs" className="w-full flex justify-start items-center" variant="plain">
                     <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className="mr-3 text-2xl"
-                        style={{ cursor: 'pointer' }} /></Link>
+                                                                               style={{ cursor: 'pointer' }} /></Link>
                 </Button>
 
             )
@@ -388,7 +409,7 @@ export const OrderTable = () => {
     ]
 
     const fetchCountAnyStatus = async () => {
-        instance.get('orders/count-any-status').then(function (response) {
+        instance.get('orders/count-any-status').then(function(response) {
             if (response.data) {
                 setCountAnyStatus(response.data as ICountStatus)
             }
@@ -438,10 +459,10 @@ export const OrderTable = () => {
                     {
                         statusBills.map((item, index) => (
                             <TabNav key={index}
-                                className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
-                                value={item.value}>
+                                    className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
+                                    value={item.value}>
                                 <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)}
-                                    maxCount={99} innerClass="bg-red-50 text-red-500">
+                                       maxCount={99} innerClass="bg-red-50 text-red-500">
                                     <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
                                         {item.label}
                                     </button>

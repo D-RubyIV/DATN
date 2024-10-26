@@ -26,7 +26,7 @@ public class OrderOverviewResponseDTO {
     private String address;
     private String phone;
     private Boolean deleted;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "hh:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
     @Enumerated(EnumType.STRING)
     private Status status;

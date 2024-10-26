@@ -54,7 +54,7 @@ public class OrderRequestDTO {
 
     private String districtName;
 
-    private Integer wardId;
+    private String wardId;
 
     private String wardName;
 

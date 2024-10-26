@@ -46,8 +46,8 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     public ResponseEntity<Page<OrderOverviewResponseDTO>> findAllByPageV2(
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
-            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdTo,
+            @RequestParam(value = "createdFrom", required = false) LocalDateTime createdFrom,
+            @RequestParam(value = "createdTo", required = false) LocalDateTime createdTo,
             @Valid @RequestBody PageableObject pageableObject,
             BindingResult bindingResult
     ) throws BindException {

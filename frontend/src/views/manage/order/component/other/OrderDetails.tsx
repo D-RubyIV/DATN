@@ -5,27 +5,26 @@ import IconText from '@/components/shared/IconText'
 import { HiMail, HiPhone, HiExternalLink, HiPencilAlt } from 'react-icons/hi'
 import { Link, useParams } from 'react-router-dom'
 import OrderProducts from '../puzzle/OrderProducts';
-import PaymentSummary, { PaymentSummaryProps } from '../puzzle/PaymentSummary';
+import PaymentSummary from '../puzzle/PaymentSummary';
 import OrderStep from '../puzzle/OrderStep';
 import OrderInfo from '../puzzle/OderInfo';
 import { Input, Radio, Tooltip } from '@/components/ui';
 import instance from '@/axios/CustomAxios';
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal';
 import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
+import { PaymentSummaryProps } from '@/@types/payment'
 
 const OrderDetails = () => {
 
     const { id } = useParams()
 
     const [paymentSummaryProp, setPaymentSummaryProp] = useState<PaymentSummaryProps>({
-        data: {
-            subTotal: 10,
-            tax: 10,
-            deliveryFees: 10,
-            total: 1000
-        }
-    });
-
+        subTotal: 10,
+        tax: 10,
+        deliveryFee: 10,
+        discount: 1000,
+        total: 1000
+    })
     const [selectObject, setSelectObject] = useState<OrderResponseDTO>()
     const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
     useEffect(() => {
@@ -37,21 +36,18 @@ const OrderDetails = () => {
             console.log(response)
             setSelectObject(response.data)
             setListOrderDetail(response.data.orderDetailResponseDTOS)
+            setPaymentSummaryProp({
+                subTotal: response.data.subTotal || 0,
+                tax: response.data.tax || 0,
+                deliveryFee: response.data.deliveryFee || 0,
+                discount: response.data.discount || 0,
+                total: response.data.total || 0
+            })
         })
     }
 
     useEffect(() => {
         console.log("Selected Bill: ", selectObject)
-        setPaymentSummaryProp((prev) => ({
-            ...prev,
-            data: {
-                subTotal: selectObject?.subTotal || 0,
-                tax: 0, // Giá trị mặc định cho tax
-                deliveryFees: 10, // Giá trị mặc định cho deliveryFees
-                total: selectObject?.total ?? 0 // Giá trị mặc định cho total
-            }
-        }));
-
     }, [selectObject])
 
 
@@ -60,18 +56,18 @@ const OrderDetails = () => {
     return (
         <div>
             <div>
-                <div className='grid grid-cols-12 gap-5'>
-                    <div className='col-span-8'>
+                <div className='2xl:grid 2xl:grid-cols-12 2xl:gap-5'>
+                    <div className='md:col-span-8'>
                         <div className='flex flex-col gap-5'>
                             {selectObject !== undefined && <OrderStep selectObject={selectObject} fetchData={fetchData}></OrderStep>}
                             {selectObject !== undefined && <OrderProducts data={listOrderDetail} fetchData={fetchData} selectObject={selectObject}></OrderProducts>}
 
                         </div>
                     </div>
-                    <div className='col-span-4'>
+                    <div className='md:col-span-4'>
                         {selectObject !== undefined && <OrderInfo data={selectObject}></OrderInfo>}
                         {selectObject !== undefined && <CustomerInfo data={selectObject}></CustomerInfo>}
-                        <PaymentSummary data={paymentSummaryProp.data} />
+                        <PaymentSummary data={paymentSummaryProp} />
                     </div>
                 </div>
             </div>

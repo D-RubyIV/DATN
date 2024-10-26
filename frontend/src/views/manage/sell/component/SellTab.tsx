@@ -115,7 +115,7 @@ const SellTab = () => {
                                                     icon={<HiOutlineUser />}
                                                     className={`${currentTab === tab.value ? 'text-[15px]' : ''} !p-1`}
                                                 >
-                                                    {tab.label} - HD{tab.orderId}
+                                                    <p className={'md:text-[13.5px] xl:text-sm'}>{tab.label} - HD{tab.orderId}</p>
                                                 </TabNav>
                                             </Badge>
                                             <CloseButton

@@ -94,10 +94,41 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
         if (selectedOrder) {
             setIsLoadingComponent(true)
             try {
-                const data: OrderHistoryResponseDTO = {
+                let data: OrderHistoryResponseDTO = {
                     status: EOrderStatusEnums.DELIVERED,
                     note: 'Đã nhận hàng'
                 }
+                // TAI QUAY
+                if(selectedOrder.type ===  "INSTORE"){
+                    if (selectedOrder.payment === EPaymentMethod.TRANSFER){
+                        data = {
+                            status: EOrderStatusEnums.DELIVERED,
+                            note: 'Đã hoàn thành'
+                        }
+                    }
+                    if (selectedOrder.payment === EPaymentMethod.CASH){
+                        data = {
+                            status: EOrderStatusEnums.DELIVERED,
+                            note: 'Đã hoàn thành'
+                        }
+                    }
+                }
+                // ONLINE
+                if(selectedOrder.type ===  "ONLINE"){
+                    if (selectedOrder.payment === EPaymentMethod.CASH){
+                        data = {
+                            status: EOrderStatusEnums.TOSHIP,
+                            note: 'Khách đã thanh toán -> Chờ giao hàng'
+                        }
+                    }
+                    if (selectedOrder.payment === EPaymentMethod.TRANSFER){
+                        data = {
+                            status: EOrderStatusEnums.TOSHIP,
+                            note: 'Khách đã thanh toán -> Chờ giao hàng'
+                        }
+                    }
+                }
+
                 const response = await changeOrderStatus(selectedOrder.id, data)
                 if (response.status === 200) {
                     await sleep(200)

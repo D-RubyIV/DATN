@@ -90,6 +90,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Pageable pageable = pageableObject.toPageRequest();
         String query = pageableObject.getQuery();
 
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdDate")
+            );
+        }
+
         return orderRepository.findAllByPageWithQuery(query, status, type, createdFrom, createdTo, pageable).map(s -> orderResponseMapper.toOverViewDTO(s));
     }
 
@@ -283,6 +291,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 order.setTotal(fetchTotal(order) - order.getDiscount());
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             log.error(e.getMessage());
             throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
         }
@@ -305,7 +314,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         if (order.getDistrictId() != null && order.getProvinceId() != null) {
             feeDTO.setTo_district_id(order.getDistrictId());
-            feeDTO.setTo_ward_code(order.getWardId().toString());
+            feeDTO.setTo_ward_code(order.getWardId());
 
             feeDTO.setHeight(2);
             feeDTO.setLength(2);
@@ -335,6 +344,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 System.out.println(a);
                 return fee;
             } catch (Exception ex) {
+                log.error(ex.getMessage());
                 throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
             }
         } else {
