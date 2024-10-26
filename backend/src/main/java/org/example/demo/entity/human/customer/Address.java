@@ -24,19 +24,19 @@ public class Address extends BaseEntity {
     private String name;
 
     @Column(name = "province_id")
-    private Integer provinceId;
+    private String provinceId;
 
     @Column(name = "province")
     private String province;
 
     @Column(name = "district_id")
-    private Integer districtId;
+    private String districtId;
 
     @Column(name = "district")
     private String district;
 
     @Column(name = "ward_id")
-    private Integer wardId;
+    private String wardId;
 
     @Column(name = "ward")
     private String ward;

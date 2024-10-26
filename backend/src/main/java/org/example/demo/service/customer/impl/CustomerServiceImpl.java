@@ -95,7 +95,7 @@ public class CustomerServiceImpl implements CustomerService {
             customerValidator.validateCustomer(customerDTO, id);
 
             // Cập nhật thông tin khách hàng và địa chỉ dựa trên DTO
-            CustomerMapper.updateCustomerFromDTO(customerDTO, existingCustomer);
+            CustomerMapper.updateCustomerFromDTO(customerDTO, existingCustomer, addressValidator);
 
             // Lưu khách hàng đã cập nhật
             Customer updatedCustomer = customerRepository.save(existingCustomer);

@@ -30,7 +30,7 @@ type AddressDTO = {
   phone: string;
   provinceId: number;
   districtId: number;
-  wardId: number;
+  wardId: string;
   province: string | null;
   district: string | null;
   ward: string | null;
@@ -52,7 +52,7 @@ interface District {
 
 
 interface Ward {
-  WardCode: number;
+  WardCode: string;
   DistrictID: number;
   WardName: string;
 }
@@ -77,6 +77,9 @@ const validationSchema = Yup.object({
     .required("Email là bắt buộc")
     .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
       return value.trim() === value
+    })
+    .test("email-gmail", "Email phải kết thúc bằng @gmail.com", value => {
+      return value ? value.endsWith("@gmail.com") : true; // Chỉ kiểm tra nếu có giá trị
     })
     .test("email-unique", "Email đã tồn tại", async (email: string) => {
       // Gọi API kiểm tra email có trùng hay không
@@ -127,7 +130,7 @@ const AddCustomer = () => {
     phone: '',
     provinceId: 0,
     districtId: 0,
-    wardId: 0,
+    wardId: '',
     province: null,
     district: null,
     ward: null,
@@ -296,7 +299,7 @@ const AddCustomer = () => {
           selectedAddress.province = newValue?.NameExtension[1];
           selectedAddress.districtId = 0;
           selectedAddress.district = null;
-          selectedAddress.wardId = 0;
+          selectedAddress.wardId = '';
           selectedAddress.ward = null;
 
           // Cập nhật Formik và gọi fetchDistricts
@@ -312,7 +315,7 @@ const AddCustomer = () => {
           // Cập nhật giá trị district
           selectedAddress.districtId = newValue.DistrictID;
           selectedAddress.district = newValue.DistrictName;
-          selectedAddress.wardId = 0;
+          selectedAddress.wardId = '';
           selectedAddress.ward = null;
 
           // Cập nhật Formik và gọi fetchWards

@@ -24,7 +24,7 @@ public class AddressDTO {
 
     private String district;
 
-    private Integer wardId;
+    private String wardId;
 
     private String ward;
 

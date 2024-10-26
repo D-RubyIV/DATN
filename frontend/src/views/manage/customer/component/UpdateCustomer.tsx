@@ -33,7 +33,7 @@ type AddressDTO = {
     phone: string;
     provinceId: number;
     districtId: number;
-    wardId: number;
+    wardId: string;
     province: string | null;
     district: string | null;
     ward: string | null;
@@ -55,7 +55,7 @@ interface District {
 
 
 interface Ward {
-    WardCode: number;
+    WardCode: string;
     DistrictID: number;
     WardName: string;
 }
@@ -70,7 +70,7 @@ const UpdateCustomer = () => {
         province: null,
         districtId: 0,
         district: null,
-        wardId: 0,
+        wardId: '',
         ward: null,
         detail: '',
         isDefault: false,
@@ -168,6 +168,12 @@ const UpdateCustomer = () => {
         email: Yup.string()
             .email("Email không hợp lệ")
             .required("Email là bắt buộc")
+            .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
+                return value.trim() === value
+            })
+            .test("email-gmail", "Email phải kết thúc bằng @gmail.com", value => {
+                return value ? value.endsWith("@gmail.com") : true; // Chỉ kiểm tra nếu có giá trị
+            })
             .test('email-unique', 'Email đã tồn tại', async (email) => {
                 if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
@@ -344,7 +350,7 @@ const UpdateCustomer = () => {
                 form.setFieldValue(`addressDTOS[${index}].district`, ''); // Reset district
                 form.setFieldValue(`addressDTOS[${index}].districtId`, 0); // Reset ID district
                 form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
-                form.setFieldValue(`addressDTOS[${index}].wardId`, 0);   // Reset ID ward
+                form.setFieldValue(`addressDTOS[${index}].wardId`, '');   // Reset ID ward
                 setWards([]); // Reset wards
             } else if (type === 'district' && 'DistrictID' in newValue && 'DistrictName' in newValue) {
                 // Cập nhật giá trị cho quận
@@ -355,7 +361,7 @@ const UpdateCustomer = () => {
                 const wardsData = await fetchWards(newValue.DistrictID);
                 setWards(wardsData);
                 form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
-                form.setFieldValue(`addressDTOS[${index}].wardId`, 0);   // Reset ID ward
+                form.setFieldValue(`addressDTOS[${index}].wardId`, '');   // Reset ID ward
             } else if (type === 'ward' && 'WardName' in newValue) {
                 // Cập nhật giá trị cho xã
                 form.setFieldValue(`addressDTOS[${index}].ward`, newValue.WardName || '');
@@ -522,7 +528,7 @@ const UpdateCustomer = () => {
                 });
                 const updatedAddressDTOS = [...values.addressDTOS];
                 updatedAddressDTOS[addressIndex] = response.data;
-                setFieldValue('addressDTOS', updatedAddressDTOS); // Cập nhật lại danh sách sau khi chỉnh sửa
+                // setFieldValue('addressDTOS', updatedAddressDTOS); // Cập nhật lại danh sách sau khi chỉnh sửa
                 console.log('dữ liệu cập nhật lại địa chỉ: ', updatedAddressDTOS)
                 toast.success('Cập nhật địa chỉ thành công');
             }
@@ -550,7 +556,7 @@ const UpdateCustomer = () => {
             );
             if (response.status === 200) {
                 console.log('Địa chỉ đã được cập nhật thành công:', response.data);
-                fetchCustomer(updateCustomer.id, currentPage); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
+                // fetchCustomer(updateCustomer.id, currentPage); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
             } else {
                 console.error('Cập nhật địa chỉ không thành công:', response.statusText);
             }
@@ -719,7 +725,7 @@ const UpdateCustomer = () => {
 
                                 <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
                                 <FieldArray name="addressDTOS">
-                                    {({ insert, remove, unshift }) => (
+                                    {({ remove, unshift }) => (
                                         <div>
                                             <Button
                                                 type="button"
@@ -771,11 +777,11 @@ const UpdateCustomer = () => {
                                                                         style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
-                                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                            const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                                            setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                                            setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                                                        }}
+                                                                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                                    //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                                    //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                                                    // }}
                                                                     />
                                                                 </FormItem>
                                                             </div>
