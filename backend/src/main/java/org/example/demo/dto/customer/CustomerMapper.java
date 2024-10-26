@@ -83,7 +83,6 @@ public class CustomerMapper {
                     .collect(Collectors.toList());
             dto.setAddressDTOS(addressDTOS);
         }
-
         return dto;
     }
 
@@ -142,7 +141,6 @@ public class CustomerMapper {
         address.setWard(dto.getWard());
         address.setDetail(dto.getDetail());
         address.setDefaultAddress(dto.getIsDefault());
-//        address.setCreatedDate(dto.getCreatedDate());
         return address;
     }
 

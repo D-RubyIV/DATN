@@ -13,6 +13,7 @@ import org.example.demo.validator.AddressValidator;
 import org.example.demo.validator.CustomerValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -213,9 +214,8 @@ public class CustomerServiceImpl implements CustomerService {
         // Liên kết địa chỉ mới với khách hàng
         newAddress.setCustomer(customer);
 
-        // Cập nhật danh sách địa chỉ của khách hàng và lưu khách hàng
-        customer.getAddresses().add(0, newAddress);
-        customerRepository.save(customer);
+        // Thêm địa chỉ vào cơ sở dữ liệu
+        addressRepository.save(newAddress);
 
         // Trả về AddressDTO
         return CustomerMapper.toAddressDTO(newAddress);
@@ -230,6 +230,30 @@ public class CustomerServiceImpl implements CustomerService {
                         .map(CustomerMapper::toAddressDTO) // Ánh xạ sang AddressDTO
                         .orElse(null))
                 .orElse(null);
+    }
+
+    @Override
+    public CustomerDTO getCustomerDetailWithPageAddresses(int customerId, int page, int size) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found width id " + customerId));
+
+        // Sử dụng Mapper để chuyển đổi Customer ---> DTO
+        CustomerDTO customerDTO = CustomerMapper.toCustomerDTO(customer);
+
+        // lấy danh sách địa chỉ phân trang
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Address> addressPage = addressRepository.findAddressesByCustomerId(customerId, pageable);
+
+        // chuyển đổi danh sách địa chỉ sang DTO
+        List<AddressDTO> addressDTOS = addressPage.getContent().stream()
+                .map(CustomerMapper::toAddressDTO)
+                .collect(Collectors.toList());
+
+        // Thiết lập danh sách địa chỉ và tổng số địa chỉ vào DTO khách hàng
+        customerDTO.setAddressDTOS(addressDTOS);
+        customerDTO.setTotalAddresses((int) addressPage.getTotalElements());
+
+        return customerDTO;
     }
 
     // Các phương thức kiểm tra trực tiếp
