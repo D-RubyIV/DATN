@@ -3,7 +3,7 @@ import SidePanel from '@/components/template/SidePanel'
 import UserDropdown from '@/components/template/UserDropdown'
 import MobileNav from '@/components/template/MobileNav'
 import StackedSideNav from '@/components/template/StackedSideNav'
-import View from '@/views'
+import RootLayout from '@/components/layouts/ClassicLayout'
 
 const HeaderActionsStart = () => {
     return (
@@ -34,7 +34,7 @@ const StackedSideLayout = () => {
                         headerEnd={<HeaderActionsEnd />}
                     />
                     <div className="h-full flex flex-auto flex-col">
-                        <View />
+                        <RootLayout  />
                     </div>
                 </div>
             </div>

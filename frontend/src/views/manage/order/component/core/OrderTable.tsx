@@ -1,24 +1,29 @@
-
 import { useState, useEffect, useRef, ChangeEvent } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
-import axios from 'axios'
-import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/DataTable'
+import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
 import { Badge, DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { StatusBill, statusEnums, TypeBill, typeEnums } from '../../store'
+import { StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '../../../../../@types/order'
 import { Link } from 'react-router-dom'
-import { HiArrowLeft, HiArrowNarrowLeft, HiEye, HiOutlineSearch, HiRefresh, HiReply } from 'react-icons/hi'
-import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
-import { format } from 'date-fns';
+import { HiEye, HiOutlineSearch } from 'react-icons/hi'
+import { format } from 'date-fns'
 import instance from '@/axios/CustomAxios'
-import { IoIosSearch } from 'react-icons/io'
 
+type BadgeType =
+    'countAll'
+    | 'countPending'
+    | 'countToShip'
+    | 'countToReceive'
+    | 'countDelivered'
+    | 'countCancelled'
+    | 'countReturned'
+    | 'countPaid'
+    | 'countUnPaid'
 
-type BadgeType = 'countAll' | 'countPending' | 'countToShip' | 'countToReceive' | 'countDelivered' | 'countCancelled' | 'countReturned';
 interface ICountStatus {
     countAll: number;    // Số lượng hóa đơn chờ xác nhận
     countPending: number;    // Số lượng hóa đơn chờ xác nhận
@@ -27,7 +32,10 @@ interface ICountStatus {
     countDelivered: number;  // Số lượng hóa đơn đang giao hàng
     countCancelled: number;  // Số lượng hóa đơn đã hủy
     countReturned: number;   // Số lượng hóa đơn trả hàng
+    countPaid: number;   // Số lượng hóa đơn trả hàng
+    countUnPaid: number;   // Số lượng hóa đơn trả hàng
 }
+
 type IOveriewBill = {
     id: number;
     code: string;
@@ -41,19 +49,8 @@ type IOveriewBill = {
     subTotal: number;
     createdDate: string
 }
-type ICustomer = {
-    name: string
-}
-type IVoucher = {
-    name: string
-}
-type IStaff = {
-    name: string
-}
-type Props = {
 
-}
-export const OrderTable = ({ }: Props) => {
+export const OrderTable = () => {
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
     const [countAnyStatus, setCountAnyStatus] = useState<ICountStatus>({
@@ -63,47 +60,49 @@ export const OrderTable = ({ }: Props) => {
         countCancelled: 0,
         countDelivered: 0,
         countReturned: 0,
-        countToReceive: 0
+        countToReceive: 0,
+        countPaid: 0,
+        countUnPaid: 0
     })
     const [queryParam, setQueryParam] = useState<{
-        type: typeEnums,
-        status: statusEnums,
+        type: EOrderTypeEnums,
+        status: EOrderStatusEnums | string,
         createdFrom: string,
         createdTo: string
     }>({
-        type: "",
-        status: "",
-        createdFrom: "",
-        createdTo: ""
+        type: '',
+        status: '',
+        createdFrom: '',
+        createdTo: ''
     })
 
     const setFromDateParam = (p: string) => {
         setQueryParam(prevState => ({
             ...prevState,
             createdFrom: p
-        }));
-    };
+        }))
+    }
 
     const setToDateParam = (p: string) => {
         setQueryParam(prevState => ({
             ...prevState,
             createdTo: p
-        }));
-    };
+        }))
+    }
 
-    const setTypeParam = (p: typeEnums) => {
+    const setTypeParam = (p: EOrderTypeEnums) => {
         setQueryParam(prevState => ({
             ...prevState,
             type: p
-        }));
-    };
+        }))
+    }
 
-    const setStatusParam = (p: statusEnums) => {
+    const setStatusParam = (p: EOrderStatusEnums) => {
         setQueryParam(prevState => ({
             ...prevState,
             status: p
-        }));
-    };
+        }))
+    }
 
     const [tableData, setTableData] = useState<{
         pageIndex: number
@@ -121,8 +120,8 @@ export const OrderTable = ({ }: Props) => {
         query: '',
         sort: {
             order: '',
-            key: '',
-        },
+            key: ''
+        }
     })
 
     const inputRef = useRef(null)
@@ -134,16 +133,9 @@ export const OrderTable = ({ }: Props) => {
         if (typeof val === 'string' && (val.length > 1 || val.length === 0)) {
             setTableData((prevData) => ({
                 ...prevData,
-                ...{ query: val, pageIndex: 1 },
+                ...{ query: val, pageIndex: 1 }
             }))
         }
-    }
-
-    function truncateString(str: string, maxLength: number): string {
-        if (str.length <= maxLength) {
-            return str;
-        }
-        return str.slice(0, maxLength) + '...'; // Thay thế '...' bằng ký hiệu khác nếu cần
     }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -156,16 +148,14 @@ export const OrderTable = ({ }: Props) => {
         if (date[0]) {
             console.log(format(date[0], 'dd-MM-yyyy'))
             setFromDateParam(format(date[0], 'dd-MM-yyyy'))
-        }
-        else {
-            setFromDateParam("")
+        } else {
+            setFromDateParam('')
         }
         if (date[1]) {
             console.log(format(date[1], 'dd-MM-yyyy'))
             setToDateParam(format(date[1], 'dd-MM-yyyy'))
-        }
-        else {
-            setToDateParam("")
+        } else {
+            setToDateParam('')
         }
         setDateRange(date)
     }
@@ -175,43 +165,43 @@ export const OrderTable = ({ }: Props) => {
             header: '#',
             cell: (props) => (
                 props.row.index + 1
-            ),
+            )
         },
         {
             header: 'Mã',
-            accessorKey: 'code',
+            accessorKey: 'code'
         },
         {
             header: 'Khách hàng',
             accessorKey: 'customer___name',
             cell: (props) => (
                 props.row.original.customerName
-            ),
+            )
         },
         {
             header: 'Nhân viên',
             accessorKey: 'staff___name',
             cell: (props) => (
                 props.row.original.staffName
-            ),
+            )
         },
         {
             header: 'SĐT',
-            accessorKey: 'phone',
+            accessorKey: 'phone'
         },
         {
             header: 'Tổng tiền',
             accessorKey: 'subTotal',
             cell: (props) => (
                 props.row.original.subTotal
-            ),
+            )
         },
         {
             header: 'Ngày tạo',
             accessorKey: 'createdDate',
             cell: (props) => (
                 props.row.original.createdDate
-            ),
+            )
         },
         {
             header: 'Trạng thái',
@@ -220,57 +210,71 @@ export const OrderTable = ({ }: Props) => {
                 <Button
                     size="xs"
                     block
-                    variant='solid'
-                    className={`${props.row.original.status === "PENDING"
-                        ? "!text-yellow-500"
-                        : props.row.original.status === "TOSHIP"
-                            ? "!text-blue-500"
-                            : props.row.original.status === "TORECEIVE"
-                                ? "!text-green-500"
-                                : props.row.original.status === "DELIVERED"
-                                    ? "!text-purple-500"
-                                    : props.row.original.status === "CANCELED"
-                                        ? "!text-red-500"
-                                        : props.row.original.status === "RETURNED"
-                                            ? "!text-orange-500"
-                                            : "!text-gray-500"
+                    variant="solid"
+                    className={`${props.row.original.status === 'PENDING'
+                        ? '!text-yellow-500'
+                        : props.row.original.status === 'TOSHIP'
+                            ? '!text-blue-500'
+                            : props.row.original.status === 'TORECEIVE'
+                                ? '!text-green-500'
+                                : props.row.original.status === 'DELIVERED'
+                                    ? '!text-purple-500'
+                                    : props.row.original.status === 'CANCELED'
+                                        ? '!text-red-500'
+                                        : props.row.original.status === 'RETURNED'
+                                            ? '!text-orange-500'
+                                            : props.row.original.status === 'PAID'
+                                                ? '!text-teal-500'
+                                                : props.row.original.status === 'UNPAID'
+                                                    ? '!text-pink-500'
+                                                    : '!text-gray-500'
                         }`}
                 >
                     <span className={`flex items-center font-bold`}>
-                        <span className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.status === "PENDING"
-                            ? "!bg-yellow-500"
-                            : props.row.original.status === "TOSHIP"
-                                ? "!bg-blue-500"
-                                : props.row.original.status === "TORECEIVE"
-                                    ? "!bg-green-500"
-                                    : props.row.original.status === "DELIVERED"
-                                        ? "!bg-purple-500"
-                                        : props.row.original.status === "CANCELED"
-                                            ? "!bg-red-500"
-                                            : props.row.original.status === "RETURNED"
-                                                ? "!bg-orange-500"
-                                                : "!bg-gray-500"
-                            }`}></span>
+                        <span
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.status === 'PENDING'
+                                ? '!bg-yellow-500'
+                                : props.row.original.status === 'TOSHIP'
+                                    ? '!bg-blue-500'
+                                    : props.row.original.status === 'TORECEIVE'
+                                        ? '!bg-green-500'
+                                        : props.row.original.status === 'DELIVERED'
+                                            ? '!bg-purple-500'
+                                            : props.row.original.status === 'CANCELED'
+                                                ? '!bg-red-500'
+                                                : props.row.original.status === 'RETURNED'
+                                                    ? '!bg-orange-500'
+                                                    : props.row.original.status === 'PAID'
+                                                        ? '!bg-teal-500'
+                                                        : props.row.original.status === 'UNPAID'
+                                                            ? '!bg-pink-500'
+                                                            : '!bg-gray-500'
+                                }`}></span>
                         <span>
                             <p>
-                                {props.row.original.status === "PENDING"
-                                    ? "Chờ xác nhân"
-                                    : props.row.original.status === "TOSHIP"
-                                        ? "Đợi giao hàng"
-                                        : props.row.original.status === "TORECEIVE"
-                                            ? "Đang giao hàng"
-                                            : props.row.original.status === "DELIVERED"
-                                                ? "Đã hoàn thành"
-                                                : props.row.original.status === "CANCELED"
-                                                    ? "Đã hủy đơn"
-                                                    : props.row.original.status === "RETURNED"
-                                                        ? "Đã trả hàng"
-                                                        : "Không xác định"}
+                                {props.row.original.status === 'PENDING'
+                                    ? 'Chờ xác nhân'
+                                    : props.row.original.status === 'TOSHIP'
+                                        ? 'Đợi giao hàng'
+                                        : props.row.original.status === 'TORECEIVE'
+                                            ? 'Đang giao hàng'
+                                            : props.row.original.status === 'DELIVERED'
+                                                ? 'Đã hoàn thành'
+                                                : props.row.original.status === 'CANCELED'
+                                                    ? 'Đã hủy đơn'
+                                                    : props.row.original.status === 'RETURNED'
+                                                        ? 'Đã trả hàng'
+                                                        : props.row.original.status === 'PAID'
+                                                            ? 'Đã thanh toán'
+                                                            : props.row.original.status === 'UNPAID'
+                                                                ? 'Chưa thanh toán'
+                                                                : 'Không xác định'}
                             </p>
                         </span>
                     </span>
                 </Button>
-            ),
+
+            )
         },
         {
             header: 'Loại hóa đon',
@@ -279,59 +283,51 @@ export const OrderTable = ({ }: Props) => {
                 <Button
                     size="xs"
                     block
-                    variant='solid'
+                    variant="solid"
                 >
 
-                    <span className={`flex items-center font-bold ${props.row.original.type === "INSTORE" ? 'text-green-600' : 'text-red-600'}`}>
+                    <span
+                        className={`flex items-center font-bold ${props.row.original.type === 'INSTORE' ? 'text-green-600' : 'text-red-600'}`}>
                         <span
-                            className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.type === "INSTORE" ? 'bg-green-600' : 'bg-red-600'}`}
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.type === 'INSTORE' ? 'bg-green-600' : 'bg-red-600'}`}
                         ></span>
                         <span>
                             <p>
-                                {props.row.original.type === "INSTORE"
-                                    ? "Tại của hàng"
-                                    : props.row.original.type === "ONLINE"
-                                        ? "Trực tuyến"
-                                        : "Không xác định"}
+                                {props.row.original.type === 'INSTORE'
+                                    ? 'Tại của hàng'
+                                    : props.row.original.type === 'ONLINE'
+                                        ? 'Trực tuyến'
+                                        : 'Không xác định'}
                             </p>
                         </span>
                     </span>
                 </Button>
-            ),
+            )
         },
         {
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
-                <Button size="xs" className='w-full flex justify-start items-center' variant='plain'>
-                    <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className='mr-3 text-2xl' style={{ cursor: 'pointer' }}/></Link>
+                <Button size="xs" className="w-full flex justify-start items-center" variant="plain">
+                    <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className="mr-3 text-2xl"
+                        style={{ cursor: 'pointer' }} /></Link>
                 </Button>
 
-            ),
-        },
+            )
+        }
     ]
-
-    const options1 = [
-        { value: '.com', label: '.com' },
-        { value: '.net', label: '.net' },
-        { value: '.io', label: '.io' },
-    ]
-
-    const typeBills: TypeBill[] = [
-        { label: "ALL", value: "" },
-        { label: "INSTORE", value: "INSTORE" },
-        { label: "ONLINE", value: "ONLINE" },
-    ];
 
     const statusBills: StatusBill[] = [
-        { label: "TẤT CẢ", value: "", badge: "countAll" },
-        { label: "CHỜ XÁC NHẬN", value: "PENDING", badge: "countPending" },
-        { label: "CHỜ VẬN CHUYỂN", value: "TOSHIP", badge: "countToShip" },
-        { label: "ĐANG VẬN CHUYỂN", value: "TORECEIVE", badge: "countToReceive" },
-        { label: "ĐÃ GIAO", value: "DELIVERED", badge: "countDelivered" },
-        { label: "ĐÃ HỦY", value: "CANCELED", badge: "countCancelled" },
-        { label: "ĐÃ TRẢ", value: "RETURNED", badge: "countReturned" },
-    ];
+        { label: 'TẤT CẢ', value: EOrderStatusEnums.EMPTY, badge: 'countAll' },
+        { label: 'CHỜ XÁC NHẬN', value: EOrderStatusEnums.PENDING, badge: 'countPending' },
+        { label: 'CHỜ THANH TOÁN', value: EOrderStatusEnums.UNPAID, badge: 'countUnPaid' },
+        { label: 'ĐÃ THANH TOÁN', value: EOrderStatusEnums.PAID, badge: 'countPaid' },
+        { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
+        { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
+        { label: 'ĐÃ GIAO', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },
+        { label: 'ĐÃ HỦY', value: EOrderStatusEnums.CANCELED, badge: 'countCancelled' },
+        { label: 'TRẢ HÀNG', value: EOrderStatusEnums.RETURNED, badge: 'countReturned' }
+    ]
 
     const handlePaginationChange = (pageIndex: number) => {
         setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
@@ -342,7 +338,7 @@ export const OrderTable = ({ }: Props) => {
             ...prevData,
             pageSize: pageSize, // Cập nhật pageSize mới
             pageIndex: 1 // Đặt pageIndex về 1
-        }));
+        }))
     }
 
     const handleSort = ({ order, key }: OnSortParam) => {
@@ -351,23 +347,13 @@ export const OrderTable = ({ }: Props) => {
             ...prevData,
             sort: {
                 order,
-                key: (key as string).replace("___", "."),
-            },
-        }));
+                key: (key as string).replace('___', '.')
+            }
+        }))
     }
-
-    const handleRestoreSetting = () => {
-        setQueryParam(prevState => ({
-            ...prevState,
-            status: "",
-            type: "",
-        }));
-    }
-
 
     useEffect(() => {
         const fetchData = async () => {
-
             setLoading(true)
             const response = await instance.post('/orders/overview', tableData,
                 {
@@ -380,7 +366,7 @@ export const OrderTable = ({ }: Props) => {
                 setLoading(false)
                 setTableData((prevData) => ({
                     ...prevData,
-                    ...{ total: response.data.totalElements },
+                    ...{ total: response.data.totalElements }
                 }))
             }
         }
@@ -392,17 +378,17 @@ export const OrderTable = ({ }: Props) => {
         tableData.sort,
         tableData.pageSize,
         tableData.query,
-        queryParam,
+        queryParam
     ])
 
-    const listTypeBillOptions: TypeBill[] = [
-        { label: "Tất cả", value: "" },
-        { label: "Tại cửa hàng", value: "INSTORE" },
-        { label: "Trực tuyến", value: "ONLINE" },
+    const listTypeBillOptions: OrderTypeBill[] = [
+        { label: 'Tất cả', value: '' },
+        { label: 'Tại cửa hàng', value: 'INSTORE' },
+        { label: 'Trực tuyến', value: 'ONLINE' }
     ]
 
     const fetchCountAnyStatus = async () => {
-        instance.get("orders/count-any-status").then(function (response) {
+        instance.get('orders/count-any-status').then(function (response) {
             if (response.data) {
                 setCountAnyStatus(response.data as ICountStatus)
             }
@@ -415,7 +401,7 @@ export const OrderTable = ({ }: Props) => {
             <div>
                 <h1 className="font-semibold text-xl text-black mb-4 text-transform: uppercase">Quản lý hóa đơn</h1>
             </div>
-            <div className='grid grid-cols-3 gap-2 py-2'>
+            <div className="grid grid-cols-3 gap-2 py-2">
                 <div>
                     <div className="relative mr-4">
                         <Input
@@ -428,7 +414,7 @@ export const OrderTable = ({ }: Props) => {
                         />
                     </div>
                 </div>
-                <div className='flex justify-between gap-5'>
+                <div className="flex justify-between gap-5">
                     <DatePicker.DatePickerRange
                         placeholder="Chọn khoảng ngày"
                         value={dateRange}
@@ -441,19 +427,22 @@ export const OrderTable = ({ }: Props) => {
                         placeholder="Loại hóa đơn"
                         options={listTypeBillOptions}
                         onChange={(el) => {
-                            setTypeParam((el as TypeBill).value); // Sử dụng as để xác nhận kiểu
+                            setTypeParam((el as OrderTypeBill).value) // Sử dụng as để xác nhận kiểu
                         }}
                     ></Select>
 
                 </div>
             </div>
-            <div className='py-2'>
-                <TabList className='flex justify-evenly gap-4 w-full bg-white pt-3 pb-1'>
+            <div className="py-2">
+                <TabList className="flex justify-evenly gap-4 w-full bg-white pt-3 pb-1">
                     {
                         statusBills.map((item, index) => (
-                            <TabNav key={index} className={`w-full rounded ${queryParam.status === item.value ? "bg-opacity-80 bg-blue-100 text-indigo-600" : ""}`} value={item.value}>
-                                <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)} maxCount={99} innerClass="bg-red-50 text-red-500">
-                                    <button className='p-2 w-auto' onClick={() => setStatusParam(item.value)}>
+                            <TabNav key={index}
+                                className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
+                                value={item.value}>
+                                <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)}
+                                    maxCount={99} innerClass="bg-red-50 text-red-500">
+                                    <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
                                         {item.label}
                                     </button>
                                 </Badge>
@@ -463,7 +452,7 @@ export const OrderTable = ({ }: Props) => {
                 </TabList>
             </div>
 
-            <div className='py-4 px-2'>
+            <div className="py-4 px-2">
                 <DataTable
                     columns={columns}
                     data={data}

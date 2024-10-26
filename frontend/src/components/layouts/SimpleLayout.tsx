@@ -4,7 +4,7 @@ import UserDropdown from '@/components/template/UserDropdown'
 import HeaderLogo from '@/components/template/HeaderLogo'
 import MobileNav from '@/components/template/MobileNav'
 import HorizontalNav from '@/components/template/HorizontalNav'
-import View from '@/views'
+import RootLayout from '@/components/layouts/ClassicLayout'
 
 const HeaderActionsStart = () => {
     return (
@@ -36,7 +36,7 @@ const SimpleLayout = () => {
                         headerMiddle={<HorizontalNav />}
                         headerEnd={<HeaderActionsEnd />}
                     />
-                    <View pageContainerType="contained" />
+                    <RootLayout  />
                 </div>
             </div>
         </div>

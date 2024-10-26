@@ -249,7 +249,7 @@ const UpdateStaffPage = () => {
             await axios.put(`http://localhost:8080/api/v1/staffs/${id}`, formattedValues);
             resetForm();
             toast.success('Nhân viên đã được cập nhật thành công.');
-            navigate('/manage/staff');
+            navigate('admin/manage/staff');
         } catch (error) {
             const errorMessage = axios.isAxiosError(error)
                 ? error.response?.data?.message || error.message

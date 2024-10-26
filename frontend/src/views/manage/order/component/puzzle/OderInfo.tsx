@@ -1,6 +1,6 @@
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
-import { BillResponseDTO } from '../../store'
+import { OrderResponseDTO } from '../../../../../@types/order'
 import { compile } from "@fileforge/react-print";
 import { Button } from '@/components/ui';
 import { FileforgeClient } from '@fileforge/client';
@@ -8,7 +8,6 @@ import { displayDoc, displayLoading } from './util';
 import Document from './Document';
 import { useState } from 'react';
 import CloseButton from '@/components/ui/CloseButton';
-import AddressModal from './AddressModal';
 
 const ff = new FileforgeClient({
     apiKey: '029d0f13-d976-43f8-a3ec-16955667b1d2',
@@ -16,7 +15,7 @@ const ff = new FileforgeClient({
 
 
 
-const OrderInfo = ({ data }: { data: BillResponseDTO }) => {
+const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
     const [viewInvoice, setViewInvoice] = useState<boolean>(false)
 
     const run = async () => {

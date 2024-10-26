@@ -9,14 +9,15 @@
 
 // const appConfig: AppConfig = {
 //     apiPrefix: '/api',
-//     authenticatedEntryPath: '/home',
-//     unAuthenticatedEntryPath: '/sign-in',
+//     authenticatedEntryPath: '/admin/home',
+//     unAuthenticatedEntryPath: '/auth/sign-in',
 //     tourPath: '/',
 //     locale: 'en',
 //     enableMock: false,
 // }
 
 // export default appConfig
+
 
 
 export type AppConfig = {
@@ -29,7 +30,7 @@ export type AppConfig = {
 }
 
 const appConfig: AppConfig = {
-    apiPrefix: '/api',
+    apiPrefix: '/api/v1',
     baseUrl: 'http://localhost:8080', // URL gốc của Spring Boot backend
     authenticatedEntryPath: '/home',
     unAuthenticatedEntryPath: '/sign-in',

@@ -1,6 +1,7 @@
 @import "./assets/styles/app.css";
 ::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
     /* Độ rộng của thanh cuộn */
 }
 
@@ -23,4 +24,7 @@
 
 .custom-datepicker {
     height: 44px !important;
+}
+.no-scroll {
+    overflow: hidden;
 }

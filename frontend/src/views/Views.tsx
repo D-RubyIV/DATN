@@ -1,15 +1,15 @@
 import { Suspense } from 'react'
 import Loading from '@/components/shared/Loading'
-import { protectedRoutes, publicRoutes } from '@/configs/routes.config'
 import appConfig from '@/configs/app.config'
 import PageContainer from '@/components/template/PageContainer'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAppSelector } from '@/store'
-import ProtectedRoute from '@/components/route/ProtectedRoute'
-import PublicRoute from '@/components/route/PublicRoute'
+import ProtectedRouteComponent from '@/components/route/ProtectedRouteComponent'
+import PublicRouteComponent from '@/components/route/PublicRouteComponent'
 import AuthorityGuard from '@/components/route/AuthorityGuard'
 import AppRoute from '@/components/route/AppRoute'
 import type { LayoutType } from '@/@types/theme'
+import { adminRoutes, authRoutes, clientRoutes, publicRoutes } from '@/configs/routes.config/routes.config'
 
 interface ViewsProps {
     pageContainerType?: 'default' | 'gutterless' | 'contained'
@@ -20,17 +20,17 @@ type AllRoutesProps = ViewsProps
 
 const { authenticatedEntryPath } = appConfig
 
-const AllRoutes = (props: AllRoutesProps) => {
+const AllAdminRoutes = (props: AllRoutesProps) => {
     const userAuthority = useAppSelector((state) => state.auth.user.authority)
 
     return (
         <Routes>
-            <Route path="/" element={<ProtectedRoute />}>
+            <Route path="/" element={<ProtectedRouteComponent />}>
                 <Route
                     path="/"
                     element={<Navigate replace to={authenticatedEntryPath} />}
                 />
-                {protectedRoutes.map((route, index) => (
+                {adminRoutes.map((route, index) => (
                     <Route
                         key={route.key + index}
                         path={route.path}
@@ -50,9 +50,50 @@ const AllRoutes = (props: AllRoutesProps) => {
                         }
                     />
                 ))}
-                <Route path="*" element={<Navigate replace to="/" />} />
             </Route>
-            <Route path="/" element={<PublicRoute />}>
+            <Route path="*" element={<Navigate replace to="/" />} />
+        </Routes>
+    )
+}
+
+const AllClientRoutes = (props: AllRoutesProps) => {
+    const userAuthority = useAppSelector((state) => state.auth.user.authority)
+    return (
+        <Routes>
+            <Route path="/" element={<ProtectedRouteComponent />}>
+                {/*<Route*/}
+                {/*    path="/"*/}
+                {/*    element={<Navigate replace to={authenticatedEntryPath} />}*/}
+                {/*/>*/}
+                {clientRoutes.map((route, index) => (
+                    <Route
+                        key={route.key + index}
+                        path={route.path}
+                        element={
+                            <AuthorityGuard
+                                userAuthority={userAuthority}
+                                authority={route.authority}
+                            >
+                                <PageContainer {...props} {...route.meta}>
+                                    <AppRoute
+                                        routeKey={route.key}
+                                        component={route.component}
+                                        {...route.meta}
+                                    />
+                                </PageContainer>
+                            </AuthorityGuard>
+                        }
+                    />
+                ))}
+            </Route>
+        </Routes>
+    )
+}
+
+const AllPublicRoutes = (props: AllRoutesProps) => {
+    return (
+        <Routes>
+            <Route path="" element={<PublicRouteComponent />}>
                 {publicRoutes.map((route) => (
                     <Route
                         key={route.path}
@@ -67,16 +108,59 @@ const AllRoutes = (props: AllRoutesProps) => {
                     />
                 ))}
             </Route>
+            <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>
-    );
-};
+    )
+}
 
-const Views = (props: ViewsProps) => {
+const AllAuthRoutes = (props: AllRoutesProps) => {
+    return (
+        <Routes>
+            <Route path="/" element={<PublicRouteComponent />}>
+                {authRoutes.map((route) => (
+                    <Route
+                        key={route.path}
+                        path={route.path}
+                        element={
+                            <AppRoute
+                                routeKey={route.key}
+                                component={route.component}
+                                {...route.meta}
+                            />
+                        }
+                    />
+                ))}
+            </Route>
+        </Routes>
+    )
+}
+const AuthViews = (props: ViewsProps) => {
     return (
         <Suspense fallback={<Loading loading={true} />}>
-            <AllRoutes {...props} />
+            <AllAuthRoutes {...props} />
         </Suspense>
-    );
-};
+    )
+}
+const PublicViews = (props: ViewsProps) => {
+    return (
+        <Suspense fallback={<Loading loading={true} />}>
+            <AllPublicRoutes {...props} />
+        </Suspense>
+    )
+}
+const AdminViews = (props: ViewsProps) => {
+    return (
+        <Suspense fallback={<Loading loading={true} />}>
+            <AllAdminRoutes {...props} />
+        </Suspense>
+    )
+}
+const ClientViews = (props: ViewsProps) => {
+    return (
+        <Suspense fallback={<Loading loading={true} />}>
+            <AllClientRoutes {...props} />
+        </Suspense>
+    )
+}
 
-export default Views;
+export { AdminViews, ClientViews, PublicViews, AuthViews }

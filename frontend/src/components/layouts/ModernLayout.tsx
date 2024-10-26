@@ -4,7 +4,7 @@ import UserDropdown from '@/components/template/UserDropdown'
 import SideNavToggle from '@/components/template/SideNavToggle'
 import MobileNav from '@/components/template/MobileNav'
 import SideNav from '@/components/template/SideNav'
-import View from '@/views'
+import RootLayout from '@/components/layouts/ClassicLayout'
 
 const HeaderActionsStart = () => {
     return (
@@ -35,7 +35,7 @@ const ModernLayout = () => {
                         headerEnd={<HeaderActionsEnd />}
                         headerStart={<HeaderActionsStart />}
                     />
-                    <View />
+                    <RootLayout />
                 </div>
             </div>
         </div>

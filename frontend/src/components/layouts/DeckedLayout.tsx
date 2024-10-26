@@ -4,7 +4,7 @@ import UserDropdown from '@/components/template/UserDropdown'
 import HeaderLogo from '@/components/template/HeaderLogo'
 import SecondaryHeader from '@/components/template/SecondaryHeader'
 import MobileNav from '@/components/template/MobileNav'
-import View from '@/views'
+import RootLayout from '@/components/layouts/ClassicLayout'
 
 const HeaderActionsStart = () => {
     return (
@@ -36,7 +36,7 @@ const DeckedLayout = () => {
                         headerEnd={<HeaderActionsEnd />}
                     />
                     <SecondaryHeader contained />
-                    <View pageContainerType="contained" />
+                    <RootLayout />
                 </div>
             </div>
         </div>

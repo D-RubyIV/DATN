@@ -1,4 +1,4 @@
-import ApiService from "./ApiService";
+import ApiService from './ApiService'
 
 
 export async function apiGetSalesDashboardData<
@@ -18,7 +18,7 @@ export async function apiDeleteSalesCutomers<
     return ApiService.fetchData<T>({
         url: '/customer/delete',
         method: 'delete',
-        data,
+        data
     })
 }
 
@@ -28,7 +28,7 @@ export async function apiGetSaleCutomer<T, U extends Record<string, unknown>>(
     return ApiService.fetchData<T>({
         url: '/customer/get-all',
         method: 'get',
-        params,
+        params
     })
 }
 
@@ -38,7 +38,7 @@ export async function apiGetSalesCutomers<T, U extends Record<number, unknown>>(
     return ApiService.fetchData<T>({
         url: '/customer/get-all',
         method: 'get',
-        params,
+        params
     })
 }
 
@@ -49,7 +49,7 @@ export async function apiDeleteSalesOrders<
     return ApiService.fetchData<T>({
         url: '/sales/orders/delete',
         method: 'delete',
-        data,
+        data
     })
 }
 
@@ -60,6 +60,6 @@ export async function apiGetSalesOrderDetails<
     return ApiService.fetchData<T>({
         url: '/sales/orders-details',
         method: 'get',
-        params,
+        params
     })
 }

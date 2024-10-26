@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState, useRef } from 'react'
 import Steps from '@/components/ui/Steps'
 import { Button, Input, Radio } from '@/components/ui'
-import { BillResponseDTO, EBillStatus } from '../../store'
+import { OrderResponseDTO, EOrderStatus } from '../../../../../@types/order'
 import { HiPlusCircle } from 'react-icons/hi'
 import Axios from 'axios'
 import instance from '@/axios/CustomAxios'
@@ -12,7 +12,7 @@ import { displayDoc } from './util'
 
 
 type ExampleAnswers = {
-    status: EBillStatus;
+    status: EOrderStatus;
     messages: string[];
 }
 const ff = new FileforgeClient({
@@ -20,7 +20,7 @@ const ff = new FileforgeClient({
 });
 
 
-const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO, fetchData: () => {} }) => {
+const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO, fetchData: () => {} }) => {
 
     const run = async () => {
 
@@ -44,7 +44,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO,
     const [step, setStep] = useState(0)
     const [invalid, setInvalid] = useState(false)
     const [value, setValue] = useState('')
-    const [currentStatus, setCurrentStatus] = useState<EBillStatus>(selectObject.status)
+    const [currentStatus, setCurrentStatus] = useState<EOrderStatus>(selectObject.status)
     const [note, setNote] = useState<string>("")
     const textareaRef = useRef<any>(null);  // useRef for textarea
 
@@ -100,7 +100,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: BillResponseDTO,
     }
 
 
-    const submitChangeStatus = (status: EBillStatus) => {
+    const submitChangeStatus = (status: EOrderStatus) => {
         const data = {
             "status": status,
             "note": note

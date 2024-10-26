@@ -1,3 +1,3 @@
-import Views from './Views'
+import { ClientViews, AdminViews, PublicViews, AuthViews } from './Views'
 
-export default Views
+export { ClientViews, AdminViews, PublicViews, AuthViews }

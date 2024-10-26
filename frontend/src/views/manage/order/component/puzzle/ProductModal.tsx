@@ -8,7 +8,7 @@ import type { ColumnDef, OnSortParam, CellContext } from '@/components/shared/Da
 import { DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { BillResponseDTO, ProductDetail, ProductDetailOverviewPhah04, StatusBill, statusEnums, TypeBill, typeEnums } from '../../store'
+import { OrderResponseDTO, OrderProductDetail, ProductDetailOverviewPhah04, StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '../../../../../@types/order'
 import { Link } from 'react-router-dom'
 import { HiArrowLeft, HiArrowNarrowLeft, HiPlusCircle, HiRefresh, HiReply } from 'react-icons/hi'
 import DatePickerRange from '@/components/ui/DatePicker/DatePickerRange'
@@ -29,7 +29,7 @@ type Direction = 'top' | 'right' | 'bottom' | 'left'
 
 
 
-const ProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: { setIsOpenProductModal: Dispatch<SetStateAction<boolean>>, selectOrder: BillResponseDTO, fetchData: () => {} }) => {
+const ProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: { setIsOpenProductModal: Dispatch<SetStateAction<boolean>>, selectOrder: OrderResponseDTO, fetchData: () => {} }) => {
     const inputRef = useRef(null)
     const quantityRef = useRef(null)
     const [data, setData] = useState([])

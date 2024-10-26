@@ -1,32 +1,17 @@
 import { useEffect, useState } from 'react'
-import Button from '@/components/ui/Button'
-import Dialog from '@/components/ui/Dialog'
-import type { MouseEvent } from 'react'
-import Timeline from '@/components/ui/Timeline/Timeline';
-import TimeLineItem from '@/components/ui/Timeline/TimeLineItem';
-import Axios from 'axios';
-import { BillResponseDTO, OrderDetailResponseDTO, ProductOrderDetail } from '../../store';
 import Card from '@/components/ui/Card'
 import Avatar from '@/components/ui/Avatar'
 import IconText from '@/components/shared/IconText'
-import { HiMail, HiPhone, HiExternalLink, HiPlusCircle, HiOutlineExclamationCircle, HiPencil, HiPencilAlt } from 'react-icons/hi'
+import { HiMail, HiPhone, HiExternalLink, HiPencilAlt } from 'react-icons/hi'
 import { Link, useParams } from 'react-router-dom'
 import OrderProducts from '../puzzle/OrderProducts';
 import PaymentSummary, { PaymentSummaryProps } from '../puzzle/PaymentSummary';
 import OrderStep from '../puzzle/OrderStep';
 import OrderInfo from '../puzzle/OderInfo';
-import { Input, Notification, Radio, toast, Tooltip } from '@/components/ui';
-import { inspect } from 'util';
+import { Input, Radio, Tooltip } from '@/components/ui';
 import instance from '@/axios/CustomAxios';
-import AddressModal from '../puzzle/AddressModal';
-
-interface IProps {
-    selectedId: number,
-    dialogIsOpen: boolean;
-    setIsOpen: (isOpen: boolean) => void;  // Sửa kiểu hàm setIsOpen
-}
-
-
+import AddressModal from '@/views/manage/order/component/puzzle/AddressModal';
+import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 
 const OrderDetails = () => {
 
@@ -41,7 +26,7 @@ const OrderDetails = () => {
         }
     });
 
-    const [selectObject, setSelectObject] = useState<BillResponseDTO>()
+    const [selectObject, setSelectObject] = useState<OrderResponseDTO>()
     const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
     useEffect(() => {
         fetchData()
@@ -97,14 +82,19 @@ const OrderDetails = () => {
 
 
 
-const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
+const CustomerInfo = ({ data }: { data: OrderResponseDTO }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState<boolean>(false)
+
+
+    const customer = data?.customerResponseDTO || {};
 
     return (
         <Card className='mb-5 h-[450px]'>
-            {isOpenEditAddress && <AddressModal onCloseModal={setIsOpenEditAddress}></AddressModal>}
+            {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress}></AddressModal>}
 
-            <h5 className="mb-4">Khách hàng #{data.customerResponseDTO.code}</h5>
+            <h5 className="mb-4">
+                Khách hàng #{customer.code || "Khách lẻ"}
+            </h5>
             <Link
                 className="group flex items-center justify-between"
                 to="/app/crm/customer-details?id=11"
@@ -113,13 +103,10 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                     <Avatar shape="circle" src={"https://th.bing.com/th/id/OIP.QypR4Rt5VeZ3Po2g8HQ2_QAAAA?rs=1&pid=ImgDetMain"} />
                     <div className="ltr:ml-2 rtl:mr-2">
                         <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
-                            {data?.customerResponseDTO.name}
+                            {customer.name || "Khách lẻ"}
                         </div>
                         <span>
-                            <span className="font-semibold">
-                                {1}{' '}
-                            </span>
-                            đơn hàng trước đó
+                            <span className="font-semibold">{customer.code ? 1 : 0}</span> đơn hàng trước đó
                         </span>
                     </div>
                 </div>
@@ -130,10 +117,10 @@ const CustomerInfo = ({ data }: { data: BillResponseDTO }) => {
                 className="mb-4"
                 icon={<HiMail className="text-xl opacity-70" />}
             >
-                <span className="font-semibold">{data?.customerResponseDTO.email}</span>
+                <span className="font-semibold">{customer.email || ""}</span>
             </IconText>
             <IconText icon={<HiPhone className="text-xl opacity-70" />}>
-                <span className="font-semibold">{data?.customerResponseDTO.phone}</span>
+                <span className="font-semibold">{customer.phone || ""}</span>
             </IconText>
             <hr className="my-5" />
             <h6 className="mb-4">Địa chỉ nhận hàng</h6>
