@@ -4609,8 +4609,8 @@
             <Increment xsi:type="xsd:double">1</Increment>
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>27</SeedValue>
-            <MinValue>0</MinValue>
-            <MaxValue>0</MaxValue>
+            <MinValue>-99999999999</MinValue>
+            <MaxValue>99999999999</MaxValue>
             <UseDefault>false</UseDefault>
             <DefaultValue />
             <Scale>2</Scale>
@@ -4634,8 +4634,8 @@
             <Increment xsi:type="xsd:double">1</Increment>
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>28</SeedValue>
-            <MinValue>0</MinValue>
-            <MaxValue>0</MaxValue>
+            <MinValue>-99999999999</MinValue>
+            <MaxValue>99999999999</MaxValue>
             <UseDefault>false</UseDefault>
             <DefaultValue />
             <Scale>2</Scale>
@@ -4651,42 +4651,48 @@
         <Column Name="district_id">
           <Checked>true</Checked>
           <DataType>int</DataType>
-          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
-            <AllowEmptyStrings>false</AllowEmptyStrings>
-            <EmptyStringProportion>10</EmptyStringProportion>
+          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>2046</Expression>
+            <Increment xsi:type="xsd:int">1</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>28</SeedValue>
+            <MinValue>1</MinValue>
+            <MaxValue>2147483647</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
           </GeneratorOptions>
-          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
-          <GeneratorId>d618f0e4-a9f5-4f3d-ab56-e7f30827255b</GeneratorId>
-          <GeneratorName>Reg Exp</GeneratorName>
-          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
+          <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
+          <GeneratorName>ID (sequential)</GeneratorName>
+          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
         <Column Name="province_id">
           <Checked>true</Checked>
           <DataType>int</DataType>
-          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
-            <AllowEmptyStrings>false</AllowEmptyStrings>
-            <EmptyStringProportion>10</EmptyStringProportion>
+          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>29</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>268</Expression>
+            <Increment xsi:type="xsd:int">1</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>29</SeedValue>
+            <MinValue>1</MinValue>
+            <MaxValue>2147483647</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
           </GeneratorOptions>
-          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
-          <GeneratorId>d618f0e4-a9f5-4f3d-ab56-e7f30827255b</GeneratorId>
-          <GeneratorName>Reg Exp</GeneratorName>
-          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
+          <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
+          <GeneratorName>ID (sequential)</GeneratorName>
+          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
@@ -4916,10 +4922,10 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>26</SeedValue>
+            <SeedValue>27</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Huyện Văn Lâm</Expression>
+            <Expression>($"USStateCodes.csv[0]")-(\C{2})</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorId>e4369865-1497-4a9d-9e00-ca1d665a5cbd</GeneratorId>
@@ -4937,7 +4943,7 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>26</SeedValue>
+            <SeedValue>27</SeedValue>
             <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
           </GeneratorOptions>
           <GeneratorType>CheckConstraintGenerator</GeneratorType>
@@ -4977,10 +4983,10 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>26</SeedValue>
+            <SeedValue>27</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Hung Yên</Expression>
+            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
@@ -5036,10 +5042,10 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>29</SeedValue>
+            <SeedValue>27</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>220909</Expression>
+            <Expression>\d{5}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
@@ -5057,10 +5063,10 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
+            <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Xã Tân Q</Expression>
+            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
