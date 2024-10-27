@@ -207,7 +207,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // address
         if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
             order.setAddress(requestDTO.getAddress());
-            order.setAddress(requestDTO.getAddress());
+        }
+        // phone
+        if(requestDTO.getPhone() != null  && !DataUtils.isNullOrEmpty(requestDTO.getPhone())){
+            order.setPhone(requestDTO.getPhone());
+        }
+        // recipientName;
+        if(requestDTO.getRecipientName() != null  && !DataUtils.isNullOrEmpty(requestDTO.getRecipientName())){
+            order.setRecipientName(requestDTO.getRecipientName());
         }
         // return order
         reloadSubTotalOrder(order);

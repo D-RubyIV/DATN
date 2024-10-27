@@ -31,6 +31,8 @@ public class OrderRequestDTO {
 
     private String phone;
 
+    private String recipientName;
+
     private Boolean deleted;
 
     private Double total;

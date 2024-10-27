@@ -1,11 +1,12 @@
 import { IconText } from '@/components/shared'
 import { Avatar, Card, Input, Radio, Tooltip } from '@/components/ui'
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal'
-import { OrderResponseDTO } from '@/@types/order'
+import { OrderAddressResponseDTOS, OrderResponseDTO } from '@/@types/order'
 import { useEffect, useState } from 'react'
 import { HiExternalLink, HiMail, HiPencilAlt, HiPhone } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 import { updateOrder } from '@/services/OrderService'
+import instance from '@/axios/CustomAxios'
 
 const CustomerInfo = ({ data, fetchSelectedOrder }: {
     data: OrderResponseDTO,
@@ -38,10 +39,23 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
         console.log(response)
     }
 
-    const handleChangeAddress = async (val) => {
-        // await instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
-        //     console.log(response)
-        // })
+    const handleChangeAddress = async (val: OrderAddressResponseDTOS) => {
+        console.log(val)
+        const payload = {
+            "provinceId": val.provinceId,
+            "provinceName": val.province,
+            "districtId": val.districtId,
+            "districtName": val.district,
+            "wardId": val.wardId,
+            "wardName": val.ward,
+            "address": val.detail,
+            "recipientName": val.name,
+            "phone": val.phone
+        }
+        await instance.put(`/orders/${data.id}`, payload).then(function(response) {
+            console.log(response)
+            fetchSelectedOrder();
+        })
     }
 
     return (
@@ -106,9 +120,17 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                     </div>
                 </div>
                 <div
-                    className={`${!isShipping ? (customer.code ? 'max-h-[0px]' : 'max-h-[0px]') : 'max-h-[600px]'} overflow-hidden duration-700 transition-all`}
+                    className={`${!isShipping ? (customer.code ? 'max-h-[0px]' : 'max-h-[0px]') : 'max-h-[600px]'} overflow-hidden duration-700 transition-all  font-semibold text-gray-500`}
                 >
                     <address className="not-italic my-2">
+                        <div className={'flex flex-col gap-3 text-sm pb-4'}>
+                            <div>
+                                + Tên người nhận: {data?.recipientName || 'N/A'}
+                            </div>
+                            <div>
+                                + Số điện thoại nhận: {data?.phone || 'N/A'}
+                            </div>
+                        </div>
                         <Input
                             disabled
                             value={
@@ -124,11 +146,11 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                             }
                         />
                     </address>
-                    <Radio.Group vertical>
+                    <Radio.Group vertical className={'text-sm'}>
                         {addresses.length ? (
                             addresses.map((item, index) => (
                                 <Radio key={index} value={item.id} onClick={() => handleChangeAddress(item)}>
-                                    {item.phone} - {item.detail}
+                                    {item.name} - {item.phone} - {item.detail}, {item.ward}, {item.district}, {item.province}
                                 </Radio>
                             ))
                         ) : (

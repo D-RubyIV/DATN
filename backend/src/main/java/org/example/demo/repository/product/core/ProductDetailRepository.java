@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Integer> {
     boolean existsByCodeAndName(String code, String name);
@@ -116,4 +117,5 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             Pageable pageable
     );
 
+    Optional<ProductDetail> findByCode(String code);
 }

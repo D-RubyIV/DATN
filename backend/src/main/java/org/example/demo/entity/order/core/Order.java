@@ -46,8 +46,11 @@ public class Order extends BaseEntity {
     @Column(name = "ward_id")
     private String wardId;
 
-    @Column(name = "wardName")
+    @Column(name = "ward_name")
     private String wardName;
+
+    @Column(name = "recipient_name")
+    private String recipientName;
 
     @Column(name = "phone")
     private String phone;

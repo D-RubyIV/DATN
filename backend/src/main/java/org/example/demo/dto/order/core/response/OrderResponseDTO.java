@@ -28,6 +28,7 @@ public class OrderResponseDTO {
     private String code;
     private String address;
     private String phone;
+    private String recipientName;
     //
     private String provinceId;
     private String provinceName;

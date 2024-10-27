@@ -8,6 +8,7 @@ import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Brand;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.product.request.core.ProductDetailRequestMapper;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
 import org.example.demo.mapper.product.response.properties.ProductResponseMapper;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductDetailService implements IService<ProductDetail, Integer, ProductDetailRequestDTO> {
@@ -67,7 +69,6 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     }
 
 
-
     @Override
     public ProductDetail findById(Integer id) throws BadRequestException {
         return productDetailRepository.findById(id)
@@ -97,7 +98,7 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         List<ProductDetail> savedProductDetails = new ArrayList<>();
 
         for (ProductDetailRequestDTO requestDTO : requestDTOList) {
-            ProductDetail existingProductDetail = productDetailRepository.findByName( requestDTO.getName());
+            ProductDetail existingProductDetail = productDetailRepository.findByName(requestDTO.getName());
 
             if (existingProductDetail != null) {
                 if (isProductDetailDuplicate(existingProductDetail, requestDTO)) {
@@ -137,7 +138,7 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         return productDetailRepository.save(entityMapped);
     }
 
-    private ProductDetail handleProductDetailUpdate(ProductDetail entityFound, ProductDetailRequestDTO requestDTO)  {
+    private ProductDetail handleProductDetailUpdate(ProductDetail entityFound, ProductDetailRequestDTO requestDTO) {
         ProductDetail existingProductDetail = productDetailRepository.findByCodeAndName(requestDTO.getCode(), requestDTO.getName());
 
         if (existingProductDetail != null && isProductDetailDuplicate(existingProductDetail, requestDTO) && !existingProductDetail.getId().equals(entityFound.getId())) {
@@ -173,5 +174,21 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         entity.setPrice(requestDTO.getPrice());
         entity.setDeleted(requestDTO.getDeleted());
         // Update other properties as needed
+    }
+
+    public ProductDetailResponseDTO findByCode(String code) {
+        Optional<ProductDetail> productDetail = productDetailRepository.findByCode(code);
+        if (productDetail.isPresent()) {
+            ProductDetail e = productDetail.get();
+            if (e.getQuantity() == 0) {
+                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng cung cấp");
+            } else if (e.getDeleted()) {
+                throw new CustomExceptions.CustomBadRequest("Sản phẩm này đã ngừng kinh doanh");
+            } else {
+                return productDetailResponseMapper.toDTO(e);
+            }
+        } else {
+            throw new CustomExceptions.CustomBadRequest("Không tìm thấy sản phẩm này");
+        }
     }
 }

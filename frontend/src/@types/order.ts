@@ -1,10 +1,18 @@
 
 
 // private
-type OrderAddressResponseDTOS = {
-    id: number,
-    phone: string,
-    detail: string
+export type OrderAddressResponseDTOS = {
+    id: number;
+    phone: string;
+    name: string;
+    provinceId: string;
+    province: string;
+    districtId: string;
+    district: string;
+    wardId: string;
+    ward: string;
+    detail: string;
+    defaultAddress: boolean;
 }
 // public
 export type EOrderTypeEnums = "" | "ONLINE" | "INSTORE"
@@ -91,6 +99,7 @@ export type OrderResponseDTO = {
     code: string;
     address: string;
     phone: string;
+    recipientName: string;
     deleted: boolean;
     status: EOrderStatus;
     type: EOrderType;

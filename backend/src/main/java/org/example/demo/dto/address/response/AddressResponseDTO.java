@@ -17,5 +17,22 @@ public class AddressResponseDTO {
 
     private String phone;
 
+    private String name;
+
+    private String provinceId;
+
+    private String province;
+
+    private String districtId;
+
+    private String district;
+
+    private String wardId;
+
+    private String ward;
+
     private String detail;
+
+    private Boolean defaultAddress;
+
 }

@@ -3,8 +3,8 @@ import { OrderTable } from "./component/core/OrderTable";
 
 const OrderManage = () => {
     return (
-        <div className="bg-white">
-            <div className="p-5 shadow-md rounded-md card h-full card-border">
+        <div className="bg-white h-full">
+            <div className="p-5 rounded-md card h-full card-border">
                 <div className="lg:flex items-center justify-between mb-4">
                     <nav className="flex" aria-label="Breadcrumb">
                         <ol className="inline-flex items-center space-x-1 md:space-x-3">

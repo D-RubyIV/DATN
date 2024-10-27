@@ -8,9 +8,9 @@ const SellBody = lazy(() => import("./SellBody"));
 const IndexView = () => {
     return (
         <Fragment>
-            {/* // header */}
             <Suspense fallback={<Loading type={"cover"} loading={true}/>}>
                 <SellHeader />
+                {/**/}
                 <SellBody />
             </Suspense>
         </Fragment>

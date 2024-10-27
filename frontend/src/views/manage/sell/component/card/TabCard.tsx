@@ -99,14 +99,14 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     note: 'Đã nhận hàng'
                 }
                 // TAI QUAY
-                if(selectedOrder.type ===  "INSTORE"){
-                    if (selectedOrder.payment === EPaymentMethod.TRANSFER){
+                if (selectedOrder.type === 'INSTORE') {
+                    if (selectedOrder.payment === EPaymentMethod.TRANSFER) {
                         data = {
                             status: EOrderStatusEnums.DELIVERED,
                             note: 'Đã hoàn thành'
                         }
                     }
-                    if (selectedOrder.payment === EPaymentMethod.CASH){
+                    if (selectedOrder.payment === EPaymentMethod.CASH) {
                         data = {
                             status: EOrderStatusEnums.DELIVERED,
                             note: 'Đã hoàn thành'
@@ -114,14 +114,14 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     }
                 }
                 // ONLINE
-                if(selectedOrder.type ===  "ONLINE"){
-                    if (selectedOrder.payment === EPaymentMethod.CASH){
+                if (selectedOrder.type === 'ONLINE') {
+                    if (selectedOrder.payment === EPaymentMethod.CASH) {
                         data = {
                             status: EOrderStatusEnums.TOSHIP,
                             note: 'Khách đã thanh toán -> Chờ giao hàng'
                         }
                     }
-                    if (selectedOrder.payment === EPaymentMethod.TRANSFER){
+                    if (selectedOrder.payment === EPaymentMethod.TRANSFER) {
                         data = {
                             status: EOrderStatusEnums.TOSHIP,
                             note: 'Khách đã thanh toán -> Chờ giao hàng'
@@ -269,8 +269,16 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                          fetchData={fetchSelectedOrder}></SellVocherModal>)
                 }
             </div>
-            <QrCodeScanner isScanning={isScanning} setIsScanning={setIsScanning}></QrCodeScanner>
-
+            {
+                selectedOrder && (
+                    <QrCodeScanner
+                        isScanning={isScanning}
+                        selectOrder={selectedOrder}
+                        fetchData={fetchSelectedOrder}
+                        setIsScanning={setIsScanning}
+                    ></QrCodeScanner>
+                )
+            }
             <div className={'h-full'}>
                 <Dialog isOpen={dialogIsOpenConfirmOrder} closable={true}>
                     <h5 className="mb-4">Xác nhận đơn hàng</h5>

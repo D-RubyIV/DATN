@@ -1,10 +1,9 @@
 import Tabs from '@/components/ui/Tabs'
 import { HiOutlineUser, HiPlusCircle } from 'react-icons/hi'
 
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Badge, Button } from '@/components/ui'
 import { DoubleSidedImage, Loading } from '@/components/shared'
-import TabCard from './card/TabCard'
 import { useToastContext } from '@/context/ToastContext'
 import CloseButton from '@/components/ui/CloseButton'
 import instance from '@/axios/CustomAxios'
@@ -83,8 +82,8 @@ const SellTab = () => {
     }, [currentTab])
 
     return (
-        <div>
-            <Loading loading={loading} type="cover">
+        <Fragment>
+            <Loading loading={loading} type="cover" className={'h-full'}>
                 <div className="flex justify-between">
                     <div>
                         <h1 className="font-semibold text-xl text-black text-transform: uppercase">Quản lý bán hàng</h1>
@@ -146,13 +145,13 @@ const SellTab = () => {
                     )
                 }
             </Loading>
-        </div>
+        </Fragment>
     )
 }
 
 const NoHaveAnyTab = () => {
     return (
-        <div className="h-full flex justify-center items-center">
+        <div className="h-full flex justify-center items-center flex-col">
             <div className="flex justify-center items-center flex-col">
                 <DoubleSidedImage
                     src="/img/others/image-removebg-preview-order-empty.png"
