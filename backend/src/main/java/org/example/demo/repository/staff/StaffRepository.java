@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -40,4 +41,13 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
                                @Param("status") String status,
                                @Param("citizenId") String citizenId,
                                Pageable pageable);
+
+    List<Staff> findStaffByEmail(String email);
+
+    List<Staff> findStaffByPhone(String phone);
+
+    List<Staff> findStaffByCitizenId(String citizenId);
+
+
+
 }

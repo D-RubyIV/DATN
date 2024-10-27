@@ -213,40 +213,63 @@ const AddStaffPage = () => {
 
     // Xác thực dữ liệu nhập vào
     const validationSchema = Yup.object({
-        name: Yup.string()
-            .matches(/^[\p{L}]+(?: [\p{L}]+)*$/u, "Họ tên không hợp lệ") // Chấp nhận chữ cái và khoảng trắng
-            .min(2, "Họ tên phải có ít nhất 2 ký tự") // Tối thiểu 2 ký tự
-            .max(50, "Họ tên không được vượt quá 50 ký tự") // Tối đa 50 ký tự
-            .required("Họ tên nhân viên là bắt buộc"), // Bắt buộc nhập
+        name: Yup.string().required('Họ tên khách hàng là bắt buộc')
+            .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+            .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+            .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => {
+                // kiểm tra khoảng trắng thừa
+                return value.trim() === value && !value.includes('  ')
+            })
+            .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', (value) => {
+                // Kiểm tra ký tự đặc biệt và số
+                return /^[\p{L}\s]+$/u.test(value); // sử dụng regex để kiểm tra
+            }),
+
+
+
+        email: Yup.string()
+            .email("Email không hợp lệ")
+            .required("Email là bắt buộc")
+            .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
+                return value.trim() === value;
+            })
+            .test("email-unique", "Email đã tồn tại", async (email) => {
+                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-email`, { params: { email } });
+                return !response.data.exists;
+            }),
+
+        phone: Yup.string()
+            .required("Số điện thoại là bắt buộc")
+            .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
+            .test("phone-unique", "Số điện thoại đã tồn tại", async (phone) => {
+                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-phone`, { params: { phone } });
+                return !response.data.exists;
+            }),
+
         citizenId: Yup.string()
-            .matches(/^[0-9]+$/, "Căn cước công dân chỉ được chứa số") // Chỉ chứa số
-            .required("Căn cước công dân là bắt buộc"),
-        email: Yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
+            .matches(/^[0-9]{12}$/, "Căn cước công dân phải có đúng 12 chữ số")
+            .required("Căn cước công dân là bắt buộc")
+            .test("citizenId-unique", "Căn cước công dân đã tồn tại", async (citizenId) => {
+                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-citizenId`, { params: { citizenId } });
+                return !response.data.exists;
+            }),
 
         birthDay: Yup.date()
             .required("Ngày sinh là bắt buộc")
             .max(new Date(), "Ngày sinh không được là tương lai")
-            .test(
-                "age-range",
-                "Nhân viên phải trong độ tuổi từ 16 đến 40",
-                function (value) {
-                    const age = dayjs().diff(dayjs(value), 'year'); // Tính tuổi
-                    return age >= 16 && age <= 40; // Kiểm tra độ tuổi
-                }
-            ),
+            .test("age-range", "Nhân viên phải trong độ tuổi từ 16 đến 40", function (value) {
+                const age = dayjs().diff(dayjs(value), 'year');
+                return age >= 16 && age <= 40;
+            }),
+
         address: Yup.string().required("Số nhà là bắt buộc"),
-        phone: Yup.string()
-            .required("Số điện thoại là bắt buộc")
-            .matches(/^(0[3|5|7|8|9]|01[2|6|8|9])\d{8}$/, "Số điện thoại không hợp lệ") // Đảm bảo định dạng số điện thoại
-            .matches(/^[0-9]+$/, "Số điện thoại không được chứa chữ"), // Kiểm tra chỉ chứa số
-
-
         province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
         district: Yup.string().required("Quận/Huyện là bắt buộc"),
         ward: Yup.string().required("Phường/Xã là bắt buộc"),
         note: Yup.string(),
         gender: Yup.boolean().required("Giới tính là bắt buộc"),
     });
+
 
 
     // Hàm xử lý khi gửi biểu mẫu
@@ -280,9 +303,13 @@ const AddStaffPage = () => {
                 setNewStaff((prev) => ({ ...prev, code, password }));
 
 
-                const serviceId = 'service_t622scu';
-                const templateId = 'template_j3dv5du';
-                const publicKey = 'OHyULXp7jha_7dpil';
+                const serviceId = 'service_kp8m1z8';
+                const templateId = 'template_lad6zvl';
+                const publicKey = '2TdUStOWX9A6vm7Ex';
+
+                // const serviceId = 'service_t622scu';
+                // const templateId = 'template_j3dv5du';
+                // const publicKey = 'OHyULXp7jha_7dpil';
 
                 const templateParams = {
                     from_name: 'Fashion Canth Shop',
@@ -346,7 +373,7 @@ const AddStaffPage = () => {
     useEffect(() => {
         if (openDialog && scannerRef.current) {
             const html5QrCodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 350 }, false);
-    
+
             html5QrCodeScanner.render(
                 async (data: string) => {
                     const cccdParts = data.split('|');
@@ -357,18 +384,18 @@ const AddStaffPage = () => {
                         const gender = cccdParts[4] === 'Nam';
                         const diaChi = cccdParts[5];
                         const diaChiSplit = diaChi.split(",");
-    
+
                         if (!birthDay) {
                             console.error('Invalid date format in QR code');
                             return;
                         }
-    
+
                         const soNha = diaChiSplit[0];
                         const tinhName = diaChiSplit[3] || ''; // check to prevent undefined
                         const foundTinh = provinces.find((province) =>
                             province.full_name.toLowerCase().includes(tinhName.toLowerCase())
                         );
-    
+
                         if (foundTinh && foundTinh.id) {
                             try {
                                 const districtResponse = await axios.get(`https://esgoo.net/api-tinhthanh/2/${foundTinh.id}.htm`);
@@ -377,15 +404,15 @@ const AddStaffPage = () => {
                                     const foundQuanOBJ = districtResponse.data.data.find((district: District) =>
                                         district.full_name.toLowerCase().includes((diaChiSplit[2] || '').toLowerCase())
                                     );
-    
+
                                     if (foundQuanOBJ && foundQuanOBJ.id) {
                                         const wardResponse = await axios.get(`https://esgoo.net/api-tinhthanh/3/${foundQuanOBJ.id}.htm`);
                                         if (wardResponse.status === 200) {
                                             setWards(wardResponse.data.data);
-                                            const foundPhuongOBJ = wardResponse.data.data.find((ward : Ward) =>
+                                            const foundPhuongOBJ = wardResponse.data.data.find((ward: Ward) =>
                                                 ward.full_name.toLowerCase().includes((diaChiSplit[1] || '').toLowerCase())
                                             );
-    
+
                                             setNewStaff(prevState => ({
                                                 ...prevState,
                                                 citizenId,
@@ -397,7 +424,7 @@ const AddStaffPage = () => {
                                                 ward: foundPhuongOBJ?.full_name || "",
                                                 gender,
                                             }));
-    
+
                                             form.setFieldValue("province", foundTinh.full_name || "");
                                             form.setFieldValue("district", foundQuanOBJ.full_name || "");
                                             form.setFieldValue("ward", foundPhuongOBJ?.full_name || "");
@@ -419,7 +446,7 @@ const AddStaffPage = () => {
                                 gender,
                             }));
                         }
-    
+
                         setOpenDialog(false); // Close dialog after scanning
                         html5QrCodeScanner.clear(); // Clear the scanner
                     } else {
@@ -430,7 +457,7 @@ const AddStaffPage = () => {
                     console.error(error); // Handle scan error
                 }
             );
-    
+
             return () => {
                 html5QrCodeScanner.clear(); // Cleanup when the component is unmounted
             };
@@ -503,7 +530,7 @@ const AddStaffPage = () => {
                                         <FormItem asterisk label="Họ tên nhân viên">
                                             <Field
                                                 type="text"
-                                                autoComplete="off"
+                                                autoComplete="on"
                                                 name="name"
                                                 placeholder="Nhập họ tên nhân viên..."
                                                 component={Input}
@@ -522,15 +549,23 @@ const AddStaffPage = () => {
                                         <FormItem asterisk label="Căn cước công dân">
                                             <Field
                                                 type="text"
-                                                autoComplete="off"
+                                                autoComplete="on"
                                                 name="citizenId"
                                                 placeholder="Nhập căn cước công dân..."
                                                 component={Input}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setFieldValue("citizenId", e.target.value);
-                                                    setNewStaff((prev) => ({ ...prev, citizenId: e.target.value }));
+                                                    // Chỉ giữ lại các ký tự số
+                                                    const value = e.target.value.replace(/[^0-9]/g, '');
+                                                    setFieldValue("citizenId", value);
+                                                    setNewStaff((prev) => ({ ...prev, citizenId: value }));
                                                 }}
-                                                value={newStaff.citizenId}
+                                                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                                    // Ngăn nhập ký tự không phải số
+                                                    if (!/[0-9]/.test(e.key)) {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                                value={newStaff.citizenId || ''} // Đảm bảo giá trị là chuỗi, không phải undefined
                                             />
                                             {touched.citizenId && errors.citizenId && (
                                                 <div style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", minHeight: "20px" }}>
@@ -538,6 +573,9 @@ const AddStaffPage = () => {
                                                 </div>
                                             )}
                                         </FormItem>
+
+
+
 
                                         <FormItem
                                             asterisk
@@ -697,7 +735,7 @@ const AddStaffPage = () => {
                                         >
                                             <Field
                                                 type="text"
-                                                autoComplete="off"
+                                                autoComplete="on"
                                                 name="address"
                                                 placeholder="Nhập số đường/số nhà..."
                                                 component={Input}
@@ -718,15 +756,23 @@ const AddStaffPage = () => {
                                         <FormItem asterisk label="Số điện thoại">
                                             <Field
                                                 type="text"
-                                                autoComplete="off"
+                                                autoComplete="on"
                                                 name="phone"
                                                 placeholder="Nhập số điện thoại..."
                                                 component={Input}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setFieldValue("phone", e.target.value);
-                                                    setNewStaff((prev) => ({ ...prev, phone: e.target.value }));
+                                                    // Giữ lại chỉ các ký tự số
+                                                    const value = e.target.value.replace(/[^0-9]/g, '');
+                                                    setFieldValue("phone", value);
+                                                    setNewStaff((prev) => ({ ...prev, phone: value }));
                                                 }}
-                                                value={newStaff.phone}
+                                                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                                    // Ngăn nhập ký tự không phải số
+                                                    if (!/[0-9]/.test(e.key)) {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                                value={newStaff.phone || ''} // Đảm bảo giá trị là chuỗi, không phải undefined
                                             />
                                             {touched.phone && errors.phone && (
                                                 <div style={{ color: "red", fontSize: "0.875rem", marginTop: "0.25rem", minHeight: "20px" }}>
@@ -734,10 +780,11 @@ const AddStaffPage = () => {
                                                 </div>
                                             )}
                                         </FormItem>
+
                                         <FormItem asterisk label="Email">
                                             <Field
                                                 type="text"
-                                                autoComplete="off"
+                                                autoComplete="on"
                                                 name="email"
                                                 placeholder="Nhập email..."
                                                 component={Input}

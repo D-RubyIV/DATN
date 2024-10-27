@@ -84,4 +84,6 @@ public class CustomerValidator {
     public boolean isPhoneExists(String phone) {
         return !customerRepository.findCustomerByPhone(phone).isEmpty();
     }
+
+
 }
