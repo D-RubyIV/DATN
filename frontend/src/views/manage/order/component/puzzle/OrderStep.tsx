@@ -24,9 +24,6 @@ const ff = new FileforgeClient({
 const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO, fetchData: () => {} }) => {
 
     const run = async () => {
-
-        // This is used to prevent treeshaking during building
-        // @ts-ignore
         await import('react-dom/server');
 
         const html = `<doctype html><html><body>${await compile(

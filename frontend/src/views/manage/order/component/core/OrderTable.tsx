@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { HiEye, HiOutlineSearch } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { formatDistanceToNow, parse, format, subHours } from 'date-fns'
-import { vi } from 'date-fns/locale';
+import { vi } from 'date-fns/locale'
 
 type BadgeType =
     'countAll'
@@ -144,38 +144,37 @@ export const OrderTable = () => {
     }
 
     const calculateDistanceTime = (formattedDate: string) => {
-        const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date());
-        const dateMinus12Hours = subHours(date, -12);
-        const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi });
-        return distance;
-    };
+        const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
+        const dateMinus12Hours = subHours(date, 12)
+        const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi })
+        return distance
+    }
 
 
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
 
 
     const handleRangePickerChange = (date: [Date | null, Date | null]) => {
-        console.log('Selected range date', date);
+        console.log('Selected range date', date)
 
         if (date[0]) {
-            const formattedFromDate = format(date[0], "yyyy-MM-dd'T'HH:mm:ss");
-            console.log(formattedFromDate);
-            setFromDateParam(formattedFromDate);
+            const formattedFromDate = format(date[0], 'yyyy-MM-dd\'T\'HH:mm:ss')
+            console.log(formattedFromDate)
+            setFromDateParam(formattedFromDate)
         } else {
-            setFromDateParam('');
+            setFromDateParam('')
         }
 
         if (date[1]) {
-            const formattedToDate = format(date[1], "yyyy-MM-dd'T'HH:mm:ss");
-            console.log(formattedToDate);
-            setToDateParam(formattedToDate);
+            const formattedToDate = format(date[1], 'yyyy-MM-dd\'T\'HH:mm:ss')
+            console.log(formattedToDate)
+            setToDateParam(formattedToDate)
         } else {
-            setToDateParam('');
+            setToDateParam('')
         }
 
-        setDateRange(date);
-    };
-
+        setDateRange(date)
+    }
 
 
     const columns: ColumnDef<IOveriewBill>[] = [
@@ -193,28 +192,28 @@ export const OrderTable = () => {
             header: 'Khách hàng',
             accessorKey: 'customer___name',
             cell: (props) => (
-                props.row.original.customerName ?? "N/a"
+                props.row.original.customerName ?? 'N/a'
             )
         },
         {
             header: 'Nhân viên',
             accessorKey: 'staff___name',
             cell: (props) => (
-                props.row.original.staffName ?? "N/a"
+                props.row.original.staffName ?? 'N/a'
             )
         },
         {
             header: 'SĐT',
             accessorKey: 'phone',
             cell: (props) => (
-                props.row.original.phone || "N/a"
+                props.row.original.phone || 'N/a'
             )
         },
         {
             header: 'Tổng tiền',
             accessorKey: 'total',
             cell: (props) => (
-                Math.round(props.row.original.total).toLocaleString('vi') + "đ"
+                Math.round(props.row.original.total).toLocaleString('vi') + 'đ'
             )
         },
         {
