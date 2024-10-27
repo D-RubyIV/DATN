@@ -152,7 +152,7 @@ const SellTab = () => {
 
 const NoHaveAnyTab = () => {
     return (
-        <div className="h-[760px] flex justify-center items-center">
+        <div className="h-full flex justify-center items-center">
             <div className="flex justify-center items-center flex-col">
                 <DoubleSidedImage
                     src="/img/others/image-removebg-preview-order-empty.png"

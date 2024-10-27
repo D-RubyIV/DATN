@@ -5,7 +5,7 @@ import IndexView from "./IndexView";
 const SellManage = () => {
     return (
         <SellProvider>
-            <div className="bg-white">
+            <div className="bg-white h-full">
                 <div className="p-5 shadow-md rounded-md card h-full card-border">
                     {/*<div className="lg:flex items-center justify-between mb-4">*/}
                     {/*    <nav className="flex" aria-label="Breadcrumb">*/}

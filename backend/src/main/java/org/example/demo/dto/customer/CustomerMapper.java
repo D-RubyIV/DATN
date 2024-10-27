@@ -167,8 +167,8 @@ public class CustomerMapper {
         dto.setProvince(address.getProvince());
         dto.setDistrict(address.getDistrict());
         dto.setWard(address.getWard());
-        dto.setProvinceId(Integer.valueOf(address.getProvinceId()));
-        dto.setDistrictId(Integer.valueOf(address.getDistrictId()));
+        dto.setProvinceId(address.getProvinceId() != null ? Integer.valueOf(address.getProvinceId()) : null);
+        dto.setDistrictId(address.getDistrictId() != null ? Integer.valueOf(address.getDistrictId()) : null);
         dto.setWardId(address.getWardId());
         dto.setDetail(address.getDetail());
         dto.setIsDefault(address.getDefaultAddress());
