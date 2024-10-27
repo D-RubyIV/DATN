@@ -14,7 +14,7 @@ import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.mapper.staff.request.StaffRequestMapper;
 import org.example.demo.mapper.staff.response.StaffResponseMapper;
 import org.example.demo.repository.staff.StaffRepository;
-import org.modelmapper.ModelMapper;
+import org.example.demo.validator.staff.StaffValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     private StaffRequestMapper staffRequestMapper;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private StaffValidator staffValidator;
 
     @Override
     public Page<StaffResponseDTO> findAllByPage(String code, String name, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable) {
@@ -180,6 +180,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     @Override
     @Transactional
     public Staff save(StaffRequestDTO requestDTO) throws BadRequestException {
+        staffValidator.validateStaff(requestDTO, null);
         Staff entityMapped = staffRequestMapper.toEntity(requestDTO);
         entityMapped.setStatus("Active");
         entityMapped.setCode(generateRandomMaNV(requestDTO.getName()));
@@ -190,9 +191,9 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
 
     @Override
     @Transactional
-    public StaffResponseDTO update(Integer id, StaffRequestDTO requestDTO) {
+    public StaffResponseDTO update(Integer id, StaffRequestDTO requestDTO) throws BadRequestException {
         Staff existingStaff = staffRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff with id " + id + " not found"));
-
+//        staffValidator.validateStaff(requestDTO, id);
         staffRequestMapper.updateEntity(requestDTO, existingStaff);
         Staff updatedStaff = staffRepository.save(existingStaff);
         return staffResponseMapper.toDTO(updatedStaff);
@@ -235,18 +236,35 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
                 staff.setWard(getCellValue(row.getCell(5)));
                 staff.setDistrict(getCellValue(row.getCell(6)));
                 staff.setProvince(getCellValue(row.getCell(7)));
-                staff.setStatus(getCellValue(row.getCell(8)));
+                staff.setCitizenId(getCellValue(row.getCell(8)));
+                String statusValue = getCellValue(row.getCell(9)).trim(); // Lấy giá trị từ ô và loại bỏ khoảng trắng
+                String statusString;
 
-                if (row.getCell(9) != null && DateUtil.isCellDateFormatted(row.getCell(9))) {
-                    LocalDate birthDate = row.getCell(9).getDateCellValue().toInstant()
+// Chuyển đổi giá trị trạng thái
+                if ("Hoạt động".equalsIgnoreCase(statusValue)) {
+                    statusString = "Active"; // Nếu trạng thái là "Hoạt động", lưu là "Active"
+                } else if ("Không hoạt động".equalsIgnoreCase(statusValue)) {
+                    statusString = "Inactive"; // Nếu trạng thái là "Không hoạt động", lưu là "Inactive"
+                } else if ("Active".equalsIgnoreCase(statusValue)) {
+                    statusString = "Active"; // Nếu trạng thái là "Active", lưu là "Active"
+                } else {
+                    statusString = "Inactive"; // Nếu không phải là "Hoạt động" hoặc "Active", mặc định là "Inactive"
+                }
+
+// Set giá trị trạng thái cho staff
+                staff.setStatus(statusString);
+
+
+                if (row.getCell(10) != null && DateUtil.isCellDateFormatted(row.getCell(10))) {
+                    LocalDate birthDate = row.getCell(10).getDateCellValue().toInstant()
                             .atZone(ZoneId.systemDefault()).toLocalDate();
                     staff.setBirthDay(birthDate);
                 }
 
-                staff.setGender("Male".equalsIgnoreCase(getCellValue(row.getCell(10))));
-                staff.setCitizenId(getCellValue(row.getCell(11)));
+                staff.setGender("Nam".equalsIgnoreCase(getCellValue(row.getCell(11))));
+
                 staff.setNote(getCellValue(row.getCell(12)));
-                staff.setDeleted("False".equalsIgnoreCase(getCellValue(row.getCell(13))));
+                staff.setDeleted("Không".equalsIgnoreCase(getCellValue(row.getCell(13))));
 
 
                 // Tạo mã nhân viên và mật khẩu
@@ -291,6 +309,18 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
             case FORMULA -> cell.getCellFormula();
             default -> "";
         };
+    }
+
+    public boolean isEmailExists(String email) {
+        return staffValidator.isEmailExists(email);
+    }
+
+    public boolean isPhoneExists(String phone) {
+        return staffValidator.isPhoneExists(phone);
+    }
+
+    public boolean isCitizenIdExists(String citizenId) {
+        return staffValidator.isCitizenIdExists(citizenId);
     }
 
 }

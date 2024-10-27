@@ -84,7 +84,7 @@ public interface IService1<E, ID, RQ> {
      * @return DTO phản hồi sau khi cập nhật
      */
     @Transactional
-    StaffResponseDTO update(ID id, RQ requestDTO);
+    StaffResponseDTO update(ID id, RQ requestDTO) throws BadRequestException;
 
     /**
      * Cập nhật trạng thái của thực thể theo ID (có thể bắt buộc giao dịch).
