@@ -33,7 +33,7 @@ type AddressDTO = {
     phone: string;
     provinceId: number;
     districtId: number;
-    wardId: number;
+    wardId: string;
     province: string | null;
     district: string | null;
     ward: string | null;
@@ -55,7 +55,7 @@ interface District {
 
 
 interface Ward {
-    WardCode: number;
+    WardCode: string;
     DistrictID: number;
     WardName: string;
 }
@@ -70,7 +70,7 @@ const UpdateCustomer = () => {
         province: null,
         districtId: 0,
         district: null,
-        wardId: 0,
+        wardId: '',
         ward: null,
         detail: '',
         isDefault: false,
@@ -100,7 +100,7 @@ const UpdateCustomer = () => {
     const [totalPages, setTotalPages] = useState<number>(0);
     const [totalAddresses, setTotalAddresses] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize: number = 2;
+    const pageSize: number = 3;
     const navigate = useNavigate();
     const { id } = useParams();
     const [formModes, setFormModes] = useState<string[]>([]);
@@ -168,6 +168,12 @@ const UpdateCustomer = () => {
         email: Yup.string()
             .email("Email không hợp lệ")
             .required("Email là bắt buộc")
+            .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
+                return value.trim() === value
+            })
+            .test("email-gmail", "Email phải kết thúc bằng @gmail.com", value => {
+                return value ? value.endsWith("@gmail.com") : true; // Chỉ kiểm tra nếu có giá trị
+            })
             .test('email-unique', 'Email đã tồn tại', async (email) => {
                 if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
@@ -344,7 +350,7 @@ const UpdateCustomer = () => {
                 form.setFieldValue(`addressDTOS[${index}].district`, ''); // Reset district
                 form.setFieldValue(`addressDTOS[${index}].districtId`, 0); // Reset ID district
                 form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
-                form.setFieldValue(`addressDTOS[${index}].wardId`, 0);   // Reset ID ward
+                form.setFieldValue(`addressDTOS[${index}].wardId`, '');   // Reset ID ward
                 setWards([]); // Reset wards
             } else if (type === 'district' && 'DistrictID' in newValue && 'DistrictName' in newValue) {
                 // Cập nhật giá trị cho quận
@@ -355,7 +361,7 @@ const UpdateCustomer = () => {
                 const wardsData = await fetchWards(newValue.DistrictID);
                 setWards(wardsData);
                 form.setFieldValue(`addressDTOS[${index}].ward`, '');     // Reset ward
-                form.setFieldValue(`addressDTOS[${index}].wardId`, 0);   // Reset ID ward
+                form.setFieldValue(`addressDTOS[${index}].wardId`, '');   // Reset ID ward
             } else if (type === 'ward' && 'WardName' in newValue) {
                 // Cập nhật giá trị cho xã
                 form.setFieldValue(`addressDTOS[${index}].ward`, newValue.WardName || '');
@@ -387,12 +393,67 @@ const UpdateCustomer = () => {
     dayjs.extend(customParseFormat);
 
     // Hàm lấy khách hàng theo ID
+    // const fetchCustomer = async (id: string, currentPage: number) => {
+    //     try {
+
+    //         const response = await axios.get(`http://localhost:8080/api/v1/customer/customer/${id}/addresses`, {
+    //             params: {
+    //                 page: currentPage,
+    //                 size: pageSize
+    //             }
+    //         });
+    //         if (response.status === 200) {
+
+    //             const customerData = response.data;
+
+    //             // Cập nhật tổng số địa chỉ và số trang
+    //             if (customerData.totalAddresses) {
+    //                 setTotalAddresses(customerData.totalAddresses);
+    //                 setTotalPages(Math.ceil(customerData.totalAddresses / pageSize));
+    //             }
+
+    //             // Cập nhật thông tin email và phone của khách hàng
+    //             setInitialContact({
+    //                 currentEmail: customerData.email,
+    //                 currentPhone: customerData.phone,
+    //             });
+    //             // Log giá trị birthDate từ backend
+    //             console.log('Giá trị birthDate từ backend:', customerData.birthDate);
+
+    //             // Chuyển đổi ngày sinh từ 'DD-MM-YYYY' sang 'YYYY-MM-DD' cho frontend
+    //             if (customerData.birthDate) {
+    //                 // Phân tích ngày với định dạng 'DD-MM-YYYY'
+    //                 const parsedDate = dayjs(customerData.birthDate, 'DD-MM-YYYY');
+
+    //                 // Log ngày đã phân tích để kiểm tra
+    //                 console.log('Parsed Date:', parsedDate.format());
+
+    //                 if (parsedDate.isValid()) {
+    //                     // Định dạng lại ngày cho frontend
+    //                     customerData.birthDate = parsedDate.format('YYYY-MM-DD');
+    //                     console.log('Formatted birthDate:', customerData.birthDate); // Log để kiểm tra xem ngày đã định dạng chưa
+    //                 } else {
+    //                     console.error('Ngày sinh không hợp lệ:', customerData.birthDate);
+    //                 }
+    //             }
+
+    //             setUpdateCustomer(customerData);
+    //             console.log('Customer data:', customerData);
+    //             setFormModes(response.data.addressDTOS.map(() => 'edit'));
+    //         } else {
+    //             console.error('Failed to fetch customer data:', response.statusText);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching customer data:', error);
+    //     }
+    // };
+
     const fetchCustomer = async (id: string, currentPage: number) => {
         try {
 
-            const response = await axios.get(`http://localhost:8080/api/v1/customer/customer/${id}/addresses`, {
+            const response = await axios.get(`http://localhost:8080/api/v1/customer/${id}/detail`, {
                 params: {
-                    page: currentPage,
+                    page: currentPage > 0 ? currentPage - 1 : 0, // Chuyển đổi currentPage về định dạng 0
                     size: pageSize
                 }
             });
@@ -401,6 +462,8 @@ const UpdateCustomer = () => {
                 const customerData = response.data;
 
                 // Cập nhật tổng số địa chỉ và số trang
+                console.log('Tổng số địa chỉ: ', customerData.totalAddresses)
+                console.log('Tổng số trang: ', customerData.totalAddresses / pageSize)
                 if (customerData.totalAddresses) {
                     setTotalAddresses(customerData.totalAddresses);
                     setTotalPages(Math.ceil(customerData.totalAddresses / pageSize));
@@ -443,8 +506,16 @@ const UpdateCustomer = () => {
     };
 
     const handlePageChange = (newPage: number) => {
-        setPage(newPage - 1); // -1 vì Spring Boot bắt đầu từ 0
-        setCurrentPage(newPage)
+        if (newPage < 1) {
+            console.warn('Số trang phải lớn hơn hoặc bằng 1')
+            return; // không gọi api nếu trang nhỏ hơn 1
+        }
+        if (id) { // Kiểm tra xem id có phải là undefined không
+            setCurrentPage(newPage);
+            fetchCustomer(id, newPage); // Gọi lại fetchCustomer với trang mới
+        } else {
+            console.error('ID is undefined');
+        }
     };
 
     const handleUpdate = async (values: CustomerDTO, { setSubmitting }: FormikHelpers<CustomerDTO>) => {
@@ -522,11 +593,11 @@ const UpdateCustomer = () => {
                 });
                 const updatedAddressDTOS = [...values.addressDTOS];
                 updatedAddressDTOS[addressIndex] = response.data;
-                setFieldValue('addressDTOS', updatedAddressDTOS); // Cập nhật lại danh sách sau khi chỉnh sửa
+                // setFieldValue('addressDTOS', updatedAddressDTOS); // Cập nhật lại danh sách sau khi chỉnh sửa
                 console.log('dữ liệu cập nhật lại địa chỉ: ', updatedAddressDTOS)
                 toast.success('Cập nhật địa chỉ thành công');
             }
-            // fetchCustomer(customerId, currentPage);
+            fetchCustomer(customerId, currentPage);
         } catch (error) {
             console.error('Error submitting address:', error);
             alert('Error submitting address. Please try again.');
@@ -550,7 +621,7 @@ const UpdateCustomer = () => {
             );
             if (response.status === 200) {
                 console.log('Địa chỉ đã được cập nhật thành công:', response.data);
-                fetchCustomer(updateCustomer.id, currentPage); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
+                // fetchCustomer(updateCustomer.id, currentPage); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
             } else {
                 console.error('Cập nhật địa chỉ không thành công:', response.statusText);
             }
@@ -719,8 +790,9 @@ const UpdateCustomer = () => {
 
                                 <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
                                 <FieldArray name="addressDTOS">
-                                    {({ insert, remove, unshift }) => (
+                                    {({ remove, unshift }) => (
                                         <div>
+
                                             <Button
                                                 type="button"
                                                 className="mb-4 mt-4"
@@ -730,6 +802,7 @@ const UpdateCustomer = () => {
 
                                                     // Cập nhật trạng thái formModes
                                                     setFormModes(['add', ...formModes]);
+
                                                 }}
                                             >
                                                 Thêm địa chỉ mới
@@ -771,11 +844,11 @@ const UpdateCustomer = () => {
                                                                         style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
-                                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                            const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                                            setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                                            setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                                                        }}
+                                                                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                                    //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                                    //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                                                    // }}
                                                                     />
                                                                 </FormItem>
                                                             </div>
@@ -947,7 +1020,7 @@ const UpdateCustomer = () => {
                                 </FieldArray>
                                 <div>
                                     <Pagination
-                                        current={page + 1} // +1 vì thư viện phân trang bắt đầu từ 1
+                                        current={currentPage} // Trực tiếp sử dụng currentPage mà không cần +1
                                         pageSize={pageSize}
                                         total={totalAddresses}
                                         onChange={handlePageChange}

@@ -8,6 +8,8 @@ import org.example.demo.repository.customer.AddressRepository;
 import org.example.demo.service.customer.AddressService;
 import org.example.demo.validator.AddressValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,8 +19,15 @@ public class AddressServiceImpl implements AddressService {
 
     @Autowired
     private AddressRepository addressRepository;
+
     @Autowired
     private AddressValidator addressValidator;
+
+    @Override
+    public Page<AddressDTO> getAllAddresses(Pageable pageable) {
+        return addressRepository.findAllAddresses(pageable)
+                .map(CustomerMapper::toAddressDTO);
+    }
 
     @Override
     public AddressDTO getAddressById(Integer id) {
@@ -35,7 +44,7 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new IllegalArgumentException("Address not found with ID: " + id));
 
         // cap nhat cac truong tu DTO vao entity
-       CustomerMapper.updateEntityAddress(existingAddress, addressDTO);
+        CustomerMapper.updateEntityAddress(existingAddress, addressDTO);
 
         // luu vao DB
         Address updatedAddress = addressRepository.save(existingAddress);

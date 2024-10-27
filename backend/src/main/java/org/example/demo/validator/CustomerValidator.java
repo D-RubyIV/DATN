@@ -47,9 +47,17 @@ public class CustomerValidator {
             throw new BadRequestException("Email không để trống");
         }
         email = email.trim(); // xoa khoang trang o dau va cuoi
+
+        // Kiểm tra định dạng email
         if (!email.matches("^[\\w-\\.]+@[\\w-]+\\.[a-zA-Z]{2,4}$")) {
             throw new BadRequestException("Email không đúng định dạng");
         }
+
+        // Kiểm tra email có chứa dấu chấm và đuôi @gmail.com
+        if (!email.contains(".") || !email.endsWith("@gmail.com")) {
+            throw new BadRequestException("Email phải có dấu chấm và phải kết thúc bằng @gmail.com");
+        }
+
         // Kiểm tra nếu tồn tại nhiều khách hàng có cùng email
         List<Customer> customers = customerRepository.findCustomerByEmail(email);
         for (Customer customer : customers) {

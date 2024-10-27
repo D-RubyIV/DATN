@@ -1,13 +1,16 @@
 package org.example.demo.dto.customer;
 
+import org.apache.coyote.BadRequestException;
 import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.validator.AddressValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CustomerMapper {
-
     // Chuyển đổi từ Customer sang CustomerListDTO
     public static CustomerListDTO toCustomerListDTO(Customer customer) {
         Address defaultAddress = customer.getAddresses().stream()
@@ -80,12 +83,11 @@ public class CustomerMapper {
                     .collect(Collectors.toList());
             dto.setAddressDTOS(addressDTOS);
         }
-
         return dto;
     }
 
     // Cập nhật thông tin khách hàng từ CustomerDTO
-    public static void updateCustomerFromDTO(CustomerDTO dto, Customer customer) {
+    public static void updateCustomerFromDTO(CustomerDTO dto, Customer customer, AddressValidator addressValidator) throws BadRequestException {
         customer.setName(dto.getName());
         customer.setEmail(dto.getEmail());
         customer.setPhone(dto.getPhone());
@@ -107,6 +109,7 @@ public class CustomerMapper {
 
                 if (existingAddress != null) {
                     // Cập nhật địa chỉ hiện có
+                    addressValidator.validateAddress(addressDTO, existingAddress.getId());
                     updateEntityAddress(existingAddress, addressDTO);
                 } else {
                     return;
@@ -130,15 +133,14 @@ public class CustomerMapper {
         address.setId(dto.getId());
         address.setName(dto.getName());
         address.setPhone(dto.getPhone());
-        address.setProvinceId(dto.getProvinceId());
+        address.setProvinceId(String.valueOf(dto.getProvinceId()));
         address.setProvince(dto.getProvince());
-        address.setDistrictId(dto.getDistrictId());
+        address.setDistrictId(String.valueOf(dto.getDistrictId()));
         address.setDistrict(dto.getDistrict());
         address.setWardId(dto.getWardId());
         address.setWard(dto.getWard());
         address.setDetail(dto.getDetail());
         address.setDefaultAddress(dto.getIsDefault());
-//        address.setCreatedDate(dto.getCreatedDate());
         return address;
     }
 
@@ -146,8 +148,8 @@ public class CustomerMapper {
     public static void updateEntityAddress(Address existingAddress, AddressDTO dto) {
         existingAddress.setName(dto.getName());
         existingAddress.setPhone(dto.getPhone());
-        existingAddress.setProvinceId(dto.getProvinceId());
-        existingAddress.setDistrictId(dto.getDistrictId());
+        existingAddress.setProvinceId(String.valueOf(dto.getProvinceId()));
+        existingAddress.setDistrictId(String.valueOf(dto.getDistrictId()));
         existingAddress.setWardId(dto.getWardId());
         existingAddress.setProvince(dto.getProvince());
         existingAddress.setDistrict(dto.getDistrict());
@@ -165,8 +167,8 @@ public class CustomerMapper {
         dto.setProvince(address.getProvince());
         dto.setDistrict(address.getDistrict());
         dto.setWard(address.getWard());
-        dto.setProvinceId(address.getProvinceId());
-        dto.setDistrictId(address.getDistrictId());
+        dto.setProvinceId(Integer.valueOf(address.getProvinceId()));
+        dto.setDistrictId(Integer.valueOf(address.getDistrictId()));
         dto.setWardId(address.getWardId());
         dto.setDetail(address.getDetail());
         dto.setIsDefault(address.getDefaultAddress());

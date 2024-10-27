@@ -38,4 +38,6 @@ public interface CustomerService {
     CustomerDTO getCustomerWithPagedAddresses(Integer id, int page, int size);
 
     AddressDTO findDefaultAddressByCustomerId(Integer customerId);
+
+    CustomerDTO getCustomerDetailWithPageAddresses(int customerId, int page, int size);
 }

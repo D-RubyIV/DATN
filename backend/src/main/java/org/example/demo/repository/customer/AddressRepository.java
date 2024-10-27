@@ -1,7 +1,8 @@
 package org.example.demo.repository.customer;
 
-import org.example.demo.dto.customer.AddressDTO;
 import org.example.demo.entity.human.customer.Address;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,9 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
     // check trùng sdt
     List<Address> findAddressByPhone(String phone);
 
+    @Query("SELECT address FROM Address  address ORDER BY address.createdDate DESC ")
+    Page<Address> findAllAddresses(Pageable pageable);
+
+    @Query("SELECT a FROM Address a WHERE a.customer.id = :customerId ORDER BY a.createdDate DESC")
+    Page<Address> findAddressesByCustomerId(@Param("customerId") int customerId, Pageable pageable);
 }

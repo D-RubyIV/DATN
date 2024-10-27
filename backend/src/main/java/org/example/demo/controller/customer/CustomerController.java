@@ -29,22 +29,14 @@ public class CustomerController {
 
 
     @GetMapping("/search")
-    public ResponseEntity<Page<CustomerListDTO>> getCustomersSearch(
-            @RequestParam(defaultValue = "") String query,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
+    public ResponseEntity<Page<CustomerListDTO>> getCustomersSearch(@RequestParam(defaultValue = "") String query, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<CustomerListDTO> customerDTOS = customerService.search(query, pageable);
         return ResponseEntity.ok(customerDTOS);
     }
 
     @GetMapping
-    public ResponseEntity<Page<CustomerListDTO>> getCustomers(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(required = false) String status
-    ) {
+    public ResponseEntity<Page<CustomerListDTO>> getCustomers(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String status) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<CustomerListDTO> customerDTOS = customerService.getAllCustomers(status, pageable);
         return ResponseEntity.ok(customerDTOS);
@@ -71,11 +63,16 @@ public class CustomerController {
         return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 
+    // API lấy chi tiết khách hàng cùng địa chỉ phân trang
+    @GetMapping("/{customerId}/detail")
+    public ResponseEntity<CustomerDTO> getCustomerDetailWithAddress(@PathVariable int customerId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
+        CustomerDTO customerDTO = customerService.getCustomerDetailWithPageAddresses(customerId, page, size);
+        return ResponseEntity.ok(customerDTO);
+    }
+
+
     @GetMapping("/customer/{id}/addresses")
-    public ResponseEntity<CustomerDTO> getCustomerWithPagedAddresses(
-            @PathVariable Integer id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size) {
+    public ResponseEntity<CustomerDTO> getCustomerWithPagedAddresses(@PathVariable Integer id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size) {
         CustomerDTO customerDTO = customerService.getCustomerWithPagedAddresses(id, page, size);
         return ResponseEntity.ok(customerDTO);
     }
@@ -102,10 +99,11 @@ public class CustomerController {
         }
     }
 
+    // API thêm mới địa chỉ cho khách hàng
     @PostMapping("/{id}/address")
-    public ResponseEntity<List<AddressDTO>> addAddressToCustomer(@PathVariable int id, @RequestBody AddressDTO addressDTO) throws BadRequestException {
+    public ResponseEntity<AddressDTO> addAddressToCustomer(@PathVariable int id, @RequestBody AddressDTO addressDTO) throws BadRequestException {
         AddressDTO newAddress = customerService.addAddressToCustomer(id, addressDTO);
-        return ResponseEntity.ok(Collections.singletonList(newAddress));
+        return ResponseEntity.status(HttpStatus.CREATED).body(newAddress);
     }
 
     @PutMapping("/update/{id}")
@@ -125,11 +123,8 @@ public class CustomerController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{addressId}/default")
-    public ResponseEntity<Address> updateDefaultAddress(
-            @PathVariable Integer addressId,
-            @RequestParam("customerId") Integer customerId,
-            @RequestParam("isDefault") Boolean defaultAddress) {
+    @PutMapping("/{addressId}/default")
+    public ResponseEntity<Address> updateDefaultAddress(@PathVariable Integer addressId, @RequestParam("customerId") Integer customerId, @RequestParam("isDefault") Boolean defaultAddress) {
         // Gọi service để cập nhật địa chỉ mặc định
         Address updatedAddress = customerService.updateAddressDefault(customerId, addressId, defaultAddress);
         return ResponseEntity.ok(updatedAddress);
