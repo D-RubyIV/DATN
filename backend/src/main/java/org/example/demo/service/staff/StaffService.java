@@ -193,7 +193,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     @Transactional
     public StaffResponseDTO update(Integer id, StaffRequestDTO requestDTO) throws BadRequestException {
         Staff existingStaff = staffRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff with id " + id + " not found"));
-//        staffValidator.validateStaff(requestDTO, id);
+        staffValidator.validateStaff(requestDTO, id);
         staffRequestMapper.updateEntity(requestDTO, existingStaff);
         Staff updatedStaff = staffRepository.save(existingStaff);
         return staffResponseMapper.toDTO(updatedStaff);

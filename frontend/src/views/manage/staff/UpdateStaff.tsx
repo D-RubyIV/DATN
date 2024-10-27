@@ -72,38 +72,46 @@ const initialStaffState: Staff = {
   deleted: false,
 };
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string()
-    .required('Họ tên khách hàng là bắt buộc')
-    .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
-    .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
-    .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => value?.trim() === value && !value.includes('  '))
-    .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', value => 
-      value ? /^[\p{L}\s]+$/u.test(value) : false),
-  citizenId: Yup.string()
-    .matches(/^[0-9]{12}$/, "Căn cước công dân phải có đúng 12 chữ số")
-    .required("Căn cước công dân là bắt buộc"),
-  email: Yup.string()
-    .email("Email không hợp lệ")
-    .required("Email là bắt buộc")
-    .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => value?.trim() === value),
-  birthDay: Yup.date()
-    .required("Ngày sinh là bắt buộc")
-    .max(new Date(), "Ngày sinh không được là tương lai")
-    .test("age-range", "Nhân viên phải trong độ tuổi từ 16 đến 40", value => {
-        const age = dayjs().diff(dayjs(value), 'year'); 
-        return age >= 16 && age <= 40;
-    }),
-  address: Yup.string().required("Số nhà là bắt buộc"),
-  phone: Yup.string()
-    .required("Số điện thoại là bắt buộc")
-    .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ"),
-  province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
-  district: Yup.string().required("Quận/Huyện là bắt buộc"),
-  ward: Yup.string().required("Phường/Xã là bắt buộc"),
-  note: Yup.string(),
-  gender: Yup.boolean().required("Giới tính là bắt buộc"),
-});
+// const validationSchema = Yup.object().shape({
+//   name: Yup.string()
+//     .required('Họ tên khách hàng là bắt buộc')
+//     .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+//     .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+//     .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => value?.trim() === value && !value.includes('  '))
+//     .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', value =>
+//       value ? /^[\p{L}\s]+$/u.test(value) : false),
+//   citizenId: Yup.string()
+//     .matches(/^[0-9]{12}$/, "Căn cước công dân phải có đúng 12 chữ số")
+//     .required("Căn cước công dân là bắt buộc"),
+//   email: Yup.string()
+//     .email("Email không hợp lệ")
+//     .required("Email là bắt buộc")
+//     .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => value?.trim() === value)
+
+//     .test('email-unique', 'Email đã tồn tại', async (email) => {
+//       if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
+
+//       // Gọi API kiểm tra email có trùng không
+//       const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
+//       return !response.data.exists; // Nếu email đã tồn tại, trả về false
+//     }),
+//   birthDay: Yup.date()
+//     .required("Ngày sinh là bắt buộc")
+//     .max(new Date(), "Ngày sinh không được là tương lai")
+//     .test("age-range", "Nhân viên phải trong độ tuổi từ 16 đến 40", value => {
+//       const age = dayjs().diff(dayjs(value), 'year');
+//       return age >= 16 && age <= 40;
+//     }),
+//   address: Yup.string().required("Số nhà là bắt buộc"),
+//   phone: Yup.string()
+//     .required("Số điện thoại là bắt buộc")
+//     .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ"),
+//   province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
+//   district: Yup.string().required("Quận/Huyện là bắt buộc"),
+//   ward: Yup.string().required("Phường/Xã là bắt buộc"),
+//   note: Yup.string(),
+//   gender: Yup.boolean().required("Giới tính là bắt buộc"),
+// });
 
 const UpdateStaffPage = () => {
   const [staff, setStaff] = useState<Staff>(initialStaffState);
@@ -115,6 +123,60 @@ const UpdateStaffPage = () => {
   const [loadingWards, setLoadingWards] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const [initialContact, setInitialContact] = useState({
+    currentEmail: '',
+    currentPhone: '',
+    email: '', // Khởi tạo email
+    phone: '', // Khởi tạo phone
+  });
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string()
+      .required('Họ tên khách hàng là bắt buộc')
+      .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+      .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+      .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => value?.trim() === value && !value.includes('  '))
+      .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', value =>
+        value ? /^[\p{L}\s]+$/u.test(value) : false),
+    citizenId: Yup.string()
+      .matches(/^[0-9]{12}$/, "Căn cước công dân phải có đúng 12 chữ số")
+      .required("Căn cước công dân là bắt buộc"),
+    email: Yup.string()
+      .email("Email không hợp lệ")
+      .required("Email là bắt buộc")
+      .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => value?.trim() === value)
+
+      .test('email-unique', 'Email đã tồn tại', async (email) => {
+        if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
+
+        // Gọi API kiểm tra email có trùng không
+        const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-email`, { params: { email } });
+        return !response.data.exists; // Nếu email đã tồn tại, trả về false
+      }),
+    birthDay: Yup.date()
+      .required("Ngày sinh là bắt buộc")
+      .max(new Date(), "Ngày sinh không được là tương lai")
+      .test("age-range", "Nhân viên phải trong độ tuổi từ 16 đến 40", value => {
+        const age = dayjs().diff(dayjs(value), 'year');
+        return age >= 16 && age <= 40;
+      }),
+    address: Yup.string().required("Số nhà là bắt buộc"),
+    phone: Yup.string()
+      .required("Số điện thoại là bắt buộc")
+      .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
+      .test('phone-unique', 'Số điện thoại đã tồn tại', async (phone) => {
+        if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
+
+        // Gọi API kiểm tra số điện thoại có trùng không
+        const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-phone`, { params: { phone } });
+        return !response.data.exists; // Nếu phone đã tồn tại, trả về false
+      }),
+    province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
+    district: Yup.string().required("Quận/Huyện là bắt buộc"),
+    ward: Yup.string().required("Phường/Xã là bắt buộc"),
+    note: Yup.string(),
+    gender: Yup.boolean().required("Giới tính là bắt buộc"),
+  });
 
   useEffect(() => {
     if (id) {
@@ -195,18 +257,25 @@ const UpdateStaffPage = () => {
 
   const fetchStaff = async (id: string): Promise<Staff | undefined> => {
     try {
-        const response = await axios.get(`http://localhost:8080/api/v1/staffs/${id}`);
-        const fetchedStaff = response.data;
-        const formattedStaff = {
-            ...fetchedStaff,
-            birthDay: dayjs(fetchedStaff.birthDay, 'DD-MM-YYYY').format('YYYY-MM-DD')
-        };
-        setStaff(formattedStaff);
-        return formattedStaff; // Return the formatted data
+      const response = await axios.get(`http://localhost:8080/api/v1/staffs/${id}`);
+      console.log('Data: ', response)
+      const fetchedStaff = response.data;
+      const formattedStaff = {
+        ...fetchedStaff,
+        birthDay: dayjs(fetchedStaff.birthDay, 'DD-MM-YYYY').format('YYYY-MM-DD')
+      };
+      setStaff(formattedStaff);
+      setInitialContact({
+        currentEmail: fetchedStaff.email,
+        currentPhone: fetchedStaff.phone,
+        email: fetchedStaff.email, // Cập nhật email từ fetchedStaff
+        phone: fetchedStaff.phone,   // Cập nhật phone từ fetchedStaff
+      });
+      return formattedStaff; // Return the formatted data
     } catch (error) {
-        console.error('Error fetching staff:', error);
+      console.error('Error fetching staff:', error);
     }
-};
+  };
 
   const handleLocationChange = (
     type: 'province' | 'district' | 'ward',
@@ -255,16 +324,16 @@ const UpdateStaffPage = () => {
 
   const handleReset = async (setValues: (values: Staff, shouldValidate?: boolean) => Promise<void | FormikErrors<Staff>>) => {
     if (id) {
-        try {
-            const fetchedStaff = await fetchStaff(id);
-            if (fetchedStaff) {
-                setValues(fetchedStaff); // Repopulate the form with fetched data
-            }
-        } catch (error) {
-            console.error('Failed to reset form:', error);
+      try {
+        const fetchedStaff = await fetchStaff(id);
+        if (fetchedStaff) {
+          setValues(fetchedStaff); // Repopulate the form with fetched data
         }
+      } catch (error) {
+        console.error('Failed to reset form:', error);
+      }
     }
-};
+  };
 
   return (
     <div>
@@ -299,7 +368,7 @@ const UpdateStaffPage = () => {
                         </div>
                       )}
                     </FormItem>
-                    
+
                     <FormItem asterisk label="Căn cước công dân">
                       <Field
                         type="text"
