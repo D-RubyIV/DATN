@@ -8,6 +8,7 @@ import { updateOrder } from '@/services/OrderService'
 import { OrderResponseDTO } from '@/@types/order'
 import { Input } from '@/components/ui/Input'
 import { HiTicket } from 'react-icons/hi'
+import { Tooltip } from '@/components/ui/Tooltip'
 
 const PaymentInfo = ({ setIsOpenVoucherModal, selectedOrder, data, fetchSelectedOrder }: {
     setIsOpenVoucherModal: React.Dispatch<SetStateAction<boolean>>,
@@ -90,14 +91,18 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
             </div>
             <ul>
                 <PaymentRow label="Tổng tiền" value={data?.subTotal} />
-                <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '}/>
+                <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
                 <PaymentRow label="Giảm giá" value={data?.discount} prefix={' - '} />
                 <div className={'pb-4'}>
                     <Input placeholder={'Nhập mã giảm giá nếu có'} suffix={
-                        (<Button className={'cursor-pointer'} variant={'plain'} icon={<HiTicket />}
-                                 onClick={() => setIsOpenVoucherModal(true)}>
-
-                        </Button>)
+                        <Tooltip title="" className={'text-black'}>
+                            <Button
+                                className={'cursor-pointer'}
+                                variant={'plain'}
+                                icon={<HiTicket />}
+                                onClick={() => setIsOpenVoucherModal(true)}>
+                            </Button>
+                        </Tooltip>
                     }></Input>
                 </div>
                 <PaymentRow isLast label="Tổng thanh toán" value={data?.total} />

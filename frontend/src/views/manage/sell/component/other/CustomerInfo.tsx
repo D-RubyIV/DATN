@@ -7,6 +7,7 @@ import { HiExternalLink, HiMail, HiPencilAlt, HiPhone } from 'react-icons/hi'
 import { Link } from 'react-router-dom'
 import { updateOrder } from '@/services/OrderService'
 import instance from '@/axios/CustomAxios'
+import { Form } from 'formik'
 
 const CustomerInfo = ({ data, fetchSelectedOrder }: {
     data: OrderResponseDTO,
@@ -42,19 +43,19 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
     const handleChangeAddress = async (val: OrderAddressResponseDTOS) => {
         console.log(val)
         const payload = {
-            "provinceId": val.provinceId,
-            "provinceName": val.province,
-            "districtId": val.districtId,
-            "districtName": val.district,
-            "wardId": val.wardId,
-            "wardName": val.ward,
-            "address": val.detail,
-            "recipientName": val.name,
-            "phone": val.phone
+            'provinceId': val.provinceId,
+            'provinceName': val.province,
+            'districtId': val.districtId,
+            'districtName': val.district,
+            'wardId': val.wardId,
+            'wardName': val.ward,
+            'address': val.detail,
+            'recipientName': val.name,
+            'phone': val.phone
         }
         await instance.put(`/orders/${data.id}`, payload).then(function(response) {
             console.log(response)
-            fetchSelectedOrder();
+            fetchSelectedOrder()
         })
     }
 
@@ -122,43 +123,45 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                 <div
                     className={`${!isShipping ? (customer.code ? 'max-h-[0px]' : 'max-h-[0px]') : 'max-h-[600px]'} overflow-hidden duration-700 transition-all  font-semibold text-gray-500`}
                 >
-                    <address className="not-italic my-2">
-                        <div className={'flex flex-col gap-3 text-sm pb-4'}>
-                            <div>
-                                + Tên người nhận: {data?.recipientName || 'N/A'}
+                    <Card>
+                        <address className="not-italic my-2">
+                            <div className={'flex flex-col gap-3 text-sm pb-4'}>
+                                <div>
+                                    + Tên người nhận: {data?.recipientName || 'N/A'}
+                                </div>
+                                <div>
+                                    + Số điện thoại nhận: {data?.phone || 'N/A'}
+                                </div>
                             </div>
-                            <div>
-                                + Số điện thoại nhận: {data?.phone || 'N/A'}
-                            </div>
-                        </div>
-                        <Input
-                            disabled
-                            value={
-                                (data?.address || 'N/A') + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''
-                            }
-                            suffix={
-                                <Tooltip title="Chỉnh sửa địa chỉ">
-                                    <HiPencilAlt
-                                        className="text-lg cursor-pointer ml-1"
-                                        onClick={() => setIsOpenEditAddress(true)}
-                                    />
-                                </Tooltip>
-                            }
-                        />
-                    </address>
-                    <Radio.Group vertical className={'text-sm'}>
-                        {addresses.length ? (
-                            addresses.map((item, index) => (
-                                <Radio key={index} value={item.id} onClick={() => handleChangeAddress(item)}>
-                                    {item.name} - {item.phone} - {item.detail}, {item.ward}, {item.district}, {item.province}
-                                </Radio>
-                            ))
-                        ) : (
-                            <div className="flex justify-center items-center">
-                                <p className="py-2">Không có bất kỳ địa chỉ nào khác</p>
-                            </div>
-                        )}
-                    </Radio.Group>
+                            <Input
+                                disabled
+                                value={
+                                    (data?.address || 'N/A') + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''
+                                }
+                                suffix={
+                                    <Tooltip title="Chỉnh sửa" className={'text-black'}>
+                                        <HiPencilAlt
+                                            className="text-lg cursor-pointer ml-1"
+                                            onClick={() => setIsOpenEditAddress(true)}
+                                        />
+                                    </Tooltip>
+                                }
+                            />
+                        </address>
+                        <Radio.Group vertical className={'text-sm'}>
+                            {addresses.length ? (
+                                addresses.map((item, index) => (
+                                    <Radio key={index} value={item.id} onClick={() => handleChangeAddress(item)}>
+                                        {item.name} - {item.phone} - {item.detail}, {item.ward}, {item.district}, {item.province}
+                                    </Radio>
+                                ))
+                            ) : (
+                                <div className="flex justify-center items-center">
+                                    <p className="py-2">Không có bất kỳ địa chỉ nào khác</p>
+                                </div>
+                            )}
+                        </Radio.Group>
+                    </Card>
                 </div>
 
             </div>
