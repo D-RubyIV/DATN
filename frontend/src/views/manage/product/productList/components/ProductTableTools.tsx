@@ -23,8 +23,8 @@ const ProductTableTools = () => {
                 </Link>
                 <Link
                     className="block lg:inline-block md:mb-0 mb-4"
-                    // to="/manage/product/product-new"
-                    to="/manage/product/brand-list"
+                    to="/manage/product/product-new"
+                    // to="/manage/product/brand-list"
                 >
                     <Button
                         size='sm'
