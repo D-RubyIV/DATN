@@ -196,7 +196,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
         return colors.flatMap(color =>
             sizes.map(size => ({
                 id: newId(),
-                name: `${initialData.product?.name || ''} ${color.name}`,
+                name: `${initialData.product?.name || ''} màu ${color.name}`,
                 code: newCode(),
                 product: initialData.product || null,
                 color,

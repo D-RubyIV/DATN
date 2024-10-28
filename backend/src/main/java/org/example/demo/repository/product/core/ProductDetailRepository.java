@@ -1,6 +1,8 @@
 package org.example.demo.repository.product.core;
 
 import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.entity.product.properties.Color;
+import org.example.demo.entity.product.properties.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,11 +17,10 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     boolean existsByCodeAndName(String code, String name);
 
     ProductDetail findByCodeAndName(String code, String name);
-    ProductDetail findByName(String name);
-    List<ProductDetail> findByProductId(Integer productId);
-    @Query("SELECT p FROM ProductDetail p WHERE p.name = :name AND p.size = :size AND p.color = :color")
-    ProductDetail findByNameAndSizeAndColor(@Param("name") String name, @Param("size") String size, @Param("color") String color);
+    @Query("SELECT p FROM ProductDetail p WHERE p.name = ?1 AND p.size = ?2 AND p.color = ?3")
+    public abstract ProductDetail findByName(String name, Size size, Color color);
 
+    List<ProductDetail> findByProductId(Integer productId);
 
     @Query(value = """ 
              SELECT DISTINCT pd FROM ProductDetail pd

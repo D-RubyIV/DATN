@@ -97,7 +97,7 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         List<ProductDetail> savedProductDetails = new ArrayList<>();
 
         for (ProductDetailRequestDTO requestDTO : requestDTOList) {
-            ProductDetail existingProductDetail = productDetailRepository.findByName(requestDTO.getName());
+            ProductDetail existingProductDetail = productDetailRepository.findByName(requestDTO.getName(),requestDTO.getSize(),requestDTO.getColor());
 
             if (existingProductDetail != null) {
                 if (isProductDetailDuplicate(existingProductDetail, requestDTO)) {
