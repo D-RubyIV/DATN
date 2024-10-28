@@ -11,18 +11,32 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.example.demo.entity.order.core.Order;
+import org.example.demo.entity.order.properties.OrderDetail;
+import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.exception.CustomExceptions;
+import org.example.demo.repository.order.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
+@Service
 public class OrderPdfService {
+    @Autowired
+    private OrderRepository orderRepository;
 
-    public static void main(String[] args) {
+    public ByteArrayOutputStream exportPdf(Integer idOrder) {
         try {
+            Order order = orderRepository.findById(idOrder).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy hóa đơn này"));
+
             PDDocument document = new PDDocument();
             PDPage firstPage = new PDPage(PDRectangle.A4);
             document.addPage(firstPage);
@@ -92,42 +106,21 @@ public class OrderPdfService {
             myTable.addCell("Qty.", tableHeadColor);
             myTable.addCell("Total", tableHeadColor);
 
-            myTable.addCell("1.", tableBodyColor);
-            myTable.addCell("Masala Dosa.", tableBodyColor);
-            myTable.addCell("120", tableBodyColor);
-            myTable.addCell("3", tableBodyColor);
-            myTable.addCell("240", tableBodyColor);
 
-            myTable.addCell("1.", tableBodyColor);
-            myTable.addCell("Masala Dosa.", tableBodyColor);
-            myTable.addCell("120", tableBodyColor);
-            myTable.addCell("3", tableBodyColor);
-            myTable.addCell("240", tableBodyColor);
+            List<OrderDetail> orderDetailList = order.getOrderDetails();
+            for (int i = 0; i < orderDetailList.size(); i++) {
+                OrderDetail s = orderDetailList.get(i);
+                String productName = s.getProductDetail().getProduct().getName();
+                String quantity = s.getQuantity().toString();
+                String price = String.valueOf(Math.round(s.getProductDetail().getPrice()));
+                String subTotal = String.valueOf(Math.round(s.getProductDetail().getPrice() * s.getQuantity()));
 
-            myTable.addCell("1.", tableBodyColor);
-            myTable.addCell("Masala Dosa.", tableBodyColor);
-            myTable.addCell("120", tableBodyColor);
-            myTable.addCell("3", tableBodyColor);
-            myTable.addCell("240", tableBodyColor);
-
-            myTable.addCell("", null);
-            myTable.addCell("", null);
-            myTable.addCell("Sub Total", null);
-            myTable.addCell("", null);
-            myTable.addCell("880", null);
-
-            myTable.addCell("", null);
-            myTable.addCell("", null);
-            myTable.addCell("GST", null);
-            myTable.addCell("5%", null);
-            myTable.addCell("44", null);
-
-            myTable.addCell("", null);
-            myTable.addCell("", null);
-            myTable.addCell("Grand Total", tableHeadColor);
-            myTable.addCell("", tableHeadColor);
-            myTable.addCell("880", tableHeadColor);
-
+                myTable.addCell(String.valueOf(i), tableBodyColor);
+                myTable.addCell(productName, tableBodyColor);
+                myTable.addCell(quantity, tableBodyColor);
+                myTable.addCell(price, tableBodyColor);
+                myTable.addCell(subTotal, tableBodyColor);
+            }
 
             String[] paymentMethod = {"Methods of payment we accept:", "Cash, PhoneGe, GPay, RuPay", "Visa, Mastercard and American Express"};
             myTextClass.addMultiLineText(paymentMethod, 15, 25, 180, italicFont, 10, new Color(122, 122, 122));
@@ -156,13 +149,17 @@ public class OrderPdfService {
 
 
             contentStream.close();
-            document.save("C:\\PDF\\myPDF.pdf");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//            document.save("C:\\PDF\\myPDF.pdf");
+            document.save(outputStream);
             document.close();
             System.out.println("PDF CREATED");
+            return outputStream;
 
 
         } catch (Exception e) {
             log.error(e.getMessage());
+            return null;
         }
 
     }

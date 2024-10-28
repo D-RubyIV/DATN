@@ -8,6 +8,7 @@ import { displayDoc, displayLoading } from './util';
 import Document from './Document';
 import { useState } from 'react';
 import CloseButton from '@/components/ui/CloseButton';
+import instance from '@/axios/CustomAxios'
 
 const ff = new FileforgeClient({
     apiKey: '029d0f13-d976-43f8-a3ec-16955667b1d2',
@@ -19,24 +20,42 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
     const [viewInvoice, setViewInvoice] = useState<boolean>(false)
 
     const run = async () => {
-        displayLoading();
+        try {
+            const response = await instance.get(`orders/exportPdf/${data.id}`, {
+                responseType: 'blob', // Đảm bảo nhận phản hồi dưới dạng blob (file)
+            });
 
-        // This is used to prevent treeshaking during building
-        // @ts-ignore
-        await import('react-dom/server');
+            // Tạo URL từ Blob
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
 
-        const html = `<doctype html><html><body>${await compile(
-            <Document billDTO={data}></Document>
-        )}</body></html>`;
+            // Tạo iframe ẩn để in
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = url;
 
-        const { url } = await ff.pdf.generate(html, {
-            options: {
-                host: true,
-            },
-        });
+            // Đợi khi iframe tải xong và in
+            iframe.onload = () => {
+                if(iframe.contentWindow){
+                    iframe.contentWindow.print();
 
-        displayDoc(url);
+                }
+            };
+
+            // Thêm iframe vào body
+            document.body.appendChild(iframe);
+
+            // Dọn dẹp tài nguyên sau khi in xong
+            iframe.addEventListener('load', () => {
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    window.URL.revokeObjectURL(url);
+                }, 600000); // Để đảm bảo quá trình in hoàn tất trước khi xóa iframe
+            });
+        } catch (error) {
+            console.error("Failed to print PDF", error);
+        }
     };
+
 
     return (
         <div className=''>

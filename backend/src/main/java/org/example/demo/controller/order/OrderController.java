@@ -13,20 +13,27 @@ import org.example.demo.dto.order.other.UseVoucherDTO;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.example.demo.service.order.OrderService;
+import org.example.demo.service.pdf.OrderPdfService;
 import org.example.demo.util.phah04.PageableObject;
 import org.example.demo.validate.group.GroupCreate;
 import org.example.demo.validate.group.GroupUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -41,6 +48,8 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     @Autowired
     private OrderResponseMapper orderResponseMapper;
+    @Autowired
+    private OrderPdfService orderPdfService;
 
     @RequestMapping(value = "overview")
     public ResponseEntity<Page<OrderOverviewResponseDTO>> findAllByPageV2(
@@ -107,5 +116,22 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     @GetMapping(value = "count-order-detail")
     public ResponseEntity<List<ICountOrderDetailInOrder>> getCountOrder(@RequestParam("ids") List<Integer> ids) {
         return ResponseEntity.ok(orderService.getCountOrderDetailInOrder(ids));
+    }
+
+    @GetMapping("/exportPdf/{idOrder}")
+    public ResponseEntity<byte[]> downloadPdf(@PathVariable Integer idOrder) {
+        ByteArrayOutputStream pdfStream = orderPdfService.exportPdf(idOrder);
+        if (pdfStream == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        byte[] pdfBytes = pdfStream.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
     }
 }

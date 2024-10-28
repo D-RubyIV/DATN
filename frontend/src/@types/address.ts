@@ -17,6 +17,8 @@ export interface IWard {
 }
 
 export interface IAddress {
+    name?: string,
+    phone?: string,
     iprovince?: IProvince,
     idistrict?: IDistrict,
     iward?: IWard,
