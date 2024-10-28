@@ -9,7 +9,7 @@ const SleeveList = () => {
                 apiFunc={apiGetSalesSleeveOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesSleeve}
-                lablel='thương hiệu'
+                lablel='kiểu tay áo'
             />
         </>
     )

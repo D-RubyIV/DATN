@@ -9,7 +9,7 @@ const MaterialList = () => {
                 apiFunc={apiGetSalesMaterialOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiGetSalesMaterialOverview}
-                lablel='thương hiệu'
+                lablel='chất liệu'
             />
         </>
     )

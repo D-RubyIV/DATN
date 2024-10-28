@@ -9,7 +9,7 @@ const ColorList = () => {
                 apiFunc={apiGetSalesColorOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesBrand}
-                lablel='thương hiệu'
+                lablel='màu sắc'
             />
         </>
     )

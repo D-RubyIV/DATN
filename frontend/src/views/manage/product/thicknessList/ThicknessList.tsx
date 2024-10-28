@@ -9,7 +9,7 @@ const ThicknessList = () => {
                 apiFunc={apiGetSalesThicknessOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesThickness}
-                lablel='thương hiệu'
+                lablel='độ dày'
             />
         </>
     )

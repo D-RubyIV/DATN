@@ -9,7 +9,7 @@ const SizeList = () => {
                 apiFunc={apiGetSalesSizeOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesSize}
-                lablel='thương hiệu'
+                lablel='kích thước'
             />
         </>
     )

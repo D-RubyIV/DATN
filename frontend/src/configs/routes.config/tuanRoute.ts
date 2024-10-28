@@ -26,9 +26,68 @@ const tuanRoute: Routes = [
         component: lazy(() => import('@/views/manage/product/brandLisst')),
         authority: [],
     },
+    {
+        key: 'productManage',
+        path: 'manage/product/origin-list',
+        component: lazy(() => import('@/views/manage/product/originList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/style-list',
+        component: lazy(() => import('@/views/manage/product/styleList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/material-list',
+        component: lazy(() => import('@/views/manage/product/materialList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/collar-list',
+        component: lazy(() => import('@/views/manage/product/collarList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/sleeve-list',
+        component: lazy(() => import('@/views/manage/product/sleeveList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/texture-list',
+        component: lazy(() => import('@/views/manage/product/textureList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/thickness-list',
+        component: lazy(() => import('@/views/manage/product/thicknessList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/elasticity-list',
+        component: lazy(() => import('@/views/manage/product/elasticityList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/size-list',
+        component: lazy(() => import('@/views/manage/product/sizeList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/color-list',
+        component: lazy(() => import('@/views/manage/product/colorList')),
+        authority: [],
+    },
+
 ]
 
 export default tuanRoute
 
-
-// chacs do chua import file nayf vao file chinh

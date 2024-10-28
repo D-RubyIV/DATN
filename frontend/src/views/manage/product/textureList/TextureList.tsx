@@ -9,7 +9,7 @@ const TextureList = () => {
                 apiFunc={apiGetSalesTextureOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesTexture}
-                lablel='thương hiệu'
+                lablel='kết cấu'
             />
         </>
     )

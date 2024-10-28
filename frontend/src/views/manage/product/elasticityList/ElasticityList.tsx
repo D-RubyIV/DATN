@@ -9,7 +9,7 @@ const ElasticityList = () => {
                 apiFunc={apiGetSalesElasticityOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesElasticity}
-                lablel='thương hiệu'
+                lablel='độ co giãn'
             />
         </>
     )

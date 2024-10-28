@@ -9,7 +9,7 @@ const StyleList = () => {
                 apiFunc={apiGetSalesStyleOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesStyle}
-                lablel='thương hiệu'
+                lablel='kiểu dáng'
             />
         </>
     )

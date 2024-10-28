@@ -9,7 +9,7 @@ const OriginList = () => {
                 apiFunc={apiGetSalesOriginOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesOrigin}
-                lablel='thương hiệu'
+                lablel='xuất xứ'
             />
         </>
     )

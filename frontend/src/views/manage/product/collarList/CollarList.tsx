@@ -9,7 +9,7 @@ const CollarList = () => {
                 apiFunc={apiGetSalesCollarOverview}
                 apiDelete={apiDeleteSalesProducts}
                 apiAdd={apiCreateSalesCollar}
-                lablel='thương hiệu'
+                lablel='kiểu cổ áo'
             />
         </>
     )
