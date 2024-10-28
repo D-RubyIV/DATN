@@ -2,6 +2,7 @@ package org.example.demo.controller.staff;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
@@ -113,7 +114,7 @@ public class StaffController {
         try {
             StaffResponseDTO updatedStaffResponseDTO = staffService.update(id, requestDTO);
             return ResponseEntity.ok(updatedStaffResponseDTO);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | BadRequestException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Staff not found with id " + id, e);
         }
     }
@@ -136,6 +137,27 @@ public class StaffController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(Collections.emptyList());
         }
+    }
+
+    // API kiểm tra email có tồn tại hay không
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
+        boolean exists = staffService.isEmailExists(email);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
+    }
+
+    // API kiểm tra số điện thoại có tồn tại hay không
+    @GetMapping("/check-phone")
+    public ResponseEntity<Map<String, Boolean>> checkPhone(@RequestParam String phone) {
+        boolean exists = staffService.isPhoneExists(phone);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
+    }
+
+    // API kiểm tra CCCD có tồn tại hay không
+    @GetMapping("/check-citizenId")
+    public ResponseEntity<Map<String, Boolean>> checkCitizenId(@RequestParam String citizenId) {
+        boolean exists = staffService.isCitizenIdExists(citizenId);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
 
 

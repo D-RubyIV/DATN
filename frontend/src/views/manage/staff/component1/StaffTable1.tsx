@@ -30,10 +30,13 @@ type IStaff = {
   province: string;
   status: 'Active' | 'Inactive';
   birthDay: string;
-  gender: boolean;
+  gender: string;
   createdDate: string;
   role: any;
   deleted: false;
+  citizenId: string;
+  note: string;
+  password: string;
 };
 
 const StaffTableStaff = () => {
@@ -287,20 +290,20 @@ const StaffTableStaff = () => {
 
   const uploadExcel = async () => {
     if (!file) return;
-  
+
     const formData = new FormData();
     formData.append('file', file);
-  
+
     try {
       const response = await axios.post('http://localhost:8080/api/v1/staffs/upload-excel', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-  
+
       if (!Array.isArray(response.data) || response.data.length === 0) {
         toast.error('Không có dữ liệu để gửi email.');
         return;
       }
-  
+
       // Gửi email
       const emailPromises = response.data.map(async (item, index) => {
         const { name, email: toEmail, code, password } = item;
@@ -308,7 +311,7 @@ const StaffTableStaff = () => {
           toast.warn(`Thông tin không hợp lệ cho nhân viên ${index + 1}.`);
           return;
         }
-  
+
         const templateParams = {
           from_name: 'Fashion Canth Shop',
           from_email: 'no-reply@fashioncanthshop.com',
@@ -316,13 +319,23 @@ const StaffTableStaff = () => {
           to_email: toEmail,
           message: `Tài khoản của bạn:\nMã nhân viên: ${code}\nMật khẩu: ${password}`,
         };
-  
+
         try {
+          
+
+          // linh
+          //  await emailjs.send(
+          //   'service_t622scu',
+          //   'template_j3dv5du',
+          //   templateParams,
+          //   'OHyULXp7jha_7dpil',
+          // );
+
           await emailjs.send(
-            'service_t622scu',
-            'template_j3dv5du',
+            'service_kp8m1z8',
+            'template_lad6zvl',
             templateParams,
-            'OHyULXp7jha_7dpil',
+            '2TdUStOWX9A6vm7Ex',
           );
           console.log(`Email đã được gửi thành công cho ${name}`);
         } catch (emailError) {
@@ -330,10 +343,10 @@ const StaffTableStaff = () => {
           toast.error(`Lỗi khi gửi email cho ${name}`);
         }
       });
-  
+
       await Promise.all(emailPromises);
       toast.success('Tải tệp thành công và đã gửi thông tin qua email.');
-  
+
       fetchData(); // Tải lại dữ liệu
       setFile(null); // Reset file
       setIsPreviewConfirmed(false); // Reset trạng thái
@@ -343,20 +356,47 @@ const StaffTableStaff = () => {
       console.error('Error uploading file:', error);
     }
   };
-  
+
 
   const exportToExcel = () => {
     if (data.length === 0) {
       toast.info('Không có dữ liệu để xuất.');
       return;
     }
-    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    const formattedData = data.map((item, index) => ({
+      Stt: index + 1,                                   // Số thứ tự
+      'Tên': item.name,                                // Tên
+      'Email': item.email,                              // Email
+      'Số điện thoại': item.phone,                     // Số điện thoại
+      'Giới tính': item.gender ? 'Nam' : 'Nữ',        // Giới tính
+      'Ngày sinh': item.birthDay,                      // Ngày sinh
+      'CCCD': item.citizenId,                          // CCCD
+      'Địa chỉ': `${item.address}, ${item.ward}, ${item.district}, ${item.province}`, // Địa chỉ gộp
+      'Ghi chú': item.note,                            // Ghi chú
+      'Trạng thái': item.status === 'Active' ? 'Hoạt động' : 'Không hoạt động', // Trạng thái
+      // 'ID vai trò': item.role,                         // ID vai trò
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Nhân viên');
+
+    // Đặt tiêu đề cho worksheet
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh sách nhân viên');
+
+    // Tạo hàng tiêu đề (header) cho worksheet
+    const headers = ['Stt', 'Tên', 'Email', 'Số điện thoại', 'Giới tính', 'Ngày sinh', 'CCCD', 'Địa chỉ', 'Ghi chú', 'Trạng thái'];
+
+    // Thêm hàng tiêu đề vào worksheet
+    const headerRow = XLSX.utils.aoa_to_sheet([headers]);
+    XLSX.utils.sheet_add_json(worksheet, formattedData, { skipHeader: true, origin: 'A2' }); // Bỏ qua header mặc định
+    XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: 'A1' }); // Thêm header
+
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(blob, 'nhan_vien.xlsx');
+    saveAs(blob, 'danh_sach_nhan_vien.xlsx'); // Tên file hiển thị tiếng Việt
   };
+
 
   return (
     <>
@@ -370,7 +410,7 @@ const StaffTableStaff = () => {
               <div className="relative w-96">
                 <IoIosSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-lg pointer-events-none" />
                 <Input
-                  placeholder="Tìm Kiếm Theo Mã, Họ Và Tên, SDT, CCCD, Email..."
+                  placeholder="Tìm Kiếm Theo Mã, Họ Và Tên, SDT, CCCD, Email"
                   style={{ paddingLeft: '35px', height: '35px' }}
                   className="w-full"
                   value={searchTerm}
