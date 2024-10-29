@@ -3,15 +3,19 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.ThicknessRequestDTO;
+import org.example.demo.dto.product.response.properties.ThicknessResponseDTO;
 import org.example.demo.entity.product.properties.Thickness; // Đổi từ Texture sang Thickness
 import org.example.demo.mapper.product.request.properties.ThicknessRequestMapper; // Đổi từ TextureRequestMapper sang ThicknessRequestMapper
+import org.example.demo.mapper.product.response.properties.ThicknessResponseMapper;
 import org.example.demo.repository.product.properties.ThicknessRepository; // Đổi từ TextureRepository sang ThicknessRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +26,19 @@ public class ThicknessService implements IService<Thickness, Integer, ThicknessR
 
     @Autowired
     private ThicknessRequestMapper thicknessRequestMapper; // Đổi từ textureRequestMapper sang thicknessRequestMapper
+    @Autowired
+    private ThicknessResponseMapper thicknessResponseMapper;
+
+    public Page<ThicknessResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return thicknessRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> thicknessResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Thickness> findAll(Pageable pageable) { // Đổi từ Texture sang Thickness
         return thicknessRepository.findAll(pageable);

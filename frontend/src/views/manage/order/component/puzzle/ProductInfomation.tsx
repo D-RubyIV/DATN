@@ -1,13 +1,13 @@
-import { ProductDetailOverviewPhah04 } from "../../../../../@types/order";
+import { ProductDetailOverviewPhah04 } from "../../store";
 
-const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: ProductDetailOverviewPhah04 }) => {
+const ProductInfomation = ({ seletedProductDetail }: { seletedProductDetail: ProductDetailOverviewPhah04 }) => {
     return (
-        <div className="grid grid-cols-3">
-            <div className={'col-span-2'}>
+        <div className="grid grid-cols-2">
+            <div>
                 <div className="font-semibold text-xl py-2">
                     <div>
-                        <span>Sản phẩm: </span>
-                        <span className='text-gray-600'>
+                        <span>Tên: </span>
+                        <span className='text-black'>
                             {seletedProductDetail?.name}
                         </span>
                     </div>
@@ -16,7 +16,7 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
                     <div>
                         <img className='rounded-md object-cover h-[260px] w-[200px]' src='https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png' alt='' />
                     </div>
-                    <div className='text-sm py-2 inline-flex flex-col justify-between'>
+                    <div className='text-[16px] py-2 inline-flex flex-col justify-between'>
                         <li>
                             <span>Mã: </span>
                             <span className='font-semibold'>{seletedProductDetail?.code}</span>
@@ -78,4 +78,4 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
     );
 }
 
-export default ProductInformation;
+export default ProductInfomation;

@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.OriginRequestDTO;
+import org.example.demo.dto.product.response.properties.MaterialResponseDTO;
+import org.example.demo.dto.product.response.properties.OriginResponseDTO;
 import org.example.demo.entity.product.properties.Origin; // Đổi từ Material sang Origin
 import org.example.demo.mapper.product.request.properties.OriginRequestMapper; // Đổi từ MaterialRequestMapper sang OriginRequestMapper
+import org.example.demo.mapper.product.response.properties.OriginResponseMapper;
 import org.example.demo.repository.product.properties.OriginRepository; // Đổi từ MaterialRepository sang OriginRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +27,20 @@ public class OriginService implements IService<Origin, Integer, OriginRequestDTO
 
     @Autowired
     private OriginRequestMapper originRequestMapper; // Đổi từ materialRequestMapper sang originRequestMapper
+
+    @Autowired
+    private OriginResponseMapper originResponseMapper;
+
+    public Page<OriginResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return originRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> originResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Origin> findAll(Pageable pageable) { // Đổi từ Material sang Origin
         return originRepository.findAll(pageable);

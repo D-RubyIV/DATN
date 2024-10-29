@@ -1,20 +1,33 @@
 package org.example.demo.controller.product.properties;
 
+import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.CollarRequestDTO;
+import org.example.demo.dto.product.response.properties.BrandResponseDTO;
 import org.example.demo.dto.product.response.properties.CollarResponseDTO;
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Collar; // Đổi từ Brand sang Collar
 import org.example.demo.mapper.product.request.properties.CollarRequestMapper; // Đổi từ BrandRequestMapper sang CollarRequestMapper
 import org.example.demo.mapper.product.response.properties.CollarResponseMapper;
 import org.example.demo.service.product.properties.CollarService; // Đổi từ BrandService sang CollarService
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("collar")
@@ -33,9 +46,27 @@ public class CollarController {
         return ResponseEntity.ok(collarService.findAll(pageable)); // Đổi từ brandService sang collarService
     }
 
-    @GetMapping("/collar")
-    public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok(collarService.findAllList());
+    @GetMapping("/collar-list")
+    public ResponseEntity<Map<String, List<Collar>>> findAll() {
+        List<Collar> collars = collarService.findAllList();
+        Map<String, List<Collar>> response = new HashMap<>();
+        response.put("data", collars);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @RequestMapping(value = "overview")
+    public ResponseEntity<Page<CollarResponseDTO>> findAllByPageV3(
+            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
+            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdTo,
+            @Valid @RequestBody PageableObject pageableObject,
+            BindingResult bindingResult
+    ) throws BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        String query = pageableObject.getQuery();
+        return ResponseEntity.ok(collarService.findAllOverviewByPage( createdFrom, createdTo, pageableObject));
     }
 
 
@@ -56,9 +87,12 @@ public class CollarController {
             Collar updatedCollar = collarService.update(id, requestDTO); // Đổi từ brandService sang collarService
 
             CollarResponseDTO responseDTO = new CollarResponseDTO( // Đổi từ BrandResponseDTO sang CollarResponseDTO
+                    updatedCollar.getId(),
                     updatedCollar.getCode(),
                     updatedCollar.getName(),
-                    updatedCollar.getDeleted()
+                    updatedCollar.getDeleted(),
+                    updatedCollar.getCreatedDate(),
+                    updatedCollar.getUpdatedDate()
             );
 
             return ResponseEntity.ok(responseDTO);
@@ -83,9 +117,12 @@ public class CollarController {
             Collar collar = collarService.save(requestDTO); // Đổi từ brandService sang collarService
 
             CollarResponseDTO responseDTO = new CollarResponseDTO( // Đổi từ BrandResponseDTO sang CollarResponseDTO
+                    collar.getId(),
                     collar.getCode(),
                     collar.getName(),
-                    collar.getDeleted()
+                    collar.getDeleted(),
+                    collar.getCreatedDate(),
+                    collar.getUpdatedDate()
             );
 
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);

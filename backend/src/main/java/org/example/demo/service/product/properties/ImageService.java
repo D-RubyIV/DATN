@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.ImageRequestDTO;
+import org.example.demo.dto.product.response.properties.ElasticityResponseDTO;
+import org.example.demo.dto.product.response.properties.ImageResponseDTO;
 import org.example.demo.entity.product.properties.Image; // Đổi từ Elasticity sang Image
 import org.example.demo.mapper.product.request.properties.ImageRequestMapper; // Đổi từ ElasticityRequestMapper sang ImageRequestMapper
+import org.example.demo.mapper.product.response.properties.ImageResponseMapper;
 import org.example.demo.repository.product.properties.ImageRepository; // Đổi từ ElasticityRepository sang ImageRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +27,20 @@ public class ImageService implements IService<Image, Integer, ImageRequestDTO> {
 
     @Autowired
     private ImageRequestMapper imageRequestMapper; // Đổi từ elasticityRequestMapper sang imageRequestMapper
+
+    @Autowired
+    private ImageResponseMapper imageResponseMapper;
+
+    public Page<ImageResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return imageRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> imageResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Image> findAll(Pageable pageable) { // Đổi từ Elasticity sang Image
         return imageRepository.findAll(pageable);

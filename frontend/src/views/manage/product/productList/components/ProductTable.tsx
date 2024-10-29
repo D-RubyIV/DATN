@@ -8,7 +8,7 @@ import Switcher from '@/components/ui/Switcher'
 import {
     getProducts,
     setTableData,
-    setSelectedProduct,
+    setSelectedProduct, 
     toggleDeleteConfirmation,
     useAppDispatch,
     useAppSelector,
@@ -21,7 +21,7 @@ import type {
     ColumnDef,
 } from '@/components/shared/DataTable'
 import { Button } from '@/components/ui'
-import { HiEye } from 'react-icons/hi'
+import { FaEye } from "react-icons/fa";
 
 type Product = {
     id: string
@@ -93,8 +93,8 @@ const ProductTable = () => {
 
     useEffect(() => {
         fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageIndex, pageSize, sort])
+
 
     useEffect(() => {
         if (tableRef) {
@@ -107,7 +107,7 @@ const ProductTable = () => {
         [pageIndex, pageSize, sort, query, total]
     )
 
-
+ 
     const fetchData = () => {
         dispatch(getProducts({ pageIndex, pageSize, sort, query, filterData }))
 
@@ -125,7 +125,7 @@ const ProductTable = () => {
         }
         return (
             <div className="flex w-full justify-start gap-2 items-center">
-                <HiEye onClick={() => handleRowClick(row)} size={20} className='mr-3 text-2xl' style={{ cursor: 'pointer' }}></HiEye>
+                <FaEye onClick={() => handleRowClick(row)} size={20} className='mr-3 text-2xl' style={{ cursor: 'pointer' }}></FaEye>
                 <Switcher
                     className='text-sm'
                     unCheckedContent={withIcon(<RiMoonClearLine />)}
@@ -142,7 +142,7 @@ const ProductTable = () => {
             {
                 header: '#',
                 id: 'index',
-                cell: (props) => {
+                cell: (props:any) => {
                     const { pageIndex, pageSize } = props.table.getState().pagination; // Lấy thông tin phân trang
                     const index = (pageIndex) * pageSize + (props.row.index + 1); // Tính số thứ tự
                     return <span>{index}</span>; // Hiển thị số thứ tự
@@ -151,7 +151,7 @@ const ProductTable = () => {
             {
                 header: 'Mã',
                 accessorKey: 'code',
-                cell: (props) => {
+                cell: (props:any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.code}</span>
                 },
@@ -159,7 +159,7 @@ const ProductTable = () => {
             {
                 header: 'Tên',
                 accessorKey: 'name',
-                cell: (props) => {
+                cell: (props:any) => {
                     const row = props.row.original
                     return <ProductColumn row={row} />
                 },
@@ -167,7 +167,7 @@ const ProductTable = () => {
             {
                 header: 'Số Lượng',
                 accessorKey: 'quantity',
-                cell: (props) => {
+                cell: (props:any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.quantity}</span>
                 },

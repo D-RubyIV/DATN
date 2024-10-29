@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.ProductRequestDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityResponseDTO;
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Product;
 import org.example.demo.mapper.product.request.properties.ProductRequestMapper;
 import org.example.demo.mapper.product.response.properties.ProductResponseMapper;
@@ -25,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -47,19 +51,7 @@ public class ProductController {
     }
 
 
-//    @RequestMapping(value = "overview")
-//    public ResponseEntity<Page<ProductResponseDTO>> findAllByPageV2(
-//            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createdFrom,
-//            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate createdTo,
-//            @Valid @RequestBody PageableObject pageableObject,
-//            BindingResult bindingResult
-//    ) throws BindException {
-//        if (bindingResult.hasErrors()) {
-//            throw new BindException(bindingResult);
-//        }
-//        String query = pageableObject.getQuery();
-//        return ResponseEntity.ok(productService.findAllOverviewByPage( createdFrom, createdTo, pageableObject));
-//    }
+
 
 
     @RequestMapping(value = "overview")
@@ -77,10 +69,16 @@ public class ProductController {
     }
 
 
-    @GetMapping("/product")
-    public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok(productService.findAllList());
+
+    @GetMapping("/product-list")
+    public ResponseEntity<Map<String, List<Product>>> findAll() {
+        List<Product> products = productService.findAllList();
+        Map<String, List<Product>> response = new HashMap<>();
+        response.put("data", products);
+        return ResponseEntity.ok(response);
     }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductDetailById(@PathVariable Integer id) throws BadRequestException {
         Product product = productService.findById(id);

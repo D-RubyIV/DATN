@@ -1,5 +1,4 @@
 import Button from '@/components/ui/Button'
-import { HiDownload, HiUpload } from 'react-icons/hi'
 import { FaFileDownload, FaFileUpload } from "react-icons/fa";
 
 import ProductDetailTableSearch from './ProductDetailTableSearch'

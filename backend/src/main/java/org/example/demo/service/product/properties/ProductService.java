@@ -45,16 +45,6 @@ public class ProductService implements IService<Product, Integer, ProductRequest
         return productRepository.findAll();
     }
 
-//    public Page<ProductResponseDTO> findAllOverviewByPage(
-//            LocalDate createdFrom,
-//            LocalDate createdTo,
-//            PageableObject pageableObject
-//    ) {
-//        Pageable pageable = pageableObject.toPageRequest();
-//        String query = pageableObject.getQuery();
-//
-//        return productRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> productResponseMapper.toOverViewDTO(s));
-//    }
 
 
     public Page<ProductWithQuantityResponseDTO> findAllOverviewByPageV3(

@@ -1,20 +1,36 @@
 package org.example.demo.controller.product.properties;
 
+import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.product.requests.properties.BrandRequestDTO;
 import org.example.demo.dto.product.requests.properties.OriginRequestDTO;
+import org.example.demo.dto.product.response.properties.BrandResponseDTO;
+import org.example.demo.dto.product.response.properties.CollarResponseDTO;
 import org.example.demo.dto.product.response.properties.OriginResponseDTO;
+import org.example.demo.entity.product.properties.Brand;
+import org.example.demo.entity.product.properties.Material;
 import org.example.demo.entity.product.properties.Origin; // Đổi từ Material sang Origin
 import org.example.demo.mapper.product.request.properties.OriginRequestMapper; // Đổi từ MaterialRequestMapper sang OriginRequestMapper
 import org.example.demo.mapper.product.response.properties.OriginResponseMapper;
 import org.example.demo.service.product.properties.OriginService; // Đổi từ MaterialService sang OriginService
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("origin")
@@ -32,10 +48,34 @@ public class OriginController {
     ) {
         return ResponseEntity.ok(originService.findAll(pageable)); // Đổi từ materialService sang originService
     }
-    @GetMapping("/origin")
-    public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok(originService.findAllList());
+
+    @GetMapping("/origin-list")
+    public ResponseEntity<Map<String, List<Origin>>> findAll() {
+        List<Origin> origins = originService.findAllList();
+        Map<String, List<Origin>> response = new HashMap<>();
+        response.put("data", origins);
+        return ResponseEntity.ok(response);
     }
+
+
+
+
+
+    @RequestMapping(value = "overview")
+    public ResponseEntity<Page<OriginResponseDTO>> findAllByPageV3(
+            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
+            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdTo,
+            @Valid @RequestBody PageableObject pageableObject,
+            BindingResult bindingResult
+    ) throws BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        String query = pageableObject.getQuery();
+        return ResponseEntity.ok(originService.findAllOverviewByPage( createdFrom, createdTo, pageableObject));
+    }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Origin> getOriginDetailById(@PathVariable Integer id) throws BadRequestException { // Đổi từ Material sang Origin
@@ -54,9 +94,12 @@ public class OriginController {
             Origin updatedOrigin = originService.update(id, requestDTO); // Đổi từ materialService sang originService
 
             OriginResponseDTO responseDTO = new OriginResponseDTO( // Đổi từ MaterialResponseDTO sang OriginResponseDTO
+                    updatedOrigin.getId(),
                     updatedOrigin.getCode(),
                     updatedOrigin.getName(),
-                    updatedOrigin.getDeleted()
+                    updatedOrigin.getDeleted(),
+                    updatedOrigin.getCreatedDate(),
+                    updatedOrigin.getUpdatedDate()
             );
 
             return ResponseEntity.ok(responseDTO);
@@ -76,14 +119,17 @@ public class OriginController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<OriginResponseDTO> saveOrigin(@RequestBody OriginRequestDTO requestDTO) { // Đổi từ MaterialRequestDTO sang OriginRequestDTO
+    public ResponseEntity<OriginResponseDTO> saveOrigin(@RequestBody OriginRequestDTO requestDTO) {
         try {
-            Origin origin = originService.save(requestDTO); // Đổi từ materialService sang originService
+            Origin origin = originService.save(requestDTO);
 
-            OriginResponseDTO responseDTO = new OriginResponseDTO( // Đổi từ MaterialResponseDTO sang OriginResponseDTO
+            OriginResponseDTO responseDTO = new OriginResponseDTO(
+                    origin.getId(),
                     origin.getCode(),
                     origin.getName(),
-                    origin.getDeleted()
+                    origin.getDeleted(),
+                    origin.getCreatedDate(),
+                    origin.getUpdatedDate() // Đảm bảo trường này được thiết lập đúng
             );
 
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -91,4 +137,5 @@ public class OriginController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
+
 }

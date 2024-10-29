@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.TextureRequestDTO;
+import org.example.demo.dto.product.response.properties.StyleResponseDTO;
+import org.example.demo.dto.product.response.properties.TextureResponseDTO;
 import org.example.demo.entity.product.properties.Texture; // Đổi từ Style sang Texture
 import org.example.demo.mapper.product.request.properties.TextureRequestMapper; // Đổi từ StyleRequestMapper sang TextureRequestMapper
+import org.example.demo.mapper.product.response.properties.TextureResponseMapper;
 import org.example.demo.repository.product.properties.TextureRepository; // Đổi từ StyleRepository sang TextureRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +27,19 @@ public class TextureService implements IService<Texture, Integer, TextureRequest
 
     @Autowired
     private TextureRequestMapper textureRequestMapper; // Đổi từ styleRequestMapper sang textureRequestMapper
+    @Autowired
+    private TextureResponseMapper textureResponseMapper;
+
+    public Page<TextureResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return textureRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> textureResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Texture> findAll(Pageable pageable) { // Đổi từ Style sang Texture
         return textureRepository.findAll(pageable);

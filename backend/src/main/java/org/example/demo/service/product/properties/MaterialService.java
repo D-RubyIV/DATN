@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.MaterialRequestDTO;
+import org.example.demo.dto.product.response.properties.ImageResponseDTO;
+import org.example.demo.dto.product.response.properties.MaterialResponseDTO;
 import org.example.demo.entity.product.properties.Material; // Đổi từ Image sang Material
 import org.example.demo.mapper.product.request.properties.MaterialRequestMapper; // Đổi từ ImageRequestMapper sang MaterialRequestMapper
+import org.example.demo.mapper.product.response.properties.MaterialResponseMapper;
 import org.example.demo.repository.product.properties.MaterialRepository; // Đổi từ ImageRepository sang MaterialRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +27,19 @@ public class MaterialService implements IService<Material, Integer, MaterialRequ
 
     @Autowired
     private MaterialRequestMapper materialRequestMapper; // Đổi từ imageRequestMapper sang materialRequestMapper
+    @Autowired
+    private MaterialResponseMapper materialResponseMapper;
+
+    public Page<MaterialResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return materialRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> materialResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Material> findAll(Pageable pageable) { // Đổi từ Image sang Material
         return materialRepository.findAll(pageable);

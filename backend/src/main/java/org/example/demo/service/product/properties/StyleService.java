@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.StyleRequestDTO;
+import org.example.demo.dto.product.response.properties.SleeveResponseDTO;
+import org.example.demo.dto.product.response.properties.StyleResponseDTO;
 import org.example.demo.entity.product.properties.Style; // Đổi từ Sleeve sang Style
 import org.example.demo.mapper.product.request.properties.StyleRequestMapper; // Đổi từ SleeveRequestMapper sang StyleRequestMapper
+import org.example.demo.mapper.product.response.properties.StyleResponseMapper;
 import org.example.demo.repository.product.properties.StyleRepository; // Đổi từ SleeveRepository sang StyleRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,7 +26,22 @@ public class StyleService implements IService<Style, Integer, StyleRequestDTO> {
     private StyleRepository styleRepository; // Đổi từ sleeveRepository sang styleRepository
 
     @Autowired
-    private StyleRequestMapper styleRequestMapper; // Đổi từ sleeveRequestMapper sang styleRequestMapper
+    private StyleRequestMapper styleRequestMapper; // Đổi từ sleeveRequestMapper sang
+
+    @Autowired
+    private StyleResponseMapper styleResponseMapper;
+
+
+    public Page<StyleResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return styleRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> styleResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Style> findAll(Pageable pageable) { // Đổi từ Sleeve sang Style
         return styleRepository.findAll(pageable);

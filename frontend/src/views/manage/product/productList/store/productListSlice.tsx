@@ -46,7 +46,7 @@ export const SLICE_NAME = 'salesProductList'
 export const getProducts = createAsyncThunk(
     SLICE_NAME + '/getProducts',
     async (data: GetSalesProductsRequest) => {
-        const response = await apiGetSalesProducts<
+        const response = await apiGetSalesProducts< 
             GetSalesProductsResponse,
             GetSalesProductsRequest
         >(data)
@@ -57,19 +57,13 @@ export const getProducts = createAsyncThunk(
 export const deleteProduct = async (params: { id: string | string[] }) => {
     try {
         const response = await apiDeleteSalesProducts<boolean>(params.id);
-        console.log(response); // Kiểm tra phản hồi từ API
-
-        // Kiểm tra trạng thái HTTP
         if (response.status === 204) {
-            console.log('Product deleted successfully'); // Xóa thành công
-            return true; // Hoặc bất kỳ giá trị nào để chỉ ra rằng xóa thành công
+            return true; 
         } else {
-            console.error('Unexpected response status:', response.status);
-            return false; // Xử lý trường hợp không thành công
+            return false; 
         }
     } catch (error) {
-        console.error('Error deleting product:', error); // In lỗi ra console
-        throw error; // Ném lại lỗi nếu cần xử lý tiếp
+        throw error; 
     }
 };
 
@@ -100,7 +94,7 @@ const initialState: SalesProductListState = {
     },
 }
 
-const productListSlice = createSlice({
+const productListSlice = createSlice({ 
     name: `${SLICE_NAME}/state`,
     initialState,
     reducers: {
@@ -134,7 +128,7 @@ const productListSlice = createSlice({
 })
 
 export const {
-    updateProductList,
+    updateProductList, 
     setTableData,
     setFilterData,
     toggleDeleteConfirmation,

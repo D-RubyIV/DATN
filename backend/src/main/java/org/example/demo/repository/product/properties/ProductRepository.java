@@ -58,26 +58,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             Pageable pageable
     );
 
-//    @Query("SELECT new org.example.demo.dto.product.response.properties.ProductWithQuantityDTO( " +
-//            "p.id, " +
-//            "p.code, " +
-//            "p.name, " +
-//            "p.deleted, " +
-//            "COALESCE(SUM(pd.quantity), 0), " +
-//            "p.createdDate, " +
-//            "p.updatedDate) " +
-//            "FROM Product p " +
-//            "LEFT JOIN ProductDetail pd ON pd.product.id = p.id " +
-//            "WHERE (:query IS NULL OR LOWER(p.code) LIKE LOWER(CONCAT('%', :query, '%')) " +
-//            "OR LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%'))) " +
-//            "AND (:createdFrom IS NULL OR p.createdDate >= :createdFrom) " +
-//            "AND (:createdTo IS NULL OR p.createdDate <= :createdTo) " +
-//            "GROUP BY p.id, p.code, p.name, p.deleted, p.createdDate, p.updatedDate")
-//    Page<ProductWithQuantityDTO> findAllByPageWithQuery(
-//            @Param("query") String query,
-//            @Param("createdFrom") LocalDate createdFrom,
-//            @Param("createdTo") LocalDate createdTo,
-//            Pageable pageable);
+
 
 
 }

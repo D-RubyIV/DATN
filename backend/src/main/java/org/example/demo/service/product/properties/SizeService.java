@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.SizeRequestDTO;
+import org.example.demo.dto.product.response.properties.OriginResponseDTO;
+import org.example.demo.dto.product.response.properties.SizeResponseDTO;
 import org.example.demo.entity.product.properties.Size; // Đổi từ Origin sang Size
 import org.example.demo.mapper.product.request.properties.SizeRequestMapper; // Đổi từ OriginRequestMapper sang SizeRequestMapper
+import org.example.demo.mapper.product.response.properties.SizeResponseMapper;
 import org.example.demo.repository.product.properties.SizeRepository; // Đổi từ OriginRepository sang SizeRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,7 +26,22 @@ public class SizeService implements IService<Size, Integer, SizeRequestDTO> { //
     private SizeRepository sizeRepository; // Đổi từ originRepository sang sizeRepository
 
     @Autowired
-    private SizeRequestMapper sizeRequestMapper; // Đổi từ originRequestMapper sang sizeRequestMapper
+    private SizeRequestMapper sizeRequestMapper; // Đổi từ originRequestMapper sang
+
+    @Autowired
+    private SizeResponseMapper sizeResponseMapper;
+
+
+    public Page<SizeResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return sizeRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> sizeResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Size> findAll(Pageable pageable) { // Đổi từ Origin sang Size
         return sizeRepository.findAll(pageable);

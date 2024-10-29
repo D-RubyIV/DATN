@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.SleeveRequestDTO;
+import org.example.demo.dto.product.response.properties.SizeResponseDTO;
+import org.example.demo.dto.product.response.properties.SleeveResponseDTO;
 import org.example.demo.entity.product.properties.Sleeve; // Đổi từ Size sang Sleeve
 import org.example.demo.mapper.product.request.properties.SleeveRequestMapper; // Đổi từ SizeRequestMapper sang SleeveRequestMapper
+import org.example.demo.mapper.product.response.properties.SleeveResponseMapper;
 import org.example.demo.repository.product.properties.SleeveRepository; // Đổi từ SizeRepository sang SleeveRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +27,20 @@ public class SleeveService implements IService<Sleeve, Integer, SleeveRequestDTO
 
     @Autowired
     private SleeveRequestMapper sleeveRequestMapper; // Đổi từ sizeRequestMapper sang sleeveRequestMapper
+    @Autowired
+    private SleeveResponseMapper  sleeveResponseMapper;
+
+
+    public Page<SleeveResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return sleeveRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> sleeveResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Sleeve> findAll(Pageable pageable) { // Đổi từ Size sang Sleeve
         return sleeveRepository.findAll(pageable);

@@ -3,15 +3,20 @@ package org.example.demo.service.product.properties;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.CollarRequestDTO;
+import org.example.demo.dto.product.response.properties.BrandResponseDTO;
+import org.example.demo.dto.product.response.properties.CollarResponseDTO;
 import org.example.demo.entity.product.properties.Collar; // Đổi từ Brand sang Collar
 import org.example.demo.mapper.product.request.properties.CollarRequestMapper; // Đổi từ BrandRequestMapper sang CollarRequestMapper
+import org.example.demo.mapper.product.response.properties.CollarResponseMapper;
 import org.example.demo.repository.product.properties.CollarRepository; // Đổi từ BrandRepository sang CollarRepository
 import org.example.demo.service.IService;
+import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,6 +27,21 @@ public class CollarService implements IService<Collar, Integer, CollarRequestDTO
 
     @Autowired
     private CollarRequestMapper collarRequestMapper; // Đổi từ brandRequestMapper sang collarRequestMapper
+
+    @Autowired
+    private CollarResponseMapper collarResponseMapper;
+
+
+    public Page<CollarResponseDTO> findAllOverviewByPage(
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        return collarRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> collarResponseMapper.toOverViewDTO(s));
+    }
 
     public Page<Collar> findAll(Pageable pageable) { // Đổi từ Brand sang Collar
         return collarRepository.findAll(pageable);

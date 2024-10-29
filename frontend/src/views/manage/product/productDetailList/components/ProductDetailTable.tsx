@@ -135,7 +135,7 @@ const ProductDetailColumn = ({ row }: { row: ProductDetail }) => {
 const ProductDetailTable = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
     const dispatch = useAppDispatch()
-    const{ id } = useParams();
+    const{ id  } = useParams();
     const productId = parseInt(id, 10);
     const { pageIndex, pageSize, sort, query, total } = useAppSelector(
         (state) => state.salesProductDetailList.data.tableData
@@ -170,7 +170,7 @@ const ProductDetailTable = () => {
             {
                 header: '#',
                 id: 'index',
-                cell: (props) => {
+                cell: (props: any) => {
                     const { pageIndex, pageSize } = props.table.getState().pagination; // Lấy thông tin phân trang
                     const index = (pageIndex) * pageSize + (props.row.index + 1); // Tính số thứ tự
                     return <span>{index}</span>; // Hiển thị số thứ tự
@@ -179,7 +179,7 @@ const ProductDetailTable = () => {
             {
                 header: 'Mã',
                 accessorKey: 'code',
-                cell: (props) => {
+                cell: (props: any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.code}</span>
                 },
@@ -187,7 +187,7 @@ const ProductDetailTable = () => {
             {
                 header: 'Tên',
                 accessorKey: 'name',
-                cell: (props) => {
+                cell: (props: any) => {
                     const row = props.row.original
                     return <ProductDetailColumn row={row} />
                 },
@@ -195,7 +195,7 @@ const ProductDetailTable = () => {
             {
                 header: 'Màu Sắc',
                 accessorKey: 'color.name',
-                cell: (props) => {
+                cell: (props: any) => {
                     const row = props.row.original
                     // Màu nền dựa trên tên màu
                     return <span className=" block w-20 h-4"
@@ -208,7 +208,7 @@ const ProductDetailTable = () => {
             {
                 header: 'Kích Thước',
                 accessorKey: 'size.name',
-                cell: (props) => {
+                cell: (props: any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.size.name}</span>
                 },
@@ -216,7 +216,7 @@ const ProductDetailTable = () => {
             {
                 header: 'Giá',
                 accessorKey: 'price',
-                cell: (props) => {
+                cell: (props: any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.price}</span>
                 },
@@ -224,7 +224,7 @@ const ProductDetailTable = () => {
             {
                 header: 'Số Lượng',
                 accessorKey: 'quantity',
-                cell: (props) => {
+                cell: (props: any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.quantity}</span>
                 },
@@ -232,7 +232,7 @@ const ProductDetailTable = () => {
             {
                 header: 'Trạng thái',
                 accessorKey: 'status',
-                cell: (props) => {
+                cell: (props: any) => {
                     const { quantity } = props.row.original;
                     const status = getInventoryStatus(quantity);
 
@@ -251,7 +251,7 @@ const ProductDetailTable = () => {
             {
                 header: '',
                 id: 'action',
-                cell: (props) => <ActionColumn row={props.row.original} />,
+                cell: (props: any) => <ActionColumn row={props.row.original} />,
             },
         ],
         []
@@ -297,7 +297,6 @@ const ProductDetailTable = () => {
                 onPaginationChange={onPaginationChange}
                 onSelectChange={onSelectChange}
                 onSort={onSort}
-                onRowClick={handleRowClick}
             />
             {/* <ProductDeleteConfirmation /> */}
         </>

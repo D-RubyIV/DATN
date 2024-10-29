@@ -63,6 +63,8 @@ public class ProductDetailController {
         return ResponseEntity.ok(productDetails);
     }
 
+
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductDetail> findById(@PathVariable Integer id) {
         try {
@@ -108,16 +110,12 @@ public class ProductDetailController {
 
     @PostMapping("saveAll")
     public ResponseEntity<List<ProductDetail>> saveAll(@Valid @RequestBody List<ProductDetailRequestDTO> requestDTOList) {
+        System.out.println("--------------------");
         try {
             List<ProductDetail> savedProductDetails = productDetailService.saveAll(requestDTOList);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProductDetails);
         } catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
-    }
-
-    @GetMapping("find-by-code/{code}")
-    public ResponseEntity<?> findByCode(@PathVariable String code) {
-        return ResponseEntity.ok(productDetailService.findByCode(code));
     }
 }

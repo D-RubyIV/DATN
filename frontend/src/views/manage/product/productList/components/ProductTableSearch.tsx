@@ -35,7 +35,7 @@ const ProductTableSearch = () => {
             fetchData(newTableData)
         }
     }
-
+  
     const fetchData = (data: TableQueries) => {
         dispatch(setTableData(data))
         dispatch(getProducts(data))
