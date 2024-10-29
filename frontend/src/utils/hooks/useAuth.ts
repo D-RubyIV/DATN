@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import useQuery from './useQuery';
 import type { SignInCredential, SignUpCredential } from '@/@types/auth';
 
-type Status = 'success' | 'failed';
+type Status = 'OK' | 'failed';
 
 function useAuth() {
     const dispatch = useAppDispatch();
@@ -30,12 +30,24 @@ function useAuth() {
     ): Promise<{ status: Status; message: string } | undefined> => {
         try {
             const resp = await apiSignIn(values);
-            if (resp.data) {
-                const { token, user } = resp.data;
+            if (resp.data && resp.data.status === 'OK') {
+                const { token, id, username, roles } = resp.data.data;
+
+                // Lưu token vào Redux store
                 dispatch(signInSuccess(token));
-                dispatch(setUser(user || { avatar: '', userName: 'Anonymous', authority: ['USER'], email: '' }));
+
+                // Lưu thông tin người dùng vào Redux store
+                dispatch(
+                    setUser({
+                        userName: username,
+                        authority: roles,
+                        email: username,
+                        avatar: '',  // Avatar có thể thêm hoặc lấy từ cấu trúc khác nếu có
+                    })
+                );
+
                 handleRedirect();
-                return { status: 'success', message: '' };
+                return { status: 'OK', message: resp.data.message || '' };
             }
         } catch (error: any) {
             return { status: 'failed', message: error?.response?.data?.message || error.toString() };
@@ -46,9 +58,19 @@ function useAuth() {
         try {
             const resp = await apiSignUp(values);
             if (resp.data) {
-                const { token, user } = resp.data;
+                const { token, username, roles } = resp.data.data;
+
+                // Lưu token và thông tin người dùng vào Redux store
                 dispatch(signInSuccess(token));
-                dispatch(setUser(user || { avatar: '', userName: 'Anonymous', authority: ['USER'], email: '' }));
+                dispatch(
+                    setUser({
+                        userName: username,
+                        authority: roles,
+                        email: username,
+                        avatar: '',  // Avatar mặc định hoặc lấy từ cấu trúc khác nếu có
+                    })
+                );
+
                 handleRedirect();
                 return { status: 'success', message: '' };
             }

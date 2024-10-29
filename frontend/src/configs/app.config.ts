@@ -10,7 +10,7 @@ export type AppConfig = {
 const appConfig: AppConfig = {
     apiPrefix: '/api/v1',
     baseUrl: 'http://localhost:8080', // URL gốc của Spring Boot backend
-    authenticatedEntryPath: '/home',
+    authenticatedEntryPath: '/manage',
     unAuthenticatedEntryPath: '/sign-in',
     tourPath: '/',
     locale: 'en',
