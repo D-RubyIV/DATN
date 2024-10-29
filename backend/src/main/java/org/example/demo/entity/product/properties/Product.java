@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
-import org.example.demo.entity.product.core.ProductDetail;
-
-import java.util.List;
+import org.example.demo.entity.event.Event;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,4 +25,7 @@ public class Product extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 }
