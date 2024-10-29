@@ -192,7 +192,7 @@ const TableBasic: React.FC<ChildComponentProps> = ({ label, url }) => {
     // Hàm xử lý khi click vào row
     const handleRowClick = (row: Todo) => {
         console.log('Row clicked:', row);
-        window.location.href = `/manage/product/ProductDetails/${row.id}`;
+        window.location.href = `/admin/manage/product/ProductDetails/${row.id}`;
         // window.location.href = `/manage/product/ProductDetails`;
         // Bạn có thể thêm các logic khác tại đây như điều hướng, mở modal, v.v.
     };

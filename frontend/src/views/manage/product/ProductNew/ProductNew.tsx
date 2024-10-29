@@ -55,14 +55,14 @@ const ProductNew = () => {
                         placement: 'top-center',
                     }
                 );
-                navigate('/manage/product/');
+                navigate('/admin/manage/product/');
             }
        
     };
 
 
     const handleDiscard = () => {
-        navigate('/manage/product/')
+        navigate('/admin/manage/product/')
     }
 
     return (

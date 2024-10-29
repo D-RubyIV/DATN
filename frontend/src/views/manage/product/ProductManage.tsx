@@ -26,15 +26,15 @@ const ProductManage = () => {
                     links={[
                         {
                             name: "THÊM SẢN PHẨM",
-                            url: "/manage/product/product-new"
+                            url: "/admin/manage/product/product-new"
                         },
                         {
                             name: "test",
-                            url: "/manage/product-list"
+                            url: "/admin/manage/product-list"
                         },
                         {
                             name: "test2",
-                            url: "/manage/product/ProductDetail-list/:id"
+                            url: "/admin/manage/product/ProductDetail-list/:id"
                         },
                     ]}
 

@@ -114,7 +114,7 @@ const AddProductDetailsManage = () => {
                     <Details
                         label="ADD PRODUCT"
                         links={[
-                            { name: "PRODUCT", url: "/manage/product" },
+                            { name: "PRODUCT", url: "/admin/manage/product" },
                         ]}
                     />
                 }

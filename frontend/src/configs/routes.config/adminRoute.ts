@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
+import tuanRoute from '@/configs/routes.config/tuanRoute'
 
 
 const adminRoute: Routes = [
@@ -98,7 +99,8 @@ const adminRoute: Routes = [
         path: `manage/payment/callback`,
         component: lazy(() => import('@/views/manage/sell/component/payment/PaymentCallback')),
         authority: []
-    }
+    },
+    ... tuanRoute
 ]
 
 export default adminRoute

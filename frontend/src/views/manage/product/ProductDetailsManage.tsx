@@ -31,7 +31,7 @@ const ProductDetailsManage = () => {
                     links={[
                         {
                             name: "ADD PRODUCT",
-                            url: "/manage/product"
+                            url: "/admin/manage/product"
                         },
                     ]}
                     

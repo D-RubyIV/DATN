@@ -145,7 +145,7 @@ console.log(productDetails)
 
             const result = await response.json();
             console.log('Chi tiết sản phẩm đã được thêm:', result);
-            window.location.href = "/manage/product";
+            window.location.href = "/admin/manage/product";
         } catch (error) {
             console.error('Lỗi trong quá trình thêm chi tiết sản phẩm:', error);
         }
