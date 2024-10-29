@@ -258,7 +258,7 @@ const AddStaffPage = () => {
         birthDay: Yup.date()
             .required('Ngày sinh là bắt buộc')
             .max(new Date(), 'Ngày sinh không được là tương lai')
-            .test('age-range', 'Nhân viên phải trong độ tuổi từ 16 đến 40', function(value) {
+            .test('age-range', 'Nhân viên phải trong độ tuổi từ 16 đến 40', function (value) {
                 const age = dayjs().diff(dayjs(value), 'year')
                 return age >= 16 && age <= 40
             }),
@@ -335,10 +335,20 @@ const AddStaffPage = () => {
 
 
     // Hàm reset biểu mẫu
-    const handleReset = (resetForm: () => void) => {
-        resetForm()
-        setNewStaff(initialStaffState) // Reset trạng thái nhân viên mới
-    }
+    // const handleReset = (resetForm: () => void) => {
+    //     // Keep the state of `isDisableAddressByScanner` as it is
+    //     resetForm();
+    //     setNewStaff(initialStaffState); // Reset the staff state
+    // }
+    const handleFullReset = (resetForm: () => void) => {
+        // This function resets the form and keeps the disable state if needed
+        resetForm(); // Resets the form fields using Formik's reset function
+        setNewStaff(initialStaffState); // Resets the staff data
+        setIsDisableAddressByScanner(false); // Optionally reset the disable state or leave if intended to block non-scanned input
+
+        // If there are any specific independent states that should persist or reset differently, manage them here
+        // For example, handling loading states or specific UI flags
+    };
 
     // Hàm đóng snackbar
     const handleSnackbarClose = () => {
@@ -552,9 +562,10 @@ const AddStaffPage = () => {
                                                 name="name"
                                                 placeholder="Nhập họ tên nhân viên..."
                                                 component={Input}
+                                                disabled={isDisableAddressByScanner}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setFieldValue('name', e.target.value)
-                                                    setNewStaff((prev) => ({ ...prev, name: e.target.value }))
+                                                    setFieldValue('name', e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, name: e.target.value }));
                                                 }}
                                                 value={newStaff.name}
                                             />
@@ -569,6 +580,7 @@ const AddStaffPage = () => {
                                                 </div>
                                             )}
                                         </FormItem>
+
                                         <FormItem asterisk label="Căn cước công dân">
                                             <Field
                                                 type="text"
@@ -576,19 +588,18 @@ const AddStaffPage = () => {
                                                 name="citizenId"
                                                 placeholder="Nhập căn cước công dân..."
                                                 component={Input}
+                                                disabled={isDisableAddressByScanner}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    // Chỉ giữ lại các ký tự số
-                                                    const value = e.target.value.replace(/[^0-9]/g, '')
-                                                    setFieldValue('citizenId', value)
-                                                    setNewStaff((prev) => ({ ...prev, citizenId: value }))
+                                                    const value = e.target.value.replace(/[^0-9]/g, '');
+                                                    setFieldValue('citizenId', value);
+                                                    setNewStaff((prev) => ({ ...prev, citizenId: value }));
                                                 }}
                                                 onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                                                    // Ngăn nhập ký tự không phải số
                                                     if (!/[0-9]/.test(e.key)) {
-                                                        e.preventDefault()
+                                                        e.preventDefault();
                                                     }
                                                 }}
-                                                value={newStaff.citizenId || ''} // Đảm bảo giá trị là chuỗi, không phải undefined
+                                                value={newStaff.citizenId || ''}
                                             />
                                             {touched.citizenId && errors.citizenId && (
                                                 <div style={{
@@ -602,7 +613,6 @@ const AddStaffPage = () => {
                                             )}
                                         </FormItem>
 
-
                                         <FormItem
                                             asterisk
                                             label="Ngày sinh"
@@ -613,41 +623,32 @@ const AddStaffPage = () => {
                                                 inputtable
                                                 inputtableBlurClose={false}
                                                 placeholder="Chọn ngày sinh..."
-                                                // Hiển thị ngày sinh nếu có, chuyển đổi từ định dạng "YYYY-MM-DD" sang "Date" object để tương thích với DatePicker
                                                 value={newStaff.birthDay ? dayjs(newStaff.birthDay, 'YYYY-MM-DD').toDate() : null}
+                                                disabled={isDisableAddressByScanner}
                                                 onChange={(date) => {
                                                     if (date) {
-                                                        // Chuyển đổi ngày từ "Date" sang "YYYY-MM-DD"
-                                                        const formattedDate = dayjs(date).format('YYYY-MM-DD')
-
-                                                        // Cập nhật giá trị vào form (Formik) và state (newStaff)
-                                                        setFieldValue('birthDay', formattedDate)
+                                                        const formattedDate = dayjs(date).format('YYYY-MM-DD');
+                                                        setFieldValue('birthDay', formattedDate);
                                                         setNewStaff((prev) => ({
                                                             ...prev,
                                                             birthDay: formattedDate
-                                                        }))
+                                                        }));
                                                     } else {
-                                                        // Nếu người dùng xoá ngày, reset giá trị birthDay
-                                                        setFieldValue('birthDay', '')
+                                                        setFieldValue('birthDay', '');
                                                         setNewStaff((prev) => ({
                                                             ...prev,
                                                             birthDay: ''
-                                                        }))
+                                                        }));
                                                     }
                                                 }}
-                                                // Ngăn người dùng chọn ngày tương lai
                                                 disableDate={(current) => {
-                                                    const dayjsCurrent = dayjs(current) // Chuyển đổi current sang dayjs
-                                                    return dayjsCurrent.isAfter(dayjs().endOf('day')) // Kiểm tra xem có phải ngày tương lai không
+                                                    const dayjsCurrent = dayjs(current);
+                                                    return dayjsCurrent.isAfter(dayjs().endOf('day'));
                                                 }}
                                             />
                                         </FormItem>
 
-
-                                        <FormItem
-                                            asterisk
-                                            label="Giới tính"
-                                        >
+                                        <FormItem asterisk label="Giới tính">
                                             <Field name="gender">
                                                 {({ field, form }: FieldProps) => (
                                                     <>
@@ -656,9 +657,10 @@ const AddStaffPage = () => {
                                                             value="Nam"
                                                             checked={newStaff.gender === true}
                                                             onChange={() => {
-                                                                form.setFieldValue('gender', true)
-                                                                setNewStaff((prev) => ({ ...prev, gender: true }))
+                                                                form.setFieldValue('gender', true);
+                                                                setNewStaff((prev) => ({ ...prev, gender: true }));
                                                             }}
+                                                            disabled={isDisableAddressByScanner}
                                                         >
                                                             Nam
                                                         </Radio>
@@ -666,9 +668,10 @@ const AddStaffPage = () => {
                                                             value="Nữ"
                                                             checked={newStaff.gender === false}
                                                             onChange={() => {
-                                                                form.setFieldValue('gender', false)
-                                                                setNewStaff((prev) => ({ ...prev, gender: false }))
+                                                                form.setFieldValue('gender', false);
+                                                                setNewStaff((prev) => ({ ...prev, gender: false }));
                                                             }}
+                                                            disabled={isDisableAddressByScanner}
                                                         >
                                                             Nữ
                                                         </Radio>
@@ -773,9 +776,10 @@ const AddStaffPage = () => {
                                                 name="address"
                                                 placeholder="Nhập số đường/số nhà..."
                                                 component={Input}
+                                                disabled={isDisableAddressByScanner && newStaff.address !== 'null' && newStaff.address !== 'null null'}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setFieldValue('address', e.target.value)
-                                                    setNewStaff((prev) => ({ ...prev, address: e.target.value }))
+                                                    setFieldValue('address', e.target.value);
+                                                    setNewStaff((prev) => ({ ...prev, address: e.target.value }));
                                                 }}
                                                 value={newStaff.address}
                                             />
@@ -881,7 +885,7 @@ const AddStaffPage = () => {
 
                                     <Button
                                         type="button"
-                                        onClick={() => handleReset(resetForm)}
+                                        onClick={() => handleFullReset(resetForm)} // Replace this onClick handler
                                         className="flex items-center justify-center"
                                         style={{
                                             height: '40px',
@@ -889,7 +893,7 @@ const AddStaffPage = () => {
                                             lineHeight: '40px',
                                             padding: '0',
                                             fontSize: '15px',
-                                            marginLeft: '1rem' // Thêm khoảng cách bên trái cho nút Đặt lại
+                                            marginLeft: '1rem'
                                         }}
                                     >
                                         <RxReset className="mr-2" style={{ fontSize: '18px' }} />

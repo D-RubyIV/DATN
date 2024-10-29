@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.mapper.staff.request.StaffMapper;
 import org.example.demo.mapper.staff.request.StaffRequestMapper;
 import org.example.demo.mapper.staff.response.StaffResponseMapper;
 import org.example.demo.repository.staff.StaffRepository;
@@ -216,82 +217,112 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
 
     @Transactional
     public List<Map<String, String>> importFromExcel(MultipartFile file) throws IOException {
-        List<Map<String, String>> responseList = new ArrayList<>(); // Danh sách chứa mã và mật khẩu
-        List<Staff> staffList = new ArrayList<>(); // Danh sách nhân viên để lưu vào DB
+        List<Map<String, String>> responseList = new ArrayList<>();
+        List<Staff> staffList = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
 
         try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            // Bắt đầu từ dòng thứ 2 (index = 1) để bỏ qua tiêu đề
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
 
-                // Khởi tạo đối tượng Staff và gán dữ liệu từ Excel
-                Staff staff = new Staff();
-                staff.setName(getCellValue(row.getCell(1)));
-                staff.setEmail(getCellValue(row.getCell(2)));
-                staff.setPhone(getCellValue(row.getCell(3)));
-                staff.setAddress(getCellValue(row.getCell(4)));
-                staff.setWard(getCellValue(row.getCell(5)));
-                staff.setDistrict(getCellValue(row.getCell(6)));
-                staff.setProvince(getCellValue(row.getCell(7)));
-                staff.setCitizenId(getCellValue(row.getCell(8)));
-                String statusValue = getCellValue(row.getCell(9)).trim(); // Lấy giá trị từ ô và loại bỏ khoảng trắng
-                String statusString;
+                StaffRequestDTO staffDTO = new StaffRequestDTO();
+                staffDTO.setName(getCellValue(row.getCell(1)));
+                staffDTO.setEmail(getCellValue(row.getCell(2)));
+                staffDTO.setPhone(getCellValue(row.getCell(3)));
+                staffDTO.setAddress(getCellValue(row.getCell(4)));
+                staffDTO.setWard(getCellValue(row.getCell(5)));
+                staffDTO.setDistrict(getCellValue(row.getCell(6)));
+                staffDTO.setProvince(getCellValue(row.getCell(7)));
+                staffDTO.setCitizenId(getCellValue(row.getCell(8)));
 
-// Chuyển đổi giá trị trạng thái
-                if ("Hoạt động".equalsIgnoreCase(statusValue)) {
-                    statusString = "Active"; // Nếu trạng thái là "Hoạt động", lưu là "Active"
-                } else if ("Không hoạt động".equalsIgnoreCase(statusValue)) {
-                    statusString = "Inactive"; // Nếu trạng thái là "Không hoạt động", lưu là "Inactive"
-                } else if ("Active".equalsIgnoreCase(statusValue)) {
-                    statusString = "Active"; // Nếu trạng thái là "Active", lưu là "Active"
-                } else {
-                    statusString = "Inactive"; // Nếu không phải là "Hoạt động" hoặc "Active", mặc định là "Inactive"
+                String statusValue = getCellValue(row.getCell(9)).trim();
+                String statusString = "Inactive";
+
+                // Xử lý trạng thái
+                if ("Hoạt động".equalsIgnoreCase(statusValue) || "Active".equalsIgnoreCase(statusValue)) {
+                    statusString = "Active";
                 }
+                staffDTO.setStatus(statusString);
 
-// Set giá trị trạng thái cho staff
-                staff.setStatus(statusString);
-
-
+                // Xử lý ngày sinh
                 if (row.getCell(10) != null && DateUtil.isCellDateFormatted(row.getCell(10))) {
                     LocalDate birthDate = row.getCell(10).getDateCellValue().toInstant()
                             .atZone(ZoneId.systemDefault()).toLocalDate();
-                    staff.setBirthDay(birthDate);
+                    staffDTO.setBirthDay(birthDate);
                 }
 
-                staff.setGender("Nam".equalsIgnoreCase(getCellValue(row.getCell(11))));
-
-                staff.setNote(getCellValue(row.getCell(12)));
-                staff.setDeleted("Không".equalsIgnoreCase(getCellValue(row.getCell(13))));
-
-
-                // Tạo mã nhân viên và mật khẩu
-                String code = generateRandomMaNV(staff.getName());
+                staffDTO.setGender("Nam".equalsIgnoreCase(getCellValue(row.getCell(11))));
+                staffDTO.setNote(getCellValue(row.getCell(12)));
+                staffDTO.setDeleted("Không".equalsIgnoreCase(getCellValue(row.getCell(13))));
+                String code = generateRandomMaNV(staffDTO.getName());
                 String password = generateRandomPassword();
-                staff.setCode(code);
-                staff.setPassword(password);
+                staffDTO.setCode(code);
+                staffDTO.setPassword(password);
 
-                // Thêm mã và mật khẩu vào danh sách phản hồi
-                Map<String, String> responseData = new HashMap<>();
-                responseData.put("name", staff.getName());
-                responseData.put("email", staff.getEmail());
-                responseData.put("code", code);
-                responseData.put("password", password);
-                responseList.add(responseData);
+                // Kiểm tra lỗi trước khi thêm vào danh sách staffList
+                try {
+                    staffValidator.validateStaff(staffDTO, null);
 
-                // Thêm nhân viên vào danh sách để lưu vào DB
-                staffList.add(staff);
+                    // Kiểm tra xem email, phone, citizenId có tồn tại không
+                    if (isEmailExists(staffDTO.getEmail())) {
+                        errorMessages.add("Dòng " + (i + 1) + ": Email đã tồn tại trong hệ thống.");
+                    }
+                    if (isPhoneExists(staffDTO.getPhone())) {
+                        errorMessages.add("Dòng " + (i + 1) + ": Số điện thoại đã tồn tại trong hệ thống.");
+                    }
+                    if (isCitizenIdExists(staffDTO.getCitizenId())) {
+                        errorMessages.add("Dòng " + (i + 1) + ": CCCD đã tồn tại trong hệ thống.");
+                    }
+
+                    // Nếu không có lỗi, thêm vào danh sách staffList
+                    if (errorMessages.isEmpty()) {
+                        Staff staff = StaffMapper.toEntity(staffDTO);
+                        staffList.add(staff);
+
+                        Map<String, String> responseData = new HashMap<>();
+                        responseData.put("name", staffDTO.getName());
+                        responseData.put("email", staffDTO.getEmail());
+                        responseData.put("code", staffDTO.getCode());
+                        responseData.put("password", staffDTO.getPassword());
+                        responseList.add(responseData);
+                    }
+
+                } catch (IllegalArgumentException e) {
+                    errorMessages.add("Dòng " + (i + 1) + ": " + e.getMessage());
+                }
             }
 
-            // Lưu tất cả nhân viên vào DB
-            staffRepository.saveAll(staffList);
+            // Nếu có lỗi, không lưu dữ liệu
+            if (!errorMessages.isEmpty()) {
+                log.warn("Lỗi khi import nhân viên từ Excel: \n" + String.join("\n", errorMessages));
+                throw new CustomException(errorMessages); // Ném ngoại lệ nếu có lỗi
+            }
+
+            // Lưu danh sách nhân viên nếu không có lỗi
+            if (!staffList.isEmpty()) {
+                staffRepository.saveAll(staffList);
+            }
         }
 
-        // Trả về danh sách mã và mật khẩu
-        return responseList;
+        return responseList; // Trả về danh sách phản hồi
     }
+
+    public class CustomException extends RuntimeException {
+        private final List<String> errorMessages;
+
+        public CustomException(List<String> errorMessages) {
+            super(String.join(", ", errorMessages));
+            this.errorMessages = errorMessages;
+        }
+
+        public List<String> getErrorMessages() {
+            return errorMessages;
+        }
+    }
+
 
     private String getCellValue(Cell cell) {
         if (cell == null) return null;

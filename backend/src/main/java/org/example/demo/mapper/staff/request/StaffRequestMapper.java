@@ -1,6 +1,5 @@
 package org.example.demo.mapper.staff.request;
 
-
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.mapper.IMapperBasic;
@@ -15,23 +14,22 @@ public interface StaffRequestMapper extends IMapperBasic<Staff, StaffRequestDTO>
     @Override
     Staff toEntity(StaffRequestDTO dto);
 
-//    @Override
-//    @Mapping(target = "role", ignore = true) // Ignore role if not used
-//    StaffRequestDTO toDTO(Staff entity);
+    // Chuyển đổi từ Staff entity sang StaffRequestDTO, bỏ qua trường `role` nếu không cần thiết
+    @Override
+    @Mapping(target = "role", ignore = true)
+    StaffRequestDTO toDTO(Staff entity);
 
-    // Use MapStruct's `@MappingTarget` to update an existing Staff entity
-    @Mapping(target = "id", ignore = true)         // Don't overwrite the ID
+    // Cập nhật Staff entity hiện tại từ DTO, bỏ qua ID và deleted
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "deleted", ignore = true)
-    // Don't overwrite the deleted flag
     void updateEntity(StaffRequestDTO dto, @MappingTarget Staff entity);
 
+    // Xử lý các trường hợp null đặc biệt sau khi ánh xạ
     @AfterMapping
     default void handleNulls(StaffRequestDTO dto, @MappingTarget Staff entity) {
         if (dto.getPhone() == null) {
-            entity.setPhone(null);  // For example, handle null cases for specific fields
+            entity.setPhone(null);
         }
-        // Add similar logic for other fields if necessary
+        // Tương tự cho các trường khác nếu cần thiết
     }
 }
-
-

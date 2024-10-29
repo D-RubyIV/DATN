@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/staffs")
@@ -122,20 +123,26 @@ public class StaffController {
     @PostMapping("/upload-excel")
     public ResponseEntity<List<Map<String, String>>> uploadFile(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty() || !file.getContentType().equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
+            return ResponseEntity.badRequest().body(Collections.singletonList(Map.of("error", "Tệp rỗng hoặc không phải là tệp Excel hợp lệ.")));
         }
 
         try {
-            List<Map<String, String>> result = staffService.importFromExcel(file);  // Trả về danh sách mã và mật khẩu
+            List<Map<String, String>> result = staffService.importFromExcel(file);
             return ResponseEntity.ok(result);
+        } catch (StaffService.CustomException e) {
+//            log.error("Lỗi khi nhập dữ liệu: " + e.getErrorMessages());
+            return ResponseEntity.badRequest()
+                    .body(e.getErrorMessages().stream()
+                            .map(msg -> Map.of("error", msg))
+                            .collect(Collectors.toList()));
         } catch (IOException e) {
-            // Log lỗi
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+//            log.error("Lỗi khi đọc tệp Excel: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonList(Map.of("error", "Vui lòng kiểm tra lại: " + e.getMessage())));
         } catch (Exception e) {
-            // Log lỗi
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(Collections.emptyList());
+//            log.error("Lỗi không xác định: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonList(Map.of("error", "Đã xảy ra lỗi không xác định: " + e.getMessage())));
         }
     }
 

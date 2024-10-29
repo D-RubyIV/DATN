@@ -1,11 +1,8 @@
 package org.example.demo.validator.staff;
 
 import org.apache.coyote.BadRequestException;
-import org.example.demo.dto.customer.CustomerDTO;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
-import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.human.staff.Staff;
-import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +18,7 @@ public class StaffValidator {
 
     public void validateStaff(StaffRequestDTO staffRequestDTO, Integer existingStaffId) throws BadRequestException {
         if (staffRequestDTO == null) {
-            throw new BadRequestException("Dữ liệu khách hàng không để trống");
+            throw new BadRequestException("Dữ liệu nhân viên không để trống");
         }
 
         validateName(staffRequestDTO.getName());
@@ -62,11 +59,10 @@ public class StaffValidator {
         for (Staff staff : staffs) {
             // Nếu tìm thấy nhân viên có email này mà không phải nhân viên đang cập nhật
             if (!staff.getId().equals(existingStaffId)) {
-                throw new BadRequestException("Email đã tồn tại");
+                throw new BadRequestException(String.format("Email của %s (%s) đã tồn tại trong danh sách", staff.getName(), email));
             }
         }
     }
-
 
     private void validatePhone(String phone, Integer existingStaffId) throws BadRequestException {
         if (!StringUtils.hasText(phone)) {
@@ -80,7 +76,7 @@ public class StaffValidator {
         for (Staff staff : staffs) {
             // Nếu tìm thấy nhân viên có số điện thoại này mà không phải nhân viên đang cập nhật
             if (!staff.getId().equals(existingStaffId)) {
-                throw new BadRequestException("Số điện thoại đã tồn tại");
+                throw new BadRequestException(String.format("Số điện thoại của %s (%s) đã tồn tại trong danh sách", staff.getName(), phone));
             }
         }
     }
@@ -97,11 +93,10 @@ public class StaffValidator {
         for (Staff staff : staffs) {
             // Nếu tìm thấy nhân viên có CCCD này mà không phải nhân viên đang cập nhật
             if (!staff.getId().equals(existingStaffId)) {
-                throw new BadRequestException("CCCD đã tồn tại");
+                throw new BadRequestException(String.format("CCCD của %s (%s) đã tồn tại trong danh sách", staff.getName(), citizenId));
             }
         }
     }
-
 
     public boolean isEmailExists(String email) {
         return !staffRepository.findStaffByEmail(email).isEmpty();

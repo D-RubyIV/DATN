@@ -39,6 +39,16 @@ type IStaff = {
   password: string;
 };
 
+interface StaffResponseItem {
+  name: string;
+  email: string;
+  code: string;
+  password: string;
+  error?: string; // Thêm thuộc tính lỗi nếu cần
+  type?: 'email' | 'phone' | 'citizenId'; // Để phân loại lỗi
+}
+
+
 const StaffTableStaff = () => {
   const [data, setData] = useState<IStaff[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,6 +70,7 @@ const StaffTableStaff = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+
 
   useEffect(() => {
     fetchData();
@@ -201,7 +212,7 @@ const StaffTableStaff = () => {
       fetchData();
     } catch (error) {
       toast.error('Lỗi cập nhật trạng thái. Vui lòng thử lại.');
-      console.error('Error updating status:', error);
+      // console.error('Error updating status:', error);
     }
   };
 
@@ -235,7 +246,7 @@ const StaffTableStaff = () => {
       }
     } catch (error) {
       toast.error('Lỗi tải dữ liệu. Vui lòng thử lại.');
-      console.error('Error fetching data:', error);
+      // console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
@@ -295,17 +306,31 @@ const StaffTableStaff = () => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/staffs/upload-excel', formData, {
+      const response = await axios.post<StaffResponseItem[]>('http://localhost:8080/api/v1/staffs/upload-excel', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
+      // Kiểm tra phản hồi có chứa thông báo lỗi hay không
       if (!Array.isArray(response.data) || response.data.length === 0) {
         toast.error('Không có dữ liệu để gửi email.');
         return;
       }
 
+      // Kiểm tra nếu có thông báo lỗi từ server
+      const errorMessages = response.data.filter(item => item.error);
+      if (errorMessages.length > 0) {
+        errorMessages.forEach((item: StaffResponseItem) => {
+          // Hiển thị lỗi cụ thể
+          toast.error(item.error); // Hiển thị lỗi cụ thể từ server
+        });
+        return; // Dừng lại nếu có lỗi
+      }
+
+      // Nếu không có lỗi, thông báo tải thành công
+      toast.success('Tải tệp thành công.');
+
       // Gửi email
-      const emailPromises = response.data.map(async (item, index) => {
+      const emailPromises = response.data.map(async (item: StaffResponseItem, index: number) => {
         const { name, email: toEmail, code, password } = item;
         if (!toEmail || !name || !code || !password) {
           toast.warn(`Thông tin không hợp lệ cho nhân viên ${index + 1}.`);
@@ -321,41 +346,45 @@ const StaffTableStaff = () => {
         };
 
         try {
-          
-
-          // linh
-          //  await emailjs.send(
-          //   'service_t622scu',
-          //   'template_j3dv5du',
-          //   templateParams,
-          //   'OHyULXp7jha_7dpil',
-          // );
-
           await emailjs.send(
             'service_kp8m1z8',
             'template_lad6zvl',
             templateParams,
             '2TdUStOWX9A6vm7Ex',
           );
-          console.log(`Email đã được gửi thành công cho ${name}`);
+          // console.log(`Email đã được gửi thành công cho ${name}`);
         } catch (emailError) {
-          console.error(`Không thể gửi email cho ${name}:`, emailError);
+          // console.error(`Không thể gửi email cho ${name}:`, emailError);
           toast.error(`Lỗi khi gửi email cho ${name}`);
         }
       });
 
       await Promise.all(emailPromises);
-      toast.success('Tải tệp thành công và đã gửi thông tin qua email.');
 
+      // Nếu đã gửi email thành công cho tất cả, có thể thông báo
+      toast.success('Đã gửi thông tin qua email cho các nhân viên.');
+
+      // Tải lại dữ liệu
       fetchData(); // Tải lại dữ liệu
       setFile(null); // Reset file
       setIsPreviewConfirmed(false); // Reset trạng thái
       if (inputRef.current) inputRef.current.value = ''; // Reset input file
+
     } catch (error) {
-      toast.error('Lỗi tải tệp. Vui lòng thử lại.');
-      console.error('Error uploading file:', error);
+      // Chỉ hiển thị thông báo nếu server phản hồi có lỗi
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessages = error.response.data; // Lấy tất cả thông báo lỗi
+        errorMessages.forEach((errorItem: { error: string }) => {
+          toast.error(errorItem.error); // Hiển thị thông báo lỗi từ server
+        });
+      } else {
+        toast.error('Đã xảy ra lỗi không xác định. Vui lòng thử lại.');
+      }
+      // console.error('Error uploading file:', error);
     }
   };
+
+
 
 
   const exportToExcel = () => {
@@ -491,26 +520,36 @@ const StaffTableStaff = () => {
 
       <Modal
         title="Xem trước dữ liệu Excel"
-        visible={isPreviewVisible}
+        open={isPreviewVisible}
         onOk={handleOk}
         onCancel={handleCancel}
-        width="70vw" // Modal sẽ chiếm 90% chiều rộng màn hình
-        bodyStyle={{ padding: 0 }} // Loại bỏ padding mặc định nếu cần
+        width="75vw"
+        styles={{ body: { padding: 0 } }}
       >
         <div className="overflow-auto max-w-none">
           <table className="w-[1200px] min-w-full border-collapse">
             <thead>
               <tr className="bg-blue-100 text-left">
-                {Object.keys(previewData[0] || {}).map((key, index) => (
-                  <th key={index} className="px-6 py-4 font-semibold text-gray-700">
-                    {key}
-                  </th>
-                ))}
+                <th className="px-6 py-4 font-semibold text-gray-700">STT</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Tên</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Email</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Điện thoại</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Địa chỉ</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Phường</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Quận</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Tỉnh</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Số CCCD</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Trạng thái</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Ngày sinh</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Giới tính</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Ghi chú</th>
+                <th className="px-6 py-4 font-semibold text-gray-700">Đã xóa</th>
               </tr>
             </thead>
             <tbody>
               {previewData.map((row, rowIndex) => (
                 <tr key={rowIndex} className="border-t">
+                  <td className="px-4 py-2">{rowIndex + 1}</td>
                   {Object.values(row).map((value, valueIndex) => (
                     <td key={valueIndex} className="px-4 py-2">
                       {String(value)}
@@ -522,7 +561,6 @@ const StaffTableStaff = () => {
           </table>
         </div>
       </Modal>
-
 
 
     </>
