@@ -25,7 +25,7 @@ public class Product extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private Event event;
 }

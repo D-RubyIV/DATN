@@ -1,11 +1,11 @@
-package org.example.demo.entity.event;
+package org.example.demo.dto.event.response;
 
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.example.demo.entity.BaseEntity;
+import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.entity.product.properties.Product;
 
 import java.time.LocalDate;
@@ -13,18 +13,13 @@ import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Data
-@Table(name = "event")
-@Entity
-public class Event extends BaseEntity {
+public class EventResponseDTO {
     private Integer discountPercent; // phần trăm giảm giá
     private LocalDate startDate;
     private LocalDate endDate;
     private String name; // tên sự kiện
     private String description;
-    private Boolean status; // 
-
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products;
+    private Boolean status; //
+//    private List<ProductResponseDTO> productResponseDTOS;
 }

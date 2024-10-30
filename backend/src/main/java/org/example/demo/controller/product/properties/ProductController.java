@@ -71,10 +71,10 @@ public class ProductController {
 
 
     @GetMapping("/product-list")
-    public ResponseEntity<Map<String, List<Product>>> findAll() {
+    public ResponseEntity<Map<String, List<ProductResponseDTO>>> findAll() {
         List<Product> products = productService.findAllList();
-        Map<String, List<Product>> response = new HashMap<>();
-        response.put("data", products);
+        Map<String, List<ProductResponseDTO>> response = new HashMap<>();
+        response.put("data", productResponseMapper.toListDTO(products));
         return ResponseEntity.ok(response);
     }
 

@@ -25,5 +25,6 @@ public class ProductOverviewResponse {
     private String materialName;
     private String thicknessName;
     private String elasticityName;
+    private String eventName;
 
 }

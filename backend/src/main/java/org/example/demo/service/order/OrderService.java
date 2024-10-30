@@ -12,6 +12,7 @@ import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.other.UseVoucherDTO;
+import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Payment;
@@ -357,5 +358,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         } else {
             return null;
         }
+    }
+
+    public List<StatisticOverviewResponse> fetchOrdersByStatusAndRangeTime(Status status, LocalDateTime from, LocalDateTime to){
+        return orderRepository.findAllByStatusAndCreatedDateBetweenOrderByCreatedDateDesc(status, from, to);
     }
 }

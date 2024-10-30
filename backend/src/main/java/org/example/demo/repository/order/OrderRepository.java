@@ -2,7 +2,9 @@ package org.example.demo.repository.order;
 
 import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
+import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.entity.order.core.Order;
+import org.example.demo.entity.order.enums.Status;
 import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,5 +67,13 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query(value = "select count(od.id) as quantity, o.code as code, o.id as id from Order o left join OrderDetail od on od.order.id = o.id where o.id in :ids group by o.id, o.code")
     List<ICountOrderDetailInOrder> getCountOrderDetailByIds(@Param("ids") List<Integer> ids);
+
+
+    @Query(value =
+            "SELECT ord.createdDate as createDate, SUM(ord.total) as totalRevenue, COUNT(ord.code) as quantityOrder " +
+            "FROM Order ord " +
+            "WHERE ord.status = :status " +
+            "AND ord.createdDate BETWEEN :from AND :to GROUP BY ord.createdDate")
+    List<StatisticOverviewResponse> findAllByStatusAndCreatedDateBetweenOrderByCreatedDateDesc(Status status, LocalDateTime from, LocalDateTime to);
 
 }

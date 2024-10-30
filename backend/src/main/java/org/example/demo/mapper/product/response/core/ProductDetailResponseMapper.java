@@ -14,6 +14,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProductDetailResponseMapper extends IMapperBasic<ProductDetail, ProductDetailResponseDTO> {
 
+
     @Mapping(target = "sizeName", source = "size.name")
     @Mapping(target = "colorName", source = "color.name")
     @Mapping(target = "productName", source = "product.name")

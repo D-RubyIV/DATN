@@ -5,6 +5,7 @@ import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.mapper.address.response.AddressResponseMapper;
 import org.example.demo.mapper.customer.response.CustomerResponseMapper;
+import org.example.demo.mapper.event.response.EventResponseMapper;
 import org.example.demo.mapper.history.response.HistoryResponseMapper;
 import org.example.demo.mapper.order.properties.response.OrderDetailResponseMapper;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author PHAH04
  * Vui lòng không chỉnh sửa, có sửa hãy copy =))
  */
-@Mapper(componentModel = "spring", uses = {AddressResponseMapper.class, HistoryResponseMapper.class, CustomerResponseMapper.class, StaffResponseMapper.class, ProductDetailResponseMapper.class, OrderDetailResponseMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressResponseMapper.class, HistoryResponseMapper.class, CustomerResponseMapper.class, StaffResponseMapper.class, ProductDetailResponseMapper.class, OrderDetailResponseMapper.class, EventResponseMapper.class})
 public interface OrderResponseMapper {
     Order toEntity(OrderResponseDTO d);
 
