@@ -18,7 +18,7 @@ export const adminRoutes = [
     {
         key: 'home',
         path: '/home',
-        component: lazy(() => import('@/views/Home')),
+        component: lazy(() => import('@/views/manage/statistics/SalesDashboard')),
         authority: []
     },
     ...adminRoute,

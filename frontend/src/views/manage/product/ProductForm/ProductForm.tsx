@@ -1,4 +1,4 @@
-import { forwardRef, useState, useEffect } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { FormContainer } from '@/components/ui/Form';
 import Button from '@/components/ui/Button';
 import StickyFooter from '@/components/shared/StickyFooter';
@@ -9,6 +9,7 @@ import DetailedProductList from './components/DetailedProductList';
 import type { Option, DetailedProduct } from './store';
 import { AiOutlineSave } from 'react-icons/ai';
 import * as Yup from 'yup';
+import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import { v4 as uuidv4 } from 'uuid';
 import reducer, {
     getProductData,
@@ -65,7 +66,7 @@ type InitialData = {
 export type FormModel = DetailedProduct
 export type SetSubmitting = (isSubmitting: boolean) => void
 type ProductFormProps = {
-    initialData?: InitialData; 
+    initialData?: InitialData;
     onDiscard?: () => void;
     onFormSubmit: (formData: FormModel[], setSubmitting: SetSubmitting) => void
 };
@@ -83,7 +84,7 @@ const validationSchema = Yup.object().shape({
     elasticity: Yup.object().nullable().required('Độ đàn hồi vải là bắt buộc!'),
     mass: Yup.number()
         .required('Khối lượng là bắt buộc!')
-        .typeError('Khối lượng phải là số!') 
+        .typeError('Khối lượng phải là số!')
         .positive('Khối lượng phải là số dương!'),
     price: Yup.number()
         .required('giá là bắt buộc!')
@@ -185,8 +186,8 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
         colors: mapOptions(colorData),
         sizes: mapOptions(sizeData),
         materials: mapOptions(materialData),
-    }; 
- 
+    };
+
     const newCode = () => uuidv4();
 
     let currentId = 0;
@@ -220,7 +221,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
         );
     };
     const combinations = useAppSelector((state) => state.dataDetailedProduct.detailedProduct);
-    
+
 
     return (
         <Formik
@@ -296,7 +297,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                                         data={combinedData}
                                     />
                                 </div>
-                                {productCombinations.length > 0 && (
+                                {productCombinations.length > 0 ? (
                                     <div className="lg:col-span-1">
                                         <DetailedProductList
                                             productCombinations={productCombinations}
@@ -304,13 +305,25 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                                             touched={touched}
                                         />
                                     </div>
-                                )}
+                                ):(
+                                    <div className="flex flex-col justify-center items-center h-full">
+                                        <DoubleSidedImage
+                                            className="max-w-[200px]"
+                                            src="/img/others/no-mail-selected.png"
+                                            darkModeSrc="/img/others/no-mail-selected-dark.png"
+                                        />
+                                        <div className="mt-4 text-2xl font-semibold">
+                                            Chọn các thuộc tính để hiển thị sản phẩm chi tiết.
+                                        </div>
+                                    </div>
+                                )
+                                }
                             </div>
                             <StickyFooter
                                 className="-mx-8 px-8 flex items-center justify-between py-4"
                                 stickyClass="border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                             >
-                                    <div> </div>
+                                <div> </div>
                                 <div className="md:flex items-center">
                                     <Button
                                         size="sm"
@@ -318,7 +331,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                                         type="button"
                                         onClick={() => onDiscard?.()}
                                     >
-                                        Quay lại 
+                                        Quay lại
                                     </Button>
                                     <Button
                                         size="sm"
@@ -329,7 +342,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                                         variant="solid"
                                         style={{ backgroundColor: 'rgb(79, 70, 229)'}}
                                     >
-                                        Lưu 
+                                        Lưu
                                     </Button>
                                 </div>
                             </StickyFooter>

@@ -149,7 +149,7 @@ export type OrderProductDetail = Entity & {
 export type OrderDetailResponseDTO = {
     id: number;
     quantity: number;
-    productDetail: OrderProductDetail;
+    productDetailResponseDTO: OrderProductDetail;
 };
 
 export type ProductOrderDetail = {
