@@ -1,69 +1,42 @@
-import { useEffect } from 'react'
-import Loading from '@/components/shared/Loading'
-import Statistic from './Statistic'
-import SalesReport from './SalesReport'
-import SalesByCategories from './SalesByCategories'
-import LatestOrder from './LatestOrder'
-import TopProduct from './TopProduct'
-import { getSalesDashboardData, useAppSelector } from '../store'
-import { useAppDispatch } from '@/store'
-import { StatisticProps } from '@/views/manage/statistics/types/model'
+import { Fragment } from 'react'
+import Statistic from '@/views/manage/statistics/components/Statistic'
+import SalesReport from '@/views/manage/statistics/components/SalesReport'
+
+type SalesReportProps = {
+    data?: {
+        series?: {
+            name: string
+            data: number[]
+        }[]
+        categories?: string[]
+    }
+    className?: string
+}
+
+const salesReportData = {
+    data: {
+        series: [
+            {
+                name: 'Revenue',
+                data: [50000, 70000, 45000, 80000, 60000, 95000, 110000] // sample revenue data for each category
+            },
+            {
+                name: 'Orders',
+                data: [20, 25, 15, 30, 28, 35, 40] // sample order count data for each category
+            }
+        ],
+        categories: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] // sample categories, e.g., days of the week
+    },
+    className: 'chart-container' // optional custom CSS class for styling
+}
 
 const SalesDashboardBody = () => {
-    const dispatch = useAppDispatch()
-
-    const dashboardData = useAppSelector(
-        (state) => state.salesDashboard.data.dashboardData
-    )
-
-    const loading = useAppSelector((state) => state.salesDashboard.data.loading)
-
-    useEffect(() => {
-        fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    const fetchData = () => {
-        dispatch(getSalesDashboardData())
-    }
-
-    const fakeStaticDataFirst: StatisticProps = {
-        data: {
-            revenue: {
-                value: 100,
-                growShrink: 200
-            },
-            orders: {
-                value: 1000,
-                growShrink: 1000
-            },
-            purchases: {
-                value: 1000,
-                growShrink: 1000
-            }
-        }
-    }
 
     return (
-        <Loading loading={false}>
-            <Statistic data={fakeStaticDataFirst.data} />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/*<SalesReport*/}
-                {/*    data={dashboardData?.salesReportData}*/}
-                {/*    className="col-span-2"*/}
-                {/*/>*/}
-                {/*<SalesByCategories*/}
-                {/*    data={dashboardData?.salesByCategoriesData}*/}
-                {/*/>*/}
-            </div>
-            {/*<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">*/}
-            {/*    <LatestOrder*/}
-            {/*        data={dashboardData?.latestOrderData}*/}
-            {/*        className="lg:col-span-2"*/}
-            {/*    />*/}
-            {/*    <TopProduct data={dashboardData?.topProductsData} />*/}
-            {/*</div>*/}
-        </Loading>
+        <Fragment>
+            <Statistic />
+            <SalesReport data={salesReportData.data}></SalesReport>
+        </Fragment>
     )
 }
 

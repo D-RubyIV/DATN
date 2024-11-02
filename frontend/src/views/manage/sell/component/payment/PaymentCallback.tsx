@@ -37,7 +37,7 @@ const PaymentCallback = () => {
 
     const handleChangePaidOrder = async (idOrder: number) => {
         const data: OrderHistoryResponseDTO = {
-            status: EOrderStatusEnums.PAID,
+            status: EOrderStatusEnums.DELIVERED,
             note: 'Đã thanh toán'
         }
         const response = await changeOrderStatus(idOrder, data)

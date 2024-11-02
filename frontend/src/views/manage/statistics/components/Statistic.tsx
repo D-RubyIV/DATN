@@ -1,18 +1,24 @@
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
 import GrowShrinkTag from '@/components/shared/GrowShrinkTag'
-import { useAppSelector } from '../store'
+import { getStatisticOverview, OverViewMonth, useAppDispatch, useAppSelector } from '../store'
 import dayjs from 'dayjs'
-import { StatisticCardProps, StatisticProps } from '@/views/manage/statistics/types/model'
+import { useEffect, useMemo } from 'react'
 
-
-
+type StatisticCardProps = {
+    value: string
+    growShrink: number
+    label: string
+    valuePrefix?: string
+    date: string
+}
 const StatisticCard = ({
-    data = { value: 0, growShrink: 0 },
-    label,
-    valuePrefix,
-    date,
-}: StatisticCardProps) => {
+                           value,
+                           growShrink,
+                           label,
+                           valuePrefix,
+                           date
+                       }: StatisticCardProps) => {
     return (
         <Card>
             <h6 className="font-semibold mb-4 text-sm">{label}</h6>
@@ -22,43 +28,70 @@ const StatisticCard = ({
                         <NumericFormat
                             thousandSeparator
                             displayType="text"
-                            value={data.value}
+                            value={value}
                             prefix={valuePrefix}
                         />
                     </h3>
                     <p>
-                        vs. 3 months prior to{' '}
+                        so với 3 tháng trước{' '}
                         <span className="font-semibold">
                             {dayjs(date).format('DD MMM')}
                         </span>
                     </p>
                 </div>
-                <GrowShrinkTag value={data.growShrink} suffix="%" />
+                <GrowShrinkTag value={growShrink} suffix="%" />
             </div>
         </Card>
     )
 }
 
-const Statistic = ({ data = {} }: StatisticProps) => {
-    const startDate = useAppSelector(
-        (state) => state.salesDashboard.data.startDate
-    )
+const Statistic = () => {
+    const dispatch = useAppDispatch()
+    const startDate = useAppSelector((state) => state.statistic.startDate)
+    const salesData = useAppSelector((state) => state.statistic.overviewOneMonthData)
+
+
+    const today = new Date()
+    const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+
+    const calculateSummary = (data: OverViewMonth[], periodStart: Date) => {
+        return data.reduce(
+            (acc, sale) => {
+                const saleDate = new Date(sale.createDate)
+                if (saleDate >= periodStart) {
+                    acc.quantityOrder += sale.quantityOrder
+                    acc.totalRevenue += sale.totalRevenue
+                }
+                return acc
+            },
+            { quantityOrder: 0, totalRevenue: 0 }
+        )
+    }
+
+    const summaryToday = useMemo(() => {
+        const startOfDay = new Date()
+        startOfDay.setHours(0, 0, 0, 0)
+        return calculateSummary(salesData, startOfDay)
+    }, [])
+
+    const summaryWeek = useMemo(() => calculateSummary(salesData, startOfWeek), [startOfWeek])
+    const summaryMonth = useMemo(() => calculateSummary(salesData, startOfMonth), [startOfMonth])
+
+
+    useEffect(() => {
+        console.log(salesData)
+    }, [salesData])
+
+    useEffect(() => {
+        dispatch(getStatisticOverview())
+    }, [])
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <StatisticCard
-                data={data.revenue}
-                valuePrefix="$"
-                label="Revenue"
-                date={startDate}
-            />
-            <StatisticCard data={data.orders} label="Orders" date={startDate} />
-            <StatisticCard
-                data={data.purchases}
-                valuePrefix="$"
-                label="Purchases"
-                date={startDate}
-            />
+            <StatisticCard value={summaryToday.totalRevenue.toFixed(2)} growShrink={6} label="Doanh số hôm nay" date={startDate} />
+            <StatisticCard value={summaryWeek.totalRevenue.toFixed(2)} growShrink={-6} label="Doanh số tuần này" date={startDate} />
+            <StatisticCard value={summaryMonth.totalRevenue.toFixed(2)} growShrink={0} label="Doanh số tháng này" date={startDate} />
         </div>
     )
 }

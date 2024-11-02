@@ -22,7 +22,6 @@ type BadgeType =
     | 'countDelivered'
     | 'countCancelled'
     | 'countReturned'
-    | 'countPaid'
     | 'countUnPaid'
 
 interface ICountStatus {
@@ -33,7 +32,6 @@ interface ICountStatus {
     countDelivered: number;  // Số lượng hóa đơn đang giao hàng
     countCancelled: number;  // Số lượng hóa đơn đã hủy
     countReturned: number;   // Số lượng hóa đơn trả hàng
-    countPaid: number;   // Số lượng hóa đơn trả hàng
     countUnPaid: number;   // Số lượng hóa đơn trả hàng
 }
 
@@ -62,7 +60,6 @@ export const OrderTable = () => {
         countDelivered: 0,
         countReturned: 0,
         countToReceive: 0,
-        countPaid: 0,
         countUnPaid: 0
     })
     const [queryParam, setQueryParam] = useState<{
@@ -243,8 +240,6 @@ export const OrderTable = () => {
                                         ? '!text-red-500'
                                         : props.row.original.status === 'RETURNED'
                                             ? '!text-orange-500'
-                                            : props.row.original.status === 'PAID'
-                                                ? '!text-teal-500'
                                                 : props.row.original.status === 'UNPAID'
                                                     ? '!text-pink-500'
                                                     : '!text-gray-500'
@@ -264,8 +259,6 @@ export const OrderTable = () => {
                                                 ? '!bg-red-500'
                                                 : props.row.original.status === 'RETURNED'
                                                     ? '!bg-orange-500'
-                                                    : props.row.original.status === 'PAID'
-                                                        ? '!bg-teal-500'
                                                         : props.row.original.status === 'UNPAID'
                                                             ? '!bg-pink-500'
                                                             : '!bg-gray-500'
@@ -284,8 +277,6 @@ export const OrderTable = () => {
                                                     ? 'Đã hủy đơn'
                                                     : props.row.original.status === 'RETURNED'
                                                         ? 'Đã trả hàng'
-                                                        : props.row.original.status === 'PAID'
-                                                            ? 'Đã thanh toán'
                                                             : props.row.original.status === 'UNPAID'
                                                                 ? 'Chưa thanh toán'
                                                                 : 'Không xác định'}
@@ -341,7 +332,6 @@ export const OrderTable = () => {
         { label: 'TẤT CẢ', value: EOrderStatusEnums.EMPTY, badge: 'countAll' },
         { label: 'CHỜ XÁC NHẬN', value: EOrderStatusEnums.PENDING, badge: 'countPending' },
         { label: 'CHỜ THANH TOÁN', value: EOrderStatusEnums.UNPAID, badge: 'countUnPaid' },
-        { label: 'ĐÃ THANH TOÁN', value: EOrderStatusEnums.PAID, badge: 'countPaid' },
         { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
         { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
         { label: 'ĐÃ GIAO', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },

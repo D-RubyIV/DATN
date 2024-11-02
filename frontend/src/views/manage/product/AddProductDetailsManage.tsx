@@ -27,7 +27,7 @@ const AddProductDetailsManage = () => {
         ],
     ];
 
-    // // Lấy các item đã chọn từ Redux store
+    // // Lấy các item đã chọn từ Redux index
     // const selectedOptions = useSelector((state: RootState) => state.selectedOptions);
     // // console.log('Selected Options:', selectedOptions); // Kiểm tra cấu trúc
 

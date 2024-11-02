@@ -25,7 +25,6 @@ export enum EOrderStatusEnums {
     DELIVERED = "DELIVERED",
     CANCELED = "CANCELED",
     RETURNED = "RETURNED",
-    PAID = "PAID",
     UNPAID = "UNPAID",
 }
 
@@ -41,7 +40,7 @@ export type StatusBill = {
     badge: string
 }
 
-export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED" | "PAID" | "UNPAID"
+export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED" | "UNPAID"
 
 export type EOrderType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 

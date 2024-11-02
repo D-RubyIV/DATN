@@ -26,11 +26,9 @@ public class StatisticController {
     @NoArgsConstructor
     @Data
     public static class OverViewRequest {
-        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         private LocalDateTime from;
-
-        @JsonDeserialize(using = LocalDateTimeDeserializer.class)
         private LocalDateTime to;
+        private String timePeriod;
     }
 
     @Autowired
@@ -40,4 +38,11 @@ public class StatisticController {
     public ResponseEntity<List<StatisticOverviewResponse>> fetchOverviewHeader(@RequestBody OverViewRequest overViewRequest) {
         return ResponseEntity.ok(statisticService.calculateRevenueAnyDay(overViewRequest.getFrom(), overViewRequest.getTo()));
     }
+
+    @PostMapping(value = "v2/overview")
+    public ResponseEntity<List<?>> fetchOverviewHeaders(@RequestBody OverViewRequest overViewRequest) {
+        return ResponseEntity.ok(statisticService.getRevenueAndQuantityByTimePeriod(overViewRequest.getFrom(), overViewRequest.getTo(), overViewRequest.getTimePeriod()));
+    }
+
+
 }

@@ -8,7 +8,7 @@ export type AppConfig = {
 }
 
 const appConfig: AppConfig = {
-    apiPrefix: '/api',
+    apiPrefix: 'http://localhost:8080/api/v1',
     authenticatedEntryPath: '/admin/home',
     unAuthenticatedEntryPath: '/auth/sign-in',
     tourPath: '/',

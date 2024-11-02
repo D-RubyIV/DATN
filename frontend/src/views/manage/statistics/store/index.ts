@@ -1,25 +1,19 @@
 import { combineReducers } from '@reduxjs/toolkit'
-import reducers, {
-    SLICE_NAME,
-    SalesDashboardState,
-} from './salesDashboardSlice'
-import { useSelector } from 'react-redux'
+import reducers, { StatisticState, SLICE_NAME } from './slice'
+import { TypedUseSelectorHook, useSelector } from 'react-redux'
+import { RootState } from '@/store'
 
-import type { TypedUseSelectorHook } from 'react-redux'
-import type { RootState } from '@/store'
-
+// NHẬP VỀ 1 REDUCERS DUY NHẤT
 const reducer = combineReducers({
-    data: reducers,
+    object: reducers
 })
-
 export const useAppSelector: TypedUseSelectorHook<
     RootState & {
-        [SLICE_NAME]: {
-            data: SalesDashboardState
-        }
+    [SLICE_NAME] : {
+        object: StatisticState
     }
-> = useSelector
+}> = useSelector
 
-export * from './salesDashboardSlice'
+export * from './slice'
 export { useAppDispatch } from '@/store'
 export default reducer
