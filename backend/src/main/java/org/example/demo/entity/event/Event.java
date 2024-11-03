@@ -1,9 +1,6 @@
 package org.example.demo.entity.event;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +9,7 @@ import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.product.properties.Product;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,12 +19,26 @@ import java.util.List;
 @Table(name = "event")
 @Entity
 public class Event extends BaseEntity {
-    private Integer discountPercent; // phần trăm giảm giá
-    private LocalDate startDate;
-    private LocalDate endDate;
+    @Column(name = "discount_code", unique = true)
+    private String discountCode;
+
+    @Column(name = "name")
     private String name; // tên sự kiện
-    private String description;
-    private Boolean status; // 
+
+    @Column(name = "start_date")
+    private Integer discountPercent; // phần trăm giảm giá
+
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
+
+    @Column(name = "quantity_discount")
+    private Integer quantityDiscount;
+
+    @Column(name = "status")
+    private Boolean status; //
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<Product> products;
