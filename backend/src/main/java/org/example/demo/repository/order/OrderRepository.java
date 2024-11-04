@@ -4,8 +4,11 @@ import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.dto.statistic.response.StatisticOverviewSymbol;
+import org.example.demo.dto.statistic.response.TopProductObject;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
+import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.entity.product.properties.Product;
 import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,7 +74,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 
     @Query(value =
-            "SELECT ord.createdDate as createDate, SUM(ord.total) as totalRevenue, COUNT(ord.code) as quantityOrder " +
+            "SELECT ord.createdDate as createDate, ROUND(sum(ord.total),0) as totalRevenue, COUNT(ord.code) as quantityOrder " +
                     "FROM Order ord " +
                     "WHERE ord.status = :status " +
                     "AND ord.createdDate BETWEEN :from AND :to GROUP BY ord.createdDate")
@@ -79,33 +82,57 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 
     @Query(value = """
-            SELECT sum(ord.total) as revenue,
-            sum(detail.quantity) as quantity,
-            CONCAT(Day(ord.createdDate), '/', MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
-            FROM Order ord join OrderDetail detail on ord.id = detail.order.id
-            WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
-            group by Day(ord.createdDate), MONTH(ord.createdDate), YEAR(ord.createdDate)
-            """)
+        SELECT ROUND(sum(ord.total), 0) as revenue,
+        sum(coalesce(detail.quantity, 0)) as quantity,
+        CONCAT(DAY(ord.createdDate), '/', MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
+        FROM Order ord
+        LEFT JOIN OrderDetail detail ON ord.id = detail.order.id
+        WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
+        GROUP BY YEAR(ord.createdDate), MONTH(ord.createdDate), DAY(ord.createdDate)
+        ORDER BY YEAR(ord.createdDate), MONTH(ord.createdDate), DAY(ord.createdDate)
+        """)
     List<StatisticOverviewSymbol> findAllStatisticByDay(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query(value = """
-            SELECT
-            sum(ord.total) as revenue,
-            sum(detail.quantity) as quantity,
-            CONCAT(MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
-            FROM Order ord join OrderDetail detail on ord.id = detail.order.id
-            WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
-            group by Day(ord.createdDate), MONTH(ord.createdDate), YEAR(ord.createdDate)
-            """)
-    List<StatisticOverviewSymbol> findAllStatisticByWeek(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+        SELECT ROUND(sum(ord.total), 0) as revenue,
+        sum(coalesce(detail.quantity, 0)) as quantity,
+        CONCAT(MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
+        FROM Order ord
+        LEFT JOIN OrderDetail detail ON ord.id = detail.order.id
+        WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
+        GROUP BY YEAR(ord.createdDate), MONTH(ord.createdDate)
+        ORDER BY YEAR(ord.createdDate), MONTH(ord.createdDate)
+        """)
+    List<StatisticOverviewSymbol> findAllStatisticByMonth(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query(value = """
-            SELECT sum(ord.total) as revenue, sum(detail.quantity) as quantity, MONTH(ord.createdDate) as symbol
-            FROM Order ord join OrderDetail detail on ord.id = detail.order.id
-            WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
-            group by MONTH (ord.createdDate)
-            """)
-    List<StatisticOverviewSymbol> findAllStatisticByMonth(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+        SELECT ROUND(sum(ord.total), 0) as revenue,
+        sum(coalesce(detail.quantity, 0)) as quantity,
+        YEAR(ord.createdDate) as symbol
+        FROM Order ord
+        LEFT JOIN OrderDetail detail ON ord.id = detail.order.id
+        WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
+        GROUP BY YEAR(ord.createdDate)
+        ORDER BY YEAR(ord.createdDate)
+        """)
+    List<StatisticOverviewSymbol> findAllStatisticByYear(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
+
+    @Query(value = """
+        SELECT p.id as id,
+        p.code as code,
+        p.code as image,
+        p.name as name,
+        sum(od.quantity) as sold
+        FROM Product p
+        JOIN ProductDetail pd ON p.id = pd.product.id
+        JOIN OrderDetail od ON pd.id = od.productDetail.id
+        JOIN Order o on o.id = od.order.id
+        WHERE o.status = 'DELIVERED'
+        GROUP BY p.id, p.code, p.name
+        ORDER BY SUM(od.quantity) DESC
+        """)
+    Page<TopProductObject> findAllTopProduct(Pageable pageable);
 
 
 }

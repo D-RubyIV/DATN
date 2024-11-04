@@ -89,9 +89,12 @@ const Statistic = () => {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <StatisticCard value={summaryToday.totalRevenue.toFixed(2)} growShrink={6} label="Doanh số hôm nay" date={startDate} />
-            <StatisticCard value={summaryWeek.totalRevenue.toFixed(2)} growShrink={-6} label="Doanh số tuần này" date={startDate} />
-            <StatisticCard value={summaryMonth.totalRevenue.toFixed(2)} growShrink={0} label="Doanh số tháng này" date={startDate} />
+            <StatisticCard value={summaryToday.totalRevenue.toFixed(2)} growShrink={6} label="Doanh số hôm nay"
+                           date={startDate} />
+            <StatisticCard value={summaryWeek.totalRevenue.toFixed(2)} growShrink={-6} label="Doanh số tuần này"
+                           date={startDate} />
+            <StatisticCard value={summaryMonth.totalRevenue.toFixed(2)} growShrink={0} label="Doanh số tháng này"
+                           date={startDate} />
         </div>
     )
 }

@@ -7,6 +7,7 @@
 -- Please backup your target database before running this script
 --
 
+
 SET LANGUAGE 'English'
 SET DATEFORMAT ymd
 SET ARITHABORT, ANSI_PADDING, ANSI_WARNINGS, CONCAT_NULL_YIELDS_NULL, QUOTED_IDENTIFIER, ANSI_NULLS, NOCOUNT ON
