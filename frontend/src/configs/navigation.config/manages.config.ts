@@ -4,7 +4,7 @@ import {
     NAV_ITEM_TYPE_COLLAPSE,
     NAV_ITEM_TYPE_ITEM,
 } from '@/constants/navigation.constant'
-import { ADMIN, USER } from '@/constants/roles.constant'
+import { ADMIN, ROLE_ADMIN, USER } from '@/constants/roles.constant'
 import type { NavigationTree } from '@/@types/navigation'
 
 
@@ -16,7 +16,7 @@ const appsNavigationConfig: NavigationTree[] = [
         translateKey: 'nav.manages',
         icon: 'manages',
         type: NAV_ITEM_TYPE_TITLE,
-        authority: [],
+        authority: [ROLE_ADMIN],
         subMenu: [
             {
                 key: 'apps.vouchers',

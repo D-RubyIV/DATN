@@ -21,8 +21,6 @@ import org.example.demo.repository.security.TokenRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.util.MessageKeys;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -123,7 +121,7 @@ public class UserService implements IUserService {
         if (jwtTokenUtils.isTokenExpired(token)) {
             throw new ExpiredTokenException("Token is expired");
         }
-        String email = jwtTokenUtils.extractEmail(token);
+        String email = jwtTokenUtils.getSubject(token);
         Optional<Staff> staff = staffRepository.findByEmail(email);
 
         if (staff.isPresent()) {
@@ -159,9 +157,7 @@ public class UserService implements IUserService {
 
         // Update the password if it is provided in the DTO
         if (staffRequestDTO.getPassword() != null && !staffRequestDTO.getPassword().isEmpty()) {
-            if (!staffRequestDTO.getPassword().equals(staffRequestDTO.getRetypePassword())) {
-                throw new DataNotFoundException("Password and retype password do not match");
-            }
+
             String newPassword = staffRequestDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(newPassword);
             existingStaff.setPassword(encodedPassword);

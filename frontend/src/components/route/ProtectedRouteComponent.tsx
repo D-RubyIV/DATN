@@ -10,7 +10,7 @@ const ProtectedRouteComponent = () => {
     const { authenticated } = useAuth()
 
     if (!authenticated) {
-        window.alert("99")
+        console.log("----------2-")
         return (
             <Navigate
                 replace

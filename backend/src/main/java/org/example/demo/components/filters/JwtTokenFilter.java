@@ -49,7 +49,7 @@ public class JwtTokenFilter extends OncePerRequestFilter{
                 return;
             }
             final String token = authHeader.substring(7);
-            final String email   = jwtTokenUtil.extractEmail(token);
+            final String email   = jwtTokenUtil.getSubject(token);
             if (email != null
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
                 Staff userDetails = (Staff) userDetailsService.loadUserByUsername(email);

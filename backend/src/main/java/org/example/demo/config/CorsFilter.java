@@ -1,67 +1,30 @@
 package org.example.demo.config;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
+//định nghĩa một bean và đồng thời chỉ định một tên cụ thể cho bean đó
+@Component("customCorsFilter")
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CorsFilter implements Filter {
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-     */
+public class CorsFilter extends OncePerRequestFilter {
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-
-    }
-
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-     * javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
-            throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-        httpServletResponse.addHeader("Access-Control-Allow-Origin", "*"); // IMPORTANT: Allowed all the domains
-        httpServletResponse.addHeader("Access-Control-Allow-Methods", "OPTIONS, GET, POST, DELETE, PUT, PATCH, HEAD");
-        httpServletResponse.addHeader("Access-Control-Allow-Headers",
-                "Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Access-Control-Allow-Origin, Authorization");
-        httpServletResponse.addHeader("Access-Control-Expose-Headers",
-                "Access-Control-Allow-Origin, Access-Control-Allow-Credentials, Content-Disposition");
-        httpServletResponse.addHeader("Access-Control-Allow-Credentials", "true");
-        httpServletResponse.addIntHeader("Access-Control-Max-Age", 3600);
-        if ("OPTIONS".equalsIgnoreCase(httpServletRequest.getMethod())) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token");
+        response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
+        if ("OPTIONS".equals(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
         } else {
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            filterChain.doFilter(request, response);
         }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.servlet.Filter#destroy()
-     */
-    @Override
-    public void destroy() {
-
     }
 }

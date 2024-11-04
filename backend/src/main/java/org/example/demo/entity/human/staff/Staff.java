@@ -77,7 +77,7 @@ public class Staff extends BaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_"+getRole().getName()));
+        authorities.add(new SimpleGrantedAuthority("ROLE_"+getRole().getName().toUpperCase()));
         return authorities;
     }
 

@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/staffs")
+@RequestMapping("/api/v1/staffs")
 public class StaffController {
 
     private final StaffService staffService;

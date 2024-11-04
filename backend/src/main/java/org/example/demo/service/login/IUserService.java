@@ -7,8 +7,6 @@ import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.exception.InvalidPasswordException;
 import org.example.demo.exception.PermissionDenyException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface IUserService {
 

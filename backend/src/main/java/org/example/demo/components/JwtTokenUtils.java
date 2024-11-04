@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.InvalidParameterException;
 import java.security.Key;
 import java.security.SecureRandom;
@@ -40,7 +41,8 @@ public class JwtTokenUtils {
 
     public String generateToken(Staff staff) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("email", staff.getEmail());
+        String subject = getSubject(staff);
+        claims.put("subject",subject);
         claims.put("staffId", staff.getId());
         try {
             String token = Jwts.builder()
@@ -55,10 +57,20 @@ public class JwtTokenUtils {
         }
     }
 
-    private Key getSignInKey() {
+    private SecretKey getSignInKey() {
         byte[] bytes = Decoders.BASE64.decode(secretKey);
         //Keys.hmacShaKeyFor(Decoders.BASE64.decode("TaqlmGv1iEDMRiFp/pHuID1+T84IABfuA0xXh4GhiUI="));
         return Keys.hmacShaKeyFor(bytes);
+    }
+
+    private static String getSubject(Staff staff) {
+        // Determine subject identifier (phone number or email)
+        String subject = staff.getEmail();
+        if (subject == null || subject.isBlank()) {
+            // If phone number is null or blank, use email as subject
+            subject = staff.getPhone();
+        }
+        return subject;
     }
 
     private String generateSecretKey() {
@@ -71,12 +83,13 @@ public class JwtTokenUtils {
 
     // truyen vao token lay ra doi tuong
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return Jwts.parser()  // Khởi tạo JwtParserBuilder
+                .verifyWith(getSignInKey())  // Sử dụng verifyWith() để thiết lập signing key
+                .build()  // Xây dựng JwtParser
+                .parseSignedClaims(token)  // Phân tích token đã ký
+                .getPayload();  // Lấy phần body của JWT, chứa claims
     }
+
 
     public  <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = this.extractAllClaims(token);
@@ -88,16 +101,44 @@ public class JwtTokenUtils {
         return expirationDate.before(new Date());
     }
 
-    public String extractEmail(String token) {return extractClaim(token, Claims::getSubject);}
+    public String getSubject(String token) {
+        return  extractClaim(token, Claims::getSubject);
+    }
 
-    public boolean validateToken(String token, Staff staffDetails) {
+
+
+//    public boolean validateToken(String token, Staff staffDetails) {
+//        try {
+//            String email = extractEmail(token);
+//            Token existingToken = tokenRepository.findByToken(token);
+//            if (existingToken == null || existingToken.isRevoked() == true || !staffDetails.isEnabled()) {
+//                return false;
+//            }
+//            return (email.equals(staffDetails.getUsername())) && !isTokenExpired(token);
+//        } catch (MalformedJwtException e) {
+//            logger.error("Invalid JWT token: {}", e.getMessage());
+//        } catch (ExpiredJwtException e) {
+//            logger.error("JWT token is expired: {}", e.getMessage());
+//        } catch (UnsupportedJwtException e) {
+//            logger.error("JWT token is unsupported: {}", e.getMessage());
+//        } catch (IllegalArgumentException e) {
+//            logger.error("JWT claims string is empty: {}", e.getMessage());
+//        }
+//        return false;
+//    }
+    public boolean validateToken(String token, Staff userDetails) {
         try {
-            String email = extractEmail(token);
+            String subject = extractClaim(token, Claims::getSubject);
+            //subject is phoneNumber or email
             Token existingToken = tokenRepository.findByToken(token);
-            if (existingToken == null || existingToken.isRevoked() == true || !staffDetails.isEnabled()) {
+            if(existingToken == null ||
+                    existingToken.isRevoked() == true ||
+                    !userDetails.isEnabled()
+            ) {
                 return false;
             }
-            return (email.equals(staffDetails.getUsername())) && !isTokenExpired(token);
+            return (subject.equals(userDetails.getUsername()))
+                    && !isTokenExpired(token);
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
@@ -107,7 +148,7 @@ public class JwtTokenUtils {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
+
         return false;
     }
-
 }

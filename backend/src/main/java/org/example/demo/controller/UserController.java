@@ -56,14 +56,6 @@ public class UserController {
                     .message(errorMessages.toString())
                     .build());
         }
-        if (!staffRequestDTO.getPassword().trim().equals(staffRequestDTO.getRetypePassword().trim())) {
-            return ResponseEntity.badRequest().body(ResponseObject.builder()
-                    .status(HttpStatus.BAD_REQUEST)
-                    .data(null)
-                    .message(localizationUtils.getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH))
-                    .build());
-        }
-
         Staff staff = userService.createStaff(staffRequestDTO);
         return ResponseEntity.ok(ResponseObject.builder()
                 .status(HttpStatus.CREATED)

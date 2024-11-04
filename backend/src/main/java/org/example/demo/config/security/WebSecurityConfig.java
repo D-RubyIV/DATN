@@ -1,41 +1,44 @@
 package org.example.demo.config.security;
 
 
+
 import lombok.RequiredArgsConstructor;
 import org.example.demo.components.filters.JwtTokenFilter;
-
 import org.example.demo.entity.human.role.Role;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.security.config.Customizer;
 
 import static org.springframework.http.HttpMethod.*;
-
 
 @Configuration
 //@EnableMethodSecurity
 @EnableWebSecurity(debug = true)
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebMvc
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
-    //    private final CustomOAuth2UserService oauth2UserService;
-    @Value("${api.prefix}") // check lai
+    @Value("${api.prefix}")
     private String apiPrefix;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)  throws Exception{
         http
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                //.cors(Customizer.withDefaults())
+                .exceptionHandling(customizer -> customizer.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> {
                     requests
                             .requestMatchers(
@@ -43,7 +46,6 @@ public class WebSecurityConfig {
                                     String.format("%s/users/login", apiPrefix),
                                     //healthcheck
                                     String.format("%s/healthcheck/**", apiPrefix),
-
                                     //swagger
                                     //"/v3/api-docs",
                                     //"/v3/api-docs/**",
@@ -56,12 +58,18 @@ public class WebSecurityConfig {
                                     "/swagger-ui/**",
                                     "/swagger-ui.html",
                                     "/webjars/swagger-ui/**",
-                                    "/swagger-ui/index.html"
+                                    "/swagger-ui/index.html",
+                                    //Google login
+                                    "users/auth/social-login",
+                                    "users/auth/social/callback"
 
                             )
                             .permitAll()
                             .requestMatchers(GET,
                                     String.format("%s/roles**", apiPrefix)).permitAll()
+
+                            .requestMatchers(
+                                    String.format("%s/voucher/**", apiPrefix)).permitAll()
 
                             .requestMatchers(GET,
                                     String.format("%s/customer/**", apiPrefix)).permitAll()
@@ -74,26 +82,25 @@ public class WebSecurityConfig {
 
                             .requestMatchers(GET,
                                     String.format("%s/orders/**", apiPrefix)).permitAll()
+                            .requestMatchers(GET,
+                                    String.format("%s/users/profile-images/**", apiPrefix))
+                            .permitAll()
 
                             .requestMatchers(GET,
                                     String.format("%s/order_details/**", apiPrefix)).permitAll()
 
-                            .requestMatchers(GET,
-                                    String.format("%s/staffs/**", apiPrefix)).permitAll()
-
-                            .requestMatchers(POST,
-                                    String.format("%s/staffs/**", apiPrefix)).hasAnyRole(Role.ADMIN)
                             .requestMatchers(PUT,
-                                    String.format("%s/staffs/**", apiPrefix)).hasAnyRole(Role.ADMIN)
-                            .requestMatchers(DELETE,
-                                    String.format("%s/staffs/**", apiPrefix)).hasAnyRole(Role.ADMIN)
+                                    String.format("%s/staffs/**", apiPrefix)).hasRole(Role.ADMIN)
+                            .requestMatchers(POST, String.format("%s/products/**", apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("%s/products/**", apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(DELETE, String.format("%s/products/**", apiPrefix)).hasRole("ADMIN")
 
                             .anyRequest()
                             .authenticated();
                     //.anyRequest().permitAll();
                 })
                 .csrf(AbstractHttpConfigurer::disable);
-        http.securityMatcher(String.valueOf(EndpointRequest.toAnyEndpoint()));
+//        http.securityMatcher(String.valueOf(EndpointRequest.toAnyEndpoint()));
         return http.build();
     }
 }

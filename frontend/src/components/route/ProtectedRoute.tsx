@@ -11,6 +11,7 @@ const ProtectedRoute = () => {
     const location = useLocation()
 
     if (!authenticated) {
+        console.log("-----------")
         return (
             <Navigate
                 replace

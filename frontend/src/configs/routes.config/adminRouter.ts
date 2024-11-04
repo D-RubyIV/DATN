@@ -1,6 +1,8 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
+import { ROLE_ADMIN } from '@/constants/roles.constant'
+
 
 
 const adminRoute: Routes = [
@@ -42,19 +44,19 @@ const adminRoute: Routes = [
         key: 'UpdateStaff',
         path: `manage/staff/update/:id`,
         component: lazy(() => import('@/views/manage/staff/UpdateStaff')),
-        authority: []
+        authority: [ROLE_ADMIN]
     },
     {
         key: 'AddStaffPage',
         path: `manage/staff/add`,
         component: lazy(() => import('@/views/manage/staff/AddStaffPage')),
-        authority: []
+        authority: [ROLE_ADMIN]
     },
     {
         key: 'orderManager',
         path: `manage/order`,
         component: lazy(() => import('@/views/manage/order/OrderManage')),
-        authority: []
+        authority: [ROLE_ADMIN]
     },
     {
         key: 'appVouchers.voucherList',
