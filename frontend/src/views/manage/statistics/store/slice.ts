@@ -93,6 +93,7 @@ export type StatisticState = {
     typeStatistic: TypeStatistic,
     timeOption: TimeOption,
     overviewOneMonthData: OverViewMonth[],
+    overviewOneMonthDataBefore: OverViewMonth[],
     overviewChartData: ChartOverviewData[],
     startDateChart: string,
     endDateChart: string,
@@ -111,8 +112,20 @@ export const getStatisticOverview = createAsyncThunk(
     SLICE_NAME + '/getSalesDashboardData',
     async () => {
         const data = {
-            'from': initialState.startDate,
-            'to': initialState.endDate
+            'from': dayjs().startOf('month').toISOString(),
+            'to': dayjs().endOf('month').toISOString()
+        }
+        const response = await apiFetchOverviewStatistic<DashboardDataResponse>(data)
+        console.log('RESULT: ')
+        return response.data
+    }
+)
+export const getStatisticOverviewBefore = createAsyncThunk(
+    SLICE_NAME + '/getStatisticOverviewBefore',
+    async () => {
+        const data = {
+            'from':dayjs().subtract(1, 'month').startOf('month').toISOString(),
+            'to': dayjs().subtract(1, 'month').endOf('month').toISOString()
         }
         const response = await apiFetchOverviewStatistic<DashboardDataResponse>(data)
         console.log('RESULT: ')
@@ -159,10 +172,11 @@ export const getLastOrders = createAsyncThunk(
 
 // KHỞI TẠO DỮ LIỆU GỐC
 const initialState: StatisticState = {
-    startDate: dayjs().subtract(1, 'month').toDate().toISOString(),
-    endDate: new Date().toISOString(),
+    startDate: dayjs().startOf('month').toISOString(),
+    endDate: dayjs().endOf('month').toISOString(),
     loading: true,
     overviewOneMonthData: [],
+    overviewOneMonthDataBefore: [],
     overviewChartData: [],
     typeStatistic: TypeStatistic.REVENUE,
     timeOption: TimeOption.DAILY,
@@ -216,6 +230,13 @@ const statisticSlice = createSlice({
                 state.loading = false
             })
             .addCase(getStatisticOverview.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(getStatisticOverviewBefore.fulfilled, (state, action) => {
+                state.overviewOneMonthDataBefore = action.payload
+                state.loading = false
+            })
+            .addCase(getStatisticOverviewBefore.pending, (state) => {
                 state.loading = true
             })
             .addCase(getStatisticOverviewV2.fulfilled, (state, action) => {

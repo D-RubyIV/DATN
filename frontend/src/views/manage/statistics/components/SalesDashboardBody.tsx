@@ -23,11 +23,11 @@ const SalesDashboardBody = () => {
                 <div className={'col-span-2'}>
                     <SalesReport />
                 </div>
-                <SalesByCategories />
+                <SalesByCategories/>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <LatestOrder data={listLatestOrders} className="lg:col-span-2"/>
-                <TopProduct data={listTopProduct}/>
+                <LatestOrder data={listLatestOrders} className="lg:col-span-2" />
+                <TopProduct data={listTopProduct} />
             </div>
         </Fragment>
     )

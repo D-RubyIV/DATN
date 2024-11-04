@@ -50,7 +50,6 @@ const Statistic = () => {
     const startDate = useAppSelector((state) => state.statistic.startDate)
     const salesData = useAppSelector((state) => state.statistic.overviewOneMonthData)
 
-
     const today = new Date()
     const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
@@ -70,10 +69,11 @@ const Statistic = () => {
     }
 
     const summaryToday = useMemo(() => {
-        const startOfDay = new Date()
-        startOfDay.setHours(0, 0, 0, 0)
+        const startOfDay =  dayjs().startOf('day').toDate();
+        console.log("startOfDay")
+        console.log(startOfDay)
         return calculateSummary(salesData, startOfDay)
-    }, [])
+    }, [salesData])
 
     const summaryWeek = useMemo(() => calculateSummary(salesData, startOfWeek), [startOfWeek])
     const summaryMonth = useMemo(() => calculateSummary(salesData, startOfMonth), [startOfMonth])
