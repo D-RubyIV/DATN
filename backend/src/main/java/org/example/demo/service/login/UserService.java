@@ -110,9 +110,9 @@ public class UserService implements IUserService {
         if (!optionalStaff.get().isEnabled()) {
             throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
         }
-        // authenticate with Java Spring security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 email, password, existingStaff.getAuthorities());
+        // authenticate with Java Spring security
         authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtils.generateToken(existingStaff);
 

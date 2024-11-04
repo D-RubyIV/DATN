@@ -130,6 +130,8 @@ const SignInForm = (props: SignInFormProps) => {
                                 loading={isSubmitting}
                                 variant="solid"
                                 type="submit"
+                                className={`${disableSubmit ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500'}`}
+                                disabled={disableSubmit}
                             >
                                 {isSubmitting ? 'Signing in...' : 'Sign In'}
                             </Button>
