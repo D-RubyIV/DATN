@@ -25,7 +25,7 @@ public class Event extends BaseEntity {
     @Column(name = "name")
     private String name; // tên sự kiện
 
-    @Column(name = "start_date")
+    @Column(name = "discount_percent")
     private Integer discountPercent; // phần trăm giảm giá
 
     @Column(name = "start_date")
@@ -38,8 +38,21 @@ public class Event extends BaseEntity {
     private Integer quantityDiscount;
 
     @Column(name = "status")
-    private Boolean status; //
+    private String status;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
+
+    public void updateStatusBasedOnTime() {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("Current time: " + now); // In thời gian hiện tại
+        if (now.isBefore(startDate)) {
+            this.status = "Sắp diễn ra";
+        } else if (now.isAfter(endDate)) {
+            this.status = "Đã kết thúc";
+        } else {
+            this.status = "Đang diễn ra";
+        }
+        System.out.println("Updated status: " + this.status); // In trạng thái đã cập nhật
+    }
 }

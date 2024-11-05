@@ -1,7 +1,7 @@
 import {
     NAV_ITEM_TYPE_TITLE,
     NAV_ITEM_TYPE_ITEM,
-    NAV_ITEM_TYPE_COLLAPSE
+    NAV_ITEM_TYPE_COLLAPSE,
 } from '@/constants/navigation.constant'
 import type { NavigationTree } from '@/@types/navigation'
 
@@ -14,7 +14,7 @@ const navigationConfig: NavigationTree[] = [
         icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
-        subMenu: []
+        subMenu: [],
     },
     {
         key: 'manageSell',
@@ -24,7 +24,7 @@ const navigationConfig: NavigationTree[] = [
         icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
-        subMenu: []
+        subMenu: [],
     },
     {
         key: 'collapseMenu',
@@ -43,7 +43,7 @@ const navigationConfig: NavigationTree[] = [
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'voucherManager',
@@ -53,7 +53,7 @@ const navigationConfig: NavigationTree[] = [
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'productManage',
@@ -63,7 +63,7 @@ const navigationConfig: NavigationTree[] = [
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'staffManager',
@@ -73,7 +73,7 @@ const navigationConfig: NavigationTree[] = [
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'orderManager',
@@ -83,9 +83,9 @@ const navigationConfig: NavigationTree[] = [
                 icon: '',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: []
-            }
-        ]
+                subMenu: [],
+            },
+        ],
     },
     {
         key: 'setting',
@@ -104,7 +104,7 @@ const navigationConfig: NavigationTree[] = [
                 icon: 'groupSingleMenu',
                 type: NAV_ITEM_TYPE_ITEM,
                 authority: [],
-                subMenu: []
+                subMenu: [],
             },
             {
                 key: 'groupMenu.collapse',
@@ -123,7 +123,7 @@ const navigationConfig: NavigationTree[] = [
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [],
-                        subMenu: []
+                        subMenu: [],
                     },
                     {
                         key: 'groupMenu.collapse.item2',
@@ -133,12 +133,12 @@ const navigationConfig: NavigationTree[] = [
                         icon: '',
                         type: NAV_ITEM_TYPE_ITEM,
                         authority: [],
-                        subMenu: []
-                    }
-                ]
-            }
-        ]
-    }
+                        subMenu: [],
+                    },
+                ],
+            },
+        ],
+    },
 ]
 
 export default navigationConfig

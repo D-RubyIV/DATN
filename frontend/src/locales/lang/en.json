@@ -10,6 +10,7 @@
         "staffTitle": "Nhân viên",
         "voucherTitle": "Phiếu giảm giá",
         "orderTitle": "Hóa đơn",
+        "eventTitle": "Đợt giảm giá",
 
         "singleMenuItem": "Single menu item",
         "collapseMenu": {

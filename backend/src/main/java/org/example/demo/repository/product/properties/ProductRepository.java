@@ -11,9 +11,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
+
+    List<Product> findByCodeIn(List<String> codes); // Tìm sản phẩm theo mã
+
     boolean existsByCodeAndName(String code, String name);
 
     Optional<Product> findByName(String name);
@@ -57,9 +61,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
-
-
-
 
 }
 

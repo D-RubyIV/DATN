@@ -70,6 +70,30 @@ const manageRoute: Routes = [
             header: 'Thêm Phiếu Giảm Giá',
         },
     },
+    {
+        key: 'eventManager',
+        path: `/manage/event`,
+        component: lazy(
+            () => import('@/views/manage/event/components/EventTable'),
+        ),
+        authority: [],
+    },
+    {
+        key: 'addEvent',
+        path: `/manage/event/add`,
+        component: lazy(
+            () => import('@/views/manage/event/components/AddEvent'),
+        ),
+        authority: [],
+    },
+    {
+        key: 'updateEvent',
+        path: `/manage/event/update/:id`,
+        component: lazy(
+            () => import('@/views/manage/event/components/UpdateEvent'),
+        ),
+        authority: [],
+    },
 ]
 
 export default manageRoute
