@@ -28,4 +28,9 @@ public interface ProductDetailResponseMapper extends IMapperBasic<ProductDetail,
     @Mapping(target = "elasticityName", source = "elasticity.name")
     ProductOverviewResponse toOverviewDTOPhah04(ProductDetail productDetail);
     List<ProductOverviewResponse> toOverviewDTOPhah04(List<ProductDetail> productDetailList);
+
+
+
+
+
 }

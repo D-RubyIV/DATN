@@ -70,6 +70,7 @@
     "react-toastify": "^10.0.5",
     "react-tooltip": "^5.11.1",
     "redux-persist": "^6.0.0",
+    "reselect": "^5.1.1",
     "styled-components": "^6.1.13",
     "twin.macro": "^3.4.0",
     "uuid": "^11.0.2",

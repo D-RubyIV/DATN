@@ -1,5 +1,4 @@
 package org.example.demo.entity.product.core;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.product.properties.*;
+
+import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +29,9 @@ public class ProductDetail extends BaseEntity {
 
     @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "mass")
+    private Integer mass;
 
     @Column(name = "deleted")
     private Boolean deleted;
@@ -92,8 +97,11 @@ public class ProductDetail extends BaseEntity {
     private Elasticity elasticity;
 
     // Hình ảnh
-    @ManyToOne
-    @JoinColumn(name = "image_id")
-    private Image image;
-
+    @ManyToMany
+    @JoinTable(
+            name = "product_detail_image",
+            joinColumns = @JoinColumn(name = "product_detail_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id")
+    )
+    private List<Image> images;
 }

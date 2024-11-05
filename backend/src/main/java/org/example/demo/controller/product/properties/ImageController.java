@@ -89,7 +89,7 @@ public class ImageController {
             ImageResponseDTO responseDTO = new ImageResponseDTO( // Đổi từ ElasticityResponseDTO sang ImageResponseDTO
                     updatedImage.getId(),
                     updatedImage.getCode(),
-                    updatedImage.getName(),
+                    updatedImage.getUrl(),
                     updatedImage.getDeleted(),
                     updatedImage.getCreatedDate(),
                     updatedImage.getUpdatedDate()
@@ -119,7 +119,7 @@ public class ImageController {
             ImageResponseDTO responseDTO = new ImageResponseDTO( // Đổi từ ElasticityResponseDTO sang ImageResponseDTO
                     image.getId(),
                     image.getCode(),
-                    image.getName(),
+                    image.getUrl(),
                     image.getDeleted(),
                     image.getCreatedDate(),
                     image.getUpdatedDate()

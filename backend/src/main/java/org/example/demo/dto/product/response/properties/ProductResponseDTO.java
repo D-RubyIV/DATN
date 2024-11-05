@@ -16,6 +16,10 @@ public class ProductResponseDTO {
     private String code;
     private String name;
     private Boolean deleted;
+    private String description;
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
+    private  LocalDateTime updatedDate;
+
 }

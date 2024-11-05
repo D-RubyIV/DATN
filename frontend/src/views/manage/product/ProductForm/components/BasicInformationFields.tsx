@@ -4,14 +4,14 @@ import RichTextEditor from '@/components/shared/RichTextEditor';
 import { FormItem } from '@/components/ui/Form';
 import { Field, FormikErrors, FormikTouched, FieldProps } from 'formik';
 import Select from '@/components/ui/Select';
-import { Option } from '../store';
+import { Option, Product,ProductFromData } from '../store';
 import { useAppDispatch, useAppSelector } from '../store';
-import { setProductData, toggleAddProductConfirmation } from '../store';
+import { setProductData, toggleAddProductConfirmation, setNameProduct } from '../store';
 import ProductAddConfirmation from './ProductAddConfirmation';
 import CreatableSelect from 'react-select/creatable';
 
 type FormFieldsName = {
-    product: Option | null;
+    product: Product | null;
     description: string;
 };
 
@@ -21,7 +21,7 @@ type BasicInformationFieldsProps = {
     values: FormFieldsName;
     setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
     data?: {
-        products: { label: string; value: Option }[] | undefined;
+        products: { label: string; value: Product }[] | undefined;
     };
 };
 
@@ -36,24 +36,11 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
     }, [data]);
 
     const handleCreate = (inputValue: string) => {
-        const newOption: Option = {
-            id: Math.floor(Math.random() * 1000), 
-            code: generateRandomCode(),
-            name: inputValue,
-            deleted: false,
-            createdDate: new Date().toISOString(),
-            modifiedDate: new Date().toISOString(),
-        };
-        dispatch(setProductData(newOption));
+        dispatch(setNameProduct(inputValue));
         dispatch(toggleAddProductConfirmation(true)); 
     };
 
-    const generateRandomCode = () => {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        return Array.from({ length: 5 }, () => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
-    };
-
-    const updateOptions = (field: string, newOption: Option) => {
+    const updateOptions = (field: string, newOption: Product) => {
         if (field === 'product') {
             setProducts((prev) => [...prev, { label: newOption.name, value: newOption }]);
         }
@@ -79,10 +66,11 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
                             value={values.product ? products.find(prod => prod.value.id === values.product?.id) : null}
                             onChange={(el) => {
                                 if (el) {
+                                    console.log(el.value)
                                     form.setFieldValue(field.name, el.value);
                                 } else {
                                     form.setFieldValue(field.name, null);
-                                }
+                                } 
                             }}
                             placeholder="Tên sản phẩm..."
                             formatCreateLabel={(inputValue) => `Thêm nhanh "${inputValue}"`}
@@ -101,6 +89,7 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
                         <RichTextEditor
                             value={field.value}
                             onChange={(val) => form.setFieldValue(field.name, val)}
+                            readOnly
                         />
                     )}
                 </Field>

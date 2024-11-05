@@ -63,9 +63,9 @@ public class ImageService implements IService<Image, Integer, ImageRequestDTO> {
 
     @Override
     public Image save(ImageRequestDTO requestDTO) throws BadRequestException { // Đổi từ Elasticity sang Image
-        boolean exists = imageRepository.existsByCodeAndName(requestDTO.getCode(), requestDTO.getName()); // Đổi từ elasticityRepository sang imageRepository
+        boolean exists = imageRepository.existsByCodeAndUrl(requestDTO.getCode(), requestDTO.getUrl()); // Đổi từ elasticityRepository sang imageRepository
         if (exists) {
-            throw new BadRequestException("Image with code " + requestDTO.getCode() + " and name " + requestDTO.getName() + " already exists."); // Đổi từ Elasticity sang Image
+            throw new BadRequestException("Image with code " + requestDTO.getCode() + " and name " + requestDTO.getUrl() + " already exists."); // Đổi từ Elasticity sang Image
         }
 
         Image entityMapped = imageRequestMapper.toEntity(requestDTO); // Đổi từ Elasticity sang Image
@@ -77,7 +77,7 @@ public class ImageService implements IService<Image, Integer, ImageRequestDTO> {
     public Image update(Integer id, ImageRequestDTO requestDTO) throws BadRequestException { // Đổi từ Elasticity sang Image
         Image entityFound = findById(id); // Đổi từ Elasticity sang Image
         entityFound.setCode(requestDTO.getCode());
-        entityFound.setName(requestDTO.getName());
+        entityFound.setUrl(requestDTO.getUrl());
 
         return imageRepository.save(entityFound); // Đổi từ elasticityRepository sang imageRepository
     }

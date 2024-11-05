@@ -99,6 +99,7 @@ public class ProductController {
                     updatedProduct.getCode(),
                     updatedProduct.getName(),
                     updatedProduct.getDeleted(),
+                    updatedProduct.getDescription(),
                     updatedProduct.getCreatedDate(),
                     updatedProduct.getUpdatedDate()
 
@@ -129,6 +130,7 @@ public class ProductController {
                     product.getCode(),
                     product.getName(),
                     product.getDeleted(),
+                    product.getDescription(),
                     product.getCreatedDate(),
                     product.getUpdatedDate()
             );

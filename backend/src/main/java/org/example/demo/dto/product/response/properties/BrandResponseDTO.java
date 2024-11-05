@@ -15,8 +15,10 @@ public class BrandResponseDTO {
     private String code;
     private String name;
     private Boolean deleted;
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
+    private  LocalDateTime modifiedDate;
 
 
 }

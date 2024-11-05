@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.dto.product.requests.properties.ImageRequestDTO;
 import org.example.demo.dto.product.response.properties.*;
 import org.example.demo.entity.product.properties.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,6 +20,7 @@ public class ProductDetailResponseDTO {
     private String name;
     private Double price;
     private Integer quantity;
+    private Integer mass;
     private Boolean deleted;
     private Size size;
     private Color color;
@@ -31,11 +34,10 @@ public class ProductDetailResponseDTO {
     private MaterialResponseDTO material;
     private ThicknessResponseDTO thickness;
     private ElasticityResponseDTO elasticity;
-    private Image image;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    private List<Image> images;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private  LocalDateTime modifiedDate;
 
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private LocalDateTime modifiedDate;
 }

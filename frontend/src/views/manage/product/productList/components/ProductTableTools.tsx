@@ -21,8 +21,9 @@ const ProductTableTools = () => {
                         Xuất Excel
                     </Button>
                 </Link>
+
                 <Link
-                    className="block lg:inline-block md:mb-0 mb-4"
+                    className="block lg:inline-block md:mx-2 md:mb-0 mb-4"
                     to="/admin/manage/product/product-new"
                     // to="/admin/manage/product/brand-list"
 
@@ -30,8 +31,9 @@ const ProductTableTools = () => {
                 >
                     <Button
                         size='sm'
+                        block
                         variant="solid"
-                        style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                        style={{ backgroundColor: 'rgb(79, 70, 229)' }}
                         className='flex items-center justify-center gap-2 button-bg-important'
                         icon={<HiPlusCircle />} 
                     >

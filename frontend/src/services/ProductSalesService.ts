@@ -233,7 +233,7 @@ export async function apiGetSalesMaterials<T>() {
 //save data
 export async function apiCreateSalesProductDetail<T, U extends Record<string, unknown>>(data: U[]) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/productDetails/saveAll',
+        url: 'http://localhost:8080/api/v1/productDetails/save-all',
         method: 'post',
         data, // Dữ liệu là một mảng
     });
