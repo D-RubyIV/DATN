@@ -33,7 +33,7 @@ const StatisticCard = ({
                         />
                     </h3>
                     <p>
-                        so với 3 tháng trước{' '}
+                        so với 1 tháng trước{' '}
                         <span className="font-semibold">
                             {dayjs(date).format('DD MMM')}
                         </span>

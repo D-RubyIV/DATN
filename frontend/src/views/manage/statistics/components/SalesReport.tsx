@@ -3,7 +3,7 @@ import Chart from '@/components/shared/Chart'
 import { Button, Radio, Tabs } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { HiOutlineHome, HiOutlineUser } from 'react-icons/hi'
+import { HiOutlineCash, HiOutlineChartSquareBar, HiOutlineHome, HiOutlineUser } from 'react-icons/hi'
 import {
     getStatisticOverviewV2,
     setChartMode,
@@ -72,13 +72,11 @@ const SalesReport = () => {
                 <h4>Thống kê</h4>
                 <Tabs defaultValue="tab1" value={chartMode.toString()} onChange={(val) => dispatch(setChartMode(Number(val)))}>
                     <TabList>
-                        <TabNav value="0" icon={<HiOutlineHome />}>
-
-                            Doanh thu
-                        </TabNav>
-                        <TabNav value="1" icon={<HiOutlineHome />}>
-
+                        <TabNav value="0" icon={<HiOutlineChartSquareBar  />}>
                             Số lượng
+                        </TabNav>
+                        <TabNav value="1" icon={<HiOutlineCash />}>
+                            Doanh thu
                         </TabNav>
                     </TabList>
                 </Tabs>
