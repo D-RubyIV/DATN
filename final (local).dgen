@@ -1,18 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Devart (www.devart.com), Data-Generator document file -->
 <!-- Modifying this generated file will probably render it invalid -->
-<DataGenDocument xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="5.0">
+<DataGenDocument xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="7.2">
+  <ConnectionModel>
+    <PropertyValue Name="Database">aa8afe9c-7d62-4564-b477-c12e62e0f440</PropertyValue>
+    <PropertyValue Name="Id">10a52b17-6ce1-472e-a52c-4ac159b88246</PropertyValue>
+    <PropertyValue Name="ConnectionString" xml:space="preserve">Encrypt=False;Integrated Security=False;User ID=sa</PropertyValue>
+  </ConnectionModel>
   <Settings>
-    <ProviderVersion>5.8.107.0</ProviderVersion>
-    <GeneratorVersion>6.1.1200.0</GeneratorVersion>
     <Provider>aa8afe9c-7d62-4564-b477-c12e62e0f440</Provider>
-    <ConnectionString>Encrypt=False;Integrated Security=False;User ID=sa</ConnectionString>
-    <CategoryId>00000000-0000-0000-0000-000000000000</CategoryId>
-    <DatabaseName>final</DatabaseName>
     <AllowNulls>false</AllowNulls>
     <IncludeNullsPercent>10</IncludeNullsPercent>
     <AllowEmptyString>false</AllowEmptyString>
     <IncludeEmptyStringPercent>10</IncludeEmptyStringPercent>
+    <DatabaseName>final</DatabaseName>
     <PopulationType>RowsCount</PopulationType>
     <RowsToGenerate>1000</RowsToGenerate>
     <ProportionOfExistingData>10</ProportionOfExistingData>
@@ -23,6 +24,7 @@
     <Seed>1</Seed>
     <LastSeedValue>0</LastSeedValue>
     <Language>US</Language>
+    <ShowDataPreview>true</ShowDataPreview>
   </Settings>
   <Tables>
     <Table Name="dbo.brand">
@@ -56,6 +58,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -76,6 +79,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -113,6 +117,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -151,6 +156,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -172,6 +178,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -191,6 +198,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -229,6 +237,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -249,6 +258,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -286,6 +296,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -324,6 +335,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -345,6 +357,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -364,6 +377,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -402,6 +416,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -422,6 +437,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -459,6 +475,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -497,6 +514,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -518,6 +536,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -537,6 +556,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -575,6 +595,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -635,6 +656,7 @@
             </Values>
           </GeneratorOptions>
           <GeneratorType>SqlBirthDateGenerator</GeneratorType>
+          <GeneratorId>a8fd99d8-6997-4550-92be-cfcd083b6aa8</GeneratorId>
           <GeneratorName>Birth Date</GeneratorName>
           <GeneratorDescription>fill with dates of birth for different age groups, e.g. for retired persons, adults, teenagers, etc.</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -655,6 +677,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -692,6 +715,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -730,6 +754,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -751,6 +776,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -770,6 +796,7 @@
             <Expression>(((((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt"))[_.]?)?($"LastNames.txt"))|(($"LastNames.txt")\C?)|(((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt"))[_.]?(\C[_.]?)?)?($"LastNames.txt")))(\D{,3})?|\c{4,8}(\d{1,4}|[_.]\c{4,10}))@(example$"7"|nowhere$"3").com</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>7f29d5b6-048c-418a-a7d5-8705699e9d7c</GeneratorId>
           <GeneratorName>Email</GeneratorName>
           <GeneratorDescription>Danica.Foley@example.com, fstu@nowhere.com, CurtK_Burton@example.com, LaroseM696@nowhere.com, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -800,6 +827,7 @@
             </Values>
           </GeneratorOptions>
           <GeneratorType>SqlWeightedListGeneratorRegexValues</GeneratorType>
+          <GeneratorId>83193616-8722-48d3-be88-2fd29093b028</GeneratorId>
           <GeneratorName>Gender</GeneratorName>
           <GeneratorDescription>Male, Female</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -820,6 +848,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -843,6 +872,7 @@
             <EncryptionType>MD5</EncryptionType>
           </GeneratorOptions>
           <GeneratorType>SqlPasswordGenerator</GeneratorType>
+          <GeneratorId>7b98221c-2110-4050-adc7-7ba7895c5246</GeneratorId>
           <GeneratorName>Password Hash</GeneratorName>
           <GeneratorDescription>fill with a password encrypted with optional Salt using MD5, SHA1, SHA256, SHA384 or SHA512</GeneratorDescription>
           <GeneratorCategory>IT</GeneratorCategory>
@@ -863,6 +893,7 @@
             <Expression>\(\D\d{2}\) \d{3}\-\d{4}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>bc9e562a-8988-4d68-bc3b-62a8793cd377</GeneratorId>
           <GeneratorName>Phone Number (domestic)</GeneratorName>
           <GeneratorDescription>(102) 136-0584, (462) 681-9028, (252) 889-1273, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -883,6 +914,7 @@
             <Expression>Active|InActive</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -920,6 +952,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -940,6 +973,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -977,6 +1011,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1015,6 +1050,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1036,6 +1072,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -1055,6 +1092,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -1093,6 +1131,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -1116,6 +1155,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>e957317f-f169-42b7-90d1-de04bc63bbfc</GeneratorId>
           <GeneratorName>int</GeneratorName>
           <GeneratorDescription>fill with 32-bit signed integer values</GeneratorDescription>
           <Length>4</Length>
@@ -1144,6 +1184,7 @@
             <IsRandomizeDate>true</IsRandomizeDate>
           </GeneratorOptions>
           <GeneratorType>SqlDateGenerator</GeneratorType>
+          <GeneratorId>6433a1c1-a207-4cb6-bb6c-b7c113b0160c</GeneratorId>
           <GeneratorName>date</GeneratorName>
           <GeneratorDescription>fill with date values</GeneratorDescription>
           <Length>3</Length>
@@ -1172,6 +1213,7 @@
             <IsRandomizeDate>true</IsRandomizeDate>
           </GeneratorOptions>
           <GeneratorType>SqlDateGenerator</GeneratorType>
+          <GeneratorId>6433a1c1-a207-4cb6-bb6c-b7c113b0160c</GeneratorId>
           <GeneratorName>date</GeneratorName>
           <GeneratorDescription>fill with date values</GeneratorDescription>
           <Length>3</Length>
@@ -1191,6 +1233,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -1228,6 +1271,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1266,6 +1310,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1302,6 +1347,7 @@
             <AddNewLines>false</AddNewLines>
           </GeneratorOptions>
           <GeneratorType>SqlLoremIpsumGenerator</GeneratorType>
+          <GeneratorId>8389ecef-58c6-4874-8a6b-e3cec654f247</GeneratorId>
           <GeneratorName>Product Description</GeneratorName>
           <GeneratorDescription>Sunt id voluptatem eveniet ipsum minus hic. Repellenadus at facilis. Aut facilis esse qui, eligendi et quae! Et qui ullam., ...</GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -1322,6 +1368,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -1360,6 +1407,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -1380,6 +1428,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -1417,6 +1466,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1455,6 +1505,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1476,6 +1527,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -1495,6 +1547,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -1533,6 +1586,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -1553,6 +1607,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -1590,6 +1645,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1628,6 +1684,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1649,6 +1706,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -1668,6 +1726,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -1706,6 +1765,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -1726,6 +1786,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -1763,6 +1824,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1801,6 +1863,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1822,6 +1885,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -1841,6 +1905,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -1879,6 +1944,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -1917,6 +1983,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1955,6 +2022,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -1976,6 +2044,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -2013,6 +2082,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -2051,6 +2121,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2089,6 +2160,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2110,6 +2182,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -2147,6 +2220,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -2167,6 +2241,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -2204,6 +2279,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2242,6 +2318,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2263,6 +2340,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -2282,6 +2360,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -2320,6 +2399,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -2340,6 +2420,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -2377,6 +2458,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2415,6 +2497,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2436,6 +2519,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -2455,6 +2539,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -2493,6 +2578,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -2513,6 +2599,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -2550,6 +2637,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2588,6 +2676,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2609,6 +2698,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -2628,6 +2718,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -2666,6 +2757,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -2686,6 +2778,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -2723,6 +2816,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2761,6 +2855,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2782,6 +2877,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -2801,6 +2897,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -2839,6 +2936,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -2859,6 +2957,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -2896,6 +2995,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2934,6 +3034,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -2955,6 +3056,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -2974,6 +3076,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -3012,6 +3115,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -3032,6 +3136,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -3054,6 +3159,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>e957317f-f169-42b7-90d1-de04bc63bbfc</GeneratorId>
           <GeneratorName>int</GeneratorName>
           <GeneratorDescription>fill with 32-bit signed integer values</GeneratorDescription>
           <Length>4</Length>
@@ -3076,6 +3182,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>60d4d543-a0c0-446e-9600-477af27f6de8</GeneratorId>
           <GeneratorName>Product Quantity</GeneratorName>
           <GeneratorDescription>9, 24, 89, 35, ...</GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -3099,6 +3206,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>60d4d543-a0c0-446e-9600-477af27f6de8</GeneratorId>
           <GeneratorName>Product Quantity</GeneratorName>
           <GeneratorDescription>9, 24, 89, 35, ...</GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -3137,6 +3245,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3175,6 +3284,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3213,6 +3323,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3251,6 +3362,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3272,6 +3384,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -3291,6 +3404,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -3311,6 +3425,7 @@
             <Expression>Active|InActive</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -3328,6 +3443,7 @@
             <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
           </GeneratorOptions>
           <GeneratorType>CheckConstraintGenerator</GeneratorType>
+          <GeneratorId>dcc70628-0233-4b9a-8f60-5847e17048a3</GeneratorId>
           <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
           <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
@@ -3366,6 +3482,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -3386,6 +3503,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -3408,6 +3526,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -3446,6 +3565,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3484,6 +3604,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3505,6 +3626,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -3524,6 +3646,7 @@
             <Expression>((Com|Speak|Sub|Con|Mic|Tweet|Read|Tab|Cab|Tab|Bi|Te|Mono|Print|Pro|Mon|Arm|Sup|Cart|Char|Re|Clean|Re|Trans|An|Stereo|Play|Com|Amp)(put|hold|ceiv|woof|mut|top|ta|le|cul|cess|tell|ject|find|pick|band|cord|plott|tin|cycl|tect|ni|cord|lict|tin|lifi)(|ic|im|in|up|ad|er||on|ep|ed|let|ga|aqu|ef|edg|op|oll|omm|ew|fi|an|ex|pl)?(er|or|er|on|phone|ra|entor|ator|ar|er|scope|or|ry|ridge|let))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>e341a0a9-8af2-4d41-b769-b0327ccb5ebd</GeneratorId>
           <GeneratorName>Product Name</GeneratorName>
           <GeneratorDescription>Repickentor, Playtinon, Cleantinedridge, Tweetnier, Cartholdoper, ... </GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -3562,6 +3685,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -3591,6 +3715,7 @@
             <IsRandomizeDate>true</IsRandomizeDate>
           </GeneratorOptions>
           <GeneratorType>SqlDateGenerator</GeneratorType>
+          <GeneratorId>6433a1c1-a207-4cb6-bb6c-b7c113b0160c</GeneratorId>
           <GeneratorName>date</GeneratorName>
           <GeneratorDescription>fill with date values</GeneratorDescription>
           <Length>3</Length>
@@ -3610,6 +3735,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -3629,6 +3755,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -3651,6 +3778,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -3689,6 +3817,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3727,6 +3856,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -3748,6 +3878,7 @@
             <Expression>($"USStateCodes.csv[1]")</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>49999ec3-b432-48cb-906e-aed072c61e18</GeneratorId>
           <GeneratorName>US State</GeneratorName>
           <GeneratorDescription>New York, Indiana, Ohio, Alaska, Texas, Virginia, Kansas, ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
@@ -3768,6 +3899,7 @@
             <Expression>\d{5}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
           <GeneratorName>ID (random)</GeneratorName>
           <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -3788,6 +3920,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -3807,6 +3940,7 @@
             <Expression>($"USStateCodes.csv[0]")-(\C{2})</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>e4369865-1497-4a9d-9e00-ca1d665a5cbd</GeneratorId>
           <GeneratorName>US Region</GeneratorName>
           <GeneratorDescription>NY-IX, IN-FA, OH-BQ, AK-NV, TX-CC, VA-US, KS-EL, ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
@@ -3827,6 +3961,7 @@
             <Expression>(((((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt"))[_.]?)?($"LastNames.txt"))|(($"LastNames.txt")\C?)|(((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt"))[_.]?(\C[_.]?)?)?($"LastNames.txt")))(\D{,3})?|\c{4,8}(\d{1,4}|[_.]\c{4,10}))@(example$"7"|nowhere$"3").com</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>7f29d5b6-048c-418a-a7d5-8705699e9d7c</GeneratorId>
           <GeneratorName>Email</GeneratorName>
           <GeneratorDescription>Danica.Foley@example.com, fstu@nowhere.com, CurtK_Burton@example.com, LaroseM696@nowhere.com, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -3847,6 +3982,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -3867,6 +4003,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -3889,6 +4026,7 @@
             <EncryptionType>MD5</EncryptionType>
           </GeneratorOptions>
           <GeneratorType>SqlPasswordGenerator</GeneratorType>
+          <GeneratorId>7b98221c-2110-4050-adc7-7ba7895c5246</GeneratorId>
           <GeneratorName>Password Hash</GeneratorName>
           <GeneratorDescription>fill with a password encrypted with optional Salt using MD5, SHA1, SHA256, SHA384 or SHA512</GeneratorDescription>
           <GeneratorCategory>IT</GeneratorCategory>
@@ -3909,6 +4047,7 @@
             <Expression>\(\D\d{2}\) \d{3}\-\d{4}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>bc9e562a-8988-4d68-bc3b-62a8793cd377</GeneratorId>
           <GeneratorName>Phone Number (domestic)</GeneratorName>
           <GeneratorDescription>(102) 136-0584, (462) 681-9028, (252) 889-1273, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -3929,6 +4068,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -3948,6 +4088,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -3967,6 +4108,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -4004,6 +4146,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -4027,6 +4170,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4065,6 +4209,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -4103,6 +4248,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -4122,6 +4268,7 @@
             <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
           </GeneratorOptions>
           <GeneratorType>CheckConstraintGenerator</GeneratorType>
+          <GeneratorId>dcc70628-0233-4b9a-8f60-5847e17048a3</GeneratorId>
           <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
           <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
@@ -4160,6 +4307,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -4183,6 +4331,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4203,6 +4352,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -4218,15 +4368,16 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Increment xsi:type="xsd:double">1</Increment>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
-            <MinValue>99999</MinValue>
-            <MaxValue>9999999</MaxValue>
+            <SeedValue>28</SeedValue>
+            <MinValue>-99999999999</MinValue>
+            <MaxValue>99999999999</MaxValue>
             <UseDefault>false</UseDefault>
             <DefaultValue />
             <Scale>2</Scale>
             <Precision>13</Precision>
           </GeneratorOptions>
           <GeneratorType>SqlFloatGenerator</GeneratorType>
+          <GeneratorId>d77ca1e0-f7fa-404d-a854-7a54d1954cba</GeneratorId>
           <GeneratorName>float</GeneratorName>
           <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
           <Length>8</Length>
@@ -4242,15 +4393,16 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Increment xsi:type="xsd:double">1</Increment>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>28</SeedValue>
-            <MinValue>0</MinValue>
-            <MaxValue>99999</MaxValue>
+            <SeedValue>29</SeedValue>
+            <MinValue>-99999999999</MinValue>
+            <MaxValue>99999999999</MaxValue>
             <UseDefault>false</UseDefault>
             <DefaultValue />
             <Scale>2</Scale>
             <Precision>13</Precision>
           </GeneratorOptions>
           <GeneratorType>SqlFloatGenerator</GeneratorType>
+          <GeneratorId>d77ca1e0-f7fa-404d-a854-7a54d1954cba</GeneratorId>
           <GeneratorName>float</GeneratorName>
           <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
           <Length>8</Length>
@@ -4259,40 +4411,48 @@
         <Column Name="district_id">
           <Checked>true</Checked>
           <DataType>int</DataType>
-          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
-            <AllowEmptyStrings>false</AllowEmptyStrings>
-            <EmptyStringProportion>10</EmptyStringProportion>
+          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>2194</Expression>
+            <Increment xsi:type="xsd:int">1</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>29</SeedValue>
+            <MinValue>1</MinValue>
+            <MaxValue>2147483647</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
           </GeneratorOptions>
-          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
-          <GeneratorName>Reg Exp</GeneratorName>
-          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
+          <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
+          <GeneratorName>ID (sequential)</GeneratorName>
+          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
         <Column Name="province_id">
           <Checked>true</Checked>
           <DataType>int</DataType>
-          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
-            <AllowEmptyStrings>false</AllowEmptyStrings>
-            <EmptyStringProportion>10</EmptyStringProportion>
+          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>268</Expression>
+            <Increment xsi:type="xsd:int">1</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>30</SeedValue>
+            <MinValue>1</MinValue>
+            <MaxValue>2147483647</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
           </GeneratorOptions>
-          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
-          <GeneratorName>Reg Exp</GeneratorName>
-          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
+          <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
+          <GeneratorName>ID (sequential)</GeneratorName>
+          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
@@ -4313,6 +4473,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4338,6 +4499,7 @@
             <Precision>13</Precision>
           </GeneratorOptions>
           <GeneratorType>SqlFloatGenerator</GeneratorType>
+          <GeneratorId>d77ca1e0-f7fa-404d-a854-7a54d1954cba</GeneratorId>
           <GeneratorName>float</GeneratorName>
           <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
           <Length>8</Length>
@@ -4362,6 +4524,7 @@
             <Precision>13</Precision>
           </GeneratorOptions>
           <GeneratorType>SqlFloatGenerator</GeneratorType>
+          <GeneratorId>d77ca1e0-f7fa-404d-a854-7a54d1954cba</GeneratorId>
           <GeneratorName>float</GeneratorName>
           <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
           <Length>8</Length>
@@ -4384,6 +4547,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4422,6 +4586,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -4460,6 +4625,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -4481,6 +4647,7 @@
             <Expression>(([1-9]\d{1,2})|([1-3]\d{3})) (((New|Old|Hidden|West|South|East|North|White|Red|E|(S)?W|NW|S(E)?|N(E)?) )?((((Ski|Chapel|Hunting|Fox|Rose|Riddle|Rock|Prospect|Sharp) Hill)|Front|Hope|Mount|Church|Social|Riverside|Highland|(Wood(land|bridge|hurst|side|row|fort|cock))|((Deep|Iron|Rush|Edge|Park|Hazel|Bur|Glen|Rock|Quail|Stone|Flint|Button|Beach|Ash|Brent)wood)|Lake|(Cedar|Pine) Tree|Oak|((Water|Meadow|Farm|River|Bay)view)|Town|Market|Mountain|Monument))|((1st|2nd|3rd|[4-9]\d?th))) (St(reet)?|Ave(nue)?|Dr(ive)?|R(oa)?d|Ct|C(our)?t|Ln|Lane|Blvd|Cir(cle)?|Hwy|Highway|Loop|Way|Pkwy|Parkway), ((((1st|2nd|3rd|[4-9]\d?th) (Floor|FL))|((Appartment|APT) [1-9]\d{0,2})|((Suite|STE) [1-9]\d{0,3})|(((Nipper|Victor Executive|Diamond|Standard|Keith|Superior|Macy's|Enquirer|Duke Energy|Bartlett|Plaza|Equitable|MidAmerican|Penobscot|Guardian|Fisher|Buhl|Comcast|Calyon|First Security|257 Towers|Kearns|Judge) (Building|Bldg)))), )?($"USStateCodes.csv[2]"), (($"USStateCodes.csv[0]")|($"USStateCodes.csv[1]")), \d{5}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>f557d390-1c4a-44de-b5ba-96501f6ac20e</GeneratorId>
           <GeneratorName>US Address Full</GeneratorName>
           <GeneratorDescription>520 46th St, Sacramento, CA, 10265; 122 Beachwood Drive, Suite 17, Hartford, Connecticut, 31824; ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
@@ -4501,6 +4668,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -4514,12 +4682,13 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
+            <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Huyện Phù Cừ</Expression>
+            <Expression>($"USStateCodes.csv[0]")-(\C{2})</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>e4369865-1497-4a9d-9e00-ca1d665a5cbd</GeneratorId>
           <GeneratorName>US Region</GeneratorName>
           <GeneratorDescription>NY-IX, IN-FA, OH-BQ, AK-NV, TX-CC, VA-US, KS-EL, ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
@@ -4534,10 +4703,11 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
+            <SeedValue>28</SeedValue>
             <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
           </GeneratorOptions>
           <GeneratorType>CheckConstraintGenerator</GeneratorType>
+          <GeneratorId>dcc70628-0233-4b9a-8f60-5847e17048a3</GeneratorId>
           <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
           <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
@@ -4558,6 +4728,7 @@
             <Expression>\(\D\d{2}\) \d{3}\-\d{4}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>bc9e562a-8988-4d68-bc3b-62a8793cd377</GeneratorId>
           <GeneratorName>Phone Number (domestic)</GeneratorName>
           <GeneratorDescription>(102) 136-0584, (462) 681-9028, (252) 889-1273, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -4572,12 +4743,13 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
+            <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Tỉnh Hưng Yên</Expression>
+            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -4592,12 +4764,13 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
+            <SeedValue>29</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -4616,6 +4789,7 @@
             <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
           </GeneratorOptions>
           <GeneratorType>CheckConstraintGenerator</GeneratorType>
+          <GeneratorId>dcc70628-0233-4b9a-8f60-5847e17048a3</GeneratorId>
           <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
           <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
@@ -4634,6 +4808,7 @@
             <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
           </GeneratorOptions>
           <GeneratorType>CheckConstraintGenerator</GeneratorType>
+          <GeneratorId>dcc70628-0233-4b9a-8f60-5847e17048a3</GeneratorId>
           <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
           <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
@@ -4648,12 +4823,13 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>27</SeedValue>
+            <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>220713</Expression>
+            <Expression>\d{5}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
           <GeneratorName>ID (random)</GeneratorName>
           <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -4668,12 +4844,13 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>28</SeedValue>
+            <SeedValue>30</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Xã Tong Phan</Expression>
+            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -4712,6 +4889,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -4735,6 +4913,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4758,6 +4937,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4781,6 +4961,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4801,6 +4982,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -4823,6 +5005,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4846,6 +5029,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4869,6 +5053,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4892,6 +5077,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4917,6 +5103,7 @@
             <Precision>13</Precision>
           </GeneratorOptions>
           <GeneratorType>SqlFloatGenerator</GeneratorType>
+          <GeneratorId>d77ca1e0-f7fa-404d-a854-7a54d1954cba</GeneratorId>
           <GeneratorName>float</GeneratorName>
           <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
           <Length>8</Length>
@@ -4939,6 +5126,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -4962,6 +5150,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>60d4d543-a0c0-446e-9600-477af27f6de8</GeneratorId>
           <GeneratorName>Product Quantity</GeneratorName>
           <GeneratorDescription>9, 24, 89, 35, ...</GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -4985,6 +5174,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5008,6 +5198,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5031,6 +5222,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5054,6 +5246,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5077,6 +5270,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5115,6 +5309,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5153,6 +5348,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5174,6 +5370,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -5193,6 +5390,7 @@
             <Expression>((Com|Speak|Sub|Con|Mic|Tweet|Read|Tab|Cab|Tab|Bi|Te|Mono|Print|Pro|Mon|Arm|Sup|Cart|Char|Re|Clean|Re|Trans|An|Stereo|Play|Com|Amp)(put|hold|ceiv|woof|mut|top|ta|le|cul|cess|tell|ject|find|pick|band|cord|plott|tin|cycl|tect|ni|cord|lict|tin|lifi)(|ic|im|in|up|ad|er||on|ep|ed|let|ga|aqu|ef|edg|op|oll|omm|ew|fi|an|ex|pl)?(er|or|er|on|phone|ra|entor|ator|ar|er|scope|or|ry|ridge|let))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>e341a0a9-8af2-4d41-b769-b0327ccb5ebd</GeneratorId>
           <GeneratorName>Product Name</GeneratorName>
           <GeneratorDescription>Repickentor, Playtinon, Cleantinedridge, Tweetnier, Cartholdoper, ... </GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -5231,6 +5429,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -5254,6 +5453,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5274,6 +5474,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -5311,6 +5512,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5349,6 +5551,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5370,6 +5573,7 @@
             <Expression>Thôn 5</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>2f6b95be-74bf-4b5c-a079-8dc8b456a94e</GeneratorId>
           <GeneratorName>US Address Line 1</GeneratorName>
           <GeneratorDescription>3581 South Ironwood Lane, 24 NW Lake Blvd, 1063 97th Street, ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
@@ -5390,6 +5594,7 @@
             <Expression>Huyện Phù Cừ</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>e4369865-1497-4a9d-9e00-ca1d665a5cbd</GeneratorId>
           <GeneratorName>US Region</GeneratorName>
           <GeneratorDescription>NY-IX, IN-FA, OH-BQ, AK-NV, TX-CC, VA-US, KS-EL, ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
@@ -5410,6 +5615,7 @@
             <Expression>2194</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
           <GeneratorName>ID (random)</GeneratorName>
           <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -5430,6 +5636,7 @@
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>17f7a8fc-4d53-4de1-88d1-491f95928117</GeneratorId>
           <GeneratorName>NickName</GeneratorName>
           <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -5450,6 +5657,7 @@
             <Expression>\(\D\d{2}\) \d{3}\-\d{4}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>bc9e562a-8988-4d68-bc3b-62a8793cd377</GeneratorId>
           <GeneratorName>Phone Number (domestic)</GeneratorName>
           <GeneratorDescription>(102) 136-0584, (462) 681-9028, (252) 889-1273, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -5470,6 +5678,7 @@
             <Expression>Hưng Yên</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -5489,6 +5698,7 @@
             <Expression>268</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
           <GeneratorName>ID (random)</GeneratorName>
           <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -5509,6 +5719,7 @@
             <Expression>Xã Tông Phan</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>397070a6-1aea-4e32-831c-57e1541fddab</GeneratorId>
           <GeneratorName>CA Province</GeneratorName>
           <GeneratorDescription>Ontario, New Brunswick, Yukon Territory, Newfoundland and Labrador, ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
@@ -5529,6 +5740,7 @@
             <Expression>220713</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>8df3ab11-26a5-4e62-b6b6-29c2da944e75</GeneratorId>
           <GeneratorName>ID (random)</GeneratorName>
           <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -5567,6 +5779,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -5590,6 +5803,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5613,6 +5827,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5636,6 +5851,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>60d4d543-a0c0-446e-9600-477af27f6de8</GeneratorId>
           <GeneratorName>Product Quantity</GeneratorName>
           <GeneratorDescription>9, 24, 89, 35, ...</GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -5674,6 +5890,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5712,6 +5929,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5751,6 +5969,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -5774,6 +5993,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -5812,6 +6032,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5850,6 +6071,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -5871,6 +6093,7 @@
             <Expression>(($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")) ($"LastNames.txt")</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>d959bfd0-49dc-4f08-9546-886c57533e02</GeneratorId>
           <GeneratorName>Full Name</GeneratorName>
           <GeneratorDescription>Malik Whitmore, Sherill Gaskin, Rigoberto Mundy, Joelle Childers, Vanna Doss, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
@@ -5891,6 +6114,7 @@
             <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorId>ea4098c0-d93a-40f9-984c-44eeb51780f0</GeneratorId>
           <GeneratorName>Reg Exp</GeneratorName>
           <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
@@ -5908,6 +6132,7 @@
             <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
           </GeneratorOptions>
           <GeneratorType>CheckConstraintGenerator</GeneratorType>
+          <GeneratorId>dcc70628-0233-4b9a-8f60-5847e17048a3</GeneratorId>
           <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
           <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
@@ -5946,6 +6171,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>35ee0b31-513c-41a9-9d6e-5861430b049b</GeneratorId>
           <GeneratorName>ID (sequential)</GeneratorName>
           <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
           <GeneratorCategory>Business</GeneratorCategory>
@@ -5966,6 +6192,7 @@
             <IsAlwaysUnique>false</IsAlwaysUnique>
           </GeneratorOptions>
           <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorId>d5479a0c-e969-42f1-a78b-aa156d9cb419</GeneratorId>
           <GeneratorName>bit</GeneratorName>
           <GeneratorDescription>fill with true or false values</GeneratorDescription>
           <Length>1</Length>
@@ -5988,6 +6215,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -6011,6 +6239,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -6034,6 +6263,7 @@
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
+          <GeneratorId>60d4d543-a0c0-446e-9600-477af27f6de8</GeneratorId>
           <GeneratorName>Product Quantity</GeneratorName>
           <GeneratorDescription>9, 24, 89, 35, ...</GeneratorDescription>
           <GeneratorCategory>Product</GeneratorCategory>
@@ -6072,6 +6302,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -6110,6 +6341,7 @@
             <Precision>26</Precision>
           </GeneratorOptions>
           <GeneratorType>DateTime2Generator</GeneratorType>
+          <GeneratorId>8765360e-0707-4e20-a83d-2121e44db6ab</GeneratorId>
           <GeneratorName>datetime2</GeneratorName>
           <GeneratorDescription>fill with date and time with fractional seconds values</GeneratorDescription>
           <Scale>6</Scale>
@@ -6149,6 +6381,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -6172,6 +6405,7 @@
             <ExclusionValuesPercent>1</ExclusionValuesPercent>
           </GeneratorOptions>
           <GeneratorType>ForeignKeyGenerator</GeneratorType>
+          <GeneratorId>5398cae0-2358-4c80-859d-1310da3e5475</GeneratorId>
           <GeneratorName>Foreign Key (auto assigned)</GeneratorName>
           <GeneratorDescription>references a column from parent table</GeneratorDescription>
           <HasForeignKey>true</HasForeignKey>
@@ -6183,6 +6417,7 @@
   </Tables>
   <SynchronizationOptions xsi:type="SqlDataSynchronizationOptions">
     <SynchronizeType>File</SynchronizeType>
+    <AppendTimestamp>false</AppendTimestamp>
     <SynchronizationFileName>C:\Users\phah0\Desktop\DATN\Data for final (local).sql</SynchronizationFileName>
     <ExecuteCustomScriptTypeBefore>UseEmbeddedScript</ExecuteCustomScriptTypeBefore>
     <ExecuteCustomScriptTypeAfter>UseEmbeddedScript</ExecuteCustomScriptTypeAfter>

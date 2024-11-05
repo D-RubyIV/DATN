@@ -7,6 +7,7 @@ import { OrderResponseDTO, OrderDetailResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import DataTable, { type OnSortParam } from '../../../../../components/shared/DataTable'
+import { FiPackage } from 'react-icons/fi'
 
 const SellProductTable = ({ selectedOrder, fetchData }: {
     selectedOrder: OrderResponseDTO,
@@ -183,7 +184,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div className="flex">
-                <Avatar size={90} src={'https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png'} />
+                <Avatar size={90} icon={<FiPackage />} />
                 <div className="ltr:ml-2 rtl:mr-2">
                     <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
                     <div className="mb-1">
