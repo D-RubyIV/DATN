@@ -15,7 +15,7 @@ const ProductDetail = () => {
 
     const colors = ['#ff0000', '#00ff00', '#0000ff', '#ff9900']; // Color options
 
-    const handleColorClick = (color) => {
+    const handleColorClick = (color:any ) => {
         setSelectedColor(color);
         console.log('Selected color:', color);
     };

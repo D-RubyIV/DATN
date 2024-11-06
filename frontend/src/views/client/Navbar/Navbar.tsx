@@ -10,22 +10,22 @@ const Menu = [
   {
     id: 1,
     name: "Trang chủ",
-    link: "/#",
+    link: "/client",
   },
   {
     id: 2,
     name: "Hệ Thống Cửa Hàng",
-    link: "/#services",
+    link: "/client/productDetail",
   },
   {
     id: 3,
     name: "Áo Nam",
-    link: "/about",
+    link: "/client/product",
   },
   {
     id: 3,
     name: "Áo Nữ",
-    link: "/cart",
+    link: "/client/cart",
   },
   {
     id: 3,
@@ -52,7 +52,7 @@ const DropdownLinks = [
   },
 ];
 
-const Navbar = ({ handleOrderPopup }) => {
+const Navbar = ({ handleOrderPopup: any }) => {
 
   const [isModalVisible, setModalVisible] = useState(false);
 

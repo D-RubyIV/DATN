@@ -6,6 +6,11 @@ import UserDropdown from '@/components/template/UserDropdown'
 import SideNav from '@/components/template/SideNav'
 import { Route, Routes } from 'react-router-dom'
 import { AdminViews, AuthViews, ClientViews, PublicViews } from '@/views'
+import Navbar from '@/views/client/Navbar/Navbar'
+import Footer from '@/views/client/Footer/Footer'
+import { useEffect, useState } from 'react'
+import AOS from "aos";
+import "aos/dist/aos.css";
 import Side from "@/components/layouts/AuthLayout/Side";
 
 const HeaderActionsStart = () => {
@@ -46,15 +51,29 @@ const AdminLayout = () => {
     )
 }
 const ClientLayout = () => {
+    const [orderPopup, setOrderPopup] = useState(false);
+
+    const handleOrderPopup = () => {
+        setOrderPopup(!orderPopup);
+    };
+    useEffect(() => {
+        AOS.init({
+            offset: 100,
+            duration: 800,
+            easing: "ease-in-sine",
+            delay: 100,
+        });
+        AOS.refresh();
+    }, []);
     return (
         <div className="app-layout-classic flex flex-auto flex-col">
-            <div className="flex flex-auto min-w-0">
+                <Navbar handleOrderPopup={handleOrderPopup} />
                 <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
                     <div className="h-full flex flex-auto flex-col">
                         <ClientViews />
                     </div>
                 </div>
-            </div>
+                <Footer/>
         </div>
     )
 }
@@ -86,9 +105,9 @@ const SecurityLayout = () => {
 const RootLayout = () => {
     return (
         <Routes>
-            {/*<Route path="/client/*" element={<ClientLayout/>}/>*/}
-            <Route path="/admin/*" element={<AdminLayout/>}/>
-            <Route path="/auth/*" element={<SecurityLayout/>}/>
+            <Route path="/admin/*" element={<AdminLayout />} />
+            <Route path="/auth/*" element={<SecurityLayout />} />
+            <Route path="/client/*" element={<ClientLayout />} />
             <Route path="/*" element={<PublicLayout />} />
             {/*<Route path="*" element={<Navigate replace to="/sign-in" />} />*/}
         </Routes>

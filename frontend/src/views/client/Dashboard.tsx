@@ -1,6 +1,6 @@
 import { Fragment } from "react/jsx-runtime";
 import Hero from '@/views/client/Hero/Hero'
-import Products from '@/views/client/Products/Products'
+import Products from '@/views/client/Products/ProductsHung'
 import TopProducts from '@/views/client/TopProducts/TopProducts'
 import Banner from '@/views/client/Banner/Banner'
 import Subscribe from '@/views/client/Subscribe/Subscribe'

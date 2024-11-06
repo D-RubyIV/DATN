@@ -17,7 +17,17 @@ import org.example.demo.entity.human.staff.Staff;
 @NoArgsConstructor
 @Data
 public class CartResponseDTO {
-    @Enumerated(EnumType.STRING)
-    private Status status;
-    private Staff staff;
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
+//    private Staff staff;
+    private Long productId;
+    private Long cartDetailId;
+    private String productName;
+    private String colorName;
+    private String sizeName;
+    private Long productDetailId;
+    private Integer cartQuantity;
+    private Double productPrice;
+    private String imageName;
+
 }
