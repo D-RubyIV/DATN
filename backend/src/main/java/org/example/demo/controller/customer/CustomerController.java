@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("customer")
 public class CustomerController {
 
     @Autowired

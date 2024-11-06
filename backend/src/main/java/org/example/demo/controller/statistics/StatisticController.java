@@ -1,11 +1,8 @@
 package org.example.demo.controller.statistics;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.demo.config.LocalDateTimeDeserializer;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.mapper.product.response.properties.ProductResponseMapper;
 import org.example.demo.service.statistic.StatisticService;

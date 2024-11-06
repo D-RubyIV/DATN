@@ -63,4 +63,12 @@ public class OrderRequestDTO {
     private Voucher voucher;
 
     private Customer customer;
+
+
+    private Boolean waitPayment;
+
+
+    private Integer paymentMethod;
+
+    private String tradingCode;
 }

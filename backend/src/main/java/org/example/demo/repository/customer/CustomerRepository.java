@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -41,6 +42,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     List<Customer> findCustomerByPhone(String phone);
 
+    Optional<Customer> findByEmail(String email);
 
+    boolean existsByEmail(String email);
 }
 

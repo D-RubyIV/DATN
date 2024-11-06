@@ -1,10 +1,15 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
-import tuanRoute from '@/configs/routes.config/tuanRoute'
 
 
 const adminRoute: Routes = [
+    {
+        key: 'home',
+        path: 'manage/home',
+        component: lazy(() => import('@/views/manage/statistics/SalesDashboard')),
+        authority: []
+    },
     {
         key: 'customerManager',
         path: `manage/customer`,
@@ -100,7 +105,6 @@ const adminRoute: Routes = [
         component: lazy(() => import('@/views/manage/sell/component/payment/PaymentCallback')),
         authority: []
     },
-    ... tuanRoute
 ]
 
 export default adminRoute

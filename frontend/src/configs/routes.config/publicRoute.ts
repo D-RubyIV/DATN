@@ -5,7 +5,13 @@ const publicRoute: Routes = [
     {
         key: 'addCustomer',
         path: '',
-        component: lazy(() => import('@/views/public/Welcome/Welcome')),
+        component: lazy(() => import('@/views/client/Dashboard')),
+        authority: []
+    },
+    {
+        key: 'logout',
+        path: 'logout',
+        component: lazy(() => import('@/views/auth/Logut/Logout')),
         authority: []
     }
 ]

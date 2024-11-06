@@ -1,10 +1,11 @@
+import { Fragment } from "react/jsx-runtime";
 import SellTab from "./component/SellTab";
 
 const SellBody = () => {
     return ( 
-        <div className={'h-full'}>
+        <Fragment>
             <SellTab></SellTab>
-        </div>
+        </Fragment>
      );
 }
  

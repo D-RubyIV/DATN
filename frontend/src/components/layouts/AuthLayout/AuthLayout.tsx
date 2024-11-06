@@ -1,9 +1,6 @@
 import Side from './Side'
-// import Cover from './Cover'
-// import Simple from './Simple'
 import { useAppSelector } from '@/store'
 import { LAYOUT_TYPE_BLANK } from '@/constants/theme.constant'
-import { AuthViews } from '@/views'
 import RootLayout from '../ClassicLayout'
 
 const AuthLayout = () => {
@@ -14,9 +11,7 @@ const AuthLayout = () => {
             {layoutType === LAYOUT_TYPE_BLANK ? (
                 <RootLayout />
             ) : (
-                <Side>
                     <RootLayout />
-                </Side>
             )}
         </div>
     )

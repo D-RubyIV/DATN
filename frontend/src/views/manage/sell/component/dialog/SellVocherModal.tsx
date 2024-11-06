@@ -8,6 +8,7 @@ import CloseButton from '@/components/ui/CloseButton'
 
 
 import instance from '@/axios/CustomAxios'
+import { SellCustomerOverview } from '../..'
 import { OrderResponseDTO } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 import axios from 'axios'
@@ -156,16 +157,15 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
         try {
             const response = await instance.post(`/orders/use-voucher`, data)
             console.log(response)
+
             await handleDelayScreen()
-            await fetchData()
-            if(response.status === 200){
-                openNotification("Áp mã giảm giá thành công")
-            }
+            fetchData()
             setIsOpenVoucherModal(false)
             document.body.style.overflow = 'auto'
         } catch (error) {
             if (axios.isAxiosError(error) && error?.response?.status === 400) {
                 openNotification(error.response.data?.error)
+
             }
         }
     }

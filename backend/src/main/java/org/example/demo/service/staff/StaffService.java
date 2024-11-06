@@ -18,6 +18,7 @@ import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.validator.staff.StaffValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +49,9 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
 
     @Autowired
     private StaffValidator staffValidator;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Page<StaffResponseDTO> findAllByPage(String code, String name, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable) {
@@ -185,7 +189,8 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         Staff entityMapped = staffRequestMapper.toEntity(requestDTO);
         entityMapped.setStatus("Active");
         entityMapped.setCode(generateRandomMaNV(requestDTO.getName()));
-        entityMapped.setPassword(generateRandomPassword());
+//        entityMapped.setPassword(generateRandomPassword());
+        entityMapped.setPassword(passwordEncoder.encode(generateRandomPassword()));
         entityMapped.setDeleted(false);
         return staffRepository.save(entityMapped);
     }

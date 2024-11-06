@@ -130,9 +130,10 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
     @Query("""
     SELECT v FROM Voucher v
-    WHERE (:keyword IS NULL OR 
-            v.name LIKE %:keyword% OR 
-            v.code LIKE %:keyword%) 
+    WHERE v.deleted = false AND
+          (:keyword IS NULL OR 
+           v.name LIKE %:keyword% OR 
+           v.code LIKE %:keyword%) 
       AND (:name IS NULL OR v.name LIKE %:name%) 
       AND (:code IS NULL OR v.code LIKE %:code%) 
       AND (:typeTicket IS NULL OR v.typeTicket = :typeTicket) 

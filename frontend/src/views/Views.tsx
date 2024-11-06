@@ -10,6 +10,7 @@ import AuthorityGuard from '@/components/route/AuthorityGuard'
 import AppRoute from '@/components/route/AppRoute'
 import type { LayoutType } from '@/@types/theme'
 import { adminRoutes, authRoutes, clientRoutes, publicRoutes } from '@/configs/routes.config/routes.config'
+import AuthorRouteComponent from "@/components/route/AuthorRouteComponent";
 
 interface ViewsProps {
     pageContainerType?: 'default' | 'gutterless' | 'contained'
@@ -51,16 +52,15 @@ const AllAdminRoutes = (props: AllRoutesProps) => {
                     />
                 ))}
             </Route>
-            <Route path="*" element={<Navigate replace to="/" />} />
+            <Route path="*" element={<Navigate replace to="/auth/sign-in" />} />
         </Routes>
     )
 }
 
 const AllClientRoutes = (props: AllRoutesProps) => {
-    const userAuthority = useAppSelector((state) => state.auth.user.authority)
     return (
         <Routes>
-            <Route path="/" element={<ProtectedRouteComponent />}>
+            <Route path="/" element={<PublicRouteComponent />}>
                 {/*<Route*/}
                 {/*    path="/"*/}
                 {/*    element={<Navigate replace to={authenticatedEntryPath} />}*/}
@@ -70,18 +70,12 @@ const AllClientRoutes = (props: AllRoutesProps) => {
                         key={route.key + index}
                         path={route.path}
                         element={
-                            <AuthorityGuard
-                                userAuthority={userAuthority}
-                                authority={route.authority}
-                            >
-                                <PageContainer {...props} {...route.meta}>
+
                                     <AppRoute
                                         routeKey={route.key}
                                         component={route.component}
                                         {...route.meta}
                                     />
-                                </PageContainer>
-                            </AuthorityGuard>
                         }
                     />
                 ))}
@@ -116,7 +110,7 @@ const AllPublicRoutes = (props: AllRoutesProps) => {
 const AllAuthRoutes = (props: AllRoutesProps) => {
     return (
         <Routes>
-            <Route path="/" element={<PublicRouteComponent />}>
+            <Route path="/" element={<AuthorRouteComponent />}>
                 {authRoutes.map((route) => (
                     <Route
                         key={route.path}

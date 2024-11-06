@@ -1,9 +1,10 @@
 import Tabs from '@/components/ui/Tabs'
 import { HiOutlineUser, HiPlusCircle } from 'react-icons/hi'
 
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Badge, Button } from '@/components/ui'
 import { DoubleSidedImage, Loading } from '@/components/shared'
+import TabCard from './card/TabCard'
 import { useToastContext } from '@/context/ToastContext'
 import CloseButton from '@/components/ui/CloseButton'
 import instance from '@/axios/CustomAxios'
@@ -82,8 +83,8 @@ const SellTab = () => {
     }, [currentTab])
 
     return (
-        <Fragment>
-            <Loading loading={loading} type="cover" className={'h-full'}>
+        <div>
+            <Loading loading={loading} type="cover">
                 <div className="flex justify-between">
                     <div>
                         <h1 className="font-semibold text-xl text-black text-transform: uppercase">Quản lý bán hàng</h1>
@@ -114,7 +115,7 @@ const SellTab = () => {
                                                     icon={<HiOutlineUser />}
                                                     className={`${currentTab === tab.value ? 'text-[15px]' : ''} !p-1`}
                                                 >
-                                                    <p className={'md:text-[13.5px] xl:text-sm'}>{tab.label} - HD{tab.orderId}</p>
+                                                    {tab.label} - HD{tab.orderId}
                                                 </TabNav>
                                             </Badge>
                                             <CloseButton
@@ -145,13 +146,13 @@ const SellTab = () => {
                     )
                 }
             </Loading>
-        </Fragment>
+        </div>
     )
 }
 
 const NoHaveAnyTab = () => {
     return (
-        <div className="h-full flex justify-center items-center flex-col">
+        <div className="h-[760px] flex justify-center items-center">
             <div className="flex justify-center items-center flex-col">
                 <DoubleSidedImage
                     src="/img/others/image-removebg-preview-order-empty.png"

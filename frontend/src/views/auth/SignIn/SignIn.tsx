@@ -4,8 +4,8 @@ const SignIn = () => {
     return (
         <>
             <div className="mb-8">
-                <h3 className="mb-1">Welcome back!</h3>
-                <p>Please enter your credentials to sign in!</p>
+                <h3 className="mb-1">Chào mừng trở lại!</h3>
+                <p>Vui lòng nhập thông tin đăng nhập của bạn để đăng nhập!</p>
             </div>
             <SignInForm disableSubmit={false} />
         </>
