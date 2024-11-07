@@ -82,7 +82,6 @@ const AllClientRoutes = (props: AllRoutesProps) => {
             </Route>
         </Routes>
     )
-    // ba
 }
 
 const AllPublicRoutes = (props: AllRoutesProps) => {

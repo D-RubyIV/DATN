@@ -46,21 +46,21 @@ public class InitDataBase {
             roleRepository.save(role);
         }
         // PAYMENT
-        if (staffRepository.findByEmail("amdin1@gmail.com").isEmpty()){
+        if (staffRepository.findByEmail("admin1@gmail.com").isEmpty()){
             StaffRequestDTO staff = new StaffRequestDTO();
-            staff.setEmail("amdin1@gmail.com");
+            staff.setEmail("admin1@gmail.com");
             staff.setPassword("admin");
             staff.setRoleId(roleRepository.findByCode("USER").get().getId());
             Staff staf = userService.createStaff(staff);
             staf.setRole(roleRepository.findByCode("ADMIN").get());
             staffRepository.save(staf);
         }
-        if (staffRepository.findByEmail("amdin2@gmail.com").isEmpty()){
+        if (staffRepository.findByEmail("admin2@gmail.com").isEmpty()){
             StaffRequestDTO staff = new StaffRequestDTO();
-            staff.setEmail("amdin2@gmail.com");
+            staff.setEmail("admin2@gmail.com");
             staff.setPassword("admin");
             staff.setRoleId(roleRepository.findByCode("USER").get().getId());
             userService.createStaff(staff);
         }
-    }
+    } // adf nahm tuonu cua t toiio tuong b sua r g b nham =)) usser mam cux day cua b
 }

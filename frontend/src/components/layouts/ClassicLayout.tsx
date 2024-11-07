@@ -90,15 +90,13 @@ const PublicLayout = () => {
 }
 const SecurityLayout = () => {
     return (
-        <Side>
-            <div className="app-layout-classic flex flex-auto flex-col">
-                <div className="flex flex-auto min-w-0">
-                    <div className="h-full flex flex-auto flex-col">
-                        <AuthViews/>
-                    </div>
+        <div className="app-layout-classic flex flex-auto flex-col">
+            <div className="flex flex-auto min-w-0">
+                <div className="h-full flex flex-auto flex-col">
+                    <AuthViews />
                 </div>
             </div>
-        </Side>
+        </div>
     )
 }
 

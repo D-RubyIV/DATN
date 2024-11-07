@@ -3,7 +3,7 @@ import { lazy } from 'react'
 const clientRoutes = [
     {
         key: 'home',
-        path: `/`,
+        path: '', // do cai nay o, nos map voi cai bocj nos ra
         component: lazy(() => import('@/views/client/LandingPage')),
         authority: []
     },
@@ -21,7 +21,7 @@ const clientRoutes = [
     },
     {
         key: 'productDetail',
-        path: `/productDetail`,
+        path: '/productDetail',
         component: lazy(() => import('@/views/client/Cart/ProductDetail')),
         authority: []
     },
@@ -32,4 +32,6 @@ const clientRoutes = [
         authority: []
     }
 ]
-export default clientRoutes;
+export default clientRoutes; // oke thank b toi di hoc day con gi baoi t k
+//  cu code ddi t fix route kia sau cho okeee <3
+// ban check xem merge hết chưa
