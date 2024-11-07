@@ -1,5 +1,7 @@
 package org.example.demo.service.product.properties;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.ImageRequestDTO;
@@ -15,77 +17,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
-public class ImageService implements IService<Image, Integer, ImageRequestDTO> { // Đổi từ ElasticityService sang ImageService
+public class ImageService implements IService<Image, Integer, ImageRequestDTO> {
 
     @Autowired
-    private ImageRepository imageRepository; // Đổi từ elasticityRepository sang imageRepository
-
+    private ImageRepository imageRepository;
     @Autowired
-    private ImageRequestMapper imageRequestMapper; // Đổi từ elasticityRequestMapper sang imageRequestMapper
+    private ImageRequestMapper imageRequestMapper;
 
     @Autowired
     private ImageResponseMapper imageResponseMapper;
 
-    public Page<ImageResponseDTO> findAllOverviewByPage(
-            LocalDateTime createdFrom,
-            LocalDateTime createdTo,
-            PageableObject pageableObject
-    ) {
-        Pageable pageable = pageableObject.toPageRequest();
-        String query = pageableObject.getQuery();
+    @Autowired
+    private Cloudinary cloudinary;
 
-        return imageRepository.findAllByPageWithQuery(query, createdFrom, createdTo, pageable).map(s -> imageResponseMapper.toOverViewDTO(s));
-    }
-
-    public Page<Image> findAll(Pageable pageable) { // Đổi từ Elasticity sang Image
-        return imageRepository.findAll(pageable);
-    }
-    public List<Image> findAllList() {
-        return imageRepository.findAll();
-    }
     @Override
-    public Image findById(Integer id) throws BadRequestException { // Đổi từ Elasticity sang Image
-        return imageRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Image not found with id: " + id)); // Đổi từ Elasticity sang Image
+    public Image findById(Integer integer) throws BadRequestException {
+        return null;
     }
 
     @Override
-    public Image delete(Integer id) throws BadRequestException { // Đổi từ Elasticity sang Image
-        Image entityFound = findById(id); // Đổi từ Elasticity sang Image
-        entityFound.setDeleted(true);
-        return imageRepository.save(entityFound); // Đổi từ elasticityRepository sang imageRepository
+    public Image delete(Integer integer) throws BadRequestException {
+        return null;
     }
 
     @Override
-    public Image save(ImageRequestDTO requestDTO) throws BadRequestException { // Đổi từ Elasticity sang Image
-        boolean exists = imageRepository.existsByCodeAndUrl(requestDTO.getCode(), requestDTO.getUrl()); // Đổi từ elasticityRepository sang imageRepository
-        if (exists) {
-            throw new BadRequestException("Image with code " + requestDTO.getCode() + " and name " + requestDTO.getUrl() + " already exists."); // Đổi từ Elasticity sang Image
-        }
-
-        Image entityMapped = imageRequestMapper.toEntity(requestDTO); // Đổi từ Elasticity sang Image
-        entityMapped.setDeleted(false);
-        return imageRepository.save(entityMapped); // Đổi từ elasticityRepository sang imageRepository
+    public Image save(ImageRequestDTO requestDTO) throws BadRequestException {
+        return null;
     }
 
     @Override
-    public Image update(Integer id, ImageRequestDTO requestDTO) throws BadRequestException { // Đổi từ Elasticity sang Image
-        Image entityFound = findById(id); // Đổi từ Elasticity sang Image
-        entityFound.setCode(requestDTO.getCode());
-        entityFound.setUrl(requestDTO.getUrl());
-
-        return imageRepository.save(entityFound); // Đổi từ elasticityRepository sang imageRepository
+    public Image update(Integer integer, ImageRequestDTO requestDTO) throws BadRequestException {
+        return null;
     }
 
-    @Transactional
-    public List<Image> saveAll(List<ImageRequestDTO> requestDTOList) { // Đổi từ Elasticity sang Image
-        List<Image> entityMapped = imageRequestMapper.toListEntity(requestDTOList); // Đổi từ Elasticity sang Image
-        return imageRepository.saveAll(entityMapped); // Đổi từ elasticityRepository sang imageRepository
-    }
 
+    public String uploadImage(MultipartFile file) throws IOException {
+        Map<String, String> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        return uploadResult.get("url");
+    }
 }

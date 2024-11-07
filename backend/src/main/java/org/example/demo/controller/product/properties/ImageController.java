@@ -22,8 +22,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -35,99 +37,21 @@ public class ImageController {
     @Autowired
     private ImageService imageService; // Đổi từ elasticityService sang imageService
     @Autowired
-    private ImageRequestMapper imageRequestMapper; // Đổi từ elasticityRequestMapper sang imageRequestMapper
+    private ImageRequestMapper imageRequestMapper;
     @Autowired
-    private ImageResponseMapper imageResponseMapper; // Đổi từ elasticityResponseMapper sang imageResponseMapper
-
-    @GetMapping("")
-    public ResponseEntity<?> findAll(
-            @PageableDefault(page = 0, size = 5) Pageable pageable
-    ) {
-        return ResponseEntity.ok(imageService.findAll(pageable)); // Đổi từ elasticityService sang imageService
-    }
-
-    @GetMapping("/image-list")
-    public ResponseEntity<Map<String, List<Image>>> findAll() {
-        List<Image> images = imageService.findAllList();
-        Map<String, List<Image>> response = new HashMap<>();
-        response.put("data", images);
-        return ResponseEntity.ok(response);
-    }
+    private ImageResponseMapper imageResponseMapper;
 
 
 
-    @RequestMapping(value = "overview")
-    public ResponseEntity<Page<ImageResponseDTO>> findAllByPageV3(
-            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
-            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdTo,
-            @Valid @RequestBody PageableObject pageableObject,
-            BindingResult bindingResult
-    ) throws BindException {
-        if (bindingResult.hasErrors()) {
-            throw new BindException(bindingResult);
-        }
-        String query = pageableObject.getQuery();
-        return ResponseEntity.ok(imageService.findAllOverviewByPage( createdFrom, createdTo, pageableObject));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Image> getImageDetailById(@PathVariable Integer id) throws BadRequestException { // Đổi từ Elasticity sang Image
-        Image image = imageService.findById(id); // Đổi từ elasticityService sang imageService
-        if (image == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ImageDetail not found"); // Đổi từ ElasticityDetail sang ImageDetail
-        }
-        return ResponseEntity.ok(image);
-    }
-
-    @PutMapping("/update/{id}")
-    public ResponseEntity<ImageResponseDTO> updateImage(
-            @PathVariable Integer id,
-            @RequestBody ImageRequestDTO requestDTO) { // Đổi từ ElasticityRequestDTO sang ImageRequestDTO
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            Image updatedImage = imageService.update(id, requestDTO); // Đổi từ elasticityService sang imageService
-
-            ImageResponseDTO responseDTO = new ImageResponseDTO( // Đổi từ ElasticityResponseDTO sang ImageResponseDTO
-                    updatedImage.getId(),
-                    updatedImage.getCode(),
-                    updatedImage.getUrl(),
-                    updatedImage.getDeleted(),
-                    updatedImage.getCreatedDate(),
-                    updatedImage.getUpdatedDate()
-            );
-
-            return ResponseEntity.ok(responseDTO);
-        } catch (BadRequestException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            String imageUrl = imageService.uploadImage(file);
+            return ResponseEntity.ok(imageUrl);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Upload failed: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteImage(@PathVariable Integer id) throws BadRequestException { // Đổi từ Elasticity sang Image
-        try {
-            imageService.delete(id); // Đổi từ elasticityService sang imageService
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            throw new BadRequestException("Image not found with id: " + id); // Đổi từ Elasticity sang Image
-        }
-    }
 
-    @PostMapping("/save")
-    public ResponseEntity<ImageResponseDTO> saveImage(@RequestBody ImageRequestDTO requestDTO) { // Đổi từ ElasticityRequestDTO sang ImageRequestDTO
-        try {
-            Image image = imageService.save(requestDTO); // Đổi từ elasticityService sang imageService
-
-            ImageResponseDTO responseDTO = new ImageResponseDTO( // Đổi từ ElasticityResponseDTO sang ImageResponseDTO
-                    image.getId(),
-                    image.getCode(),
-                    image.getUrl(),
-                    image.getDeleted(),
-                    image.getCreatedDate(),
-                    image.getUpdatedDate()
-            );
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
-        } catch (BadRequestException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
 }

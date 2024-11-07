@@ -34,7 +34,7 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
             setProducts(data.products || []);
         }
     }, [data]);
-
+ 
     const handleCreate = (inputValue: string) => {
         dispatch(setNameProduct(inputValue));
         dispatch(toggleAddProductConfirmation(true)); 
@@ -66,8 +66,8 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
                             value={values.product ? products.find(prod => prod.value.id === values.product?.id) : null}
                             onChange={(el) => {
                                 if (el) {
-                                    console.log(el.value)
                                     form.setFieldValue(field.name, el.value);
+                                    form.setFieldValue('description', el.value.description)
                                 } else {
                                     form.setFieldValue(field.name, null);
                                 } 

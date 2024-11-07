@@ -10,7 +10,6 @@ import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.product.core.ProductDetail;
 
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,7 +28,7 @@ public class Image extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @JsonBackReference
+    @JsonBackReference // Tránh vòng lặp vô tận khi trả về JSON từ ProductDetail
     @ManyToMany(mappedBy = "images")
     private List<ProductDetail> productDetails;
 }

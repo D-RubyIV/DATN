@@ -68,7 +68,6 @@ const ImageList = ({ imgList, onImageDelete }: { imgList: Image[]; onImageDelete
                         </span>
                     </div>
                 </div>
-
             ))}
             <Dialog isOpen={viewOpen} onClose={onDialogClose} onRequestClose={onDialogClose}>
                 <h5 className="mb-4">{selectedImg?.code}</h5>
@@ -100,6 +99,8 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
     // Ensure productImages is always an array
     const productImages = matchingProducts[0]?.images ?? [];
 
+    const [loading, setLoading] = useState(false); // Thêm state loading
+
     const beforeUpload = (file: FileList | null) => {
         const allowedFileTypes = ['image/jpeg', 'image/png'];
         const maxFileSize = 500000; // 500KB
@@ -117,20 +118,43 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
         return true;
     };
 
-    const handleUpload = (files: File[] | null) => {
+    const handleUpload = async (files: File[] | null) => {
         if (!files) return;
 
-        // Chuyển đổi các file thành array các đối tượng Image
-        const newImages: Image[] = files.map((file, index) => ({
-            id: Date.now() + index,  // id should be unique
-            code: file.name,         // dùng tên file (code) làm thuộc tính nhận diện
-            url: URL.createObjectURL(file),  // blob URL
-            deleted: false,
-            createdDate: new Date().toISOString(),
-            modifiedDate: new Date().toISOString(),
-        }));
+        setLoading(true); // Bật loading khi bắt đầu upload
 
-        // Kiểm tra và loại bỏ các ảnh trùng lặp, cũng như ảnh đã xóa
+        const newImages: Image[] = [];
+
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await fetch("http://localhost:8080/api/v1/image/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload image');
+                }
+
+                const imageUrl = await response.text(); // URL ảnh trả về từ backend
+
+                newImages.push({
+                    id: Date.now(), // ID duy nhất
+                    code: file.name, // Tên file làm mã ảnh
+                    url: imageUrl,   // URL ảnh sau khi upload
+                    deleted: false,
+                    createdDate: new Date().toISOString(),
+                    modifiedDate: new Date().toISOString(),
+                });
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                // Có thể thêm thông báo lỗi ở đây
+            }
+        }
+
         const updatedImages = [
             ...productImages.filter(img => !img.deleted),  // Loại bỏ ảnh bị xóa
             ...newImages.filter(newImg =>
@@ -140,8 +164,8 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
             )
         ];
 
-        // Cập nhật Redux state với danh sách ảnh đã loại bỏ trùng lặp
         dispatch(updateProductImagesByColor({ colorName, images: updatedImages }));
+        setLoading(false); // Tắt loading khi upload hoàn thành
     };
 
     const handleImageDelete = (deletedImg: Image) => {
@@ -150,7 +174,7 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
     };
 
     return (
-        <div className="mb-4 grid ">
+        <div className="mb-4 grid">
             <div className="text-center">
                 <h5 className='mb-3'>Thêm ảnh cho sản phẩm màu {colorName} </h5>
                 {productImages.length > 0 ? (
@@ -170,36 +194,44 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
                                     src="/img/others/upload.png"
                                     darkModeSrc="/img/others/upload-dark.png"
                                 />
-                                <p className="font-semibold text-center text-gray-800 dark:text-white">Tải lên </p>
+                                {loading ? (
+                                    <div className="mt-4">Đang tải...</div> // Hiển thị thông báo "Đang tải" hoặc spinner
+                                ) : (
+                                    <p className="font-semibold text-center text-gray-800 dark:text-white">Tải lên </p>
+                                )}
                             </div>
                         </Upload>
                     </div>
                 ) : (
-                        <Upload
-                            draggable
-                            beforeUpload={beforeUpload}
-                            showList={false}
-                            onChange={(info) => handleUpload(info)} 
-                        >
-                            <div className=" text-center">
-                                <DoubleSidedImage
-                                    className="mx-auto"
-                                    src="/img/others/upload.png"
-                                    darkModeSrc="/img/others/upload-dark.png"
-                                />
-                                <p className="font-semibold">
-                                    <span className="text-gray-800 dark:text-white">
-                                        Thả hình ảnh của bạn ở đây, hoặc{' '}
-                                    </span>
-                                    <span className="text-blue-500">
-                                        duyệt 
-                                    </span>
-                                </p>
-                                <p className="mt-1 opacity-60 dark:text-white">
-                                    Hỗ trợ: jpeg, png
-                                </p>
-                            </div>
-                        </Upload>
+                    <Upload
+                        draggable
+                        beforeUpload={beforeUpload}
+                        showList={false}
+                        onChange={(info) => handleUpload(info)}
+                    >
+                        <div className=" text-center">
+                            <DoubleSidedImage
+                                className="mx-auto"
+                                src="/img/others/upload.png"
+                                darkModeSrc="/img/others/upload-dark.png"
+                            />
+                            {loading ? (
+                                <div className="mt-4">Đang tải...</div> // Hiển thị thông báo "Đang tải" hoặc spinner
+                            ) : (
+                                <>
+                                    <p className="font-semibold">
+                                        <span className="text-gray-800 dark:text-white">
+                                            Thả hình ảnh của bạn ở đây, hoặc{' '}
+                                        </span>
+                                        <span className="text-blue-500">duyệt</span>
+                                    </p>
+                                    <p className="mt-1 opacity-60 dark:text-white">
+                                        Hỗ trợ: jpeg, png
+                                    </p>
+                                </>
+                            )}
+                        </div>
+                    </Upload>
                 )}
             </div>
         </div>

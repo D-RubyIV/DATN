@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Integer> {
     boolean existsByCodeAndUrl(String code, String url); // Sửa ở đây
@@ -27,4 +28,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+    Optional<Image> findByCode(String code);
 }

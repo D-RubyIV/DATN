@@ -27,10 +27,10 @@ public class BaseEntity {
     private Integer id;
 
     @CreationTimestamp
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
     private LocalDateTime updatedDate;
 }

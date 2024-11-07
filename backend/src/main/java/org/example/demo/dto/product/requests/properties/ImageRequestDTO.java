@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ImageRequestDTO {
     private String code;
-    private String url;
+    private String url; // Dùng MultipartFile để nhận ảnh từ frontend
     private Boolean deleted;
 
 
