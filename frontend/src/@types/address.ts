@@ -1,0 +1,26 @@
+
+export interface IProvince {
+    ProvinceID: string,
+    ProvinceName: string,
+    value: string,
+    label: string,
+}
+
+export interface IDistrict {
+    DistrictID: string,
+    DistrictName: string,
+}
+
+export interface IWard {
+    WardCode: string,
+    WardName: string,
+}
+
+export interface IAddress {
+    name?: string,
+    phone?: string,
+    iprovince?: IProvince,
+    idistrict?: IDistrict,
+    iward?: IWard,
+    address?: string
+}
