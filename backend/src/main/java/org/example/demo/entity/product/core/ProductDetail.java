@@ -1,5 +1,6 @@
 package org.example.demo.entity.product.core;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.product.properties.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -92,8 +95,13 @@ public class ProductDetail extends BaseEntity {
     private Elasticity elasticity;
 
     // Hình ảnh
-    @ManyToOne
-    @JoinColumn(name = "image_id")
-    private Image image;
+    @ManyToMany
+    @JoinTable(
+            name = "product_detail_image", // Đặt tên cho bảng liên kết trung gian
+            joinColumns = @JoinColumn(name = "product_detail_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id")
+    )
+    @JsonManagedReference // Giúp tránh vòng lặp vô tận khi trả về JSON
+    private List<Image> images;
 
 }
