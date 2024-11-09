@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class ImageRequestDTO {
     private String code;
-    private String name;
-    private Boolean deleted;}
+    private String url; // Dùng MultipartFile để nhận ảnh từ frontend
+    private Boolean deleted;
+}
