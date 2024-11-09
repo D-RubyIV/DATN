@@ -10,6 +10,7 @@ import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.product.properties.Product;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -42,8 +43,13 @@ public class Event extends BaseEntity {
     @Column(name = "status")
     private String status;
 
-    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Product> products;
+    @ManyToMany
+    @JoinTable(
+            name = "event_product",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private List<Product> products = new ArrayList<>();
 
     public void updateStatusBasedOnTime() {
         LocalDateTime now = LocalDateTime.now();

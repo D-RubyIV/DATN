@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { HiPencil, HiPlusCircle } from 'react-icons/hi';
 import { FaFilter } from 'react-icons/fa';
+import { MdDelete } from "react-icons/md";
+import Dialog from '@/components/ui/Dialog'
+import { toast } from "react-toastify";
 
 type EventListDTO = {
     id: number;
@@ -29,6 +32,8 @@ const EventTable = () => {
     const [pageSize, setPageSize] = useState(5);
     const [query, setQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>();
+    const [dialogIsOpen, setIsOpen] = useState(false)
+    const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
 
     // api GetAll, Search, Filter Status
     const fetchEvent = async (
@@ -94,6 +99,32 @@ const EventTable = () => {
     const handleSelectChange = (newPageSize: number) => {
         setPageSize(newPageSize);
     };
+
+    // mở dialog xác nhận xóa
+    const openDialog = (eventId: number) => {
+        setSelectedEventId(eventId);
+        setIsOpen(true);
+    }
+
+    // Đóng dialog mà không xóa
+    const onDialogClose = () => {
+        setIsOpen(false);
+        setSelectedEventId(null);
+    };
+
+    // Xác nhận và xóa sự kiện
+    const onDialogOk = async () => {
+        console.log('Runn....')
+        if (selectedEventId !== null) {
+            try {
+                await axios.delete(`http://localhost:8080/api/v1/event/delete/${selectedEventId}`);
+                toast.success('Xóa thành công');
+                setData(data.filter(data => data.id !== selectedEventId))
+            } catch (error) {
+                toast.error('Xóa thất bại');
+            }
+        }
+    }
 
     const columns = [
         {
@@ -183,6 +214,11 @@ const EventTable = () => {
                             style={{ cursor: 'pointer' }}
                             onClick={() => handleUpdateClick(event.id)}
                         />
+                        <MdDelete
+                            size={20}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => openDialog(event.id)}
+                        />
                     </div>
                 )
             }
@@ -255,6 +291,19 @@ const EventTable = () => {
                     onSelectChange={handleSelectChange}
                 />
             </div>
+            {/* Dialog xác nhận xóa */}
+            <Dialog isOpen={dialogIsOpen} closable={false} onClose={onDialogClose}>
+                <h5 className="mb-4">Xác nhận xóa sự kiện</h5>
+                <p>Bạn có chắc chắn muốn xóa sự kiện này không?</p>
+                <div className="text-right mt-6">
+                    <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
+                        Hủy
+                    </Button>
+                    <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} type='submit' onClick={onDialogOk}>
+                        Xác nhận
+                    </Button>
+                </div>
+            </Dialog>
         </div>
     )
 }

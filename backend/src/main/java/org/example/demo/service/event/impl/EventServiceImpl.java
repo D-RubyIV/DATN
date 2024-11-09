@@ -74,7 +74,7 @@ public class EventServiceImpl implements EventService {
         // Chuyển đổi EventDTO thành entity Event
         Event event = EventMapper.toEventEntity(eventDTO);
 
-        // Xử lý các sản phẩm để đảm bảo chúng không bị detached
+        // Xử lý các sản phẩm và thêm vào sự kiện
         if (event.getProducts() != null) {
             List<Product> managedProducts = new ArrayList<>();
             for (Product product : event.getProducts()) {
@@ -83,8 +83,7 @@ public class EventServiceImpl implements EventService {
                     Optional<Product> managedProduct = productRepository.findById(product.getId());
                     managedProduct.ifPresent(managedProducts::add);
                 } else {
-                    // Thêm sản phẩm mới nếu không có ID
-                    managedProducts.add(product);
+                    managedProducts.add(product); // Thêm sản phẩm mới nếu không có ID
                 }
             }
             event.setProducts(managedProducts);
@@ -99,6 +98,9 @@ public class EventServiceImpl implements EventService {
         // Chuyển đổi entity sự kiện đã lưu trở lại DTO và trả về
         return EventMapper.toEventDTO(savedEvent);
     }
+
+
+
 
     @Override
     @Transactional

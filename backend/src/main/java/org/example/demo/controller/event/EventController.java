@@ -28,7 +28,7 @@ public class EventController {
             @RequestParam(defaultValue = "5") int size
     ) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<ProductDTO> productDTOS = productService.  getAllProductDTO( pageable);
+        Page<ProductDTO> productDTOS = productService.getAllProductDTO(pageable);
         return ResponseEntity.ok(productDTOS);
     }
 
@@ -72,7 +72,7 @@ public class EventController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Integer id) {
         eventService.deleteEvent(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/save")
