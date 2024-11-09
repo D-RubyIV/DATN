@@ -12,6 +12,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { FaFileDownload } from "react-icons/fa";
 import { HiPencil, HiPlusCircle } from 'react-icons/hi';
+import instance from "@/axios/CustomAxios";
 
 type AddressDTO = {
     id: number;
@@ -46,7 +47,7 @@ const CustomerTable = () => {
     const [loading, setLoading] = useState(false);
     const [total, setTotal] = useState(0);
     const [pageIndex, setPageIndex] = useState(1)
-    const [pageSize, setPageSize] = useState(5);
+    const [pageSize, setPageSize] = useState(10);
     const [query, setQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
@@ -57,17 +58,17 @@ const CustomerTable = () => {
     const fetchData = async (page: number, size: number, searchTerm: string, status?: string | null) => {
         setLoading(true);
         try {
-            let url = `http://localhost:8080/api/v1/customer?page=${page}&size=${size}`;
+            let url = `/customer?page=${page}&size=${size}`;
 
             if (searchTerm) {
-                url = `http://localhost:8080/api/v1/customer/search?query=${searchTerm}&page=${page}&size=${size}`;
+                url = `/customer/search?query=${searchTerm}&page=${page}&size=${size}`;
             }
 
             if (status && status !== '') {
                 url += `&status=${status}`;
             }
 
-            const response = await axios.get(url);
+            const response = await instance.get(url);
             const data = response.data;
             let fetchedCustomers: CustomerListDTO[] = [];
 
@@ -90,7 +91,7 @@ const CustomerTable = () => {
 
     const updateStatus = async (id: number, newStatus: boolean) => {
         try {
-            await axios.patch(`http://localhost:8080/api/v1/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
+            await instance.patch(`/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
             toast.success('cập nhật thành công');
             fetchData(pageIndex, pageSize, query)
         } catch (error) {

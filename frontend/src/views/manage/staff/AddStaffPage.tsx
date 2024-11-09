@@ -31,6 +31,7 @@ import { IoPersonAdd } from "react-icons/io5";
 import { RxReset } from "react-icons/rx";
 import { BsQrCodeScan } from "react-icons/bs";
 import { color } from "framer-motion";
+import instance from "@/axios/CustomAxios";
 // Định nghĩa kiểu dữ liệu cho nhân viên
 interface Staff {
     id: string;
@@ -273,7 +274,7 @@ const AddStaffPage = () => {
                 ward: values.ward,
             };
 
-            const response = await axios.post("http://localhost:8080/api/v1/staffs", payload);
+            const response = await instance.post("/staffs", payload);
 
             if (response.status === 201) {
                 const { code, password } = response.data;

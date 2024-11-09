@@ -68,7 +68,6 @@ public class TokenRequestFilter extends OncePerRequestFilter {
             log.debug("Exception");
             handlerExceptionResolver.resolveException(request, response, null, ex);
         }
-
     }
 
     private void setAuthenticationContext(UserDetails userDetails, HttpServletRequest request) {

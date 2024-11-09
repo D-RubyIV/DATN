@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { DatePicker } from '@/components/ui';
 import Switch from '@mui/material/Switch';
 import { useParams } from 'react-router-dom';
+import instance from "@/axios/CustomAxios";
 
 type ChildObject = {
     code: string;
@@ -209,7 +210,7 @@ const TableProductDetails: React.FC<ChildComponentProps> = ({ label, url }) => {
             setLoading(true); // Set loading to true initially
 
             try {
-                const response = await axios.post(url, {
+                const response = await instance.post(url, {
                      // Truyền productId
                     // productId: productId, 
                     ...tableData // Truyền tất cả dữ liệu trong tableData

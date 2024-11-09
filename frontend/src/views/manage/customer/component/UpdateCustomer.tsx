@@ -11,6 +11,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { SingleValue } from 'react-select';
 import { toast } from 'react-toastify';
 import { Pagination } from 'antd';
+import instance from "@/axios/CustomAxios";
 
 
 
@@ -172,7 +173,7 @@ const UpdateCustomer = () => {
                 if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra email có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
+                const response = await instance.get(`/customer/check-email`, { params: { email } });
                 return !response.data.exists; // Nếu email đã tồn tại, trả về false
             }),
 
@@ -183,7 +184,7 @@ const UpdateCustomer = () => {
                 if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra số điện thoại có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
+                const response = await instance.get(`/customer/check-phone`, { params: { phone } });
                 return !response.data.exists; // Nếu phone đã tồn tại, trả về false
             }),
 
@@ -224,7 +225,7 @@ const UpdateCustomer = () => {
                         if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                         // Gọi API kiểm tra số điện thoại có trùng không
-                        const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
+                        const response = await instance.get(`/customer/check-phone`, { params: { phone } });
                         return !response.data.exists; // Nếu phone đã tồn tại, trả về false
                     }),
 
@@ -390,7 +391,7 @@ const UpdateCustomer = () => {
     const fetchCustomer = async (id: string, currentPage: number) => {
         try {
 
-            const response = await axios.get(`http://localhost:8080/api/v1/customer/customer/${id}/addresses`, {
+            const response = await instance.get(`/customer/customer/${id}/addresses`, {
                 params: {
                     page: currentPage,
                     size: pageSize
@@ -458,7 +459,7 @@ const UpdateCustomer = () => {
 
             // Định dạng ngày sinh trước khi gửi
             const formattedBirthDate = dayjs(values.birthDate, 'YYYY-MM-DD').format('DD-MM-YYYY');
-            const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, {
+            const response = await instance.put(`/customer/update/${values.id}`, {
                 ...values,
                 birthDate: formattedBirthDate, // Gửi ngày đã định dạng
             });
@@ -504,7 +505,7 @@ const UpdateCustomer = () => {
 
             let response;
             if (mode === 'add') {
-                response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
+                response = await instance.post(`/customer/${customerId}/address`, address);
                 console.log('Dữ liệu địa chỉ vừa thêm:', response.data);
                 if (response.status === 201) {
                     // Thêm địa chỉ mới vào đầu danh sách sau khi thành công
@@ -515,7 +516,7 @@ const UpdateCustomer = () => {
                 toast.success('Thêm địa chỉ mới thành công');
             } else {
                 // Gửi yêu cầu cập nhật với các trường ID quận và xã
-                response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, {
+                response = await instance.put(`/address/update/${addressId}`, {
                     ...address, // Bao gồm cả districtId và wardId
                     districtId: address.districtId, // Đảm bảo ID quận được gửi
                     wardId: address.wardId // Đảm bảo ID xã được gửi
@@ -538,8 +539,8 @@ const UpdateCustomer = () => {
     const updateDefaultAddress = async (addressId: string, isDefault: boolean) => {
         try {
             console.log('Updating address ID:', addressId, 'to default:', isDefault);
-            const response = await axios.put(
-                `http://localhost:8080/api/v1/customer/${addressId}/default`,
+            const response = await instance.put(
+                `/customer/${addressId}/default`,
                 null,
                 {
                     params: {

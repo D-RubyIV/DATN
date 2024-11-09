@@ -21,7 +21,7 @@ const navigationConfig: NavigationTree[] = [
         path: '/admin/manage/sell',
         title: 'Home',
         translateKey: 'nav.sellTitle',
-        icon: 'home',
+        icon: 'sale',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: []
@@ -31,7 +31,7 @@ const navigationConfig: NavigationTree[] = [
         path: 'manage/customer',
         title: 'Collapse menu item 1',
         translateKey: 'nav.customerTitle',
-        icon: '',
+        icon: 'groupUser',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: []
@@ -41,7 +41,7 @@ const navigationConfig: NavigationTree[] = [
         path: 'manage/voucher',
         title: 'Collapse menu item 2',
         translateKey: 'nav.voucherTitle',
-        icon: '',
+        icon: 'ticket',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: []
@@ -51,7 +51,7 @@ const navigationConfig: NavigationTree[] = [
         path: 'manage/product',
         title: 'Collapse menu item 2',
         translateKey: 'nav.productTitle',
-        icon: '',
+        icon: 'product',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: []
@@ -61,7 +61,7 @@ const navigationConfig: NavigationTree[] = [
         path: 'manage/staff',
         title: 'Collapse menu item 2',
         translateKey: 'nav.staffTitle',
-        icon: '',
+        icon: 'staff',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: []
@@ -71,75 +71,11 @@ const navigationConfig: NavigationTree[] = [
         path: 'manage/order',
         title: 'Collapse menu item 2',
         translateKey: 'nav.orderTitle',
-        icon: '',
+        icon: 'order',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: []
     },
-    {
-        key: 'collapseMenu',
-        path: 'admin',
-        title: 'Collapse Menu',
-        translateKey: 'nav.manageTitle',
-        icon: 'collapseMenu',
-        type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
-        subMenu: [
-
-        ]
-    },
-    {
-        key: 'setting',
-        path: '',
-        title: 'Group Menu',
-        translateKey: 'nav.settingTitle',
-        icon: '',
-        type: NAV_ITEM_TYPE_TITLE,
-        authority: [],
-        subMenu: [
-            {
-                key: 'groupMenu.single',
-                path: '/group-single-menu-item-view',
-                title: 'Group single menu item',
-                translateKey: 'nav.groupMenu.single',
-                icon: 'groupSingleMenu',
-                type: NAV_ITEM_TYPE_ITEM,
-                authority: [],
-                subMenu: []
-            },
-            {
-                key: 'groupMenu.collapse',
-                path: '',
-                title: 'Group collapse menu',
-                translateKey: 'nav.groupMenu.collapse.collapse',
-                icon: 'groupCollapseMenu',
-                type: NAV_ITEM_TYPE_COLLAPSE,
-                authority: [],
-                subMenu: [
-                    {
-                        key: 'groupMenu.collapse.item1',
-                        path: '/group-collapse-menu-item-view-1',
-                        title: 'Menu item 1',
-                        translateKey: 'nav.groupMenu.collapse.item1',
-                        icon: '',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [],
-                        subMenu: []
-                    },
-                    {
-                        key: 'groupMenu.collapse.item2',
-                        path: '/group-collapse-menu-item-view-2',
-                        title: 'Menu item 2',
-                        translateKey: 'nav.groupMenu.collapse.item2',
-                        icon: '',
-                        type: NAV_ITEM_TYPE_ITEM,
-                        authority: [],
-                        subMenu: []
-                    }
-                ]
-            }
-        ]
-    }
 ]
 
 export default navigationConfig

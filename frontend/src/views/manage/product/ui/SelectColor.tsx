@@ -3,6 +3,7 @@ import chroma from 'chroma-js';
 import Select, { StylesConfig } from 'react-select';
 import axios from 'axios';
 import { useAppContext } from '@/store/ProductContext';
+import instance from "@/axios/CustomAxios";
 
 interface ColourOption {
     id: number;
@@ -77,7 +78,7 @@ const ColourSelect = ({ url }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(url);
+            const response = await instance.get(url);
             const formattedData = response.data.map((item) => ({
                 ...item,
                 label: item.name,

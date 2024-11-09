@@ -3,6 +3,7 @@ import { Button } from "@/components/ui";
 import axios from "axios";
 import { IoIosSearch } from 'react-icons/io';
 import { Input } from 'antd';
+import instance from "@/axios/CustomAxios";
 
 type ICustomer = {
     id: number;
@@ -29,7 +30,7 @@ const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
         const fetchCustomers = async () => {
             setLoading(true);
             try {
-                const res = await axios.get('http://localhost:8080/api/v1/customer');
+                const res = await instance.get('/customer');
                 setCustomers(res.data.content);
             } catch (error) {
                 console.error("Error fetching customers:", error);

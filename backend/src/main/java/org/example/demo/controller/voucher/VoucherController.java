@@ -19,7 +19,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/v1/voucher")
+@RequestMapping(value = "voucher")
 public class VoucherController {
 
     @Autowired

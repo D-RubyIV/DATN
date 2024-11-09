@@ -9,6 +9,7 @@ import VoucherTableTool from './VoucherTableTool'
 import { Tooltip } from 'antd'
 import { FaPen } from 'react-icons/fa'
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
+import instance from "@/axios/CustomAxios";
 
 type IVoucher = {
     id: number
@@ -190,7 +191,7 @@ const VoucherTable = () => {
 
     const softDelete = async (id: number) => {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/v1/voucher/delete/${id}`);
+            const response = await instance.delete(`/voucher/delete/${id}`);
             if (response.status === 200) {
                 toast.success('Xoá thành công');
                 fetchData();
@@ -235,7 +236,7 @@ const VoucherTable = () => {
 
             console.log('Fetching data with params:', params);
 
-            const response = await axios.get('http://localhost:8080/api/v1/voucher/page', { params });
+            const response = await instance.get('/voucher/page', { params });
 
             if (response.data) {
                 setData(response.data.content);
