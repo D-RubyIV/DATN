@@ -18,18 +18,33 @@ export type Option = {
     id: number;
     code: string;
     name: string;
-    deleted: boolean;
+    deleted: boolean; 
     createdDate: string;
     modifiedDate: string;
 };
 
 
 
-
+export type ProductFromData = {
+    id: number;
+    code: string;
+    name: string;
+    description: string;
+    deleted: boolean;
+    createdDate: string;
+    modifiedDate: string;
+}; 
 
 export type OptionFormData = {
     data: Option[]; 
 };
+
+export type ProductFromDatas = {
+    data: ProductFromData[]; 
+};
+
+
+
 
 type OptionDataResponse = OptionFormData;
 
@@ -46,7 +61,7 @@ export type OptionState = {
     colorData: Option[];
     sizeData: Option[];
     materialData: Option[];
-    productData: Option[];
+    productData: ProductFromData[];
 };
 
 
@@ -143,7 +158,7 @@ export const getMaterialData = createAsyncThunk(
 export const getProductData = createAsyncThunk(
     SLICE_NAME + '/getProductData',
     async () => {
-        const response = await apiGetSalesProductList<OptionDataResponse>();
+        const response = await apiGetSalesProductList<ProductFromDatas>();
         return response.data;
     }
 );

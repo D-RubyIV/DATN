@@ -7,36 +7,23 @@ import Layout from '@/components/layouts';
 import './locales';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-const environment = process.env.NODE_ENV;
-
 /**
  * Đặt enableMock(Default false) thành true tại configs/app.config.js
  * Nếu bạn muốn kích hoạt mock api
  */
 
-export const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            refetchOnWindowFocus: false
-        }
-    }
-})
+
 
 function App() {
     return (
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <BrowserRouter>
-                    <QueryClientProvider client={queryClient}>
-                        <Theme>
-                            <Layout />
-                        </Theme>
-                        <ToastContainer /> {/* Thêm ToastContainer ở đây */}
-                    </QueryClientProvider>
+                    <Theme>
+                        <Layout />
+                    </Theme>
+                    <ToastContainer /> {/* Thêm ToastContainer ở đây */}
                 </BrowserRouter>
-
             </PersistGate>
         </Provider>
     );

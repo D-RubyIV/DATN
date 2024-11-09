@@ -6,12 +6,12 @@ import UserDropdown from '@/components/template/UserDropdown'
 import SideNav from '@/components/template/SideNav'
 import { Route, Routes } from 'react-router-dom'
 import { AdminViews, AuthViews, ClientViews, PublicViews } from '@/views'
+import Side from "@/components/layouts/AuthLayout/Side";
 import Navbar from '@/views/client/Navbar/Navbar'
 import Footer from '@/views/client/Footer/Footer'
 import { useEffect, useState } from 'react'
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Side from "@/components/layouts/AuthLayout/Side";
 
 const HeaderActionsStart = () => {
     return (
@@ -72,8 +72,9 @@ const ClientLayout = () => {
                     <div className="h-full flex flex-auto flex-col">
                         <ClientViews />
                     </div>
-                </div>
                 <Footer/>
+
+                </div>
         </div>
     )
 }
@@ -90,22 +91,24 @@ const PublicLayout = () => {
 }
 const SecurityLayout = () => {
     return (
-        <div className="app-layout-classic flex flex-auto flex-col">
-            <div className="flex flex-auto min-w-0">
-                <div className="h-full flex flex-auto flex-col">
-                    <AuthViews />
+        <Side>
+            <div className="app-layout-classic flex flex-auto flex-col">
+                <div className="flex flex-auto min-w-0">
+                    <div className="h-full flex flex-auto flex-col">
+                        <AuthViews/>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Side>
     )
 }
 
 const RootLayout = () => {
     return (
         <Routes>
-            <Route path="/admin/*" element={<AdminLayout />} />
-            <Route path="/auth/*" element={<SecurityLayout />} />
-            <Route path="/client/*" element={<ClientLayout />} />
+            <Route path="/client/*" element={<ClientLayout/>}/>
+            <Route path="/admin/*" element={<AdminLayout/>}/>
+            <Route path="/auth/*" element={<SecurityLayout/>}/>
             <Route path="/*" element={<PublicLayout />} />
             {/*<Route path="*" element={<Navigate replace to="/sign-in" />} />*/}
         </Routes>

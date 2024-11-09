@@ -4,7 +4,7 @@ import { User } from './user.type'
 
 
 export type AuthRespon = SuccesRessponse<{
-  access_token: string
-  expires: string
+  token: string
+  refresh_token: string
   user: User
 }>
