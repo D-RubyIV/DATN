@@ -8,7 +8,18 @@ import org.springframework.data.domain.Pageable;
 
 public interface EventService {
 
+    Page<EventListDTO> filterStatus(String status, Pageable pageable);
+
+    Page<EventListDTO> search(String search, Pageable pageable);
+
     Page<EventListDTO> getEvents(Pageable pageable);
 
-    EventDTO saveEvent(EventDTO eventDTO, ProductRepository productRepository);
+    EventDTO getById(Integer id);
+
+    EventDTO saveEvent(EventDTO eventDTO);
+
+    EventDTO updateEvent(Integer id, EventDTO eventDTO);
+
+    void deleteEvent(Integer id);
+
 }

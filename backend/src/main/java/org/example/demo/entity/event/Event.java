@@ -1,5 +1,6 @@
 package org.example.demo.entity.event;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.product.properties.Product;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,9 +29,11 @@ public class Event extends BaseEntity {
     private Integer discountPercent; // phần trăm giảm giá
 
     @Column(name = "start_date")
+    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     private LocalDateTime startDate;
 
     @Column(name = "end_date")
+    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
     private LocalDateTime endDate;
 
     @Column(name = "quantity_discount")

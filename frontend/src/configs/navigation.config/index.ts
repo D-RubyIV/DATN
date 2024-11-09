@@ -85,6 +85,16 @@ const navigationConfig: NavigationTree[] = [
                 authority: [],
                 subMenu: [],
             },
+            {
+                key: 'eventManager',
+                path: 'manage/event', // b dien hộ vs cái dường dẫn ý, là nó luon rôi mà
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.eventTitle',
+                icon: '',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: [],
+            },
         ],
     },
     {

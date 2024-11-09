@@ -10,6 +10,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
+    // find All Event By CreateDate
     @Query("select e from Event e order by e.createdDate DESC")
     Page<Event> findAllEvents(Pageable pageable);
+
+    // search by Code, name
+    @Query("select e from Event e where lower(e.discountCode) like lower(concat('%', :search, '%')) or lower(e.name) like lower(concat('%', : search, '%'))")
+    Page<Event> findEventsBySearch(String search, Pageable pageable);
+
+    // filter status
+    @Query("select e from Event e where e.status = :status")
+    Page<Event> findEventsByStatus(String status, Pageable pageable);
+
 }

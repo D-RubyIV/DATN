@@ -28,14 +28,12 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
     Page<Customer> search(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-
     // Loc theo status
     @Query("SELECT c FROM Customer c WHERE c.status = :status")
     Page<Customer> findByStatus(@Param("status") String status, Pageable pageable);
 
     @Query("SELECT c FROM Customer c ORDER BY c.createdDate DESC")
     Page<Customer> findAllCustomers(Pageable pageable);
-
 
     List<Customer> findCustomerByEmail(String email);
 

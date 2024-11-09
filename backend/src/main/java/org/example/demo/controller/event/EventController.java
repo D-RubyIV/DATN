@@ -1,22 +1,58 @@
 package org.example.demo.controller.event;
 
+import org.example.demo.dto.event.EventDTO;
 import org.example.demo.dto.event.EventListDTO;
+import org.example.demo.dto.product.mchien.ProductDTO;
 import org.example.demo.service.event.EventService;
+import org.example.demo.service.product.properties.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/event")
 public class EventController {
+
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private ProductService productService;
+
+    @GetMapping("/product-list")
+    public ResponseEntity<Page<ProductDTO>> getAllProductDTO(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ProductDTO> productDTOS = productService.  getAllProductDTO( pageable);
+        return ResponseEntity.ok(productDTOS);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Page<EventListDTO>> filterEvents(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<EventListDTO> eventListDTOS = eventService.filterStatus(status, pageable);
+        return ResponseEntity.ok(eventListDTOS);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<EventListDTO>> searchEvents(
+            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<EventListDTO> eventListDTOS = eventService.search(query, pageable);
+        return ResponseEntity.ok(eventListDTOS);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<Page<EventListDTO>> getAllEvents(
@@ -25,9 +61,31 @@ public class EventController {
     ) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<EventListDTO> events = eventService.getEvents(pageable);
-        if (events.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
         return ResponseEntity.ok(events);
+    }
+
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<EventDTO> getEvent(@PathVariable Integer id) {
+        return ResponseEntity.ok(eventService.getById(id));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Integer id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<EventDTO> saveEvent(@RequestBody EventDTO eventDTO) {
+        EventDTO saved = eventService.saveEvent(eventDTO);
+        if (saved == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<EventDTO> updateEvent(@PathVariable Integer id, @RequestBody EventDTO eventDTO) {
+        return ResponseEntity.ok(eventService.updateEvent(id, eventDTO));
     }
 }

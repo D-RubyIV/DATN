@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import DataTable, { CellContext } from '@/components/shared/DataTable';
 import { Button, Input, Switcher } from '@/components/ui';
-import { GrEdit } from "react-icons/gr";
 import { IoIosSearch } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
-import { FiPlusCircle } from "react-icons/fi";
 import { toast } from 'react-toastify';
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
 import * as XLSX from 'xlsx';
@@ -115,7 +113,7 @@ const CustomerTable = () => {
                     : 'N/A',
             };
         });
-    
+
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Customer');
@@ -300,8 +298,8 @@ const CustomerTable = () => {
                         variant="solid"
                         style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
                         className='flex items-center justify-center gap-2 button-bg-important'
+                        icon={<HiPlusCircle />}
                         onClick={handleAddClick}
-                        icon={<HiPlusCircle />} 
                     >
                         Thêm mới
                     </Button>

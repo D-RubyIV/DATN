@@ -1,5 +1,6 @@
 package org.example.demo.repository.product.properties;
 
+import org.example.demo.dto.product.mchien.ProductDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityResponseDTO;
 import org.example.demo.entity.product.properties.Product;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
-    List<Product> findByCodeIn(List<String> codes); // Tìm sản phẩm theo mã
+
 
     boolean existsByCodeAndName(String code, String name);
 

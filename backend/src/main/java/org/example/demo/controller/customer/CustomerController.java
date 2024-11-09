@@ -48,7 +48,6 @@ public class CustomerController {
         return ResponseEntity.ok(customerDTO);
     }
 
-
     // API kiểm tra email có tồn tại hay không
     @GetMapping("/check-email")
     public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
