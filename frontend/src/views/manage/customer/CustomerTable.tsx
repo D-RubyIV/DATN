@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import instance from "@/axios/CustomAxios";
 
 
 
@@ -67,7 +68,7 @@ const CustomerTable = () => {
                 url += `&status=${status}`
             }
 
-            const response = await axios.get(url);
+            const response = await instance.get(url);
             const data = response.data;
             let fetchedCustomers: CustomerListDTO[] = [];
 
@@ -92,7 +93,7 @@ const CustomerTable = () => {
 
     const updateStatus = async (id: number, newStatus: boolean) => {
         try {
-            await axios.patch(`http://localhost:8080/api/v1/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
+            await instance.patch(`/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
             toast.success('Status updated successfully');
             fetchData(pageIndex, pageSize, query)
         } catch (error) {

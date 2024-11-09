@@ -51,7 +51,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers(mvcMatcherBuilder.pattern("users/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("orders/**")).hasAnyAuthority("ROLE_ADMIN")
-                                .requestMatchers(mvcMatcherBuilder.pattern("vouchers/**")).hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(mvcMatcherBuilder.pattern("voucher/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .anyRequest().authenticated()
                 );
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

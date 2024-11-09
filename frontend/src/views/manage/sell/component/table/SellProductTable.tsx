@@ -116,7 +116,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 header: 'Giá',
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
-                    return <PriceAmount amount={row.productDetail.price} />
+                    return <PriceAmount amount={row?.productDetailResponseDTO?.price} />
                 }
             },
             {
@@ -124,7 +124,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 header: 'Tổng',
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
-                    return <PriceAmount amount={row.quantity * row.productDetail.price} />
+                    return <PriceAmount amount={row.quantity * row?.productDetailResponseDTO?.price} />
                 }
             },
             {
@@ -186,14 +186,14 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
             <div className="flex">
                 <Avatar size={90} icon={<FiPackage />} />
                 <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.productDetail.name}</h6>
+                    <h6 className="mb-2">{row?.productDetailResponseDTO?.name}</h6>
                     <div className="mb-1">
                         <span className="capitalize">Cỡ: </span>
-                        <span className="font-semibold">{row.productDetail.size.name}</span>
+                        <span className="font-semibold">{row?.productDetailResponseDTO?.size?.name}</span>
                     </div>
                     <div className="mb-1">
                         <span className="capitalize">Màu: </span>
-                        <span className="font-semibold">{row.productDetail.color.name}</span>
+                        <span className="font-semibold">{row?.productDetailResponseDTO?.color?.name}</span>
                     </div>
                 </div>
             </div>

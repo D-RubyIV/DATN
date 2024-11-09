@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { SingleValue } from 'react-select';
 import { RxReset } from "react-icons/rx";
 import { GrUpdate } from "react-icons/gr";
+import instance from "@/axios/CustomAxios";
 interface Staff {
     id: string;
     code: string;
@@ -202,7 +203,7 @@ const UpdateStaffPage = () => {
 
     const fetchStaff = async (id: string) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/staffs/${id}`);
+            const response = await instance.get(`staffs/${id}`);
             const fetchedStaff = response.data;
             setStaff({
                 ...fetchedStaff,
@@ -246,7 +247,7 @@ const UpdateStaffPage = () => {
                 birthDay: values.birthDay ? dayjs(values.birthDay).format('YYYY-MM-DD') : '',
             };
 
-            await axios.put(`http://localhost:8080/api/v1/staffs/${id}`, formattedValues);
+            await instance.put(`/staffs/${id}`, formattedValues);
             resetForm();
             toast.success('Nhân viên đã được cập nhật thành công.');
             navigate('admin/manage/staff');
