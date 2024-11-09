@@ -25,14 +25,19 @@ public class CartController {
         return cartService.getListCart(idCustomer);
     }
 
-    @PostMapping()
+    @PostMapping("/add-to-cart")
     public ResponseObject addCart(@RequestBody CartRequestDTO cartRequestDTO) {
-        return cartService.update(cartRequestDTO);
+        return cartService.create(cartRequestDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseObject deleteCart(@PathVariable Integer id) {
         return cartService.deleteById(id);
+    }
+
+    @PutMapping
+    public ResponseObject updateCart(@RequestBody CartRequestDTO cartRequestDTO) {
+        return cartService.update(cartRequestDTO);
     }
 
     @DeleteMapping("/delete-all/{idCustomer}")

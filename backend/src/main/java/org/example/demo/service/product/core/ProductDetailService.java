@@ -2,6 +2,8 @@ package org.example.demo.service.product.core;
 
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
+import org.example.demo.dto.product.phah04.response.ProductClientResponse;
 import org.example.demo.dto.product.requests.core.ProductDetailRequestDTO;
 import org.example.demo.dto.product.requests.properties.ImageRequestDTO;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
@@ -17,11 +19,13 @@ import org.example.demo.service.IService;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +56,20 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
 
     public Page<ProductDetail> findAll(Pageable pageable) {
         return productDetailRepository.findAll(pageable);
+    }
+
+
+    public Page<ProductClientResponse> getAll(FindProductDetailRequest request) {
+        Pageable pageable = PageRequest.of(request.getPage() -1, request.getSizePage());
+        FindProductDetailRequest customRequest = FindProductDetailRequest.builder()
+                .colors(request.getColor() != null ? Arrays.asList(request.getColor().split(",")) : null)
+                .sizes(request.getSize() != null ? Arrays.asList(request.getSize().split(",")) : null)
+                .products(request.getProduct() != null ? Arrays.asList(request.getProduct().split(",")) : null)
+                .size(request.getSize())
+                .color(request.getColor())
+                .product(request.getProduct())
+                .build();
+        return (Page<ProductClientResponse>) new org.example.demo.infrastructure.common.PageableObject<>(productDetailRepository.productClient(customRequest, pageable));
     }
 
     // Phương thức tìm tất cả sản phẩm chi tiết với điều kiện phân trang

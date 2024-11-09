@@ -103,5 +103,4 @@ public class ProductDetail extends BaseEntity {
     )
     @JsonManagedReference // Giúp tránh vòng lặp vô tận khi trả về JSON
     private List<Image> images;
-
 }

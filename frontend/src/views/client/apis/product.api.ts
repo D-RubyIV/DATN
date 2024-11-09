@@ -3,14 +3,14 @@ import { SuccesRessponse } from "../types/ultils.type"
 import http from "../utils/http"
 
 
-const URL = 'products'
+const URL = 'productDetails'
 const productApi = {
   getProducts(params: ProductListConfig) {
-    return http.get<SuccesRessponse<ProductList>>(URL, {
+    return http.get<SuccesRessponse<ProductList>>(`${URL}/abc`, {
       params
     })
   },
-  getProductDetail(id: string) {
+  getProductDetail(id: number) {
     return http.get<SuccesRessponse<Product>>(`${URL}/${id}`)
   }
 }

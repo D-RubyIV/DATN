@@ -1,7 +1,7 @@
 import { Purchase, PurchaseListStatus } from '../types/purchase.type'
 import { SuccesRessponse } from "../types/ultils.type"
 import http from "../utils/http"
-const URL = 'purchases'
+const URL = 'cart'
 
 const purchaseApi = {
   addToCart(body: { product_id: string; buy_count: number }) {
