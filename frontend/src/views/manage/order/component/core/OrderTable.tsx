@@ -229,7 +229,7 @@ export const OrderTable = () => {
                     size="xs"
                     block
                     variant="solid"
-                    className={`${props.row.original.status === 'PENDING'
+                    className={`bg-white ${props.row.original.status === 'PENDING'
                         ? '!text-yellow-500'
                         : props.row.original.status === 'TOSHIP'
                             ? '!text-blue-500'
@@ -296,6 +296,7 @@ export const OrderTable = () => {
                     size="xs"
                     block
                     variant="solid"
+                    className={'bg-white'}
                 >
 
                     <span
