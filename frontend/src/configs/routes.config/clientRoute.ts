@@ -32,6 +32,4 @@ const clientRoutes = [
         authority: []
     }
 ]
-export default clientRoutes; // oke thank b toi di hoc day con gi baoi t k
-//  cu code ddi t fix route kia sau cho okeee <3
-// ban check xem merge hết chưa
+export default clientRoutes; 
