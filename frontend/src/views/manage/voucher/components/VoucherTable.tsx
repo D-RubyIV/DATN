@@ -267,7 +267,7 @@ const VoucherTable = () => {
 
     return (
         <>
-            <div className="bg-white p-5 mb-6 w-full">
+            <div className="bg-white mb-6 w-full">
                 <div className="mb-4">
                     <p className="text-xl font-bold mx-auto mb-5 text-black uppercase">Quản Lý Phiếu Giảm Giá</p>
                     <div

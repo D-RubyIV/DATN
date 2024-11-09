@@ -11,6 +11,7 @@ import AppRoute from '@/components/route/AppRoute'
 import type { LayoutType } from '@/@types/theme'
 import { adminRoutes, authRoutes, clientRoutes, publicRoutes } from '@/configs/routes.config/routes.config'
 import AuthorRouteComponent from "@/components/route/AuthorRouteComponent";
+import PageNotFound from "@/views/404/PageNotFound";
 
 interface ViewsProps {
     pageContainerType?: 'default' | 'gutterless' | 'contained'
@@ -52,7 +53,7 @@ const AllAdminRoutes = (props: AllRoutesProps) => {
                     />
                 ))}
             </Route>
-            <Route path="*" element={<Navigate replace to="/auth/sign-in" />} />
+            <Route path="*" element={<PageNotFound/>} />
         </Routes>
     )
 }

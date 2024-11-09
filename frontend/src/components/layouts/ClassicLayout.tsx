@@ -86,7 +86,7 @@ const SecurityLayout = () => {
 const RootLayout = () => {
     return (
         <Routes>
-            {/*<Route path="/client/*" element={<ClientLayout/>}/>*/}
+            <Route path="/client/*" element={<ClientLayout/>}/>
             <Route path="/admin/*" element={<AdminLayout/>}/>
             <Route path="/auth/*" element={<SecurityLayout/>}/>
             <Route path="/*" element={<PublicLayout />} />

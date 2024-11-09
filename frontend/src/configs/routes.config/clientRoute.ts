@@ -2,8 +2,8 @@ import { lazy } from 'react'
 
 const clientRoutes = [
     {
-        key: 'home',
-        path: `/home`,
+        key: '',
+        path: `/`,
         component: lazy(() => import('@/views/client/Dashboard')),
         authority: []
     }
