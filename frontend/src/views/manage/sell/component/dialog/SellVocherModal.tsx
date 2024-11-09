@@ -1,18 +1,19 @@
-import { useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch } from 'react'
+import React, {useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch} from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
-import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
+import type {ColumnDef, OnSortParam} from '@/components/shared/DataTable'
 import CloseButton from '@/components/ui/CloseButton'
 
 
 import instance from '@/axios/CustomAxios'
-import { SellCustomerOverview } from '../..'
-import { OrderResponseDTO } from '@/@types/order'
-import { useLoadingContext } from '@/context/LoadingContext'
+import {SellCustomerOverview} from '../..'
+import {OrderResponseDTO} from '@/@types/order'
+import {useLoadingContext} from '@/context/LoadingContext'
 import axios from 'axios'
-import { useToastContext } from '@/context/ToastContext'
+import {useToastContext} from '@/context/ToastContext'
+import {DoubleSidedImage} from "@/components/shared";
 
 type VoucherDTO = {
     id: number;
@@ -30,7 +31,7 @@ type VoucherDTO = {
     customerEmail: string | null; // Có thể là string hoặc null
 };
 
-const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
+const SellVoucherModal = ({setIsOpenVoucherModal, selectOrder, fetchData}: {
     setIsOpenVoucherModal: Dispatch<SetStateAction<boolean>>,
     selectOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
@@ -38,8 +39,8 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
     const inputRef = useRef(null)
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
-    const { sleep } = useLoadingContext()
-    const { openNotification } = useToastContext()
+    const {sleep} = useLoadingContext()
+    const {openNotification} = useToastContext()
 
     const [tableData, setTableData] = useState<{
         pageIndex: number
@@ -61,8 +62,8 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
         }
     })
     const handlePaginationChange = (pageIndex: number) => {
-        setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
-        setQueryParam((pre) => ({ ...pre, page: pageIndex }))
+        setTableData((prevData) => ({...prevData, ...{pageIndex}}))
+        setQueryParam((pre) => ({...pre, page: pageIndex}))
     }
     const handleSelectChange = (pageSize: number) => {
         setTableData((prevData) => ({
@@ -70,10 +71,10 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
             pageSize: pageSize, // Cập nhật pageSize mới
             pageIndex: 1 // Đặt pageIndex về 1
         }))
-        setQueryParam((pre) => ({ ...pre, size: pageSize }))
+        setQueryParam((pre) => ({...pre, size: pageSize}))
     }
-    const handleSort = ({ order, key }: OnSortParam) => {
-        console.log({ order, key })
+    const handleSort = ({order, key}: OnSortParam) => {
+        console.log({order, key})
         setTableData((prevData) => ({
             ...prevData,
             sort: {
@@ -173,14 +174,14 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
 
     const fetchDataProduct = async () => {
         setLoading(true)
-        const response = await instance.get('/voucher/page', {
+        const response = await instance.get(`/voucher/page`, {
             params: queryParam
         })
         setData(response.data.content)
         setLoading(false)
         setTableData((prevData) => ({
             ...prevData,
-            ...{ total: response.data.totalElements }
+            ...{total: response.data.totalElements}
         }))
     }
 
@@ -194,9 +195,9 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
         if ((val.length > 1 || val.length === 0)) {
             setTableData((prevData) => ({
                 ...prevData,
-                ...{ query: val, pageIndex: 1 }
+                ...{query: val, pageIndex: 1}
             }))
-            setQueryParam((pre) => ({ ...pre, query: val }))
+            setQueryParam((pre) => ({...pre, query: val}))
         }
     }
 
@@ -220,7 +221,7 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/5 h-auto bg-gray-100 z-20 shadow-md rounded-md">
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 2xl:w-3/5 md:w-4/5 h-auto bg-gray-100 z-20 shadow-md rounded-md">
                 <div className="p-5 bg-white !h-4/5 rounded-md">
                     <div className="flex justify-between pb-3">
                         <div>
@@ -237,24 +238,31 @@ const SellVoucherModal = ({ setIsOpenVoucherModal, selectOrder, fetchData }: {
                         </div>
                     </div>
                     <div>
-                        <div>
-                            <Input
-                                ref={inputRef}
-                                placeholder="Search..."
-                                size="sm"
-                                className="lg:w-full"
-                                onChange={(el) => handleChange(el)}
-                            />
-                        </div>
-                        <DataTable
-                            columns={columns}
-                            data={data}
-                            loading={loading}
-                            pagingData={tableData}
-                            onPaginationChange={handlePaginationChange}
-                            onSelectChange={handleSelectChange}
-                            onSort={handleSort}
-                        />
+                        {
+                            Array.isArray(data) && (
+                                <div>
+                                    <div>
+                                        <Input
+                                            ref={inputRef}
+                                            placeholder="Search..."
+                                            size="sm"
+                                            className="lg:w-full"
+                                            onChange={(el) => handleChange(el)}
+                                        />
+                                    </div>
+                                    <DataTable
+                                        columns={columns}
+                                        data={data}
+                                        loading={loading}
+                                        pagingData={tableData}
+                                        onPaginationChange={handlePaginationChange}
+                                        onSelectChange={handleSelectChange}
+                                        onSort={handleSort}
+                                    />
+                                </div>
+                            )
+                        }
+
                     </div>
                 </div>
             </div>

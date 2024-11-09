@@ -27,22 +27,22 @@ const SalesReport = () => {
                 data: []
             }
         ],
-        categories: listOverViewChart.map(s => s.symbol)
+        categories: Array.isArray(listOverViewChart) ? listOverViewChart.map(s => s.symbol) : []
     });
 
     useEffect(() => {
         const updatedSeries = [];
-        const updatedCategories = listOverViewChart.map(s => s.symbol); // Cập nhật categories
+        const updatedCategories = Array.isArray(listOverViewChart) ? listOverViewChart.map(s => s.symbol) : []; // Cập nhật categories
 
         if (chartMode === 0) {
             updatedSeries.push({
                 name: 'Session Duration',
-                data: listOverViewChart.map(s => s.quantity)
+                data: Array.isArray(listOverViewChart) ?listOverViewChart.map(s => s.quantity) : []
             });
         } else {
             updatedSeries.push({
                 name: 'Page Views',
-                data: listOverViewChart.map(s => Number(s.revenue.toFixed(0)))
+                data: Array.isArray(listOverViewChart) ?listOverViewChart.map(s => Number(s.revenue.toFixed(0))) : []
             });
         }
 

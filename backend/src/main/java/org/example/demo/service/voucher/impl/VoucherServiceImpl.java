@@ -8,6 +8,7 @@ import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.entity.voucher.enums.Type;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.infrastructure.common.AutoGenCode;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.infrastructure.converted.VoucherConvert;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,9 +134,9 @@ public class VoucherServiceImpl implements VoucherService {
 
 
     @Override
-    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, int limit, int offset) {
+    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent, Double minAmount, String status, int limit, int offset) {
         Pageable pageable = PageRequest.of(offset / limit, limit);
-        return voucherRepository.searchVoucher(keyword,name, code, typeTicket, quantity, maxPercent,minAmount,status, pageable);
+        return voucherRepository.searchVoucher(keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
     }
 
     @Transactional
@@ -236,6 +238,23 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = optionalVoucher.get();
         voucher.setDeleted(true);
         voucherRepository.save(voucher);
+    }
+
+
+    @Override
+    public List<Voucher> findBetterVoucher(BigDecimal amount) {
+        Sort sort;
+        List<Voucher> vouchers = new ArrayList<>();
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+            sort = Sort.by(Sort.Direction.ASC, "minAmount");
+             vouchers = voucherRepository.findTopVouchers(sort);
+        } else {
+            vouchers = voucherRepository.findVoucherWithMinAmountGreaterThan(amount);
+            if (vouchers.isEmpty()){
+                vouchers = voucherRepository.findBestVoucher(amount);
+            }
+        }
+        return vouchers;
     }
 
     public void updateStatus(Voucher voucher) {

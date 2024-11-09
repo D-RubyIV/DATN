@@ -46,7 +46,7 @@ const SalesByCategories = () => {
                     <div className={'grid grid-cols-2'}>
                         <div>
                             <Chart
-                                donutTitle={`${resultData.data.reduce(
+                                donutTitle={`${Array.isArray(resultData) && resultData.data.reduce(
                                     (a, b) => a + b,
                                     0
                                 )}`}

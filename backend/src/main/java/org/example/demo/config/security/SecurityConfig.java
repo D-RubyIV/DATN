@@ -53,13 +53,13 @@ public class SecurityConfig {
                                 .requestMatchers(mvcMatcherBuilder.pattern("orders/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .requestMatchers(mvcMatcherBuilder.pattern("voucher/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .requestMatchers(mvcMatcherBuilder.pattern("customer/**")).hasAnyAuthority("ROLE_ADMIN")
-                                .anyRequest().permitAll()
+                                .anyRequest().authenticated()
                 );
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//        httpSecurity.exceptionHandling(ex -> {
-//            ex.authenticationEntryPoint((request, response, authException) -> response.sendError(401, "Unauthorized"));
-//            ex.accessDeniedHandler((request, response, authException) -> response.sendError(403, "Forbidden"));
-//        });
+        httpSecurity.exceptionHandling(ex -> {
+            ex.authenticationEntryPoint((request, response, authException) -> response.sendError(401, "Unauthorized"));
+            ex.accessDeniedHandler((request, response, authException) -> response.sendError(403, "Forbidden"));
+        });
         return httpSecurity.build();
     }
 }

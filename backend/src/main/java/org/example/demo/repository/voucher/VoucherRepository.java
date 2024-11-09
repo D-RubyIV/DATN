@@ -6,11 +6,13 @@ import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -154,5 +156,32 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                                 Pageable pageable);
 
 
+    @Query("""
+        SELECT v FROM Voucher v
+        WHERE CAST(v.minAmount AS bigdecimal) > :amount
+        AND v.quantity > 0
+        AND v.deleted = FALSE
+        AND v.status = 'Active'
+        ORDER BY v.maxPercent ASC
+        """)
+    List<Voucher> findVoucherWithMinAmountGreaterThan(@Param("amount") BigDecimal amount);
+
+    @Query("""
+        SELECT v FROM Voucher v
+        WHERE CAST(v.minAmount AS bigdecimal) < :amount
+        AND v.quantity > 0
+        AND v.deleted = FALSE
+        AND v.status = 'Active'
+        ORDER BY v.maxPercent DESC
+        """)
+    List<Voucher> findBestVoucher(@Param("amount") BigDecimal amount);
+
+    @Query("""
+    SELECT v FROM Voucher v
+    WHERE v.quantity > 0
+    AND v.deleted = FALSE
+    AND v.status = 'Active'
+    """)
+    List<Voucher> findTopVouchers(Sort sort);
 
 }

@@ -208,7 +208,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             variant="solid"
                             style={{ backgroundColor: 'rgb(79, 70, 229)' }}
                             className="flex items-center justify-center gap-2 button-bg-important"
-                            disabled={selectedOrder?.orderDetailResponseDTOS.length === 0}
+                            disabled={Array.isArray(selectedOrder?.orderDetailResponseDTOS) && selectedOrder?.orderDetailResponseDTOS.length === 0}
                             onClick={() => setIsOpenConfirmOrder(true)}
                         >
                             Xác nhận đơn hàng

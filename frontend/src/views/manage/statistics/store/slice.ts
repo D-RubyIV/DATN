@@ -112,7 +112,7 @@ export const getStatisticOverview = createAsyncThunk(
     SLICE_NAME + '/getSalesDashboardData',
     async () => {
         const data = {
-            'from': dayjs().startOf('month').toISOString(),
+            'from': dayjs().subtract(1, 'month').startOf('month').toISOString(),
             'to': dayjs().endOf('month').toISOString()
         }
         const response = await apiFetchOverviewStatistic<DashboardDataResponse>(data)

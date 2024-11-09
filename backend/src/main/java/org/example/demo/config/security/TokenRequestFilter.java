@@ -40,7 +40,6 @@ public class TokenRequestFilter extends OncePerRequestFilter {
         String myAuthorization = request.getHeader("Authorization");
         if (!(myAuthorization != null && myAuthorization.startsWith("Bearer"))) {
             log.debug("NOT HAVE AUTHORIZATION");
-            filterChain.doFilter(request, response);
             return;
         }
         String tokenClient = myAuthorization.split(" ")[1].trim();
@@ -48,18 +47,15 @@ public class TokenRequestFilter extends OncePerRequestFilter {
         try {
             if (jwtTokenUtil.getSubject(tokenClient) == null) {
                 log.debug("TOKEN NULL");
-                filterChain.doFilter(request, response);
                 return;
             }
             String email = jwtTokenUtil.getSubject(tokenClient);
             UserDetails userDetails =  customUserDetailsService.loadUserByUsername(email);
             if (userDetails == null) {
                 log.debug("USER NOT FOUND");
-                filterChain.doFilter(request, response);
                 return;
             }
             setAuthenticationContext(userDetails, request);
-            filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
             log.debug("Expired jwt credentials");
             throw new CredentialsExpiredException("Expired jwt credentials");
@@ -68,6 +64,7 @@ public class TokenRequestFilter extends OncePerRequestFilter {
             log.debug("Exception");
             handlerExceptionResolver.resolveException(request, response, null, ex);
         }
+        filterChain.doFilter(request, response);
     }
 
     private void setAuthenticationContext(UserDetails userDetails, HttpServletRequest request) {

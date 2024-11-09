@@ -107,7 +107,7 @@ const SellTab = () => {
                                         <div key={tab.value} className="flex items-center justify-center gap-1">
                                             <Badge
                                                 className="mr-1"
-                                                content={quantityInOrder.find((s) => s.id === tab.orderId)?.quantity}
+                                                content={Array.isArray(quantityInOrder) && quantityInOrder.find((s) => s.id === tab.orderId)?.quantity}
                                                 // maxCount={tab.orderId}
                                                 innerClass="bg-red-50 text-red-500">
                                                 <TabNav
