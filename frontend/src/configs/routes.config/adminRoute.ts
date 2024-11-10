@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
+import tuanRoute from '@/configs/routes.config/tuanRoute'
 
 
 const adminRoute: Routes = [
@@ -102,8 +103,35 @@ const adminRoute: Routes = [
     {
         key: 'payment',
         path: `manage/payment/callback`,
-        component: lazy(() => import('@/views/manage/sell/component/payment/PaymentCallback')),
-        authority: []
+        component: lazy(
+            () =>
+                import('@/views/manage/sell/component/payment/PaymentCallback'),
+        ),
+        authority: [],
+    },
+    {
+        key: 'eventManager',
+        path: `/manage/event`,
+        component: lazy(
+            () => import('@/views/manage/event/components/EventTable'),
+        ),
+        authority: [],
+    },
+    {
+        key: 'addEvent',
+        path: `/manage/event/add`,
+        component: lazy(
+            () => import('@/views/manage/event/components/AddEvent'),
+        ),
+        authority: [],
+    },
+    {
+        key: 'updateEvent',
+        path: `/manage/event/update:id`,
+        component: lazy(
+            () => import('@/views/manage/event/components/UpdateEvent'),
+        ),
+        authority: [],
     },
 ]
 

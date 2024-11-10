@@ -14,7 +14,7 @@ const navigationConfig: NavigationTree[] = [
         icon: 'home',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
-        subMenu: []
+        subMenu: [],
     },
     {
         key: 'manageSell',

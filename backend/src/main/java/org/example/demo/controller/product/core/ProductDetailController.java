@@ -63,8 +63,6 @@ public class ProductDetailController {
         return ResponseEntity.ok(productDetails);
     }
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<ProductDetail> findById(@PathVariable Integer id) {
         try {

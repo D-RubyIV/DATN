@@ -2,11 +2,14 @@ package org.example.demo.service.product.properties;
 
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.event.EventDTO;
+import org.example.demo.dto.product.mchien.ProductDTO;
 import org.example.demo.dto.product.requests.properties.ProductRequestDTO;
-import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityResponseDTO;
+import org.example.demo.entity.event.Event;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Product;
+import org.example.demo.mapper.event.EventMapper;
 import org.example.demo.mapper.product.request.properties.ProductRequestMapper;
 import org.example.demo.mapper.product.response.properties.ProductResponseMapper;
 import org.example.demo.repository.product.core.ProductDetailRepository;
@@ -20,8 +23,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService implements IService<Product, Integer, ProductRequestDTO> {
@@ -37,6 +40,11 @@ public class ProductService implements IService<Product, Integer, ProductRequest
     private ProductDetailRepository productDetailRepository;
 
 
+    public Page<ProductDTO> getAllProductDTO(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(EventMapper::toProductDTO);
+    }
+
     public Page<Product> findAll(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
@@ -44,7 +52,6 @@ public class ProductService implements IService<Product, Integer, ProductRequest
     public List<Product> findAllList() {
         return productRepository.findAll();
     }
-
 
 
     public Page<ProductWithQuantityResponseDTO> findAllOverviewByPageV3(
@@ -57,7 +64,6 @@ public class ProductService implements IService<Product, Integer, ProductRequest
 
         return productRepository.findAllByPageWithQueryV2(query, createdFrom, createdTo, pageable);
     }
-
 
 
     @Override
@@ -88,6 +94,7 @@ public class ProductService implements IService<Product, Integer, ProductRequest
 
         return productRepository.save(entityFound);
     }
+
     @Override
     public Product save(ProductRequestDTO requestDTO) throws BadRequestException {
         boolean exists = productRepository.existsByCodeAndName(requestDTO.getCode(), requestDTO.getName());

@@ -244,7 +244,7 @@ export const OrderTable = () => {
                                                 : props.row.original.status === 'UNPAID'
                                                     ? '!text-pink-500'
                                                     : '!text-gray-500'
-                    }`}
+                        }`}
                 >
                     <span className={`flex items-center font-bold`}>
                         <span
@@ -263,7 +263,7 @@ export const OrderTable = () => {
                                                         : props.row.original.status === 'UNPAID'
                                                             ? '!bg-pink-500'
                                                             : '!bg-gray-500'
-                            }`}></span>
+                                }`}></span>
                         <span>
                             <p>
                                 {props.row.original.status === 'PENDING'
@@ -323,7 +323,7 @@ export const OrderTable = () => {
             cell: (props) => (
                 <Button size="xs" className="w-full flex justify-start items-center" variant="plain">
                     <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className="mr-3 text-2xl"
-                                                                               style={{ cursor: 'pointer' }} /></Link>
+                        style={{ cursor: 'pointer' }} /></Link>
                 </Button>
 
             )
@@ -400,7 +400,7 @@ export const OrderTable = () => {
     ]
 
     const fetchCountAnyStatus = async () => {
-        instance.get('orders/count-any-status').then(function(response) {
+        instance.get('orders/count-any-status').then(function (response) {
             if (response.data) {
                 setCountAnyStatus(response.data as ICountStatus)
             }
@@ -450,10 +450,10 @@ export const OrderTable = () => {
                     {
                         statusBills.map((item, index) => (
                             <TabNav key={index}
-                                    className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
-                                    value={item.value}>
+                                className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
+                                value={item.value}>
                                 <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)}
-                                       maxCount={99} innerClass="bg-red-50 text-red-500">
+                                    maxCount={99} innerClass="bg-red-50 text-red-500">
                                     <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
                                         {item.label}
                                     </button>

@@ -50,10 +50,6 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAll(pageable));
     }
 
-
-
-
-
     @RequestMapping(value = "overview")
     public ResponseEntity<Page<ProductWithQuantityResponseDTO>> findAllByPageV3(
             @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
