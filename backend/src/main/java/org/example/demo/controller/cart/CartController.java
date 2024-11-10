@@ -2,9 +2,13 @@ package org.example.demo.controller.cart;
 
 import org.example.demo.dto.cart.request.CartRequestDTO;
 import org.example.demo.dto.cart.response.CartResponseDTO;
+import org.example.demo.entity.cart.enums.Status;
+import org.example.demo.entity.cart.properties.Cart;
 import org.example.demo.infrastructure.common.ResponseObject;
+import org.example.demo.repository.cart.CartRepository;
 import org.example.demo.service.cart.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +23,9 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private CartRepository cartRepository;
 
     @GetMapping("/{idCustomer}")
     public List<CartResponseDTO> getListCart(@PathVariable Integer idCustomer) {
@@ -43,5 +50,12 @@ public class CartController {
     @DeleteMapping("/delete-all/{idCustomer}")
     public ResponseObject deleteAllCart(@PathVariable Integer idCustomer) {
         return cartService.deleteAll(idCustomer);
+    }
+
+    @GetMapping("new-cart")
+    public ResponseEntity<?> createNewCart(){
+        Cart cart = new Cart();
+        cart.setStatus(Status.PENDING);
+        return ResponseEntity.ok(cartRepository.save(cart));
     }
 }

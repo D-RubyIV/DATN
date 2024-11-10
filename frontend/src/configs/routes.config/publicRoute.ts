@@ -2,7 +2,12 @@ import type { Routes } from '@/@types/routes'
 import { lazy } from 'react'
 
 const publicRoute: Routes = [
-    
+    {
+        key: '',
+        path: '',
+        component: lazy(() => import('@/views/sale/LandingPage')),
+        authority: []
+    },
     {
         key: 'logout',
         path: 'logout',

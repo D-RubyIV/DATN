@@ -59,7 +59,7 @@ public class TokenRequestFilter extends OncePerRequestFilter {
                 System.out.println("USER NOT FOUND");
                 throw new CustomExceptions.CustomBadSecurity("User not found");
             }
-
+            System.out.println(userDetails);
             setAuthenticationContext(userDetails, request);
 
         } catch (ExpiredJwtException e) {
@@ -75,13 +75,12 @@ public class TokenRequestFilter extends OncePerRequestFilter {
         } catch (Exception ex) {
             System.out.println("Exception");
             ex.printStackTrace();
-            handlerExceptionResolver.resolveException(request, response, null, ex);
+            handlerExceptionResolver.resolveException(request, response, null, new CustomExceptions.CustomBadSecurity("User not found in database"));
             return;
         }
 
         filterChain.doFilter(request, response);
     }
-
 
 
     private void setAuthenticationContext(UserDetails userDetails, HttpServletRequest request) {
