@@ -10,7 +10,9 @@ import org.example.demo.service.voucher.VoucherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -35,7 +38,7 @@ public class VoucherController {
         return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id, request));
     }
     @GetMapping
-    public ResponseEntity<Page<VoucherResponseDTO>> getAllNhanVien(
+    public ResponseEntity<Page<VoucherResponseDTO>> getAllVoucher(
             @RequestParam(name = "limit", defaultValue = "5") int limit,
             @RequestParam(name = "offset", defaultValue = "0") int offset) {
         Page<Voucher> result = voucherService.getAllVouchers(limit, offset);
@@ -43,7 +46,7 @@ public class VoucherController {
         return ResponseEntity.ok(response);
     }
     @GetMapping("/page")
-    public ResponseEntity<Page<VoucherResponseDTO>> searchNhanVien(
+    public ResponseEntity<Page<VoucherResponseDTO>> searchVoucher(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String code,
@@ -52,16 +55,23 @@ public class VoucherController {
             @RequestParam(required = false) Double maxPercent,
             @RequestParam(required = false) Double minAmount,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String order,
             @PageableDefault(size = 5) Pageable pageable) {
 
-        // Ensure the service layer can handle the status filtering
+        if (sort != null && !sort.isEmpty()) {
+            String sortDirection = (order != null && !order.isEmpty()) ? order.toUpperCase() : "ASC";
+            Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+            Sort.Order orderSort = new Sort.Order(direction, sort);
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(orderSort));
+        }
         Page<Voucher> result = voucherService.searchVoucher(
-                keyword, name, typeTicket, code, quantity, maxPercent,minAmount,status,
-                pageable.getPageSize(), (int) pageable.getOffset());
-
+                keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
+
+
 
     @GetMapping("/get-all")
     public ResponseEntity<List<VoucherResponse>> getAll() {
@@ -108,4 +118,15 @@ public class VoucherController {
     public ResponseEntity<?> findBetterVoucher(@RequestParam("amount") BigDecimal amount){
         return ResponseEntity.ok(voucherResponseMapper.toListDTO(voucherService.findBetterVoucher(amount)));
     }
+
+    @GetMapping("/sorted")
+    public ResponseEntity<List<VoucherResponseDTO>> getSortedVouchers() {
+        Sort sort = Sort.by(Sort.Order.desc("maxPercent"));
+        List<Voucher> vouchers = voucherService.getSortedVouchers(sort);
+        List<VoucherResponseDTO> voucherResponseDTOs = vouchers.stream()
+                .map(voucherService::getVoucherResponseDTO)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(voucherResponseDTOs, HttpStatus.OK);
+    }
+
 }

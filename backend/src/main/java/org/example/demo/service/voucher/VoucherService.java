@@ -8,6 +8,7 @@ import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,7 +37,7 @@ public interface VoucherService {
 
     Voucher addVoucher(VoucherRequest request);
 
-    Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, int limit, int offset);
+    Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, Pageable pageable);
 
     Voucher updateVoucher(Integer id, VoucherRequest request);
 
@@ -45,4 +46,6 @@ public interface VoucherService {
     void deleteVoucher(Integer id);
 
     List<Voucher> findBetterVoucher(BigDecimal amount);
+
+    List<Voucher> getSortedVouchers(Sort sort);
 }

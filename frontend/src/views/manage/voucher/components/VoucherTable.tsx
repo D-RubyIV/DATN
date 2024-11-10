@@ -10,6 +10,7 @@ import { Tooltip } from 'antd'
 import { FaPen } from 'react-icons/fa'
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
 import instance from "@/axios/CustomAxios";
+import { useNavigate } from 'react-router-dom'
 
 type IVoucher = {
     id: number
@@ -29,6 +30,7 @@ const VoucherTable = () => {
     const [loading, setLoading] = useState(false)
     const [searchKeyword, setSearchKeyword] = useState('')
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
     const [tableData, setTableData] = useState({
         pageIndex: 1,
         pageSize: 10,
@@ -46,6 +48,8 @@ const VoucherTable = () => {
         totalItems: 0,
         pageSize: 10,
     });
+
+
 
     useEffect(() => {
         fetchData();
@@ -69,13 +73,19 @@ const VoucherTable = () => {
         setTableData(prevData => ({ ...prevData, pageSize, pageIndex: 1 }));
     };
 
+    
+
     const handleSort = ({ order, key }: OnSortParam) => {
-        setTableData(prevData => ({
-            ...prevData,
-            sort: { order, key },
-            pageIndex: 1,
-        }));
+        setTableData(prevData => {
+            const newOrder = (prevData.sort.key === key && prevData.sort.order === 'asc') ? 'desc' : 'asc';
+            return {
+                ...prevData,
+                sort: { order: newOrder, key },
+                pageIndex: 1,
+            };
+        });
     };
+    
 
     const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setTableData(prevData => ({
@@ -84,6 +94,8 @@ const VoucherTable = () => {
             pageIndex: 1,
         }));
     };
+
+
 
     const columns: ColumnDef<IVoucher>[] = useMemo(
         () => [
@@ -176,7 +188,7 @@ const VoucherTable = () => {
                             </Tooltip>
 
                             <Tooltip title="Cập nhật">
-                                <Button size="xs">
+                                <Button size="xs" onClick={() => handleUpdate(id)}>
                                     <FaPen />
                                 </Button>
                             </Tooltip>
@@ -254,6 +266,11 @@ const VoucherTable = () => {
             setLoading(false);
         }
     };
+
+    const handleUpdate =  (id: number) => {
+        navigate(`/admin/manage/voucher/update/${id}`)
+    };
+
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);

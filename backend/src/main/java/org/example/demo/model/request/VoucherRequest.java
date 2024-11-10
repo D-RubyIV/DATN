@@ -1,5 +1,6 @@
 package org.example.demo.model.request;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.infrastructure.common.PageableRequest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,16 +23,14 @@ import java.util.List;
 @Data
 public class VoucherRequest extends PageableRequest {
 
-    @NotNull(message = "Code must not be empty!")
     private String code;
 
-    @NotNull(message = "Name must not be empty!")
+    @NotBlank(message = "Name must not be empty!")
     private String name;
 
     @NotNull(message = "Quantity must not be empty!")
     private Integer quantity;
 
-    @NotNull(message = "Status must not be empty!")
     private String status;
 
     @NotNull(message = "Min amount must not be empty!")
