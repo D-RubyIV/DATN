@@ -35,12 +35,12 @@ const VoucherNew =() => {
                     placement : 'top-center'
                 }
             )
-            navigate('/admin/manager/voucher/voucher-list')
+            navigate('/admin/manager/voucher')
         }
     }
 
     const handleDiscard = () => {
-        navigate('/admin/manager/voucher/voucher-list')
+        navigate('/admin/manager/voucher')
     }
     return (
 

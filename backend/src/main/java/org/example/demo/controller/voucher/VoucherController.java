@@ -10,6 +10,7 @@ import org.example.demo.service.voucher.VoucherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -54,16 +55,23 @@ public class VoucherController {
             @RequestParam(required = false) Double maxPercent,
             @RequestParam(required = false) Double minAmount,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String order,
             @PageableDefault(size = 5) Pageable pageable) {
 
-        // Ensure the service layer can handle the status filtering
+        if (sort != null && !sort.isEmpty()) {
+            String sortDirection = (order != null && !order.isEmpty()) ? order.toUpperCase() : "ASC";
+            Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+            Sort.Order orderSort = new Sort.Order(direction, sort);
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(orderSort));
+        }
         Page<Voucher> result = voucherService.searchVoucher(
-                keyword, name, typeTicket, code, quantity, maxPercent,minAmount,status,
-                pageable.getPageSize(), (int) pageable.getOffset());
-
+                keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
+
+
 
     @GetMapping("/get-all")
     public ResponseEntity<List<VoucherResponse>> getAll() {

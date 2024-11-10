@@ -1,7 +1,6 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
-import tuanRoute from '@/configs/routes.config/tuanRoute'
 
 
 const adminRoute: Routes = [
@@ -40,6 +39,25 @@ const adminRoute: Routes = [
         authority: []
     },
     {
+        key: 'appVouchers.voucherList',
+        path: `manage/voucher/voucher-list`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherManage')),
+        authority: []
+    },
+    {
+        key: 'appVouchers.voucherNew',
+        path: `manage/voucher/voucher-new`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherNew')),
+        authority: [],
+        meta: { header: 'Thêm Phiếu Giảm Giá' }
+    },
+    {
+        key: 'UpdateVoucher',
+        path: `manage/voucher/update/:id`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherNew/VoucherUpdate')),
+        authority: []
+    },
+    {
         key: 'staffManager',
         path: `manage/staff`,
         component: lazy(() => import('@/views/manage/staff/StaffManage')),
@@ -62,19 +80,6 @@ const adminRoute: Routes = [
         path: `manage/order`,
         component: lazy(() => import('@/views/manage/order/OrderManage')),
         authority: []
-    },
-    {
-        key: 'appVouchers.voucherList',
-        path: `${APP_PREFIX_PATH}/voucher/voucher-list`,
-        component: lazy(() => import('@/views/manage/voucher/VoucherManage')),
-        authority: []
-    },
-    {
-        key: 'appVouchers.voucherNew',
-        path: `${APP_PREFIX_PATH}/voucher/voucher-new`,
-        component: lazy(() => import('@/views/manage/voucher/VoucherNew')),
-        authority: [],
-        meta: { header: 'Thêm Phiếu Giảm Giá' }
     },
     {
         key: 'customerManager',

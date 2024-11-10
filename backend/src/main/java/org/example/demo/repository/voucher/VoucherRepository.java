@@ -143,8 +143,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
       AND (:quantity IS NULL OR v.quantity = :quantity) 
       AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
       AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
-      AND (:status IS NULL OR v.status = :status) 
-    ORDER BY v.createdDate DESC
+      AND (:status IS NULL OR v.status = :status)
 """)
     Page<Voucher> searchVoucher(@Param("keyword") String keyword,
                                 @Param("name") String name,
@@ -155,6 +154,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                                 @Param("minAmount") Double minAmount,
                                 @Param("status") String status,
                                 Pageable pageable);
+
 
 
     @Query("""

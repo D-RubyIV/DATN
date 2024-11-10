@@ -133,11 +133,18 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
 
-    @Override
-    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent, Double minAmount, String status, int limit, int offset) {
-        Pageable pageable = PageRequest.of(offset / limit, limit);
-        return voucherRepository.searchVoucher(keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
-    }
+//    @Override
+//    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent, Double minAmount, String status, int limit, int offset) {
+//        Pageable pageable = PageRequest.of(offset / limit, limit);
+//        return voucherRepository.searchVoucher(keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
+//    }
+@Override
+public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity,
+                                   Double maxPercent, Double minAmount, String status, Pageable pageable) {
+    // Gọi repository với các tham số tìm kiếm và pageable
+    return voucherRepository.searchVoucher(
+            keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
+}
 
     @Transactional
     @Override
