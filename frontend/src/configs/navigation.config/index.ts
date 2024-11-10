@@ -76,6 +76,16 @@ const navigationConfig: NavigationTree[] = [
         authority: [],
         subMenu: []
     },
+    {
+        key: 'eventManager',
+        path: 'manage/event',
+        title: 'Collapse menu item 2',
+        translateKey: 'nav.eventTitle',
+        icon: 'event',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: []
+    },
 ]
 
 export default navigationConfig

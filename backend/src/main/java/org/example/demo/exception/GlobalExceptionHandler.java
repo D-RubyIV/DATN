@@ -139,4 +139,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler({CustomExceptions.CustomBadSecurity.class})
+    public ResponseEntity<?> handleCustomBadSecurityException(CustomExceptions.CustomBadSecurity ex) {
+        CustomError error = new CustomError(HttpStatus.FORBIDDEN, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
 }

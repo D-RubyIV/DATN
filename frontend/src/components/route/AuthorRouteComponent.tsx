@@ -15,13 +15,13 @@ const AuthorRouteComponent = () => {
                 const parsedAuthData = JSON.parse(JSON.parse(authData).auth);
                 const authority: string[] = parsedAuthData.user.authority ?? []
                 console.log(authority)
-                if(authority.includes("ROLE_ADMIN")){
+                if(authenticated && authority.includes("ROLE_ADMIN")){
                     console.log("ROLE_ADMIN REDIRECT")
                     nevigate("/admin/manage/home")
                 }
-                else if(authority.includes("ROLE_USER")){
+                else if(authenticated && authority.includes("ROLE_USER")){
                     console.log("ROLE_USER REDIRECT")
-                    nevigate("/client/home")
+                    nevigate("/")
                 }
                 else {
                     console.log("UNKNOWN REDIRECT")

@@ -10,6 +10,7 @@ import { FaFilter } from 'react-icons/fa';
 import { MdDelete } from "react-icons/md";
 import Dialog from '@/components/ui/Dialog'
 import { toast } from "react-toastify";
+import instance from "@/axios/CustomAxios";
 
 type EventListDTO = {
     id: number;
@@ -49,14 +50,14 @@ const EventTable = () => {
 
             // thay doi endpoint neu co search hoac status filter
             if (query) {
-                url = `http://localhost:8080/api/v1/event/search`;
+                url = `/event/search`;
                 params.query = query;
             } else if (statusFilter) {
-                url = `http://localhost:8080/api/v1/event/filter`;
+                url = `/event/filter`;
                 params.status = statusFilter; // phai khop voi params cua api (prams.status)
             }
 
-            const response = await axios.get(url, { params });
+            const response = await instance.get(url, { params });
             setData(response.data.content);  // cập nhật dữ liệu sự kiện
             setTotal(response.data.totalElements); // tổng số phần tử để phân trang
         } catch (error) {
@@ -117,7 +118,7 @@ const EventTable = () => {
         console.log('Runn....')
         if (selectedEventId !== null) {
             try {
-                await axios.delete(`http://localhost:8080/api/v1/event/delete/${selectedEventId}`);
+                await instance.delete(`/event/delete/${selectedEventId}`);
                 toast.success('Xóa thành công');
                 setData(data.filter(data => data.id !== selectedEventId))
             } catch (error) {

@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Yup from 'yup';
 import { Table as AntTable } from 'antd';
+import instance from "@/axios/CustomAxios";
 
 type EventDTO = {
     id: string;
@@ -65,7 +66,7 @@ const AddEvent = () => {
     // api Product
     const fetchProductDTO = async (pageIndex: number, pageSize: number) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/event/product-list`, {
+            const response = await instance.get(`/event/product-list`, {
                 params: {
                     page: pageIndex,
                     size: pageSize
@@ -116,7 +117,7 @@ const AddEvent = () => {
             console.log("Dữ liệu đã format: ", formattedPayload); // Log lại dữ liệu sau khi format
 
             // Gửi yêu cầu POST với payload đã format
-            const response = await axios.post('http://localhost:8080/api/v1/event/save', formattedPayload);
+            const response = await instance.post('/event/save', formattedPayload);
 
             if (response.status === 200) {
                 toast.success('Lưu thành công');
