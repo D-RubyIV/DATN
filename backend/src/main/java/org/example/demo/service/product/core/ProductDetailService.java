@@ -1,29 +1,33 @@
 package org.example.demo.service.product.core;
 
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
+import org.example.demo.dto.product.phah04.response.ProductClientResponse;
 import org.example.demo.dto.product.requests.core.ProductDetailRequestDTO;
+import org.example.demo.dto.product.requests.properties.ImageRequestDTO;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
-import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Brand;
+import org.example.demo.entity.product.properties.Image;
 import org.example.demo.mapper.product.request.core.ProductDetailRequestMapper;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
-import org.example.demo.mapper.product.response.properties.ProductResponseMapper;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.product.properties.BrandRepository;
+import org.example.demo.repository.product.properties.ImageRepository;
 import org.example.demo.service.IService;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductDetailService implements IService<ProductDetail, Integer, ProductDetailRequestDTO> {
@@ -32,20 +36,43 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     private ProductDetailRepository productDetailRepository;
 
     @Autowired
-    private EntityManager entityManager;
-
-    @Autowired
     private ProductDetailRequestMapper productDetailRequestMapper;
 
     @Autowired
     private BrandRepository brandRepository;
+
     @Autowired
     private ProductDetailResponseMapper productDetailResponseMapper;
+
+    @Autowired
+    private ImageRepository imageRepository;
+
+
+    @Override
+    public ProductDetail findById(Integer id) throws BadRequestException {
+        return productDetailRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("ProductDetail not found with id: " + id));
+    }
 
     public Page<ProductDetail> findAll(Pageable pageable) {
         return productDetailRepository.findAll(pageable);
     }
 
+
+    public Page<ProductClientResponse> getAll(FindProductDetailRequest request) {
+        Pageable pageable = PageRequest.of(request.getPage() -1, request.getSizePage());
+        FindProductDetailRequest customRequest = FindProductDetailRequest.builder()
+                .colors(request.getColor() != null ? Arrays.asList(request.getColor().split(",")) : null)
+                .sizes(request.getSize() != null ? Arrays.asList(request.getSize().split(",")) : null)
+                .products(request.getProduct() != null ? Arrays.asList(request.getProduct().split(",")) : null)
+                .size(request.getSize())
+                .color(request.getColor())
+                .product(request.getProduct())
+                .build();
+        return (Page<ProductClientResponse>) new org.example.demo.infrastructure.common.PageableObject<>(productDetailRepository.productClient(customRequest, pageable));
+    }
+
+    // Phương thức tìm tất cả sản phẩm chi tiết với điều kiện phân trang
     public Page<ProductDetailResponseDTO> findAllProductDetailsOverviewByPage(
             Integer productId,
             LocalDateTime createdFrom,
@@ -54,25 +81,16 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     ) {
         Pageable pageable = pageableObject.toPageRequest();
         String query = pageableObject.getQuery();
-        // Boolean deleted = pageableObject.getDeleted(); // Uncomment if using the deleted filter
 
-        return productDetailRepository.findAllByProductIdWithQuery(
+        Page<ProductDetail> productDetails = productDetailRepository.findAllByProductIdWithQuery(
                 productId,
                 query,
-                // deleted, // Uncomment if using the deleted filter
                 createdFrom,
                 createdTo,
                 pageable
-        ).map(s -> productDetailResponseMapper.toDTO(s)); // Add the closing parenthesis here
+        );
 
-    }
-
-
-
-    @Override
-    public ProductDetail findById(Integer id) throws BadRequestException {
-        return productDetailRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("ProductDetail not found with id: " + id));
+        return productDetails.map(s -> productDetailResponseMapper.toDTO(s));
     }
 
     @Override
@@ -82,83 +100,62 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         return productDetailRepository.save(entityFound);
     }
 
+
     @Override
     public ProductDetail save(ProductDetailRequestDTO requestDTO) throws BadRequestException {
-        return handleProductDetailSave(requestDTO);
+        return null;
     }
 
     @Override
-    public ProductDetail update(Integer id, ProductDetailRequestDTO requestDTO) throws BadRequestException {
-        ProductDetail entityFound = findById(id);
-        return handleProductDetailUpdate(entityFound, requestDTO);
+    public ProductDetail update(Integer integer, ProductDetailRequestDTO requestDTO) throws BadRequestException {
+        return null;
     }
-
     @Transactional
-    public List<ProductDetail> saveAll(List<ProductDetailRequestDTO> requestDTOList) throws BadRequestException {
+    public List<ProductDetail> saveAll(List<ProductDetailRequestDTO> requestDTOs) throws BadRequestException {
         List<ProductDetail> savedProductDetails = new ArrayList<>();
 
-        for (ProductDetailRequestDTO requestDTO : requestDTOList) {
-            ProductDetail existingProductDetail = productDetailRepository.findByName(requestDTO.getName(),requestDTO.getSize(),requestDTO.getColor());
-
-            if (existingProductDetail != null) {
-                if (isProductDetailDuplicate(existingProductDetail, requestDTO)) {
-                    existingProductDetail.setQuantity(existingProductDetail.getQuantity() + requestDTO.getQuantity());
-                    savedProductDetails.add(productDetailRepository.save(existingProductDetail));
-                } else {
-                    savedProductDetails.add(existingProductDetail);
-                }
-            } else {
-                // Kiểm tra Brand không null
-                if (requestDTO.getBrand() == null || requestDTO.getBrand().getId() == null) {
-                    throw new BadRequestException("Brand must not be null");
-                }
-
-                ProductDetail entityMapped = productDetailRequestMapper.toEntity(requestDTO);
-                Brand brand = brandRepository.findById(requestDTO.getBrand().getId())
-                        .orElseThrow(() -> new BadRequestException("Brand not found"));
-                entityMapped.setBrand(brand);
-                entityMapped.setDeleted(false);
-                savedProductDetails.add(productDetailRepository.save(entityMapped));
-            }
+        // Duyệt qua từng sản phẩm trong danh sách và xử lý từng sản phẩm
+        for (ProductDetailRequestDTO requestDTO : requestDTOs) {
+            // Kiểm tra và xử lý từng sản phẩm chi tiết
+            ProductDetail savedProductDetail = handleProductDetailSave(requestDTO);
+            savedProductDetails.add(savedProductDetail);
         }
 
         return savedProductDetails;
     }
 
-    @Transactional
-    public ProductDetail handleProductDetailSave(ProductDetailRequestDTO requestDTO) throws BadRequestException {
-        ProductDetail existingProductDetail = productDetailRepository.findByCodeAndName(requestDTO.getCode(), requestDTO.getName());
+    private ProductDetail handleProductDetailSave(ProductDetailRequestDTO requestDTO) throws BadRequestException {
+        // Kiểm tra xem sản phẩm chi tiết đã tồn tại với mã và tên không
+        ProductDetail existingProductDetail = productDetailRepository.findByName(requestDTO.getCode(), requestDTO.getSize(),requestDTO.getColor());
 
+        // Nếu sản phẩm đã tồn tại và không phải là trùng lặp, cộng thêm số lượng
         if (existingProductDetail != null && isProductDetailDuplicate(existingProductDetail, requestDTO)) {
             existingProductDetail.setQuantity(existingProductDetail.getQuantity() + requestDTO.getQuantity());
             return productDetailRepository.save(existingProductDetail);
         }
 
+        // Nếu không tồn tại, tạo mới sản phẩm chi tiết
         ProductDetail entityMapped = productDetailRequestMapper.toEntity(requestDTO);
+
+        // Kiểm tra và gán thương hiệu cho sản phẩm
         Brand brand = brandRepository.findById(requestDTO.getBrand().getId())
                 .orElseThrow(() -> new BadRequestException("Brand not found"));
         entityMapped.setBrand(brand);
-        entityMapped.setDeleted(false);
+        entityMapped.setDeleted(false); // Mặc định là chưa xóa
 
-        return productDetailRepository.save(entityMapped);
-    }
-
-    private ProductDetail handleProductDetailUpdate(ProductDetail entityFound, ProductDetailRequestDTO requestDTO)  {
-        ProductDetail existingProductDetail = productDetailRepository.findByCodeAndName(requestDTO.getCode(), requestDTO.getName());
-
-        if (existingProductDetail != null && isProductDetailDuplicate(existingProductDetail, requestDTO) && !existingProductDetail.getId().equals(entityFound.getId())) {
-            entityFound.setQuantity(entityFound.getQuantity() + requestDTO.getQuantity());
-        } else {
-            entityFound.setQuantity(requestDTO.getQuantity());
+        // Lưu ảnh vào cơ sở dữ liệu nếu có
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            List<Image> images = createImagesFromDTO(requestDTO.getImages());
+            entityMapped.setImages(images);
         }
 
-        updateEntityFromRequest(entityFound, requestDTO);
-        return productDetailRepository.save(entityFound);
+        // Lưu sản phẩm chi tiết vào cơ sở dữ liệu
+        return productDetailRepository.save(entityMapped);
     }
 
     private boolean isProductDetailDuplicate(ProductDetail existingProductDetail, ProductDetailRequestDTO requestDTO) {
         return existingProductDetail != null &&
-                existingProductDetail.getName().equals(requestDTO.getName()) && // Check only name
+                existingProductDetail.getName().equals(requestDTO.getName()) &&
                 existingProductDetail.getSize().equals(requestDTO.getSize()) &&
                 existingProductDetail.getProduct().equals(requestDTO.getProduct()) &&
                 existingProductDetail.getColor().equals(requestDTO.getColor()) &&
@@ -173,11 +170,16 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
                 existingProductDetail.getElasticity().equals(requestDTO.getElasticity());
     }
 
-    private void updateEntityFromRequest(ProductDetail entity, ProductDetailRequestDTO requestDTO) {
-        entity.setCode(requestDTO.getCode());
-        entity.setName(requestDTO.getName());
-        entity.setPrice(requestDTO.getPrice());
-        entity.setDeleted(requestDTO.getDeleted());
-        // Update other properties as needed
+    private List<Image> createImagesFromDTO(List<ImageRequestDTO> imageRequestDTOs) {
+        return imageRequestDTOs.stream().map(imageRequestDTO -> {
+            System.out.println(imageRequestDTO.toString());
+            Image image = new Image();
+            image.setCode(imageRequestDTO.getCode());
+            image.setUrl(imageRequestDTO.getUrl());
+            image.setDeleted(imageRequestDTO.getDeleted());
+            return imageRepository.save(image);
+        }).collect(Collectors.toList());
     }
+
+
 }

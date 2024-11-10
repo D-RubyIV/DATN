@@ -1,5 +1,8 @@
 package org.example.demo.repository.product.core;
 
+import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
+import org.example.demo.dto.product.phah04.response.ProductClientResponse;
+import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Color;
 import org.example.demo.entity.product.properties.Size;
@@ -8,56 +11,60 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Integer> {
     boolean existsByCodeAndName(String code, String name);
 
     ProductDetail findByCodeAndName(String code, String name);
     @Query("SELECT p FROM ProductDetail p WHERE p.name = ?1 AND p.size = ?2 AND p.color = ?3")
-    public abstract ProductDetail findByName(String name, Size size, Color color);
+    ProductDetail findByName(String name, Size size, Color color);
 
     List<ProductDetail> findByProductId(Integer productId);
 
-    @Query(value = """ 
-             SELECT DISTINCT pd FROM ProductDetail pd
-             LEFT JOIN FETCH pd.size
-             LEFT JOIN FETCH pd.color
-             LEFT JOIN FETCH pd.texture
-             LEFT JOIN FETCH pd.origin
-             LEFT JOIN FETCH pd.brand
-             LEFT JOIN FETCH pd.collar
-             LEFT JOIN FETCH pd.sleeve
-             LEFT JOIN FETCH pd.style
-             LEFT JOIN FETCH pd.material
-             LEFT JOIN FETCH pd.thickness
-             LEFT JOIN FETCH pd.elasticity
-             LEFT JOIN FETCH pd.image
-             WHERE
-             (:productId IS NULL OR pd.product.id = :productId)
-             AND 
-             (
-                 (:query IS NULL OR LOWER(pd.code) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.brand.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.collar.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.color.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.elasticity.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.image.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.origin.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.size.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.style.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.sleeve.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.thickness.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(pd.texture.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(CAST(pd.quantity AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
-                 OR (:query IS NULL OR LOWER(CAST(pd.price AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
-             )
-             AND (:createdFrom IS NULL OR pd.createdDate >= :createdFrom)
-             AND (:createdTo IS NULL OR pd.createdDate <= :createdTo)
+    @Query(value = """
+            SELECT DISTINCT pd FROM ProductDetail pd
+            LEFT JOIN FETCH pd.size
+            LEFT JOIN FETCH pd.color
+            LEFT JOIN FETCH pd.texture
+            LEFT JOIN FETCH pd.origin
+            LEFT JOIN FETCH pd.brand
+            LEFT JOIN FETCH pd.collar
+            LEFT JOIN FETCH pd.sleeve
+            LEFT JOIN FETCH pd.style
+            LEFT JOIN FETCH pd.material
+            LEFT JOIN FETCH pd.thickness
+            LEFT JOIN FETCH pd.elasticity
+            LEFT JOIN FETCH pd.images
+            
+         
+            WHERE
+            (:productId IS NULL OR pd.product.id = :productId)
+            AND 
+            (
+                (:query IS NULL OR LOWER(pd.code) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.brand.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.collar.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.color.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.elasticity.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.origin.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.size.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.style.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.sleeve.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.thickness.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(pd.texture.name) LIKE LOWER(CONCAT('%', :query, '%')))
+                
+                OR (:query IS NULL OR LOWER(CAST(pd.quantity AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
+                OR (:query IS NULL OR LOWER(CAST(pd.price AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
+            )
+            AND (:createdFrom IS NULL OR pd.createdDate >= :createdFrom)
+            AND (:createdTo IS NULL OR pd.createdDate <= :createdTo)
             """)
     Page<ProductDetail> findAllByProductIdWithQuery(
             @Param("productId") Integer productId,
@@ -65,8 +72,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             @Param("createdFrom") LocalDateTime createdFrom,
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
-            // Uncomment if needed: @Param("deleted") Boolean deleted,
     );
+
 
 
     // BY PHAH04
@@ -117,4 +124,84 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             Pageable pageable
     );
 
+
+    @Query(value = """
+        SELECT
+            pd.id AS id,
+            ROW_NUMBER() OVER(ORDER BY pd.updated_at DESC) AS indexs,
+            (pd.name + ' [' + pdcr.name + ' - ' + pdse.name + ']') AS name,
+            pd.code AS code,
+            pdso.name AS sole,
+            pdcr.name AS color,
+            pdse.name AS size,
+            pd.quantity AS quantity,
+            pd.weight AS weight,
+            pd.price AS price,
+            STRING_AGG(img.name, ',') AS images,
+            pd.deleted AS status
+        FROM
+            product_detail pd
+            LEFT JOIN product pdp ON pd.product_id = pdp.id
+            LEFT JOIN color pdcr ON pd.color_id = pdcr.id
+            LEFT JOIN size pdse ON pd.size_id = pdse.id
+            LEFT JOIN images img ON img.product_detail_id = pd.id
+        WHERE
+            (:#{#req.product} IS NULL OR pd.product_id IN (:#{#req.products}))
+            AND (:#{#req.color} IS NULL OR :#{#req.color} = '' OR pd.color_id IN (:#{#req.colors}))
+            AND (:#{#req.size} IS NULL OR :#{#req.size} = '' OR pd.size_id IN (:#{#req.sizes}))
+            AND (:#{#req.name} IS NULL OR :#{#req.name} = '' OR (pdp.name + ' ' + pdcr.name + ' ' + pdse.name + ' ') LIKE '%' + :#{#req.name} + '%')
+        GROUP BY
+            pd.id, pd.updated_at, pd.name, pdcr.name, pdse.name, pd.code, pdso.name, pd.quantity, pd.weight, pd.price, pd.deleted;
+        """, nativeQuery = true)
+    Page<ProductClientResponse> productClient(@Param("req")FindProductDetailRequest request, Pageable pageable);
+
+
+    @Query(
+            value = """
+                    select new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+                    p.id,
+                    p.code,
+                    p.name,
+                    count(c.id),
+                    count(s.id),
+                    pd.price,
+                    pd.price
+                    ) FROM Product p
+                    left JOIN ProductDetail pd on p.id = pd.product.id
+                    left JOIN Color c on c.id = pd.color.id
+                    left JOIN Size s on s.id = pd.size.id
+                    group by p.id, p.code, p.name,  pd.price
+                    
+                    
+                    """
+    )
+    Page<ProductResponseOverDTO> findCustom(Pageable pageable);
+
+    @Query(
+            value = """
+                select new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+                p.id,
+                p.code,
+                p.name,
+                count(c.id),
+                count(s.id),
+                pd.price,
+                pd.price
+                ) FROM Product p
+                left JOIN ProductDetail pd on p.id = pd.product.id
+                left JOIN Color c on c.id = pd.color.id
+                left JOIN Size s on s.id = pd.size.id
+                WHERE p.id = :id
+                group by p.id, p.code, p.name, pd.price
+                """
+    )
+    Optional<ProductResponseOverDTO> findOneCustom(@Param("id") Integer id);
+
+
+    @Query(value = """
+            SELECT pd from ProductDetail pd where pd.product.id in :ids
+            """)
+    List<ProductDetail> findAllByProductIdCustom(List<Integer> ids);
+    // viewt cho toi 1 cai api nhu v phan trang luong
+//    okko phan trang thi truyen pageable laf null laf dc
 }

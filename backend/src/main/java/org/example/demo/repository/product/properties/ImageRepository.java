@@ -1,6 +1,5 @@
 package org.example.demo.repository.product.properties;
 
-import org.example.demo.entity.product.properties.Collar;
 import org.example.demo.entity.product.properties.Image;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,15 +8,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Integer> {
-    boolean existsByCodeAndName(String code, String name);
+    boolean existsByCodeAndUrl(String code, String url); // Sửa ở đây
+
     @Query(value = """
             SELECT DISTINCT i FROM Image i
             WHERE
             (:query IS NULL OR (LOWER(i.code) LIKE LOWER(CONCAT('%', :query, '%'))
-            OR LOWER(i.name) LIKE LOWER(CONCAT('%', :query, '%')))
-            )
+            OR LOWER(i.url) LIKE LOWER(CONCAT('%', :query, '%'))))
             AND (:createdFrom IS NULL OR i.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR i.createdDate <= :createdTo)
             GROUP BY i
@@ -28,4 +28,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+    Optional<Image> findByCode(String code);
 }

@@ -7,6 +7,11 @@ import SideNav from '@/components/template/SideNav'
 import { Route, Routes } from 'react-router-dom'
 import { AdminViews, AuthViews, ClientViews, PublicViews } from '@/views'
 import Side from "@/components/layouts/AuthLayout/Side";
+import Navbar from '@/views/client/Navbar/Navbar'
+import Footer from '@/views/client/Footer/Footer'
+import { useEffect, useState } from 'react'
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const HeaderActionsStart = () => {
     return (
@@ -46,15 +51,30 @@ const AdminLayout = () => {
     )
 }
 const ClientLayout = () => {
+    const [orderPopup, setOrderPopup] = useState(false);
+
+    const handleOrderPopup = () => {
+        setOrderPopup(!orderPopup);
+    };
+    useEffect(() => {
+        AOS.init({
+            offset: 100,
+            duration: 800,
+            easing: "ease-in-sine",
+            delay: 100,
+        });
+        AOS.refresh();
+    }, []);
     return (
         <div className="app-layout-classic flex flex-auto flex-col">
-            <div className="flex flex-auto min-w-0">
+                <Navbar handleOrderPopup={handleOrderPopup} />
                 <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
                     <div className="h-full flex flex-auto flex-col">
                         <ClientViews />
                     </div>
+                <Footer/>
+
                 </div>
-            </div>
         </div>
     )
 }

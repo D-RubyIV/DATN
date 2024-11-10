@@ -9,7 +9,17 @@ export type Attribute = {
     modifiedDate: string;
 }; 
 
+export type Product = {
+    id: number;
+    code: string;
+    name: string;
+    description:string;
+    deleted: boolean;
+    createdDate: string;
+    modifiedDate: string;
+}; 
 
+ 
 export type AddAttributeState = {
     loading: boolean;
     addAttribute: boolean;
@@ -21,8 +31,9 @@ export type AddAttributeState = {
 export type AddProductState = {
     loading: boolean;
     addProduct: boolean;
-    dataProduct: Attribute | null;
-    options: Attribute[]; // Danh sách tùy chọn cho sản phẩm
+    dataProduct: Product | null;
+    nameProduct:string
+    options: Product[]; // Danh sách tùy chọn cho sản phẩm
 };
 
 type GetDataAttribute = {
@@ -31,8 +42,8 @@ type GetDataAttribute = {
 };
 
 type GetDataProduct = {
-    ProductData: Attribute;
-    apiFunc: (data: Attribute) => Promise<{ data: Attribute }>;
+    ProductData: Product;
+    apiFunc: (data: Product) => Promise<{ data: Product }>;
 };
 
 export const SLICE_NAME_ADD_ATTRIBUTE = 'addAttribute';
@@ -51,7 +62,7 @@ export const addAttribute = createAsyncThunk<Attribute, GetDataAttribute>(
 );
 
 // Thunk cho thêm sản phẩm
-export const addProduct = createAsyncThunk<Attribute, GetDataProduct>(
+export const addProduct = createAsyncThunk<Product, GetDataProduct>(
     `${SLICE_NAME_ADD_PRODUCT}/addProduct`,
     async ({ ProductData, apiFunc }) => {
         const response = await apiFunc(ProductData);
@@ -74,6 +85,7 @@ const initialStateProduct: AddProductState = {
     loading: false,
     addProduct: false,
     dataProduct: null,
+    nameProduct:'',
     options: [], // Khởi tạo options cho sản phẩm
 };
 
@@ -114,6 +126,9 @@ const productAdd = createSlice({
     name: SLICE_NAME_ADD_PRODUCT,
     initialState: initialStateProduct,
     reducers: {
+        setNameProduct: (state, action) => {
+            state.nameProduct = action.payload;
+        },
         setProductData: (state, action) => {
             state.dataProduct = action.payload;
         },
@@ -140,7 +155,7 @@ const productAdd = createSlice({
 
 // Xuất actions và reducer
 export const { setAttributeData, toggleAddAttributeConfirmation, setLabelAttribute } = attributeAdd.actions;
-export const { setProductData, toggleAddProductConfirmation } = productAdd.actions;
+export const { setProductData, toggleAddProductConfirmation, setNameProduct } = productAdd.actions;
 
 export default {
     attributeReducer: attributeAdd.reducer,

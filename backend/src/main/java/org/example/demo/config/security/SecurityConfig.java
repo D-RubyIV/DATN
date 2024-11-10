@@ -49,7 +49,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorize -> authorize
-                                .requestMatchers(mvcMatcherBuilder.pattern("users/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("users/**")).permitAll() // toi cho phep r ma k dc b fix cho
+                                .requestMatchers(mvcMatcherBuilder.pattern("productDetails/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("orders/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .requestMatchers(mvcMatcherBuilder.pattern("voucher/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .requestMatchers(mvcMatcherBuilder.pattern("customer/**")).hasAnyAuthority("ROLE_ADMIN")

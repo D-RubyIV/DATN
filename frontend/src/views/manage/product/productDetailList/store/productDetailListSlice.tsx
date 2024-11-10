@@ -30,6 +30,8 @@ type ProductDetail = {
     thickness?: ChildObject;
     price?: number;
     quantity?: number;
+    mass?:number
+    images?:any
 }
 
 type ProductDetails = ProductDetail[]
@@ -122,6 +124,8 @@ const productDetailListSlice = createSlice({
         builder
             .addCase(getProductDetails.fulfilled, (state, action) => {
                 state.productDetailList = action.payload.content
+                console.log(state.productDetailList)
+
                 state.tableData.total = action.payload.totalElements
                 state.loading = false
             })

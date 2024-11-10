@@ -59,9 +59,9 @@ const SalesDashboardHeader = () => {
                 <DatePicker value={dayjs(startDate).toDate()} placeholder="Pick a date" onChange={handleDateChangeStartDateChart} />
                 <DatePicker value={dayjs(endDate).toDate()} placeholder="Pick a date" onChange={handleDateChangeEndDateChart} />
 
-                <Button size="sm" icon={<HiOutlineFilter />} onClick={onFilter}>
-                    Lọc
-                </Button>
+                {/*<Button size="sm" icon={<HiOutlineFilter />} onClick={onFilter}>*/}
+                {/*    Lọc*/}
+                {/*</Button>*/}
             </div>
         </div>
     )

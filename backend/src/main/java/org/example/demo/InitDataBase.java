@@ -62,5 +62,5 @@ public class InitDataBase {
             staff.setRoleId(roleRepository.findByCode("USER").get().getId());
             userService.createStaff(staff);
         }
-    }
+    } // adf nahm tuonu cua t toiio tuong b sua r g b nham =)) usser mam cux day cua b
 }

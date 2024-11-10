@@ -66,7 +66,7 @@ const SignInForm = (props: SignInFormProps) => {
             )}
             <Formik
                 initialValues={{
-                    email: 'admin1@gmail.com',
+                    email: 'admin2@gmail.com',
                     password: 'admin',
                     rememberMe: true,
                 }}
