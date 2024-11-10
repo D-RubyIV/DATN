@@ -21,7 +21,6 @@ import java.util.List;
 @Data
 public class VoucherRequest extends PageableRequest {
 
-    @NotNull(message = "Code must not be empty!")
     private String code;
 
     @NotNull(message = "Name must not be empty!")

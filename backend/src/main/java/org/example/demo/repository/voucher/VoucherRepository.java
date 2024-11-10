@@ -1,5 +1,6 @@
 package org.example.demo.repository.voucher;
 
+import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.model.request.VoucherRequest;
@@ -183,5 +184,16 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     AND v.status = 'Active'
     """)
     List<Voucher> findTopVouchers(Sort sort);
+
+
+    @Query("""
+    SELECT v FROM Voucher v
+    WHERE v.quantity > 0
+    AND v.deleted = FALSE
+    AND v.status = 'Active'
+    """)
+    List<Voucher> findSortAmountVouchers(Sort sort);
+
+
 
 }

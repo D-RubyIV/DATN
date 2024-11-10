@@ -8,6 +8,7 @@ import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,4 +46,6 @@ public interface VoucherService {
     void deleteVoucher(Integer id);
 
     List<Voucher> findBetterVoucher(BigDecimal amount);
+
+    List<Voucher> getSortedVouchers(Sort sort);
 }

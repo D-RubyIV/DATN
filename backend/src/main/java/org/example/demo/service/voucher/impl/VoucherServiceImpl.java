@@ -271,4 +271,9 @@ public class VoucherServiceImpl implements VoucherService {
         }
         voucherRepository.save(voucher);
     }
+
+
+    public List<Voucher> getSortedVouchers(Sort sort) {
+        return voucherRepository.findSortAmountVouchers(sort);
+    }
 }
