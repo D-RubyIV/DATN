@@ -100,16 +100,22 @@ public class EventServiceImpl implements EventService {
     }
 
 
-
-
     @Override
     @Transactional
     public EventDTO updateEvent(Integer id, EventDTO eventDTO) {
         Event exitstingEvent = eventRepository.findById(id).orElseThrow(() -> new RuntimeException("ID không ton tại"));
 
+        // Tính toán quantityDiscount từ danh sách sản phẩm trong productDTOS
+        if (eventDTO.getProductDTOS() != null && !eventDTO.getProductDTOS().isEmpty()) {
+            eventDTO.setQuantityDiscount(eventDTO.getProductDTOS().size());
+        }
+
         // Ánh xạ từ EventDTO sang Event
         Event eventUpdate = EventMapper.toEventEntity(eventDTO);
         eventUpdate.setId(exitstingEvent.getId());  // Thiết lập ID của event đã tồn tại
+
+        // Cập nhật trạng thái sự kiện dựa trên thời gian
+        eventUpdate.updateStatusBasedOnTime();
 
         Event updateEvent = eventRepository.save(eventUpdate);
 

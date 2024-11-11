@@ -56,7 +56,12 @@ const AddEvent = () => {
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
     // Validation schema
-    const validationSchema = Yup.object({});
+    const validationSchema = Yup.object({
+        name: Yup.string().required('Tên đợt giảm giá là bắt buộc'),
+        discountPercent: Yup.number().required('Giá trị giảm là bắt buộc').min(0).max(100),
+        startDate: Yup.string().required('Ngày bắt đầu là bắt buộc'),
+        endDate: Yup.string().required('Ngày kết thúc là bắt buộc'),
+    });
 
     useEffect(() => {
         fetchProductDTO(pageIndex, pageSize);
@@ -170,30 +175,21 @@ const AddEvent = () => {
                                 <h4 className="font-medium text-xl mb-4">Thông tin đợt giảm giá</h4>
                                 <FormContainer>
                                     <FormItem
-                                        asterisk
-                                        label="Tên đợt giảm giá"
-                                        invalid={errors.name && touched.name}
-                                        errorMessage={errors.name}
+                                        asterisk label="Tên đợt giảm giá" invalid={!!errors.name && touched.name} errorMessage={errors.name}
                                     >
                                         <Field type="text" autoComplete="on" name="name" style={{ height: '44px' }}
                                             placeholder="Tên khách hàng..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
-                                        asterisk
-                                        label="Giá trị giảm(%)"
-                                        invalid={errors.discountPercent && touched.discountPercent}
-                                        errorMessage={errors.discountPercent}
+                                        asterisk label="Giá trị giảm(%)" invalid={!!errors.discountPercent && touched.discountPercent} errorMessage={errors.discountPercent}
                                     >
                                         <Field type="number" autoComplete="off" name="discountPercent" style={{ height: '44px' }}
                                             placeholder="Giá trị giảm(%)..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
-                                        asterisk
-                                        label="Ngày bắt đầu"
-                                        invalid={errors.startDate && touched.startDate}
-                                        errorMessage={errors.startDate}
+                                        asterisk label="Ngày bắt đầu" invalid={!!errors.startDate && touched.startDate} errorMessage={errors.startDate}
                                     >
                                         <Field name="startDate">
                                             {({ field, form }: any) => (
@@ -210,10 +206,7 @@ const AddEvent = () => {
                                     </FormItem>
 
                                     <FormItem
-                                        asterisk
-                                        label="Ngày kết thúc"
-                                        invalid={errors.endDate && touched.endDate}
-                                        errorMessage={errors.endDate}
+                                        asterisk label="Ngày kết thúc" invalid={!!errors.endDate && touched.endDate} errorMessage={errors.endDate}
                                     >
                                         <Field name="endDate">
                                             {({ field, form }: any) => (
