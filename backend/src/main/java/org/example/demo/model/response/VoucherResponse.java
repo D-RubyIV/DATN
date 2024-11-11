@@ -37,4 +37,5 @@ public interface VoucherResponse {
     String getCustomerName();
 
     String getCustomerEmail();
+
 }

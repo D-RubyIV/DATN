@@ -2,6 +2,7 @@ package org.example.demo.controller.voucher;
 
 
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
+import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.mapper.voucher.response.VoucherResponseMapper;
 import org.example.demo.model.request.VoucherRequest;
@@ -80,8 +81,8 @@ public class VoucherController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VoucherResponse> getVoucherById(@PathVariable Integer id) {
-        VoucherResponse voucherResponse = voucherService.findVoucherById(id);
+    public ResponseEntity<VoucherResponseV2DTO> getVoucherById(@PathVariable Integer id) {
+        VoucherResponseV2DTO voucherResponse = voucherService.findVoucherById(id);
         if (voucherResponse != null) {
             return ResponseEntity.ok(voucherResponse);
         } else {

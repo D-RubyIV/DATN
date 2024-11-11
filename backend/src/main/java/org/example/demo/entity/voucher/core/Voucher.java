@@ -1,6 +1,7 @@
 package org.example.demo.entity.voucher.core;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,6 +63,7 @@ public class Voucher extends BaseEntity {
             joinColumns = @JoinColumn(name = "voucher_id"),
             inverseJoinColumns = @JoinColumn(name = "customer_id")
     )
+    @JsonManagedReference
     private List<Customer> customers;
 
 

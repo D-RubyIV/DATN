@@ -1,5 +1,6 @@
 package org.example.demo.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -42,11 +43,14 @@ public class VoucherRequest extends PageableRequest {
     @NotNull(message = "Please select the voucher type!")
     private Type typeTicket;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @NotNull(message = "Start date must not be empty!")
     private LocalDateTime startDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @NotNull(message = "End date must not be empty!")
     private LocalDateTime endDate;
+
 
     private Boolean deleted = false;
 
