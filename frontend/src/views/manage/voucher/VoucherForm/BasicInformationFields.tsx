@@ -2,6 +2,7 @@ import AdaptableCard from '@/components/shared/AdaptableCard'
 import Input from '@/components/ui/Input'
 import { FormItem } from '@/components/ui/Form'
 import { Field, FormikErrors, FormikTouched, FieldProps } from 'formik'
+import { format, parseISO } from 'date-fns'
 
 type FormFieldsName = {
     name: string
@@ -120,13 +121,17 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                     invalid={(errors.startDate && touched.startDate) as boolean}
                     errorMessage={errors.startDate}
                 >
-                    <Field
-                        type="date"
-                        autoComplete="off"
-                        name="startDate"
-                        placeholder="Start Date"
-                        component={Input}
-                    />
+                    <Field name="startDate">
+                        {({ field, form }: FieldProps) => (
+                            <Input
+                                type="datetime-local" // Allows date and time selection
+                                autoComplete="off"
+                                value={field.value ? format(parseISO(field.value), "yyyy-MM-dd'T'HH:mm") : ''}
+                                onChange={(e) => form.setFieldValue(field.name, e.target.value)}
+                                placeholder="Start Date"
+                            />
+                        )}
+                    </Field>
                 </FormItem>
 
                 <FormItem
@@ -135,15 +140,20 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                     invalid={(errors.endDate && touched.endDate) as boolean}
                     errorMessage={errors.endDate}
                 >
-                    <Field
-                        type="date"
-                        autoComplete="off"
-                        name="endDate"
-                        placeholder="End Date"
-                        component={Input}
-                    />
+                    <Field name="endDate">
+                        {({ field, form }: FieldProps) => (
+                            <Input
+                                type="datetime-local" // Allows date and time selection
+                                autoComplete="off"
+                                value={field.value ? format(parseISO(field.value), "yyyy-MM-dd'T'HH:mm") : ''}
+                                onChange={(e) => form.setFieldValue(field.name, e.target.value)}
+                                placeholder="End Date"
+                            />
+                        )}
+                    </Field>
                 </FormItem>
             </div>
+            
             <FormItem
                 label="Loại Phiếu Giảm Giá"
                 asterisk
@@ -167,9 +177,9 @@ const BasicInformationFields = (props: BasicInformationFields) => {
                                 <Field
                                     type="radio"
                                     name="typeTicket"
-                                    value="Everyone"
+                                    value="Everybody"
                                     className="form-radio"
-                                    checked={field.value === 'Everyone'}
+                                    checked={field.value === 'Everybody'}
                                 />
                                 <span>Mọi Người</span>
                             </label>

@@ -1,6 +1,7 @@
 package org.example.demo.repository.voucher;
 
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
+import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.model.request.VoucherRequest;
@@ -65,38 +66,61 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
             """, nativeQuery = true)
     List<VoucherResponse> getAllVouchersWithCustomers(@Param("idCustomer") Integer id, @Param("req") VoucherRequest request);
 
-    @Query(value = """
-                SELECT
-                    ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
-                    STRING_AGG(CAST(vc.customer_id AS VARCHAR(MAX)), ',') AS customer,
-                    v.id AS id,
-                    v.code AS code,
-                    v.name AS name,
-                    v.type_ticket AS typeTicket,
-                    v.quantity AS quantity,
-                    v.start_date AS startDate,
-                    v.end_date AS endDate,
-                    v.max_percent AS maxPercent,
-                    v.min_amount AS minAmount,
-                    v.status AS status
-                FROM voucher v
-                LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
-                LEFT JOIN customer c ON vc.customer_id = c.id
-                WHERE v.id = :id
-                GROUP BY
-                    v.id,
-                    v.code,
-                    v.name,
-                    v.type_ticket,
-                    v.quantity,
-                    v.start_date,
-                    v.end_date,
-                    v.max_percent,
-                    v.min_amount,
-                    v.status,
-                    v.created_date
-            """, nativeQuery = true)
-    Optional<VoucherResponse> findVoucherById(Integer id);
+//    @Query(value = """
+//                SELECT
+//                    ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
+//                    STRING_AGG(CAST(c.name AS VARCHAR(MAX)), ', ') AS customerNames,  -- Chuỗi tên khách hàng
+//                    STRING_AGG(CAST(vc.customer_id AS VARCHAR(MAX)), ',') AS customerIds, -- Chuỗi ID khách hàng
+//                    v.id AS id,
+//                    v.code AS code,
+//                    v.name AS name,
+//                    v.type_ticket AS typeTicket,
+//                    v.quantity AS quantity,
+//                    v.start_date AS startDate,
+//                    v.end_date AS endDate,
+//                    v.max_percent AS maxPercent,
+//                    v.min_amount AS minAmount,
+//                    v.status AS status
+//                FROM voucher v
+//                LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
+//                LEFT JOIN customer c ON vc.customer_id = c.id
+//                WHERE v.id = :id
+//                GROUP BY
+//                    v.id,
+//                    v.code,
+//                    v.name,
+//                    v.type_ticket,
+//                    v.quantity,
+//                    v.start_date,
+//                    v.end_date,
+//                    v.max_percent,
+//                    v.min_amount,
+//                    v.status,
+//                    v.created_date
+//            """, nativeQuery = true)
+//    Optional<VoucherResponseV2DTO> findVoucherById(Integer id);
+
+
+//    @Query("""
+//            SELECT new org.example.demo.dto.voucher.response.VoucherResponseV2DTO(
+//                ROW_NUMBER() OVER (ORDER BY v.createdDate DESC),
+//                v.id,
+//                v.name,
+//                v.code,
+//                v.startDate,
+//                v.endDate,
+//                v.status,
+//                v.quantity,
+//                v.maxPercent,
+//                v.minAmount,
+//                v.typeTicket,
+//                (SELECT STRING_AGG(c.name, ', ') FROM Customer c JOIN VoucherCustomer vc ON vc.customerId = c.id WHERE vc.voucherId = v.id),
+//                (SELECT STRING_AGG(vc.customerId, ', ') FROM VoucherCustomer vc WHERE vc.voucherId = v.id)
+//            )
+//            FROM Voucher v
+//            WHERE v.id = :id
+//            """)
+//    Optional<VoucherResponseV2DTO> findVoucherById(@Param("id") Integer id);
 
     @Query(value = """
             SELECT 
