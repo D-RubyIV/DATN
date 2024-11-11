@@ -4,20 +4,22 @@ import SidePanel from '@/components/template/SidePanel'
 import MobileNav from '@/components/template/MobileNav'
 import UserDropdown from '@/components/template/UserDropdown'
 import SideNav from '@/components/template/SideNav'
-import { Route, Routes } from 'react-router-dom'
-import { AdminViews, AuthViews, ClientViews, PublicViews } from '@/views'
+import {Route, Routes} from 'react-router-dom'
+import {AdminViews, AuthViews, ClientViews, PublicViews} from '@/views'
 import Side from "@/components/layouts/AuthLayout/Side";
 import Navbar from '@/views/client/Navbar/Navbar'
 import Footer from '@/views/client/Footer/Footer'
-import { useEffect, useState } from 'react'
+import {useEffect, useState} from 'react'
 import AOS from "aos";
 import "aos/dist/aos.css";
+import SaleProvider from "@/views/sale/SaleContext";
+import CartDrawer from "@/views/sale/CartDrawer";
 
 const HeaderActionsStart = () => {
     return (
         <>
-            <MobileNav />
-            <SideNavToggle />
+            <MobileNav/>
+            <SideNavToggle/>
         </>
     )
 }
@@ -25,8 +27,8 @@ const HeaderActionsStart = () => {
 const HeaderActionsEnd = () => {
     return (
         <>
-            <SidePanel />
-            <UserDropdown hoverable={false} />
+            <SidePanel/>
+            <UserDropdown hoverable={false}/>
         </>
     )
 }
@@ -35,15 +37,15 @@ const AdminLayout = () => {
     return (
         <div className="app-layout-classic flex flex-auto flex-col">
             <div className="flex flex-auto min-w-0">
-                <SideNav />
+                <SideNav/>
                 <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
                     <Header
                         className="shadow dark:shadow-2xl"
-                        headerStart={<HeaderActionsStart />}
-                        headerEnd={<HeaderActionsEnd />}
+                        headerStart={<HeaderActionsStart/>}
+                        headerEnd={<HeaderActionsEnd/>}
                     />
                     <div className="h-full flex flex-auto flex-col">
-                        <AdminViews />
+                        <AdminViews/>
                     </div>
                 </div>
             </div>
@@ -51,11 +53,7 @@ const AdminLayout = () => {
     )
 }
 const ClientLayout = () => {
-    const [orderPopup, setOrderPopup] = useState(false);
 
-    const handleOrderPopup = () => {
-        setOrderPopup(!orderPopup);
-    };
     useEffect(() => {
         AOS.init({
             offset: 100,
@@ -67,14 +65,17 @@ const ClientLayout = () => {
     }, []);
     return (
         <div className="app-layout-classic flex flex-auto flex-col">
-                <Navbar handleOrderPopup={handleOrderPopup} />
+            <SaleProvider>
+                <Navbar/>
                 <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
-                    <div className="h-full flex flex-auto flex-col">
-                        <ClientViews />
+                    <div className="h-full flex flex-auto flex-col ">
+                        <ClientViews/>
                     </div>
-                <Footer/>
-
+                    <Footer/>
                 </div>
+                <CartDrawer></CartDrawer>
+            </SaleProvider>
+
         </div>
     )
 }
@@ -83,7 +84,7 @@ const PublicLayout = () => {
         <div className="app-layout-classic flex flex-auto flex-col">
             <div className="flex flex-auto min-w-0">
                 <div className="h-full flex flex-auto flex-col">
-                    <PublicViews />
+                    <PublicViews/>
                 </div>
             </div>
         </div>
@@ -109,7 +110,7 @@ const RootLayout = () => {
             <Route path="/client/*" element={<ClientLayout/>}/>
             <Route path="/admin/*" element={<AdminLayout/>}/>
             <Route path="/auth/*" element={<SecurityLayout/>}/>
-            <Route path="/*" element={<PublicLayout />} />
+            <Route path="/*" element={<PublicLayout/>}/>
             {/*<Route path="*" element={<Navigate replace to="/sign-in" />} />*/}
         </Routes>
     )

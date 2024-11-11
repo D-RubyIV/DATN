@@ -5,8 +5,17 @@ import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.dto.customer.response.CustomerResponseDTO;
+import org.example.demo.dto.history.response.HistoryResponseDTO;
+import org.example.demo.dto.order.properties.response.OrderDetailResponseDTO;
+import org.example.demo.dto.staff.response.StaffResponseDTO;
+import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.cart.enums.Status;
 import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.entity.order.enums.Payment;
+import org.example.demo.entity.order.enums.Type;
+
+import java.util.List;
 
 /**
  * The type Staff response dto.
@@ -17,17 +26,31 @@ import org.example.demo.entity.human.staff.Staff;
 @NoArgsConstructor
 @Data
 public class CartResponseDTO {
-//    @Enumerated(EnumType.STRING)
-//    private Status status;
-//    private Staff staff;
-    private Long productId;
-    private Long cartDetailId;
-    private String productName;
-    private String colorName;
-    private String sizeName;
-    private Long productDetailId;
-    private Integer cartQuantity;
-    private Double productPrice;
-    private String imageName;
-
+    private Integer id;
+    private String code;
+    private String address;
+    private String phone;
+    private String recipientName;
+    //
+    private String provinceId;
+    private String provinceName;
+    private String districtId;
+    private String districtName;
+    private String wardId;
+    private String wardName;
+    //
+    private Boolean deleted;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+    @Enumerated(EnumType.STRING)
+    private Type type;
+    @Enumerated(EnumType.STRING)
+    private Payment payment;
+    private Double total;
+    private Double deliveryFee;
+    private Double discount;
+    private Double subTotal;
+    private CustomerResponseDTO customerResponseDTO;
+    private VoucherResponseDTO voucherResponseDTO;
+    private List<CartDetailResponseDTO> cartDetailResponseDTOS;
 }

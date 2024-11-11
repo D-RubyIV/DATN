@@ -9,11 +9,13 @@ import org.example.demo.entity.product.properties.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ProductDetailResponseDTO {
+    private Integer id;
     private String code;
     private String name;
     private Double price;
@@ -31,7 +33,7 @@ public class ProductDetailResponseDTO {
     private MaterialResponseDTO material;
     private ThicknessResponseDTO thickness;
     private ElasticityResponseDTO elasticity;
-    private Image image;
+    private List<Image> images;
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)

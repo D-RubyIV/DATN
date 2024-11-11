@@ -105,15 +105,6 @@ const adminRoute: Routes = [
         authority: []
     },
     {
-        key: 'payment',
-        path: `manage/payment/callback`,
-        component: lazy(
-            () =>
-                import('@/views/manage/sell/component/payment/PaymentCallback'),
-        ),
-        authority: [],
-    },
-    {
         key: 'eventManager',
         path: `/manage/event`,
         component: lazy(

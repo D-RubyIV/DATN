@@ -1,6 +1,7 @@
 package org.example.demo.repository.cart;
 
 import org.example.demo.dto.cart.response.CartResponseDTO;
+import org.example.demo.entity.cart.enums.Status;
 import org.example.demo.entity.cart.properties.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -38,4 +39,8 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     List<CartResponseDTO> getListCart(@Param("idCustomer") Integer idCustomer);
 
     Cart findByCustomerId(Integer customerId);
+
+    Cart findByIdAndDeleted(Integer id, Boolean deleted);
+
+    Cart findByCode(String code);
 }

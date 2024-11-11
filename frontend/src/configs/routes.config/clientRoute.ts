@@ -3,7 +3,7 @@ import { lazy } from 'react'
 const clientRoutes = [
     {
         key: 'home',
-        path: '', // do cai nay o, nos map voi cai bocj nos ra
+        path: '',
         component: lazy(() => import('@/views/client/LandingPage')),
         authority: []
     },
@@ -24,6 +24,18 @@ const clientRoutes = [
         path: '/productDetail',
         component: lazy(() => import('@/views/client/Cart/ProductDetail')),
         authority: []
-    }
+    },
+    {
+        key: 'collections',
+        path: '/collections',
+        component: lazy(() => import('@/views/sale/ProductList')),
+        authority: []
+    },
+    {
+        key: 'products',
+        path: '/products/:id',
+        component: lazy(() => import('@/views/sale/ProductDetail')),
+        authority: []
+    },
 ]
 export default clientRoutes;
