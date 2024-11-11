@@ -10,6 +10,7 @@ import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Image;
+import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.service.product.core.ProductDetailService;
 import org.example.demo.util.phah04.PageableObject;
@@ -21,6 +22,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,9 @@ public class ProductDetailController {
 
     @Autowired
     private ProductDetailService productDetailService;
+
+    @Autowired
+    private ProductDetailResponseMapper productDetailResponseMapper;
 
     @GetMapping("")
     public ResponseEntity<Page<ProductDetail>> findAll(Pageable pageable) {
@@ -134,16 +139,21 @@ public class ProductDetailController {
         }
     }
 
-    // trc b inject foken vao moi cai request kj ti chi toi phat
     @GetMapping("abc")
-    public ResponseEntity<?> custome(@PageableDefault(page = 0, size = 10) Pageable pageable) {
-        Page<ProductResponseOverDTO> page = productDetailRepository.findCustom(pageable);
-        List<ProductResponseOverDTO> productList = page.getContent(); // log cho nay xem hinh nhu chua lay dc list van size 0 no ra IDS[2, 51] r, tooi dang join ko phai left join nen no ra its, tis suaw okeee
+    public ResponseEntity<?> custome(
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @RequestParam(value = "colorCodes", required = false) List<String> colorCodes,
+            @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes
+    ) {
+        colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+        sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+
+        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes);
+        List<ProductResponseOverDTO> productList = page.getContent();
         List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
         System.out.println("IDS" + productIds);
         List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
         System.out.println("listProductDetail SIZE " + listProductDetail.size());
-
 
         productList.forEach(s -> {
             Integer idPro = s.getProductId();
@@ -153,14 +163,41 @@ public class ProductDetailController {
             listProd.forEach(pd -> {
                 System.out.println(pd.getCode());
                 System.out.println("-------");
-                productImages.addAll(pd.getImages());  // Thêm tất cả hình ảnh của mỗi sản phẩm vào productImages
+                productImages.addAll(pd.getImages());
             });
-
+            s.setListColor(listProd.stream().map(pr -> pr.getColor()).toList());
+            s.setListSize(listProd.stream().map(pr -> pr.getSize()).toList());
             s.setImage(productImages.stream().map(Image::getUrl).toList());
         });
         PageImpl<ProductResponseOverDTO> pageResponse = new PageImpl<>(productList, pageable, page.getTotalElements());
         return ResponseEntity.ok(pageResponse);
+    }
 
+    @GetMapping("detail-information/{id}")
+    public ResponseEntity<?> detail_information(
+            @PathVariable("id") Integer id
+    ) {
+        List<ProductResponseOverDTO> productList = productDetailRepository.findCustomListByProductId(id);
+        List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
+        System.out.println("IDS" + productIds);
+        List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
+        System.out.println("listProductDetail SIZE " + listProductDetail.size());
+
+        productList.forEach(s -> {
+            Integer idPro = s.getProductId();
+            List<ProductDetail> listProd = listProductDetail.stream().filter(p -> p.getProduct().getId().equals(idPro)).toList();
+            System.out.println("listProductDetail 2" + listProd.size());
+            List<Image> productImages = new ArrayList<>();
+            listProd.forEach(pd -> {
+                System.out.println(pd.getCode());
+                System.out.println("-------");
+                productImages.addAll(pd.getImages());
+            });
+            s.setListColor(listProd.stream().map(pr -> pr.getColor()).toList());
+            s.setListSize(listProd.stream().map(pr -> pr.getSize()).toList());
+            s.setImage(productImages.stream().map(Image::getUrl).toList());
+        });
+        return ResponseEntity.ok(productList);
     }
 
     @GetMapping("abc/{id}")
@@ -179,4 +216,9 @@ public class ProductDetailController {
         return ResponseEntity.ok(productResponseOverDTO);
     }
 
+    @GetMapping("product-detail-of-product/{id}")
+    public ResponseEntity<?> findProductDetailOfProduct(@PathVariable Integer id){
+        List<ProductDetail> list = productDetailRepository.findAllByProductId(id);
+        return ResponseEntity.ok(productDetailResponseMapper.toListDTO(list));
+    }
 }

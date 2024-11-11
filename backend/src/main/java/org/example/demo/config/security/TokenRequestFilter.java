@@ -45,19 +45,20 @@ public class TokenRequestFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String tokenClient = myAuthorization.split(" ")[1].trim();
-
         try {
+            String tokenClient = myAuthorization.split(" ")[1].trim();
             if (jwtTokenUtil.getSubject(tokenClient) == null) {
                 System.out.println("TOKEN NULL");
-                throw new CustomExceptions.CustomBadSecurity("Invalid token");
+                filterChain.doFilter(request, response);
+                return;
             }
 
             String email = jwtTokenUtil.getSubject(tokenClient);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
             if (userDetails == null) {
                 System.out.println("USER NOT FOUND");
-                throw new CustomExceptions.CustomBadSecurity("User not found");
+                filterChain.doFilter(request, response);
+                return;
             }
             System.out.println(userDetails);
             setAuthenticationContext(userDetails, request);

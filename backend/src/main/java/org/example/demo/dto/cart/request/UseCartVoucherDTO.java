@@ -1,4 +1,4 @@
-package org.example.demo.dto.order.other;
+package org.example.demo.dto.cart.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UseVoucherDTO{
+public class UseCartVoucherDTO {
     @NotNull(message = "NotNull")
-    private Integer idOrder;
+    private Integer idCartId;
     @NotNull(message = "NotNull")
-    private Integer idVoucher;
+    private String voucherCode;
 }

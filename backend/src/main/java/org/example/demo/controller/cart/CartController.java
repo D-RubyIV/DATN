@@ -1,17 +1,41 @@
 package org.example.demo.controller.cart;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.validation.Valid;
 import org.example.demo.dto.cart.request.CartRequestDTO;
+import org.example.demo.dto.cart.request.CartRequestDTOV2;
+import org.example.demo.dto.cart.request.UseCartVoucherDTO;
 import org.example.demo.dto.cart.response.CartResponseDTO;
+import org.example.demo.dto.ghn.FeeDTO;
+import org.example.demo.dto.ghn.ItemDTO;
+import org.example.demo.dto.order.core.request.OrderRequestDTO;
+import org.example.demo.dto.order.core.response.OrderResponseDTO;
+import org.example.demo.dto.order.other.UseOrderVoucherDTO;
 import org.example.demo.entity.cart.enums.Status;
 import org.example.demo.entity.cart.properties.Cart;
-import org.example.demo.infrastructure.common.ResponseObject;
+import org.example.demo.entity.order.core.Order;
+import org.example.demo.entity.order.enums.Payment;
+import org.example.demo.entity.order.enums.Type;
+import org.example.demo.entity.voucher.core.Voucher;
+import org.example.demo.exception.CustomExceptions;
+import org.example.demo.mapper.cart.response.CartDetailResponseMapper;
+import org.example.demo.mapper.cart.response.CartResponseMapper;
 import org.example.demo.repository.cart.CartRepository;
+import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.cart.CartService;
+import org.example.demo.service.cart.CartServiceV2;
+import org.example.demo.service.fee.FeeService;
+import org.example.demo.util.DataUtils;
+import org.example.demo.util.RandomCodeGenerator;
+import org.example.demo.validate.group.GroupUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author PHAH04
@@ -27,35 +51,140 @@ public class CartController {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private VoucherRepository voucherRepository;
+
+    @Autowired
+    private FeeService feeService;
+
+    @Autowired
+    private RandomCodeGenerator randomCodeGenerator;
+
+    @Autowired
+    private CartServiceV2 cartServiceV2;
+
+    @Autowired
+    private CartResponseMapper cartResponseMapper;
+
     @GetMapping("/{idCustomer}")
     public List<CartResponseDTO> getListCart(@PathVariable Integer idCustomer) {
         return cartService.getListCart(idCustomer);
     }
 
+
     @PostMapping("/add-to-cart")
-    public ResponseObject addCart(@RequestBody CartRequestDTO cartRequestDTO) {
+    public ResponseEntity<?> addCart(@RequestBody CartRequestDTO cartRequestDTO) {
         return cartService.create(cartRequestDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseObject deleteCart(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteCart(@PathVariable Integer id) {
         return cartService.deleteById(id);
     }
 
     @PutMapping
-    public ResponseObject updateCart(@RequestBody CartRequestDTO cartRequestDTO) {
+    public ResponseEntity<?> updateCart(@RequestBody CartRequestDTO cartRequestDTO) {
         return cartService.update(cartRequestDTO);
     }
 
     @DeleteMapping("/delete-all/{idCustomer}")
-    public ResponseObject deleteAllCart(@PathVariable Integer idCustomer) {
+    public ResponseEntity<?> deleteAllCart(@PathVariable Integer idCustomer) {
         return cartService.deleteAll(idCustomer);
     }
 
+    //  phah04
+    @PutMapping(value = {"v2/{id}"})
+    public ResponseEntity<CartResponseDTO> update(@PathVariable Integer id, @Validated(GroupUpdate.class) @RequestBody CartRequestDTOV2 cartRequestDTOV2) {
+        return ResponseEntity.ok(cartResponseMapper.toDTO(cartServiceV2.update(id, cartRequestDTOV2)));
+
+    }
+
+    //  phah04
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<?> detail(@PathVariable Integer id) {
+        return ResponseEntity.ok(cartResponseMapper.toDTO(cartRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Giỏ hàng ko tồn tại"))));
+    }
+
+    //  phah04
     @GetMapping("new-cart")
-    public ResponseEntity<?> createNewCart(){
+    public ResponseEntity<?> createNewCart() {
         Cart cart = new Cart();
+        cart.setCode("CR" + randomCodeGenerator.generateRandomCode());
         cart.setStatus(Status.PENDING);
+        cart.setDeleted(false);
+        cart.setPayment(Payment.CASH);
+        cart.setType(Type.ONLINE);
+        cart.setSubTotal(0.0);
+        cart.setTotal(0.);
+        cart.setDiscount(0.);
+        cart.setDeliveryFee(0.);
         return ResponseEntity.ok(cartRepository.save(cart));
     }
+
+    //  phah04
+    @GetMapping("check-cart-active/{id}")
+    public ResponseEntity<?> checkCartActive(@PathVariable Integer id) {
+        Cart cart = cartRepository.findByIdAndDeleted(id, false);
+        if (cart == null) {
+            throw new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng");
+        } else {
+            return ResponseEntity.ok(cart);
+        }
+    }
+    //  phah04
+    @PostMapping(value = "use-voucher")
+    public ResponseEntity<?> addVoucher(@Valid @RequestBody UseCartVoucherDTO request) {
+        Cart cartFound = cartRepository.findById(request.getIdCartId()).orElseThrow(
+                () -> new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng")
+        );
+        Voucher voucherFound = voucherRepository.findByCode(request.getVoucherCode()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Khuyễn mãi không tồn tại"));
+        System.out.println(cartFound.getCode());
+        System.out.println(voucherFound.getCode());
+        Double total = cartServiceV2.fetchTotal(cartFound);
+        Integer t = voucherFound.getMinAmount();
+        // kiêm tra số lương
+        if (voucherFound.getQuantity() > 0) {
+            if (total >= t) {
+                double discount = total / 100 * voucherFound.getMaxPercent();
+                cartFound.setTotal(total - discount);
+                cartFound.setDiscount(discount);
+                cartFound.setSubTotal(total);
+                cartFound.setVoucher(voucherFound);
+            } else {
+                throw new CustomExceptions.CustomBadRequest("Số tiền tối thiểu không đáp ứng");
+            }
+        } else {
+            throw new CustomExceptions.CustomBadRequest("Voucher này đã được sử dụng hết số lượng");
+        }
+        cartFound = cartRepository.save(cartFound);
+        cartServiceV2.reloadSubTotalOrder(cartFound);
+        return ResponseEntity.ok(cartResponseMapper.toDTO(cartFound));
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

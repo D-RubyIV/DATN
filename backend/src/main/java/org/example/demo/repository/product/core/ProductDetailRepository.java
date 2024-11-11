@@ -8,6 +8,7 @@ import org.example.demo.entity.product.properties.Color;
 import org.example.demo.entity.product.properties.Size;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +27,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     ProductDetail findByName(String name, Size size, Color color);
 
     List<ProductDetail> findByProductId(Integer productId);
+    List<ProductDetail> findAllByProductId(Integer id);
 
     @Query(value = """
             SELECT DISTINCT pd FROM ProductDetail pd
@@ -157,25 +159,48 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
 
     @Query(
-            value = """
-                    select new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
-                    p.id,
-                    p.code,
-                    p.name,
-                    count(c.id),
-                    count(s.id),
-                    pd.price,
-                    pd.price
-                    ) FROM Product p
-                    left JOIN ProductDetail pd on p.id = pd.product.id
-                    left JOIN Color c on c.id = pd.color.id
-                    left JOIN Size s on s.id = pd.size.id
-                    group by p.id, p.code, p.name,  pd.price
-                    
-                    
-                    """
+            """
+            SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+                p.id,
+                p.code,
+                p.name,
+                COUNT(DISTINCT c.id),
+                COUNT(DISTINCT s.id)
+            )
+            FROM Product p
+            JOIN ProductDetail pd ON p.id = pd.product.id
+            JOIN Color c ON c.id = pd.color.id
+            JOIN Size s ON s.id = pd.size.id
+            WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+            AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+            GROUP BY p.id, p.code, p.name
+            """
     )
-    Page<ProductResponseOverDTO> findCustom(Pageable pageable);
+    Page<ProductResponseOverDTO> findCustomPage(
+            Pageable pageable,
+            @Param("sizeCodes") List<String> sizeCodes,
+             @Param("colorCodes") List<String> colorCodes
+    );
+
+
+    @Query(
+            value = """
+                select distinct new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+                p.id,
+                p.code,
+                p.name,
+                count(DISTINCT c.id),
+                count(DISTINCT s.id)
+                )
+                FROM Product p
+                JOIN ProductDetail pd on p.id = pd.product.id
+                 JOIN Color c on c.id = pd.color.id
+                 JOIN Size s on s.id = pd.size.id
+                 WHERE p.id = :productId
+                GROUP BY p.id, p.code, p.name
+                """
+    )
+    List<ProductResponseOverDTO> findCustomListByProductId(Integer productId);
 
     @Query(
             value = """
@@ -183,23 +208,24 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 p.id,
                 p.code,
                 p.name,
-                count(c.id),
-                count(s.id),
-                pd.price,
-                pd.price
+                count(DISTINCT c.id),
+                count(DISTINCT s.id)
                 ) FROM Product p
-                left JOIN ProductDetail pd on p.id = pd.product.id
-                left JOIN Color c on c.id = pd.color.id
-                left JOIN Size s on s.id = pd.size.id
+                LEFT JOIN ProductDetail pd on p.id = pd.product.id
+                JOIN Color c on c.id = pd.color.id
+                JOIN Size s on s.id = pd.size.id
                 WHERE p.id = :id
-                group by p.id, p.code, p.name, pd.price
+                AND p.deleted = false
+                AND s.deleted = false
+                AND c.deleted = false
+                group by p.id, p.code, p.name
                 """
     )
     Optional<ProductResponseOverDTO> findOneCustom(@Param("id") Integer id);
 
-
+    @EntityGraph(attributePaths = {"brand", "color", "size", "material", "images"})
     @Query(value = """
-            SELECT pd from ProductDetail pd where pd.product.id in :ids
+            SELECT pd from ProductDetail pd  where pd.product.id in :ids
             """)
     List<ProductDetail> findAllByProductIdCustom(List<Integer> ids);
     // viewt cho toi 1 cai api nhu v phan trang luong

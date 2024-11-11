@@ -21,6 +21,7 @@ import java.util.Optional;
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
+    Optional<Voucher> findByCode(String code);
 
     @Query(value = """
             SELECT 

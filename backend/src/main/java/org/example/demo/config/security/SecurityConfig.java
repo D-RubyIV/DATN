@@ -50,10 +50,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(mvcMatcherBuilder.pattern("users/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("color/color-list")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("size/size-list")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("productDetails/abc")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("productDetails/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("orders/convert/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("orders/status/change/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("payment/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("orders/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .requestMatchers(mvcMatcherBuilder.pattern("voucher/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("customer/**")).hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(mvcMatcherBuilder.pattern("product/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("cart/v2")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("cart/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("cart-details/**")).permitAll()
                                 .anyRequest().authenticated()
                 );
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
