@@ -83,7 +83,7 @@ const PublicLayout = () => {
     return (
         <div className="app-layout-classic flex flex-auto flex-col">
             <div className="flex flex-auto min-w-0">
-                <div className="h-full flex flex-auto flex-col">
+                <div className="h-screen flex flex-auto flex-col">
                     <PublicViews/>
                 </div>
             </div>

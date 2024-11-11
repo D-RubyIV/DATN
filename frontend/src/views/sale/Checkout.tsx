@@ -297,27 +297,36 @@ const Checkout = () => {
         handleUpdateCart(data)
     }
     return (
-        <Fragment>
-            <div className="max-w-[1500px] mx-auto flex-col justify-center md:p-20 p-5">
-                <div className={'grid xl:grid-cols-2 grid-cols-1 gap-5'}>
-                    {/*BLOCK 1*/}
-                    <Card className={'order-2 md:order-1'}>
-                        <div className={'py-2 text-black text-[15px]'}>
-                            <p>Thông tin giao hàng</p>
-                        </div>
-                        <div className={'flex flex-col gap-5'}>
+        <div className="h-full">
+            <div className={'grid xl:grid-cols-2 grid-cols-1 gap-5 p-20 h-full'}>
+                {/*BLOCK 1*/}
+                <Card className={'order-2 md:order-1 h-full'}>
+                    <div className={'py-2 text-black font-semibold text-[18px]'}>
+                        <p>Thông tin giao hàng</p>
+                    </div>
+                    <div className={'flex flex-col gap-5'}>
+                        <div>
+                            <p>Họ và tên</p>
                             <Input placeholder={'Họ và tên'}></Input>
-                            <div className={'grid grid-cols-6 gap-2'}>
-                                <div className={'col-span-4'}>
-                                    <Input placeholder={'Email'}></Input>
-                                </div>
-                                <div className={'col-span-2'}>
-                                    <Input placeholder={'Số điện thoại'}></Input>
-                                </div>
+                        </div>
+                        <div className={'grid grid-cols-6 gap-2'}>
+                        <div className={'col-span-4'}>
+                                <p>Email</p>
+                                <Input placeholder={'Email'}></Input>
                             </div>
+                            <div className={'col-span-2'}>
+                                <p>Số điện thoại</p>
+                                <Input placeholder={'Số điện thoại'}></Input>
+                            </div>
+                        </div>
+                        <div>
+                            <p>Địa chỉ</p>
                             <Input placeholder={'Địa chỉ'}></Input>
+                        </div>
 
-                            <div className={'grid grid-cols-3 gap-2'}>
+                        <div className={'grid grid-cols-3 gap-2'}>
+                            <div>
+                                <p>Số điện thoại</p>
                                 <Select
                                     options={provinces}
                                     placeholder="Tỉnh/thành"
@@ -325,6 +334,10 @@ const Checkout = () => {
                                         setIAddress((prev) => ({...prev, iprovince: (el as IProvince)}))
                                     }}
                                 />
+                            </div>
+
+                            <div>
+                                <p>Số điện thoại</p>
                                 <Select
                                     options={districts}
                                     placeholder="Quận/huyện"
@@ -332,170 +345,169 @@ const Checkout = () => {
                                         setIAddress((prev) => ({...prev, idistrict: (el as IDistrict)}))
                                     }}
                                 />
-                                <Select
-                                    options={wards}
-                                    placeholder="Xã/phường"
-                                    onChange={(el) => {
-                                        setIAddress((prev) => ({...prev, iward: (el as IWard)}))
-                                    }}
-                                />
                             </div>
 
-                            <div>
-                                <div className={'py-2 text-black text-[15px]'}>
-                                    <p>Phương thức vận chuyển</p>
-                                </div>
-                                <div className={'py-4 px-4 rounded border border-gray-300'}>
-                                    <Radio checked>Vận chuyển</Radio>
-                                </div>
-                            </div>
-                            <div>
-                                <div className={'py-2 text-black text-[15px]'}>
-                                    Phương thức thanh toán
-                                </div>
-                                <div>
-                                    <Radio.Group vertical className={'gap-1'} value={paymentMethod}
-                                                 onChange={onChangeMethod}>
-                                        <Radio value={EPaymentMethod.TRANSFER}>Thanh toán ngân hàng</Radio>
-                                        <Radio value={EPaymentMethod.CASH}>Thanh toán khi nhận hàng</Radio>
-                                    </Radio.Group>
-                                </div>
-                            </div>
-                            {/*<button className="bg-black w-full py-2 font-thin rounded-md text-white">Xác nhận thông tin</button>*/}
+                            <Select
+                                options={wards}
+                                placeholder="Xã/phường"
+                                onChange={(el) => {
+                                    setIAddress((prev) => ({...prev, iward: (el as IWard)}))
+                                }}
+                            />
                         </div>
-                    </Card>
-                    {/*BLOCK 2*/}
-                    <Card className="order-1 md:order-2">
-                        <div className="grid">
-                            <div
-                                className="dark:text-gray-500 bg-white flex flex-col justify-between">
-                                <div>
-                                    {/* CENTER */}
-                                    <div className={`overflow-y-auto`}>
-                                        {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 && listCartDetailResponseDTO.map((item, index) => (
-                                                <Fragment key={index}>
+
+                        <div>
+                            <div className={'py-2 text-black font-semibold text-[18px]'}>
+                                <p>Phương thức vận chuyển</p>
+                            </div>
+                            <div className={'py-4 px-4 rounded border border-gray-300'}>
+                                <Radio checked>Vận chuyển</Radio>
+                            </div>
+                        </div>
+                        <div>
+                            <div className={'py-2 text-black font-semibold text-[18px]'}>
+                                Phương thức thanh toán
+                            </div>
+                            <div>
+                                <Radio.Group vertical className={'gap-1'} value={paymentMethod}
+                                             onChange={onChangeMethod}>
+                                    <Radio value={EPaymentMethod.TRANSFER}>Thanh toán ngân hàng</Radio>
+                                    <Radio value={EPaymentMethod.CASH}>Thanh toán khi nhận hàng</Radio>
+                                </Radio.Group>
+                            </div>
+                        </div>
+                        {/*<button className="bg-black w-full py-2 font-thin rounded-md text-white">Xác nhận thông tin</button>*/}
+                    </div>
+                </Card>
+                {/*BLOCK 2*/}
+                <Card className="order-1 md:order-2 h-full">
+                    <div className="grid">
+                        <div
+                            className="dark:text-gray-500 bg-white flex flex-col justify-between">
+                            <div>
+                                {/* CENTER */}
+                                <div className={`overflow-y-auto`}>
+                                    {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 && listCartDetailResponseDTO.map((item, index) => (
+                                            <Fragment key={index}>
+                                                <div
+                                                    className="text-[13.5px] grid grid-cols-12 gap-2 border-b border-dashed border-gray-400 py-3">
                                                     <div
-                                                        className="text-[13.5px] grid grid-cols-12 gap-2 border-b border-dashed border-gray-400 py-3">
-                                                        <div
-                                                            className="inline-flex justify-center items-center col-span-4 gap-1">
-                                                            <div>
-                                                                <Badge content={item?.quantity} maxCount={9}>
-                                                                    <img
-                                                                        src={(item.productDetailResponseDTO as ProductDetailResponseDTO).images[0]?.url}
-                                                                        className="w-[80px] object-cover"
-                                                                        alt="Product"/>
-                                                                </Badge>
-                                                            </div>
+                                                        className="inline-flex justify-center items-center col-span-4 gap-1">
+                                                        <div>
+                                                            <Badge content={item?.quantity} maxCount={9}>
+                                                                <img
+                                                                    src={(item.productDetailResponseDTO as ProductDetailResponseDTO).images[0]?.url}
+                                                                    className="w-[80px] object-cover"
+                                                                    alt="Product"/>
+                                                            </Badge>
                                                         </div>
-                                                        <div className="col-span-8">
-                                                            <div className="flex items-center">
+                                                    </div>
+                                                    <div className="col-span-8">
+                                                        <div className="flex items-center">
                                                             <span className="font-medium text-[12.5px]">
                                                                 {(item.productDetailResponseDTO as ProductDetailResponseDTO)?.code}
                                                             </span>
-                                                                <span className="font-medium text-red-600 ">
+                                                            <span className="font-medium text-red-600 ">
                                                                 <button className="active:bg-red-400 p-1 rounded-full"
                                                                 ><HiDocumentRemove/></button>
                                                             </span>
+                                                        </div>
+                                                        <div className="text-sm font-thin">
+                                                            <span>{((item.productDetailResponseDTO as ProductDetailResponseDTO)?.color as Color)?.name}</span>
+                                                            {" / "}
+                                                            <span>{((item.productDetailResponseDTO as ProductDetailResponseDTO)?.size as Size)?.name}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <div
+                                                                className="flex gap-2 text-gray-400 duration-100 items-center">
                                                             </div>
-                                                            <div className="text-sm font-thin">
-                                                                <span>{((item.productDetailResponseDTO as ProductDetailResponseDTO)?.color as Color)?.name}</span>
-                                                                {" / "}
-                                                                <span>{((item.productDetailResponseDTO as ProductDetailResponseDTO)?.size as Size)?.name}</span>
-                                                            </div>
-                                                            <div className="flex justify-between">
-                                                                <div
-                                                                    className="flex gap-2 text-gray-400 duration-100 items-center">
-                                                                </div>
-                                                                <div>
+                                                            <div>
                                                                     <span
                                                                         className="font-semibold">{(item.productDetailResponseDTO as ProductDetailResponseDTO)?.price.toLocaleString("vi-VN") + "₫"}</span>
-                                                                </div>
                                                             </div>
-                                                            <div className="flex justify-end">
+                                                        </div>
+                                                        <div className="flex justify-end">
                                                                 <span
                                                                     className="text-[12.5px]">Kho: {(item.productDetailResponseDTO as ProductDetailResponseDTO).quantity}</span>
-                                                            </div>
-
                                                         </div>
+
                                                     </div>
+                                                </div>
 
 
-                                                </Fragment>
-                                            ))
-                                            ||
-                                            (
-                                                <Fragment>
-                                                    <div className="flex flex-col justify-center items-center h-full">
-                                                        <div>
-                                                            <img className="w-24 h-24 object-cover"
-                                                                 src="./OIP-removebg-preview.png"></img>
-                                                        </div>
-                                                        <div>
+                                            </Fragment>
+                                        ))
+                                        ||
+                                        (
+                                            <Fragment>
+                                                <div className="flex flex-col justify-center items-center h-full">
+                                                    <div>
+                                                        <img className="w-24 h-24 object-cover"
+                                                             src="./OIP-removebg-preview.png"></img>
+                                                    </div>
+                                                    <div>
                                                             <span
                                                                 className="font-thin">No have any product in your cart</span>
-                                                        </div>
                                                     </div>
-                                                </Fragment>
-                                            )
-                                        }
-                                    </div>
-                                    <br/>
-                                    <hr/>
-                                    <br/>
-
+                                                </div>
+                                            </Fragment>
+                                        )
+                                    }
                                 </div>
-                                <div className={'grid grid-cols-6 gap-2 w-full'}>
-                                    <div className={'col-span-4'}>
-                                        <Input
-                                            value={voucherCode}
-                                            placeholder="Mã giảm giá"
-                                            onChange={handleVoucherCodeChange}
-                                        />
-                                    </div>
-                                    <div className={'col-span-2 w-full'}>
-                                        <Button
-                                            className={'w-full'}
-                                            onClick={() => handleUseVoucher()}
-                                        >Sử dụng</Button>
-                                    </div>
-                                </div>
-                                {/* BOTTOM */}
-                                <div className="text-sm">
-                                    <div className="py-2 flex justify-between">
-                                        <span>Tạm tính:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? "n/a" + "₫"}</span>
-                                    </div>
-                                    <div className="py-2 flex justify-between">
-                                        <span>Phí vận chuyển:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') + "₫"}</span>
-                                    </div>
-                                    <div className="py-2 flex justify-between">
-                                        <span>Gỉảm giá:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') + "₫"}</span>
-                                    </div>
-                                    <div className="py-2 flex justify-between">
-                                        <span>Tổng tiền:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') + "₫"}</span>
-                                    </div>
-                                    <button
-                                        className="bg-black w-full py-2 font-thin rounded-md text-white"
-                                        onClick={() => handleConfirmCart()}
-                                    >Xác nhận đơn hàng
-                                    </button>
+                                <br/>
+                                <hr/>
+                                <br/>
 
+                            </div>
+                            <div className={'grid grid-cols-6 gap-2 w-full'}>
+                                <div className={'col-span-4'}>
+                                    <Input
+                                        value={voucherCode}
+                                        placeholder="Mã giảm giá"
+                                        onChange={handleVoucherCodeChange}
+                                    />
+                                </div>
+                                <div className={'col-span-2 w-full'}>
+                                    <Button
+                                        className={'w-full'}
+                                        onClick={() => handleUseVoucher()}
+                                    >Sử dụng</Button>
                                 </div>
                             </div>
+                            {/* BOTTOM */}
+                            <div className="text-sm">
+                                <div className="py-2 flex justify-between">
+                                    <span>Tạm tính:</span>
+                                    <span
+                                        className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? "n/a" + "₫"}</span>
+                                </div>
+                                <div className="py-2 flex justify-between">
+                                    <span>Phí vận chuyển:</span>
+                                    <span
+                                        className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') + "₫"}</span>
+                                </div>
+                                <div className="py-2 flex justify-between">
+                                    <span>Gỉảm giá:</span>
+                                    <span
+                                        className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') + "₫"}</span>
+                                </div>
+                                <div className="py-2 flex justify-between">
+                                    <span>Tổng tiền:</span>
+                                    <span
+                                        className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') + "₫"}</span>
+                                </div>
+                                <button
+                                    className="bg-black w-full py-2 font-thin rounded-md text-white"
+                                    onClick={() => handleConfirmCart()}
+                                >Xác nhận đơn hàng
+                                </button>
+
+                            </div>
                         </div>
-                    </Card>
-
-                </div>
-
+                    </div>
+                </Card>
             </div>
-        </Fragment>
+        </div>
     )
 }
 export default Checkout
