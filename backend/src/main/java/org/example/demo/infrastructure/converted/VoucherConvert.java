@@ -8,6 +8,7 @@ import org.example.demo.repository.voucher.VoucherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,12 +38,8 @@ public class VoucherConvert {
     }
 
     public Voucher convertRequestToEntity(Integer id, VoucherRequest request) {
-        Optional<Voucher> optionalVoucher = voucherRepository.findById(id);
-        if (optionalVoucher.isEmpty()) {
-            throw new RuntimeException("Voucher with ID not found: " + id);
-        }
-
-        Voucher voucher = optionalVoucher.get();
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Voucher with ID " + id + " not found"));
         voucher.setCode(request.getCode());
         voucher.setName(request.getName());
         voucher.setStatus(request.getStatus());
@@ -53,10 +50,17 @@ public class VoucherConvert {
         voucher.setEndDate(request.getEndDate());
         voucher.setTypeTicket(request.getTypeTicket());
         voucher.setDeleted(request.getDeleted());
-
-        List<Customer> customers = customerRepository.findAllById(request.getCustomers());
-        voucher.setCustomers(customers);
+        if (request.getCustomers() != null && !request.getCustomers().isEmpty()) {
+            List<Customer> customers = customerRepository.findAllById(request.getCustomers());
+            if (customers.size() != request.getCustomers().size()) {
+                throw new RuntimeException("One or more customers not found");
+            }
+            voucher.setCustomers(customers);
+        } else {
+            voucher.setCustomers(new ArrayList<>());
+        }
 
         return voucher;
     }
+
 }

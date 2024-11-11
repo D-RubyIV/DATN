@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from "@/components/ui";
 import { IoIosSearch } from 'react-icons/io';
 import { Input } from 'antd';
 import instance from "@/axios/CustomAxios";
-
 
 type ICustomer = {
     id: number;
@@ -16,6 +15,7 @@ type CustomerTableProps = {
     onSelectedCustomersChange: (selectedCustomers: ICustomer[]) => void;
     selectedCustomerIds: number[];
 };
+
 const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: CustomerTableProps) => {
     const [customers, setCustomers] = useState<ICustomer[]>([]);
     const [loading, setLoading] = useState(true);
@@ -41,27 +41,25 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
         fetchCustomers();
     }, [currentPage]);
 
-    // Sync selectedCustomerIdsState with prop (but only when the prop changes)
-    useEffect(() => {
-        if (JSON.stringify(selectedCustomerIds) !== JSON.stringify(selectedCustomerIdsState)) {
-            setSelectedCustomerIdsState(selectedCustomerIds);
-        }
-    }, [selectedCustomerIds]);
-
-    // Notify parent of selected customers
-    useEffect(() => {
-        const selectedCustomers = customers.filter(customer => selectedCustomerIdsState.includes(customer.id));
-        onSelectedCustomersChange(selectedCustomers);
-    }, [selectedCustomerIdsState, customers, onSelectedCustomersChange]);
-
-    // Handle customer selection
-    const handleSelectCustomer = (customerId: number) => {
+    const handleSelectCustomer = useCallback((customerId: number) => {
         setSelectedCustomerIdsState((prevSelected) =>
             prevSelected.includes(customerId)
                 ? prevSelected.filter((id) => id !== customerId)
                 : [...prevSelected, customerId]
         );
-    };
+    }, []);
+
+    useEffect(() => {
+        setSelectedCustomerIdsState(selectedCustomerIds);
+    }, [selectedCustomerIds]);
+
+    useEffect(() => {
+        if (selectedCustomerIdsState.length === selectedCustomerIds.length) return; // Prevent unnecessary updates
+        const selectedCustomers = customers.filter(customer =>
+            selectedCustomerIdsState.includes(customer.id)
+        );
+        onSelectedCustomersChange(selectedCustomers);
+    }, [selectedCustomerIdsState, customers, onSelectedCustomersChange]);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -69,10 +67,12 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
     };
 
     // Filtered customers
-    const filteredCustomers = customers.filter((customer) =>
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredCustomers = useMemo(() => {
+        return customers.filter((customer) =>
+            customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [customers, searchTerm]);
 
     // Pagination logic
     const indexOfLastCustomer = currentPage * customersPerPage;
@@ -111,7 +111,7 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
             </div>
 
             {loading ? (
-                <p className="text-gray-500 ">Loading customers...</p>
+                <p className="text-gray-500">Loading customers...</p>
             ) : (
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                     <thead className="bg-gray-200">
@@ -119,27 +119,51 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
                             <th className="border-b border-gray-300 px-4 py-2">Select</th>
                             <th className="border-b border-gray-300 px-4 py-2">Name</th>
                             <th className="border-b border-gray-300 px-4 py-2">Email</th>
+                            <th className="border-b border-gray-300 px-4 py-2">Phone</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="bg-white divide-y divide-gray-200">
                         {currentCustomers.map((customer) => (
-                            <tr key={customer.id} className="hover:bg-gray-100">
-                                <td className="border-b border-gray-300 px-4 py-2">
+                            <tr key={customer.id} className="hover:bg-gray-100 transition duration-200">
+                                <td className="border-b border-gray-300 px-4 py-2 text-center">
                                     <input
                                         type="checkbox"
                                         checked={selectedCustomerIdsState.includes(customer.id)}
                                         onChange={() => handleSelectCustomer(customer.id)}
+                                        className="form-checkbox h-5 w-5 text-blue-600"
                                     />
                                 </td>
                                 <td className="border-b border-gray-300 px-4 py-2">{customer.name}</td>
                                 <td className="border-b border-gray-300 px-4 py-2">{customer.email}</td>
+                                <td className="border-b border-gray-300 px-4 py-2">{customer.phone}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             )}
+
+            {/* Pagination */}
+            <div className="flex justify-between items-center mt-4">
+                {/* Previous Page */}
+                <div
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className={`cursor-pointer ${currentPage === 1 ? 'text-gray-400' : 'text-blue-600'}`}
+                >
+                    &lt; {/* This represents the Previous arrow */}
+                </div>
+
+                <span>{`Page ${currentPage} of ${totalPages}`}</span>
+
+                {/* Next Page */}
+                <div
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    className={`cursor-pointer ${currentPage === totalPages ? 'text-gray-400' : 'text-blue-600'}`}
+                >
+                    &gt; {/* This represents the Next arrow */}
+                </div>
+            </div>
         </div>
     );
 };
 
-export default CustomerTable; 
+export default CustomerTable;

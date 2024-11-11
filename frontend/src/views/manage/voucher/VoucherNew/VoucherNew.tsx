@@ -12,7 +12,7 @@ const VoucherNew = () => {
     const addVoucher = async (data: InitialData) => {
         try {
             const response = await instance.post<{ success: boolean }>('/voucher/add', data)
-            return response.data.success
+            return response.status
         } catch (error) {
             console.error('Error adding voucher:', error)
             return false
@@ -27,17 +27,8 @@ const VoucherNew = () => {
             setSubmitting(true)
             const success = await addVoucher(values)
             
-            if (success) {
-                toast.push(
-                    <Notification 
-                        title="Thêm mới thành công!" 
-                        type="success" 
-                        duration={2500}
-                    />,
-                    {
-                        placement: 'top-center'
-                    }
-                )
+            if (success == 201) {
+                toast.push('Thêm mới thành công')
                 navigate('/admin/manager/voucher')
             } else {
                 toast.push(

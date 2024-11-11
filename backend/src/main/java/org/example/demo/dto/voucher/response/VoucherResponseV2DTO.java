@@ -22,5 +22,5 @@ public class VoucherResponseV2DTO {
     private Integer maxPercent;
     private Integer minAmount;
     private String typeTicket;
-    private List<Integer> customerIds;
+    private List<Integer> customers;
 }
