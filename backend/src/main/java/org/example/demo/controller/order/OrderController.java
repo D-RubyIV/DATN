@@ -87,6 +87,11 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.findById(id)));
     }
 
+    @GetMapping(value = "by-code/{code}")
+    public ResponseEntity<OrderResponseDTO> detailByCode(@PathVariable String code) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.findByCode(code)));
+    }
+
     @PutMapping(value = "status/change/{id}")
     public ResponseEntity<OrderResponseDTO> changeStatus(@PathVariable Integer id, @RequestBody HistoryRequestDTO requestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeStatus(id, requestDTO)));

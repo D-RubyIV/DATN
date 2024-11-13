@@ -117,7 +117,6 @@ export type OrderResponseDTO = {
     voucherResponseDTO: OrderVoucherResponseDTO;
     orderDetailResponseDTOS: OrderDetailResponseDTO[];
     historyResponseDTOS: OrderHistoryResponseDTO[];
-    images: Image[]
 }
 
 export type Entity = {
@@ -144,11 +143,13 @@ export type OrderProductDetail = Entity & {
     material: Entity;
     thickness: Entity;
     elasticity: Entity;
-    images: Entity;
+    images: Entity[];
 };
 
 export type OrderDetailResponseDTO = {
     id: number;
+    name: string;
+    code: string;
     quantity: number;
     productDetailResponseDTO: OrderProductDetail;
 };

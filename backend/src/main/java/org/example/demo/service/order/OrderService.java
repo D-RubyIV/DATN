@@ -115,6 +115,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found"));
     }
 
+    public Order findByCode(String code) {
+        return orderRepository.findByCode(code).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found"));
+    }
+
     @Override
     @Transactional
     public Order delete(Integer id) {

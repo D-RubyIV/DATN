@@ -244,7 +244,7 @@ const Checkout = () => {
                                     const url = response?.data?.data?.paymentUrl
                                     console.log(url)
                                     if (url) {
-                                        // window.location.href = url // Mở đường dẫn mới
+                                        window.location.href = url // Mở đường dẫn mới
                                     }
                                 }
                             })

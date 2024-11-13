@@ -40,7 +40,7 @@ const publicRoute: Routes = [
     },
     {
         key: 'purchase',
-        path: '/user/purchase/:idOrder',
+        path: '/user/purchase/:codeOrder',
         component: lazy(() => import('@/views/sale/InvoiceSearchResult')),
         authority: []
     },

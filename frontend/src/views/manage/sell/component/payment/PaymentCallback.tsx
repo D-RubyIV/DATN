@@ -5,6 +5,7 @@ import { EOrderStatusEnums, OrderHistoryResponseDTO } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 import { Loading } from '@/components/shared'
 import { Button } from '@/components/ui'
+import instance from "@/axios/CustomAxios";
 
 type OrderResponseDTO = {
     id: number;
@@ -60,7 +61,15 @@ const PaymentCallback = () => {
                 setIsLoading(false)
             })
         })
+
+        instance.get(`orders/${idOrder}`).then(function (response){
+            if(response.status === 200){
+                setSelectedOrder(response.data)
+            }
+        })
     }, [location])
+
+
 
     const handleChangePaidOrder = async (idOrder: number) => {
         const data: OrderHistoryResponseDTO = {
@@ -81,12 +90,12 @@ const PaymentCallback = () => {
                     <p className="text-gray-700 mb-4">Cảm ơn bạn đã thanh toán. Đơn hàng của bạn đã được xử lý.</p>
                     <div className="border-t border-gray-200 mt-4 pt-4">
                         <h2 className="text-lg font-semibold text-indigo-400">Thông tin đơn hàng:</h2>
-                        <p className="text-gray-600">Mã đơn hàng: <span className="font-bold">#{(selectedOrder as OrderResponseDTO).code}</span></p>
-                        <p className="text-gray-600">Tổng tiền: <span className="font-bold">#{(selectedOrder as OrderResponseDTO).total.toLocaleString('vi')} VND</span></p>
-                        <p className="text-gray-600">Trạng thái đơn hàng: <span className="font-bold">#{(selectedOrder as OrderResponseDTO).status}</span></p>
+                        <p className="text-gray-600">Mã đơn hàng: <span className="font-bold">#{(selectedOrder as OrderResponseDTO)?.code ?? ""}</span></p>
+                        <p className="text-gray-600">Tổng tiền: <span className="font-bold">#{(selectedOrder as OrderResponseDTO)?.total.toLocaleString('vi')  ?? ""} VND</span></p>
+                        <p className="text-gray-600">Trạng thái đơn hàng: <span className="font-bold">#{(selectedOrder as OrderResponseDTO)?.status  ?? ""}</span></p>
                     </div>
                     <div className={'py-6'}>
-                     <Link to={`/admin/manage/order/order-details/${selectedOrderId}`}>
+                     <Link to={`/user/purchase/${selectedOrderId}`}>
                          <Button className={''} variant="default">
                              Xem chi tiết đơn hàng
                          </Button>
