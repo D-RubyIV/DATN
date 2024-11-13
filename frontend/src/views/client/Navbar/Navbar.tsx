@@ -11,12 +11,12 @@ const Menu = [
     {
         id: 1,
         name: "Trang chủ",
-        link: "/client",
+        link: "/",
     },
     {
         id: 2,
-        name: "Áo Nam",
-        link: "/client/collections",
+        name: "Sản phẩm của chúng tôi",
+        link: "/collections",
     },
 ];
 

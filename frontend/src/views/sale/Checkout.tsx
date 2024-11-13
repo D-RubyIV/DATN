@@ -221,7 +221,7 @@ const Checkout = () => {
                 instance.get(`/orders/convert/${id}`).then(function (response) {
                     if (response.status === 200 && response.data) {
                         getDetailAboutCart();
-                        navigate("/client")
+                        navigate("/")
                         localStorage.removeItem("myCartId")
                     }
                 })

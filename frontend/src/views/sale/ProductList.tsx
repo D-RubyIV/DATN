@@ -177,7 +177,7 @@ const ProductList = () => {
                                             <p>{Math.round(product.originPrice).toLocaleString('vi') + "₫"}</p>
                                         </div>
                                         <div>
-                                            <Link to={`/client/products/${product.productId}`}>
+                                            <Link to={`/products/${product.productId}`}>
                                                 <Button className={'w-full'}>Thêm vào giỏ hàng</Button>
                                             </Link>
                                         </div>

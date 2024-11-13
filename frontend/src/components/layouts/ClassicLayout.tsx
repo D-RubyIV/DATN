@@ -52,8 +52,34 @@ const AdminLayout = () => {
         </div>
     )
 }
-const ClientLayout = () => {
-
+// const ClientLayout = () => {
+//
+//     useEffect(() => {
+//         AOS.init({
+//             offset: 100,
+//             duration: 800,
+//             easing: "ease-in-sine",
+//             delay: 100,
+//         });
+//         AOS.refresh();
+//     }, []);
+//     return (
+//         <div className="app-layout-classic flex flex-auto flex-col">
+//             <SaleProvider>
+//                 <Navbar/>
+//                 <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
+//                     <div className="h-full flex flex-auto flex-col ">
+//                         <ClientViews/>
+//                     </div>
+//                     <Footer/>
+//                 </div>
+//                 <CartDrawer></CartDrawer>
+//             </SaleProvider>
+//
+//         </div>
+//     )
+// }
+const PublicLayout = () => {
     useEffect(() => {
         AOS.init({
             offset: 100,
@@ -67,26 +93,13 @@ const ClientLayout = () => {
         <div className="app-layout-classic flex flex-auto flex-col">
             <SaleProvider>
                 <Navbar/>
-                <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
-                    <div className="h-full flex flex-auto flex-col ">
-                        <ClientViews/>
+                <div className="flex flex-auto min-w-0">
+                    <div className="h-screen flex flex-auto flex-col">
+                        <PublicViews/>
                     </div>
-                    <Footer/>
                 </div>
                 <CartDrawer></CartDrawer>
             </SaleProvider>
-
-        </div>
-    )
-}
-const PublicLayout = () => {
-    return (
-        <div className="app-layout-classic flex flex-auto flex-col">
-            <div className="flex flex-auto min-w-0">
-                <div className="h-screen flex flex-auto flex-col">
-                    <PublicViews/>
-                </div>
-            </div>
         </div>
     )
 }
@@ -107,7 +120,7 @@ const SecurityLayout = () => {
 const RootLayout = () => {
     return (
         <Routes>
-            <Route path="/client/*" element={<ClientLayout/>}/>
+            {/*<Route path="/client/*" element={<ClientLayout/>}/>*/}
             <Route path="/admin/*" element={<AdminLayout/>}/>
             <Route path="/auth/*" element={<SecurityLayout/>}/>
             <Route path="/*" element={<PublicLayout/>}/>
