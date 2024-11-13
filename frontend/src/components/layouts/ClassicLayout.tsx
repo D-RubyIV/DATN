@@ -93,10 +93,11 @@ const PublicLayout = () => {
         <div className="app-layout-classic flex flex-auto flex-col">
             <SaleProvider>
                 <Navbar/>
-                <div className="flex flex-auto min-w-0">
-                    <div className="h-screen flex flex-auto flex-col">
+                <div className="flex flex-col flex-auto min-h-screen min-w-0 relative w-full">
+                    <div className="h-full flex flex-auto flex-col ">
                         <PublicViews/>
                     </div>
+                    <Footer/>
                 </div>
                 <CartDrawer></CartDrawer>
             </SaleProvider>

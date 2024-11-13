@@ -157,6 +157,9 @@ public class CartServiceV2 {
         feeDTO.setFrom_district_id(3440); // quận Nam Từ Liêm
 
         if (cart.getDistrictId() != null && cart.getProvinceId() != null) {
+            System.out.println("DISTRICT: " + cart.getDistrictId());
+            System.out.println("PROVINCE: " + cart.getProvinceId());
+            System.out.println("WARD: " + cart.getWardId());
             feeDTO.setTo_district_id(cart.getDistrictId());
             feeDTO.setTo_ward_code(cart.getWardId());
 
@@ -188,6 +191,7 @@ public class CartServiceV2 {
                 System.out.println(a);
                 return fee;
             } catch (Exception ex) {
+                System.out.println(ex.getMessage());
                 throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
             }
         } else {

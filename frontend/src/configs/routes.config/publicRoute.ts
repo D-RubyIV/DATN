@@ -33,6 +33,24 @@ const publicRoute: Routes = [
         authority: []
     },
     {
+        key: 'thank',
+        path: '/thank',
+        component: lazy(() => import('@/views/sale/ThankYou')),
+        authority: []
+    },
+    {
+        key: 'purchase',
+        path: '/user/purchase/:idOrder',
+        component: lazy(() => import('@/views/sale/InvoiceSearchResult')),
+        authority: []
+    },
+    {
+        key: 'check',
+        path: '/check-order',
+        component: lazy(() => import('@/views/sale/CheckOrderView')),
+        authority: []
+    },
+    {
         key: 'products',
         path: '/products/:id',
         component: lazy(() => import('@/views/sale/ProductDetail')),

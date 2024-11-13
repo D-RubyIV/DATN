@@ -63,7 +63,6 @@ public class Voucher extends BaseEntity {
             joinColumns = @JoinColumn(name = "voucher_id"),
             inverseJoinColumns = @JoinColumn(name = "customer_id")
     )
-    @JsonManagedReference
     private List<Customer> customers;
 
 

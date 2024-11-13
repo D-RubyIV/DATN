@@ -1,11 +1,12 @@
-import { Fragment, useEffect, useState } from "react";
+import {Fragment, useEffect, useState} from "react";
 import instance from "@/axios/CustomAxios";
-import { Button } from "@/components/ui";
-import { Link, useNavigate } from "react-router-dom";
-import { IoBagHandle } from "react-icons/io5";
-import { FaEye } from "react-icons/fa";
+import {Button} from "@/components/ui";
+import {Link, useNavigate} from "react-router-dom";
+import {IoBagHandle} from "react-icons/io5";
+import {FaEye} from "react-icons/fa";
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import {useSaleContext} from "@/views/sale/SaleContext";
 
 type Product = {
     productId: number;
@@ -33,8 +34,8 @@ type Param = {
 
 // Dữ liệu ví dụ:
 const categories = [
-    { id: 1, name: "Áo Phông có cổ" },
-    { id: 2, name: "Áo phông không cố" },
+    {id: 1, name: "Áo Phông có cổ"},
+    {id: 2, name: "Áo phông không cố"},
     // Thêm các danh mục khác
 ];
 
@@ -45,8 +46,7 @@ const ProductList = () => {
     const [listSize, setSetListSize] = useState<CommonObject[]>([])
     const [listSizeSelected, setListSizeSelected] = useState<CommonObject[]>([])
     const [listColorSelected, setListColorSelected] = useState<CommonObject[]>([])
-
-    // Hùng 
+    // Hùng
     const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
     const [priceRange, setPriceRange] = useState([0, 5000000]);
     const [isNewProductSelected, setIsNewProductSelected] = useState(false);
@@ -152,12 +152,26 @@ const ProductList = () => {
                                 step={1000}
                                 value={priceRange}
                                 onChange={handlePriceChange}
-                                trackStyle={[{ backgroundColor: 'gray', height: 8 }]}
+                                trackStyle={[{backgroundColor: 'gray', height: 8}]}
                                 handleStyle={[
-                                    { borderColor: 'black', height: 24, width: 24, marginLeft: -12, marginTop: -8, backgroundColor: 'white' },
-                                    { borderColor: 'black', height: 24, width: 24, marginLeft: -12, marginTop: -8, backgroundColor: 'white' }
+                                    {
+                                        borderColor: 'black',
+                                        height: 24,
+                                        width: 24,
+                                        marginLeft: -12,
+                                        marginTop: -8,
+                                        backgroundColor: 'white'
+                                    },
+                                    {
+                                        borderColor: 'black',
+                                        height: 24,
+                                        width: 24,
+                                        marginLeft: -12,
+                                        marginTop: -8,
+                                        backgroundColor: 'white'
+                                    }
                                 ]}
-                                railStyle={{ backgroundColor: 'lightgray', height: 8 }}
+                                railStyle={{backgroundColor: 'lightgray', height: 8}}
                             />
                             <div className="flex justify-between w-full mt-3">
                                 {/* Hiển thị giá theo định dạng có dấu phẩy và "đ" */}
@@ -165,7 +179,8 @@ const ProductList = () => {
                                 <p>{priceRange[1].toLocaleString('vi-VN')} đ</p>
                             </div>
                             <div className="mt-2 font-semibold text-sm text-gray-800">
-                                Khoảng giá: {priceRange[0].toLocaleString('vi-VN')}đ - {priceRange[1].toLocaleString('vi-VN')}đ
+                                Khoảng giá: {priceRange[0].toLocaleString('vi-VN')}đ
+                                - {priceRange[1].toLocaleString('vi-VN')}đ
                             </div>
                         </div>
                     </div>
@@ -200,7 +215,7 @@ const ProductList = () => {
                             <button
                                 className={`hover:bg-gray-200 p-2 text-left ${isOnSaleSelected ? 'bg-gray-300' : ''}`}
                                 onClick={() => handleFilterOnSale()}>
-                                <p className="font-bold">   Sản phẩm đang sale</p>
+                                <p className="font-bold"> Sản phẩm đang sale</p>
 
                             </button>
                         </div>
@@ -215,8 +230,8 @@ const ProductList = () => {
                             {
                                 listColor.map((item, index) => (
                                     <button key={index}
-                                        className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border  ${listColorSelected.find(s => s.code === item.code) ? "border-black border" : "border-gray-300"}`}
-                                        onClick={() => handleSelectColor(item)}>
+                                            className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border  ${listColorSelected.find(s => s.code === item.code) ? "border-black border" : "border-gray-300"}`}
+                                            onClick={() => handleSelectColor(item)}>
                                         <p>{item.name}</p>
                                     </button>
                                 ))
@@ -233,8 +248,8 @@ const ProductList = () => {
                                 listSize.map((item, index) => (
                                     <div key={index} className={'py-2'}>
                                         <button key={index}
-                                            className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border ${listSizeSelected.find(s => s.code === item.code) ? "border-black border" : "border-gray-300"}`}
-                                            onClick={() => handleSelectSize(item)}>
+                                                className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border ${listSizeSelected.find(s => s.code === item.code) ? "border-black border" : "border-gray-300"}`}
+                                                onClick={() => handleSelectSize(item)}>
                                             <p>{item.name}</p>
                                         </button>
                                     </div>
@@ -252,7 +267,8 @@ const ProductList = () => {
                         {
                             listProduct.map((product, index) => (
                                 <Fragment key={index}>
-                                    <div className={'bg-white p-4 rounded shadow flex justify-center flex-col duration-500 ease-in-out hover:scale-110 '}
+                                    <div
+                                        className={'bg-white p-4 rounded shadow flex justify-center flex-col duration-500 ease-in-out hover:scale-110 '}
                                         onMouseEnter={() => setHoveredProductId(product.productId)}
                                         onMouseLeave={() => setHoveredProductId(null)}
                                     >
@@ -270,7 +286,7 @@ const ProductList = () => {
                                                             className={`transition-transform duration-500 ease-in-out ${hoveredProductId === product.productId
                                                                 ? "transform scale-110"
                                                                 : "transform scale-100"
-                                                                }`}
+                                                            }`}
                                                         />
                                                     ) :
                                                     (
@@ -280,16 +296,19 @@ const ProductList = () => {
                                                         />
                                                     )
                                             }
-                                            <div className="absolute bottom-0 left-0 right-0 flex flex-row justify-around opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-opacity-50 p-2 w-full">
-                                                <Link to={`/client/products/${product.productId}`} className="flex-1 mr-1">
-                                                    <Button className=" bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center overflow-hidden">
-                                                        <IoBagHandle />
+                                            <div
+                                                className="absolute bottom-0 left-0 right-0 flex flex-row justify-around opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-opacity-50 p-2 w-full">
+                                                <Link to={`/products/${product.productId}`} className="flex-1 mr-1">
+                                                    <Button
+                                                        className=" bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center overflow-hidden">
+                                                        <IoBagHandle/>
                                                     </Button>
                                                 </Link>
 
-                                                <Link to={`/client/products/${product.productId}`} className="flex-1 ml-1">
-                                                    <Button className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
-                                                        <FaEye className="mr-2" />
+                                                <Link to={`/products/${product.productId}`} className="flex-1 ml-1">
+                                                    <Button
+                                                        className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
+                                                        <FaEye className="mr-2"/>
                                                     </Button>
                                                 </Link>
                                             </div>

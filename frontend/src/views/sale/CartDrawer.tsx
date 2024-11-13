@@ -1,28 +1,14 @@
-import {Fragment, useEffect, useState} from 'react'
+import {Fragment} from 'react'
 import {useSaleContext} from "@/views/sale/SaleContext";
-import instance from "@/axios/CustomAxios";
 import CloseButton from "@/components/ui/CloseButton";
 import {HiDocumentRemove, HiMinusCircle, HiPlusCircle} from "react-icons/hi";
-import {CartDetailResponseDTO, Color, ProductDetailResponseDTO, Size} from "@/views/sale/index";
+import { Color, ProductDetailResponseDTO, Size} from "@/views/sale/index";
 import {Link} from "react-router-dom";
 
 const CartDrawer = () => {
-    const {myCartId, isOpenCartDrawer, setIsOpenCartDrawer} = useSaleContext()
-
-    const [listCartDetailResponseDTO, setListCartDetailResponseDTO] = useState<CartDetailResponseDTO[]>([])
-    useEffect(() => {
-        if (isOpenCartDrawer) {
-           instance.get(`cart-details/in-cart/${myCartId}`).then(function (response){
-               console.log(response)
-               if (response?.data) {
-                   setListCartDetailResponseDTO(response?.data)
-               }
-            })
-        }
-    }, [isOpenCartDrawer]);
+    const {getCartDetailInCard, listCartDetailResponseDTO, setListCartDetailResponseDTO, myCartId, isOpenCartDrawer, setIsOpenCartDrawer} = useSaleContext()
 
     return (
-
         <Fragment>
             <div
                 className={`z-40 fixed h-[100svh] top-0 from-indigo-900 bg-gradient-to-l rounded-md 2xl:w-3/12 md:w-4/12 transition-all duration-500 block ${isOpenCartDrawer ? "right-0" : "-right-full"}`}>

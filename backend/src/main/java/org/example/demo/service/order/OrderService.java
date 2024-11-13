@@ -295,6 +295,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         calculateDiscount(order);
         try {
             if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE) {
+                System.out.println("DISTRICT: " + order.getDistrictId());
+                System.out.println("PROVINCE: " + order.getProvinceId());
+                System.out.println("WARD: " + order.getWardId());
                 JsonNode feeObject = calculateFee(order.getId());
                 if (feeObject != null) {
                     String feeString = String.valueOf(feeObject.get("data").get("total"));

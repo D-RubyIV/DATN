@@ -12,7 +12,7 @@ import ProductInfo from "../client/Cart/ProductInfo";
 
 const ProductDetail = () => {
     const { id } = useParams();
-    const { myCartId } = useSaleContext();
+    const { myCartId, getCartDetailInCard } = useSaleContext();
     const [product, setProduct] = useState<Product>();
     const [listProductDetail, setListProductDetail] = useState<ProductDetailResponseDTO[]>([]);
     const [listColorValid, setListColorValid] = useState<string[]>([]);
@@ -194,7 +194,9 @@ const ProductDetail = () => {
             console.log(response);
             if (response.status === 200) {
                 openNotification("Thêm vào giỏ hàng thành công")
+                getCartDetailInCard()
             }
+
         })
     }
 
@@ -267,7 +269,7 @@ const ProductDetail = () => {
                             {listColor.map((item, index) => (
                                 <button
                                     key={index}
-                                    className={`p-1 text-[12px] min-w-20 rounded border hover:bg-gray-100 disabled:bg-gray-100 ${selectedColor?.id === item.id ? "border-black" : ""
+                                    className={`p-1 text-[12px] min-w-20 rounded border hover:bg-gray-100 disabled:bg-gray-400 ${selectedColor?.id === item.id ? "border-black" : ""
                                         }`}
                                     disabled={!listColorValid.includes(item.code) && listColorValid.length > 0}
                                     onClick={() => handleColorSelect(item)}
@@ -283,7 +285,7 @@ const ProductDetail = () => {
                             {listSize.map((item, index) => (
                                 <button
                                     key={index}
-                                    className={`p-1 text-[12px] min-w-20 rounded border hover:bg-gray-100 disabled:bg-gray-100 ${selectedSize?.id === item.id ? "border-black" : ""
+                                    className={`p-1 text-[12px] min-w-20 rounded border hover:bg-gray-100 disabled:bg-gray-400 ${selectedSize?.id === item.id ? "border-black" : ""
                                         }`}
                                     disabled={!listSizeValid.includes(item.code) && listSizeValid.length > 0}
                                     onClick={() => handleSizeSelect(item)}

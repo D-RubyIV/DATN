@@ -5,6 +5,7 @@ import org.example.demo.repository.staff.StaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -57,7 +58,8 @@ public class SecurityConfig {
                                 .requestMatchers(mvcMatcherBuilder.pattern("orders/convert/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("orders/status/change/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("payment/**")).permitAll()
-                                .requestMatchers(mvcMatcherBuilder.pattern("orders/**")).hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, "orders/**")).hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "orders/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("voucher/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("customer/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .requestMatchers(mvcMatcherBuilder.pattern("product/**")).permitAll()

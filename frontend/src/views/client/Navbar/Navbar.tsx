@@ -18,6 +18,11 @@ const Menu = [
         name: "Sản phẩm của chúng tôi",
         link: "/collections",
     },
+    {
+        id: 3,
+        name: "Tra cứu đơn hàng",
+        link: "/check-order",
+    },
 ];
 
 const DropdownLinks = [
