@@ -26,10 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,7 +92,7 @@ public class VoucherServiceImpl implements VoucherService {
         dto.setMinAmount(voucher.getMinAmount());
         dto.setTypeTicket(voucher.getTypeTicket().name());
 
-        dto.setCustomerIds(
+        dto.setCustomers(
                 voucher.getCustomers().stream()
                         .map(BaseEntity::getId)
                         .collect(Collectors.toList())
@@ -209,13 +206,12 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    @Transactional
     public Voucher updateVoucher(Integer id, VoucherRequest request) {
         Voucher voucherUpdate = voucherRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Voucher not found with id: " + id));
-
-        Voucher voucherSaved = voucherRepository.save(voucherConvert.convertRequestToEntity(id, request));
-        updateStatus(voucherSaved);
-
+                .orElseThrow(() -> new RuntimeException("Voucher not found with ID " + id));
+        Voucher voucherSaved = voucherConvert.convertRequestToEntity(id, request);
+        updateStatus(voucherUpdate);
         if (voucherSaved.getTypeTicket() == Type.Individual && !request.getCustomers().isEmpty()) {
             List<Integer> idCustomers = request.getCustomers();
             List<Customer> listCustomers = idCustomers.stream()
@@ -223,12 +219,13 @@ public class VoucherServiceImpl implements VoucherService {
                             .orElseThrow(() -> new RuntimeException("Customer not found: " + idCustomer)))
                     .collect(Collectors.toList());
             voucherSaved.setCustomers(listCustomers);
+            voucherSaved = voucherRepository.save(voucherSaved);
         } else {
             voucherSaved.setCustomers(Collections.emptyList());
+            voucherSaved = voucherRepository.save(voucherSaved);
         }
         return voucherRepository.save(voucherSaved);
     }
-
 
     @Override
     public void updateStatusVoucher() {
