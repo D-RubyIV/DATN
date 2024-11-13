@@ -94,7 +94,7 @@ const CartDrawer = () => {
                                         <Fragment>
                                             <div className="flex flex-col justify-center items-center h-full">
                                                 <div>
-                                                    <img className="w-24 h-24 object-cover" src="./OIP-removebg-preview.png"></img>
+                                                    <img className="w-24 h-24 object-cover" src="/img/OIP-removebg-preview.png"></img>
                                                 </div>
                                                 <div>
                                                     <span className="font-thin">No have any product in your cart</span>

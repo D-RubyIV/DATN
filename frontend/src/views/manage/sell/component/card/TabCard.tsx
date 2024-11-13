@@ -62,6 +62,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                 discount: response.data.discount || 0,
                 total: response.data.total || 0
             })
+        }).catch(function (error){
+            console.log(error.response.data.error === "Order not found")
+            localStorage.removeItem("orderIds")
+            window.location.reload()
         })
         await sleep(200)
         setIsLoadingComponent(false)

@@ -351,8 +351,8 @@ const Checkout = () => {
 
     return (
         <div className="h-full bg-white">
-            <Card className={'px-40 py-20'}>
-                <form className={'grid 2xl:grid-cols-1 grid-cols-1 gap-5 h-full xl:p-20'}>
+            <Card className={'px-40'}>
+                <form className={'grid 2xl:grid-cols-1 grid-cols-1 gap-20 h-full xl:p-20'}>
                     {/*BLOCK 1*/}
                     <div className={'order-2 md:order-1 h-full col-span-2'}>
                         <Fragment>

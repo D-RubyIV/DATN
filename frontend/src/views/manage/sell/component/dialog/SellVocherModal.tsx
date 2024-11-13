@@ -53,7 +53,7 @@ const SellVoucherModal = ({setIsOpenVoucherModal, selectOrder, fetchData}: {
         total: number
     }>({
         total: 0,
-        pageIndex: 1,
+        pageIndex: 0,
         pageSize: 5,
         query: '',
         sort: {
@@ -63,7 +63,7 @@ const SellVoucherModal = ({setIsOpenVoucherModal, selectOrder, fetchData}: {
     })
     const handlePaginationChange = (pageIndex: number) => {
         setTableData((prevData) => ({...prevData, ...{pageIndex}}))
-        setQueryParam((pre) => ({...pre, page: pageIndex}))
+        setQueryParam((pre) => ({...pre, page: pageIndex, size: tableData.pageSize - 1}))
     }
     const handleSelectChange = (pageSize: number) => {
         setTableData((prevData) => ({
@@ -75,6 +75,14 @@ const SellVoucherModal = ({setIsOpenVoucherModal, selectOrder, fetchData}: {
     }
     const handleSort = ({order, key}: OnSortParam) => {
         console.log({order, key})
+        setQueryParam((pre) => ({
+            ...pre,
+            page: tableData.pageIndex,
+            size: tableData.pageSize,
+            order: order,
+            sort: typeof key === 'number' ? String(key) : key // Ensure 'sort' is always a string
+        }));
+
         setTableData((prevData) => ({
             ...prevData,
             sort: {
@@ -141,11 +149,15 @@ const SellVoucherModal = ({setIsOpenVoucherModal, selectOrder, fetchData}: {
         size: number | undefined,
         page: number | undefined,
         query: string | undefined
+        sort: string | undefined
+        order: string | undefined
 
     }>({
         size: 10,
         page: undefined,
-        query: undefined
+        query: undefined,
+        sort: undefined,
+        order: 'asc',
     })
 
     // FUCTION
@@ -175,7 +187,7 @@ const SellVoucherModal = ({setIsOpenVoucherModal, selectOrder, fetchData}: {
     const fetchDataProduct = async () => {
         setLoading(true)
         const response = await instance.get(`/voucher/page`, {
-            params: queryParam
+            params: queryParam,
         })
         setData(response.data.content)
         setLoading(false)

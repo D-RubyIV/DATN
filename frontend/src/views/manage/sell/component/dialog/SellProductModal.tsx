@@ -1,19 +1,21 @@
-import { useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch } from 'react'
+import {useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch} from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
-import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
-import { HiPlusCircle } from 'react-icons/hi'
+import type {ColumnDef, OnSortParam} from '@/components/shared/DataTable'
+import {HiPlusCircle} from 'react-icons/hi'
 import CloseButton from '@/components/ui/CloseButton'
-import type { MouseEvent } from 'react'
-import { useToastContext } from '@/context/ToastContext'
+import type {MouseEvent} from 'react'
+import {useToastContext} from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
 import ProductInformation from '@/views/manage/order/component/puzzle/ProductInfomation'
-import { OrderResponseDTO, ProductDetailOverviewPhah04 } from '@/@types/order'
-import { useLoadingContext } from '@/context/LoadingContext'
+import {OrderResponseDTO, ProductDetailOverviewPhah04} from '@/@types/order'
+import {useLoadingContext} from '@/context/LoadingContext'
+import {Avatar} from "@/components/ui";
+import {FiPackage} from "react-icons/fi";
 
-const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
+const SellProductModal = ({setIsOpenProductModal, selectOrder, fetchData}: {
     setIsOpenProductModal: Dispatch<SetStateAction<boolean>>,
     selectOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
@@ -21,7 +23,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const inputRef = useRef(null)
     const quantityRef = useRef(null)
     const [data, setData] = useState([])
-    const { sleep, isLoadingComponent, setIsLoadingComponent } = useLoadingContext()
+    const {sleep, isLoadingComponent, setIsLoadingComponent} = useLoadingContext()
     const [isOpenPlacement, setIsOpenPlacement] = useState(false)
     const [selectedProductDetail, setSelectedProductDetail] = useState<ProductDetailOverviewPhah04>({
         id: 0,
@@ -40,7 +42,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         sleeveName: "",
         materialName: "",
         thicknessName: "",
-        elasticityName: ""
+        elasticityName: "",
+        images: []
     });
 
     const [orderDetailRequest, setOrderDetailRequest] = useState<{
@@ -63,7 +66,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     }>({
         total: 0,
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 5,
         query: '',
         sort: {
             order: '',
@@ -71,7 +74,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         }
     })
     const handlePaginationChange = (pageIndex: number) => {
-        setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
+        setTableData((prevData) => ({...prevData, ...{pageIndex}}))
     }
     const handleSelectChange = (pageSize: number) => {
         setTableData((prevData) => ({
@@ -80,8 +83,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             pageIndex: 1 // Đặt pageIndex về 1
         }))
     }
-    const handleSort = ({ order, key }: OnSortParam) => {
-        console.log({ order, key })
+    const handleSort = ({order, key}: OnSortParam) => {
+        console.log({order, key})
         setTableData((prevData) => ({
             ...prevData,
             sort: {
@@ -96,6 +99,16 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             cell: (props) => (
                 props.row.index + 1
             )
+        },
+        {
+            header: 'Ảnh',
+            cell: (props) => {
+                return Array.isArray(props.row.original.images) && props.row.original.images.length > 0 ? (
+                    <Avatar size={90} src={props.row.original.images[0].url} shape={'round'} />
+                ) : (
+                    <Avatar size={90} icon={<FiPackage />} />
+                );
+            }
         },
         {
             header: 'Tên',
@@ -159,12 +172,12 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     })
 
     // FUCTION
-    const { openNotification } = useToastContext()
+    const {openNotification} = useToastContext()
 
     const setSelectProductDetailAndOpenDrawer = (productDetail: ProductDetailOverviewPhah04, isOpen: boolean) => {
         setIsOpenPlacement(true)
         setSelectedProductDetail(productDetail)
-        setOrderDetailRequest((pre) => ({ ...pre, productDetailId: productDetail.id, quantity: 1 }))
+        setOrderDetailRequest((pre) => ({...pre, productDetailId: productDetail.id, quantity: 1}))
     }
 
     const fetchDataProduct = async () => {
@@ -177,7 +190,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         setData(response.data.content)
         setTableData((prevData) => ({
             ...prevData,
-            ...{ total: response.data.totalElements }
+            ...{total: response.data.totalElements}
         }))
         await fetchData()
         setIsLoadingComponent(false)
@@ -192,7 +205,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         if ((val.length > 1 || val.length === 0)) {
             setTableData((prevData) => ({
                 ...prevData,
-                ...{ query: val, pageIndex: 1 }
+                ...{query: val, pageIndex: 1}
             }))
         }
     }
@@ -227,7 +240,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/5 bg-gray-100 z-20 shadow-md rounded-md">
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 2xl:w-3/5 w-4/5 max-h-4/5 overflow-auto bg-gray-100 z-20 shadow-md rounded-md">
                 <div className="flex-wrap inline-flex xl:flex items-center gap-2 !w-[500px]">
                     <div
                         title="Thêm sản phẩm"
@@ -260,7 +273,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     })}
                                 />
                                 <Button block variant="solid" size="sm" className="bg-indigo-500 w-full mt-5"
-                                        icon={<HiPlusCircle />} onClick={() => addOrderDetail()}>
+                                        icon={<HiPlusCircle/>} onClick={() => addOrderDetail()}>
                                     Thêm sản phẩm
                                 </Button>
                             </div>

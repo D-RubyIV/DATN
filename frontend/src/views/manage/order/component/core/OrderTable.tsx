@@ -143,7 +143,7 @@ export const OrderTable = () => {
 
     const calculateDistanceTime = (formattedDate: string) => {
         const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
-        const dateMinus12Hours = subHours(date, 12)
+        const dateMinus12Hours = subHours(date, -12)
         const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi })
         return distance
     }
@@ -269,9 +269,9 @@ export const OrderTable = () => {
                                 {props.row.original.status === 'PENDING'
                                     ? 'Chờ xác nhân'
                                     : props.row.original.status === 'TOSHIP'
-                                        ? 'Đợi giao hàng'
+                                        ? 'Chờ vận chuyển'
                                         : props.row.original.status === 'TORECEIVE'
-                                            ? 'Đang giao hàng'
+                                            ? 'Đang vận chuyển'
                                             : props.row.original.status === 'DELIVERED'
                                                 ? 'Đã hoàn thành'
                                                 : props.row.original.status === 'CANCELED'
@@ -336,7 +336,7 @@ export const OrderTable = () => {
         { label: 'CHỜ THANH TOÁN', value: EOrderStatusEnums.UNPAID, badge: 'countUnPaid' },
         { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
         { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
-        { label: 'ĐÃ GIAO', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },
+        { label: 'ĐÃ HOÀN THÀNH', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },
         { label: 'ĐÃ HỦY', value: EOrderStatusEnums.CANCELED, badge: 'countCancelled' },
         { label: 'TRẢ HÀNG', value: EOrderStatusEnums.RETURNED, badge: 'countReturned' }
     ]

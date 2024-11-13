@@ -142,7 +142,7 @@ export type OrderProductDetail = Entity & {
     material: Entity;
     thickness: Entity;
     elasticity: Entity;
-    image: Entity;
+    images: Entity;
 };
 
 export type OrderDetailResponseDTO = {
@@ -190,4 +190,15 @@ export type ProductDetailOverviewPhah04 = {
     materialName: string;
     thicknessName: string;
     elasticityName: string;
+    images: Image[]
+
+};
+
+type Image = {
+    id: number;
+    createdDate: string;
+    updatedDate: string;
+    code: string;
+    url: string;
+    deleted: boolean;
 };

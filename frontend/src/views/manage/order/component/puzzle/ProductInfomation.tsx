@@ -1,9 +1,11 @@
 import { ProductDetailOverviewPhah04 } from "../../../../../@types/order";
+import {Avatar} from "@/components/ui";
+import {FiPackage} from "react-icons/fi";
 
 const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: ProductDetailOverviewPhah04 }) => {
     return (
-        <div className="grid grid-cols-3">
-            <div className={'col-span-2'}>
+        <div className="grid xl:grid-cols-3 grid-cols-1">
+            <div className={'md:col-span-2'}>
                 <div className="font-semibold text-xl py-2">
                     <div>
                         <span>Sản phẩm: </span>
@@ -14,7 +16,13 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
                 </div>
                 <div className='flex gap-5'>
                     <div>
-                        <img className='rounded-md object-cover h-[260px] w-[200px]' src='https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png' alt='' />
+                        {
+                            Array.isArray(seletedProductDetail.images) && seletedProductDetail.images.length > 0 ? (
+                                <Avatar size={150} src={seletedProductDetail.images[0].url} shape={'round'}/>
+                            ) : (
+                                <Avatar size={150} icon={<FiPackage />} />
+                            )
+                        }
                     </div>
                     <div className='text-sm py-2 inline-flex flex-col justify-between'>
                         <li>
