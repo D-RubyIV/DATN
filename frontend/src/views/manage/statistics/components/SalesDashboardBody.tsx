@@ -1,69 +1,35 @@
-import { useEffect } from 'react'
-import Loading from '@/components/shared/Loading'
-import Statistic from './Statistic'
-import SalesReport from './SalesReport'
-import SalesByCategories from './SalesByCategories'
-import LatestOrder from './LatestOrder'
-import TopProduct from './TopProduct'
-import { getSalesDashboardData, useAppSelector } from '../store'
+import React, { Fragment, useEffect } from 'react'
+import Statistic from '@/views/manage/statistics/components/Statistic'
+import SalesReport from '@/views/manage/statistics/components/SalesReport'
+import SalesByCategories from '@/views/manage/statistics/components/SalesByCategories'
+import LatestOrder from '@/views/manage/statistics/components/LatestOrder'
+import TopProduct from '@/views/manage/statistics/components/TopProduct'
 import { useAppDispatch } from '@/store'
-import { StatisticProps } from '@/views/manage/statistics/types/model'
+import { getLastOrders, getTopSeller, useAppSelector } from '@/views/manage/statistics/store'
 
 const SalesDashboardBody = () => {
     const dispatch = useAppDispatch()
-
-    const dashboardData = useAppSelector(
-        (state) => state.salesDashboard.data.dashboardData
-    )
-
-    const loading = useAppSelector((state) => state.salesDashboard.data.loading)
+    const listTopProduct = useAppSelector((state) => state.statistic.listTopProduct)
+    const listLatestOrders = useAppSelector((state) => state.statistic.listLatestOrders)
 
     useEffect(() => {
-        fetchData()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        dispatch(getTopSeller())
+        dispatch(getLastOrders())
     }, [])
-
-    const fetchData = () => {
-        dispatch(getSalesDashboardData())
-    }
-
-    const fakeStaticDataFirst: StatisticProps = {
-        data: {
-            revenue: {
-                value: 100,
-                growShrink: 200
-            },
-            orders: {
-                value: 1000,
-                growShrink: 1000
-            },
-            purchases: {
-                value: 1000,
-                growShrink: 1000
-            }
-        }
-    }
-
     return (
-        <Loading loading={false}>
-            <Statistic data={fakeStaticDataFirst.data} />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/*<SalesReport*/}
-                {/*    data={dashboardData?.salesReportData}*/}
-                {/*    className="col-span-2"*/}
-                {/*/>*/}
-                {/*<SalesByCategories*/}
-                {/*    data={dashboardData?.salesByCategoriesData}*/}
-                {/*/>*/}
+        <Fragment>
+            <Statistic />
+            <div className="grid grid-cols-1 2xl:grid-cols-3 gap-4">
+                <div className={'col-span-2'}>
+                    <SalesReport />
+                </div>
+                <SalesByCategories/>
             </div>
-            {/*<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">*/}
-            {/*    <LatestOrder*/}
-            {/*        data={dashboardData?.latestOrderData}*/}
-            {/*        className="lg:col-span-2"*/}
-            {/*    />*/}
-            {/*    <TopProduct data={dashboardData?.topProductsData} />*/}
-            {/*</div>*/}
-        </Loading>
+            <div className="grid grid-cols-1 2xl:grid-cols-3 gap-4">
+                <LatestOrder data={listLatestOrders} className="lg:col-span-2" />
+                <TopProduct data={listTopProduct} />
+            </div>
+        </Fragment>
     )
 }
 

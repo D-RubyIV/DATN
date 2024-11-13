@@ -4,13 +4,14 @@ import axios from "axios"
 import toast from '@/components/ui/toast'
 import { Notification } from "@/components/ui"
 import { AdaptableCard } from "@/components/shared"
+import instance from "@/axios/CustomAxios";
  
 const VoucherNew =() => {
 
     const navigate = useNavigate()
 
     const addVoucher = async (data: FormModel) => {
-        const response = await axios.post<FormModel>('http://localhost:8080/api/v1/voucher/add', data, {
+        const response = await instance.post<FormModel>('/voucher/add', data, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -34,12 +35,12 @@ const VoucherNew =() => {
                     placement : 'top-center'
                 }
             )
-            navigate('/admin/manager/voucher/voucher-list')
+            navigate('/admin/manager/voucher')
         }
     }
 
     const handleDiscard = () => {
-        navigate('/admin/manager/voucher/voucher-list')
+        navigate('/admin/manager/voucher')
     }
     return (
 

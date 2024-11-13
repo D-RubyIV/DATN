@@ -3,7 +3,11 @@ package org.example.demo.dto.product.requests.core;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.dto.product.requests.properties.ImageRequestDTO;
 import org.example.demo.entity.product.properties.*;
+
+import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,6 +18,7 @@ public class ProductDetailRequestDTO {
     private String name;
     private Double price;
     private Integer quantity;
+    private Integer mass;
     private Boolean deleted;
     private Size size;
     private Color color;
@@ -27,5 +32,5 @@ public class ProductDetailRequestDTO {
     private Material material;
     private Thickness thickness;
     private Elasticity elasticity;
-    private Image image;
+    private List<ImageRequestDTO> images; //
 }

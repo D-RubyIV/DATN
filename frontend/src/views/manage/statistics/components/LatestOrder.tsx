@@ -8,52 +8,88 @@ import {
     useReactTable,
     getCoreRowModel,
     flexRender,
-    createColumnHelper,
+    createColumnHelper
 } from '@tanstack/react-table'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { NumericFormat } from 'react-number-format'
-import dayjs from 'dayjs'
+import { OrderDTO } from '@/views/manage/statistics/store'
+import { HiEye } from 'react-icons/hi'
 
-type Order = {
-    id: string
-    date: number
-    customer: string
-    status: number
-    paymentMehod: string
-    paymentIdendifier: string
-    totalAmount: number
-}
 
 type LatestOrderProps = {
-    data?: Order[]
+    data?: OrderDTO[]
     className?: string
 }
 
 type OrderColumnPros = {
-    row: Order
+    row: OrderDTO
 }
 
 const { Tr, Td, TBody, THead, Th } = Table
 
 const orderStatusColor: Record<
-    number,
+    string,
     {
         label: string
         dotClass: string
         textClass: string
     }
 > = {
-    0: {
-        label: 'Paid',
-        dotClass: 'bg-emerald-500',
-        textClass: 'text-emerald-500',
+    'PENDING': {
+        label: 'Chờ xác nhận',
+        dotClass: 'bg-yellow-500',
+        textClass: 'text-yellow-500'
     },
-    1: {
-        label: 'Pending',
-        dotClass: 'bg-amber-500',
-        textClass: 'text-amber-500',
+    'TOSHIP': {
+        label: 'Chờ vận chuyển',
+        dotClass: 'bg-blue-500',
+        textClass: 'text-blue-500'
     },
-    2: { label: 'Failed', dotClass: 'bg-red-500', textClass: 'text-red-500' },
+    'TORECEIVE': {
+        label: 'Đang vận chuyển',
+        dotClass: 'bg-green-500',
+        textClass: 'text-green-500'
+    },
+    'DELIVERED': {
+        label: 'Đã hoàn thành',
+        dotClass: 'bg-purple-500',
+        textClass: 'text-purple-500'
+    },
+    'CANCELED': {
+        label: 'Đã hủy đơn',
+        dotClass: 'bg-red-500',
+        textClass: 'text-red-500'
+    },
+    'RETURNED': {
+        label: 'Đã trả hàng',
+        dotClass: 'bg-orange-500',
+        textClass: 'text-orange-500'
+    },
+    'UNPAID': {
+        label: 'Chờ thanh toán',
+        dotClass: 'bg-pink-500',
+        textClass: 'text-pink-500'
+    }
+}
+
+const orderTypeColor: Record<
+    string,
+    {
+        label: string
+        dotClass: string
+        textClass: string
+    }
+> = {
+    'INSTORE': {
+        label: 'Tại quầy',
+        dotClass: 'bg-yellow-500',
+        textClass: 'text-yellow-500'
+    },
+    'ONLINE': {
+        label: 'Giao hàng',
+        dotClass: 'bg-blue-500',
+        textClass: 'text-blue-500'
+    }
 }
 
 const OrderColumn = ({ row }: OrderColumnPros) => {
@@ -74,15 +110,15 @@ const OrderColumn = ({ row }: OrderColumnPros) => {
     )
 }
 
-const columnHelper = createColumnHelper<Order>()
+const columnHelper = createColumnHelper<OrderDTO>()
 
 const columns = [
     columnHelper.accessor('id', {
-        header: 'Order',
-        cell: (props) => <OrderColumn row={props.row.original} />,
+        header: 'Đơn hàng',
+        cell: (props) => <OrderColumn row={props.row.original} />
     }),
     columnHelper.accessor('status', {
-        header: 'Status',
+        header: 'Trạng thái',
         cell: (props) => {
             const { status } = props.row.original
             return (
@@ -95,55 +131,92 @@ const columns = [
                     </span>
                 </div>
             )
-        },
+        }
     }),
-    columnHelper.accessor('date', {
-        header: 'Date',
+    columnHelper.accessor('type', {
+        header: 'Loại',
+        cell: (props) => {
+            const { type } = props.row.original
+            return (
+                <div className="flex items-center">
+                    <Badge className={orderTypeColor[type].dotClass} />
+                    <span
+                        className={`ml-2 rtl:mr-2 capitalize font-semibold ${orderTypeColor[type].textClass}`}
+                    >
+                        {orderTypeColor[type].label}
+                    </span>
+                </div>
+            )
+        }
+    }),
+    columnHelper.accessor('createdDate', {
+        header: 'Ngày tạo',
         cell: (props) => {
             const row = props.row.original
-            return <span>{dayjs.unix(row.date).format('DD/MM/YYYY')}</span>
-        },
+            return <span>{row.createdDate}</span>
+        }
     }),
-    columnHelper.accessor('customer', {
-        header: 'Customer',
-    }),
-    columnHelper.accessor('totalAmount', {
-        header: 'Profile Progress',
+    columnHelper.accessor('customerName', {
+        header: 'Khách hàng',
         cell: (props) => {
-            const { totalAmount } = props.row.original
+            const row = props.row.original
+            return <span>{row.customerName ?? 'Khách lẻ'}</span>
+        }
+    }),
+    columnHelper.accessor('total', {
+        header: 'Thành tiền',
+        cell: (props) => {
+            const { total } = props.row.original
             return (
                 <NumericFormat
                     displayType="text"
-                    value={(Math.round(totalAmount * 100) / 100).toFixed(2)}
-                    prefix={'$'}
+                    value={(Math.round(total * 100) / 100).toFixed(0)}
+                    suffix={'đ'}
                     thousandSeparator={true}
                 />
             )
-        },
+        }
     }),
+    columnHelper.accessor('id', {
+        header: 'Hành động',
+        cell: (props) => {
+            const { id } = props.row.original
+            return (
+                <Button size="xs" className="w-full flex justify-start items-center" variant="plain">
+                    <Link to={`/admin/manage/order/order-details/${id}`}>
+                        <HiEye
+                            size={20}
+                            className="mr-3 text-2xl"
+                            style={{ cursor: 'pointer' }}
+                        />
+                    </Link>
+                </Button>
+            )
+        }
+    })
 ]
 
 const LatestOrder = ({ data = [], className }: LatestOrderProps) => {
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
+        getCoreRowModel: getCoreRowModel()
     })
 
     return (
         <Card className={className}>
             <div className="flex items-center justify-between mb-6">
-                <h4>Latest Orders</h4>
-                <Button size="sm">View Orders</Button>
+                <h4>Đơn hàng gần đây</h4>
+                {/*<Button size="sm">View Orders</Button>*/}
             </div>
             <Table>
                 <THead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <Tr key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
+                    {table.getHeaderGroups().map((headerGroup, index) => (
+                        <Tr key={index}>
+                            {headerGroup.headers.map((header, index) => {
                                 return (
                                     <Th
-                                        key={header.id}
+                                        key={index}
                                         colSpan={header.colSpan}
                                     >
                                         {flexRender(
@@ -157,12 +230,12 @@ const LatestOrder = ({ data = [], className }: LatestOrderProps) => {
                     ))}
                 </THead>
                 <TBody>
-                    {table.getRowModel().rows.map((row) => {
+                    {table.getRowModel().rows.map((row, index) => {
                         return (
-                            <Tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => {
+                            <Tr key={index}>
+                                {row.getVisibleCells().map((cell, index) => {
                                     return (
-                                        <Td key={cell.id}>
+                                        <Td key={index}>
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()

@@ -1,4 +1,3 @@
-import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Table from '@/components/ui/Table'
 import Avatar from '@/components/ui/Avatar'
@@ -6,27 +5,22 @@ import {
     useReactTable,
     getCoreRowModel,
     flexRender,
-    createColumnHelper,
+    createColumnHelper
 } from '@tanstack/react-table'
 import { FiPackage } from 'react-icons/fi'
-
-type Product = {
-    id: string
-    name: string
-    img: string
-    sold: number
-}
+import { TopProductDTO, useAppSelector } from '../store'
+import { Select } from '@/components/ui'
 
 type TopProductProps = {
-    data?: Product[]
+    data?: TopProductDTO[]
     className?: string
 }
 
 const { Tr, Td, TBody, THead, Th } = Table
 
-const ProductColumn = ({ row }: { row: Product }) => {
+const ProductColumn = ({ row }: { row: TopProductDTO }) => {
     const avatar = row.img ? (
-        <Avatar src={row.img} />
+        <Avatar src={row.img} className={'w-[250px]'}/>
     ) : (
         <Avatar icon={<FiPackage />} />
     )
@@ -39,7 +33,7 @@ const ProductColumn = ({ row }: { row: Product }) => {
     )
 }
 
-const columnHelper = createColumnHelper<Product>()
+const columnHelper = createColumnHelper<TopProductDTO>()
 
 const columns = [
     columnHelper.accessor('name', {
@@ -47,26 +41,42 @@ const columns = [
         cell: (props) => {
             const row = props.row.original
             return <ProductColumn row={row} />
-        },
+        }
     }),
     columnHelper.accessor('sold', {
-        header: 'Sold',
-    }),
+        header: 'Sold'
+    })
 ]
 
 const TopProduct = ({ data = [], className }: TopProductProps) => {
+
     const table = useReactTable({
         data,
         columns,
-        getCoreRowModel: getCoreRowModel(),
+        getCoreRowModel: getCoreRowModel()
     })
+
+    // const listOptions = [
+    //     { value: 5, label: 5, color: '#00B8D9' },
+    //     { value: 10, label: 10, color: '#0052CC' },
+    //     { value: 20, label: 20, color: '#5243AA' },
+    // ]
+    // const topIndex = useAppSelector((state) => state.statistic.topProductParam.size);
 
     return (
         <Card className={className}>
             <div className="flex items-center justify-between mb-4">
-                <h4>Top Selling</h4>
-                <Button size="sm">View Products</Button>
+                <h4>Top thịnh hành</h4>
+                {/*<Button size="sm">View Products</Button>*/}
+                {/*<div>*/}
+                {/*    <Select*/}
+                {/*        placeholder="Please Select"*/}
+                {/*        options={listOptions}*/}
+                {/*        value={listOptions.find((s) => s.value === topIndex)}*/}
+                {/*    ></Select>*/}
+                {/*</div>*/}
             </div>
+
             <Table>
                 <THead>
                     {table.getHeaderGroups().map((headerGroup) => (

@@ -8,5 +8,4 @@ public enum Status {
     CANCELED,   // Đã hủy
     RETURNED,   // Trả hàng
     UNPAID,     // Chờ thanh toán
-    PAID        // Đã thanh toán
 }

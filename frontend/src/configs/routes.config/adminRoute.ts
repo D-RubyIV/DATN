@@ -1,110 +1,109 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
-import tuanRoute from '@/configs/routes.config/tuanRoute'
+
 
 const adminRoute: Routes = [
+    {
+        key: 'home',
+        path: 'manage/home',
+        component: lazy(() => import('@/views/manage/statistics/SalesDashboard')),
+        authority: []
+    },
     {
         key: 'customerManager',
         path: `manage/customer`,
         component: lazy(() => import('@/views/manage/customer/CustomerManage')),
-        authority: [],
+        authority: []
     },
     {
         key: 'addCustomer',
         path: `manage/customer/add`,
         component: lazy(
-            () => import('@/views/manage/customer/component/AddCustomer'),
+            () => import('@/views/manage/customer/component/AddCustomer')
         ),
-        authority: [],
+        authority: []
     },
     {
         key: 'updateCustomer',
         path: `manage/customer/update/:id`,
         component: lazy(
-            () => import('@/views/manage/customer/component/UpdateCustomer'),
+            () => import('@/views/manage/customer/component/UpdateCustomer')
         ),
-        authority: [],
+        authority: []
     },
     {
         key: 'voucherManager',
         path: `manage/voucher`,
         component: lazy(() => import('@/views/manage/voucher/VoucherManage')),
+        authority: []
+    },
+    {
+        key: 'appVouchers.voucherList',
+        path: `manage/voucher/voucher-list`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherManage')),
+        authority: []
+    },
+    {
+        key: 'appVouchers.voucherNew',
+        path: `manage/voucher/voucher-new`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherNew')),
         authority: [],
+        meta: { header: 'Thêm Phiếu Giảm Giá' }
+    },
+    {
+        key: 'UpdateVoucher',
+        path: `manage/voucher/update/:id`,
+        component: lazy(() => import('@/views/manage/voucher/VoucherNew/VoucherUpdate')),
+        authority: []
     },
     {
         key: 'staffManager',
         path: `manage/staff`,
         component: lazy(() => import('@/views/manage/staff/StaffManage')),
-        authority: [],
+        authority: []
     },
     {
         key: 'UpdateStaff',
         path: `manage/staff/update/:id`,
         component: lazy(() => import('@/views/manage/staff/UpdateStaff')),
-        authority: [],
+        authority: []
     },
     {
         key: 'AddStaffPage',
         path: `manage/staff/add`,
         component: lazy(() => import('@/views/manage/staff/AddStaffPage')),
-        authority: [],
+        authority: []
     },
     {
         key: 'orderManager',
         path: `manage/order`,
         component: lazy(() => import('@/views/manage/order/OrderManage')),
-        authority: [],
-    },
-    {
-        key: 'appVouchers.voucherList',
-        path: `${APP_PREFIX_PATH}/voucher/voucher-list`,
-        component: lazy(() => import('@/views/manage/voucher/VoucherManage')),
-        authority: [],
-    },
-    {
-        key: 'appVouchers.voucherNew',
-        path: `${APP_PREFIX_PATH}/voucher/voucher-new`,
-        component: lazy(() => import('@/views/manage/voucher/VoucherNew')),
-        authority: [],
-        meta: { header: 'Thêm Phiếu Giảm Giá' },
+        authority: []
     },
     {
         key: 'customerManager',
         path: `manage/order/order-details/:id`,
-        component: lazy(
-            () => import('@/views/manage/order/component/other/OrderDetails'),
-        ),
-        authority: [],
+        component: lazy(() => import('@/views/manage/order/component/other/OrderDetails')),
+        authority: []
     },
     {
         key: 'manageSell',
         path: `manage/sell`,
         component: lazy(() => import('@/views/manage/sell/SellManage')),
-        authority: [],
+        authority: []
     },
     {
         key: 'productManage',
         path: `manage/product`,
         component: lazy(() => import('@/views/manage/product/productList')),
-        authority: [],
+        authority: []
     },
     {
         key: 'productManage',
         path: 'manage/product/ProductDetail-list/:id',
-        component: lazy(
-            () => import('@/views/manage/product/productDetailList'),
-        ),
-        authority: [],
-    },
-    {
-        key: 'payment',
-        path: `manage/payment/callback`,
-        component: lazy(
-            () =>
-                import('@/views/manage/sell/component/payment/PaymentCallback'),
-        ),
-        authority: [],
+        component: lazy(() => import('@/views/manage/product/productDetailList')),
+        authority: []
     },
     {
         key: 'eventManager',
@@ -131,7 +130,90 @@ const adminRoute: Routes = [
         authority: [],
     },
 
-    ...tuanRoute,
+    {
+        key: 'productManage',
+        path: `/manage/product`,
+        component: lazy(() => import('@/views/manage/product/productList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/ProductDetail-list/:id',
+        component: lazy(() => import('@/views/manage/product/productDetailList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/product-new',
+        component: lazy(() => import('@/views/manage/product/ProductNew')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/brand-list',
+        component: lazy(() => import('@/views/manage/product/brandLisst')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/origin-list',
+        component: lazy(() => import('@/views/manage/product/originList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/style-list',
+        component: lazy(() => import('@/views/manage/product/styleList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/material-list',
+        component: lazy(() => import('@/views/manage/product/materialList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/collar-list',
+        component: lazy(() => import('@/views/manage/product/collarList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/sleeve-list',
+        component: lazy(() => import('@/views/manage/product/sleeveList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/texture-list',
+        component: lazy(() => import('@/views/manage/product/textureList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/thickness-list',
+        component: lazy(() => import('@/views/manage/product/thicknessList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/elasticity-list',
+        component: lazy(() => import('@/views/manage/product/elasticityList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/size-list',
+        component: lazy(() => import('@/views/manage/product/sizeList')),
+        authority: [],
+    },
+    {
+        key: 'productManage',
+        path: 'manage/product/color-list',
+        component: lazy(() => import('@/views/manage/product/colorList')),
+        authority: [],
+    },
 ]
 
 export default adminRoute

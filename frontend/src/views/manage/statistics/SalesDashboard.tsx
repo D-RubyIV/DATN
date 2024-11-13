@@ -1,9 +1,11 @@
-import reducer from './store'
 import { injectReducer } from '@/store'
+import React from 'react'
+import SalesDashboardBody from '@/views/manage/statistics/components/SalesDashboardBody'
+import reducer from '@/views/manage/statistics/store'
 import SalesDashboardHeader from './components/SalesDashboardHeader'
-import SalesDashboardBody from './components/SalesDashboardBody'
 
-injectReducer('salesDashboard', reducer)
+
+injectReducer('STATISTIC_SLICE', reducer)
 
 const SalesDashboard = () => {
     return (

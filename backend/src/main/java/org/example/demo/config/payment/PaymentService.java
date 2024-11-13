@@ -13,10 +13,9 @@ public class PaymentService {
     private final VnPayConfig vnPayConfig;
     public PaymentDTO.VNPayResponse createVnPayPayment(HttpServletRequest request) {
         long amount = Integer.parseInt(request.getParameter("amount")) * 100L;
-        String returnUrl = request.getParameter("returnUrl");
+        long idOrder = Integer.parseInt(request.getParameter("idOrder"));
         String bankCode = request.getParameter("bankCode");
-        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
-        vnpParamsMap.put("vnp_ReturnUrl", returnUrl);
+        Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig(idOrder);
         vnpParamsMap.put("vnp_Amount", String.valueOf(amount));
         if (bankCode != null && !bankCode.isEmpty()) {
             vnpParamsMap.put("vnp_BankCode", bankCode);

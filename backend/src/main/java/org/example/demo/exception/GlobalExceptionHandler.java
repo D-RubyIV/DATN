@@ -18,7 +18,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -138,6 +137,12 @@ public class GlobalExceptionHandler {
         String message = messageSource.getMessage("HttpMessageNotReadableException", new Object[]{}, LocaleContextHolder.getLocale());
         CustomError error = new CustomError(HttpStatus.BAD_REQUEST, message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler({CustomExceptions.CustomBadSecurity.class})
+    public ResponseEntity<?> handleCustomBadSecurityException(CustomExceptions.CustomBadSecurity ex) {
+        CustomError error = new CustomError(HttpStatus.FORBIDDEN, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
 }

@@ -27,15 +27,13 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                         />
                         <div className="text-white">
                             <div className="font-semibold text-base">
-                                Brittany Hale
+                                Lê Ngọc Hùng
                             </div>
                             <span className="opacity-80">CTO, Onward</span>
                         </div>
                     </div>
                     <p className="text-lg text-white opacity-80">
-                        Elstar comes with a complete set of UI components
-                        crafted with Tailwind CSS, it fulfilled most of the use
-                        case to create modern and beautiful UI and application
+                        CANTH website is an e-commerce site that helps buyers buy, sell and pay easily
                     </p>
                 </div>
                 <span className="text-white">
@@ -48,8 +46,8 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                     <div className="mb-8">{content}</div>
                     {children
                         ? cloneElement(children as React.ReactElement, {
-                              ...rest,
-                          })
+                            ...rest,
+                        })
                         : null}
                 </div>
             </div>

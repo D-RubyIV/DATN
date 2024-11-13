@@ -6,9 +6,9 @@ import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.human.customer.Customer;
-import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.entity.voucher.enums.Type;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.infrastructure.common.AutoGenCode;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.infrastructure.converted.VoucherConvert;
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,12 +61,6 @@ public class VoucherServiceImpl implements VoucherService {
     public List<VoucherResponse> getAll() {
         return voucherRepository.getPublicVoucher();
     }
-
-//    @Override
-//    public PageableObject<VoucherResponse> getAll(VoucherRequest request) {
-//
-//        return new PageableObject<>(voucherRepository.getAllVoucher(request, PageRequest.of(request.getPage() -1 > 0 ? request.getPage()-1 : 0, request.getSizePage())));
-//    }
 
     @Override
     public PageableObject<VoucherResponse> getAll(VoucherRequest request) {
@@ -138,11 +133,18 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
 
-    @Override
-    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, int limit, int offset) {
-        Pageable pageable = PageRequest.of(offset / limit, limit);
-        return voucherRepository.searchVoucher(keyword,name, code, typeTicket, quantity, maxPercent,minAmount,status, pageable);
-    }
+//    @Override
+//    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent, Double minAmount, String status, int limit, int offset) {
+//        Pageable pageable = PageRequest.of(offset / limit, limit);
+//        return voucherRepository.searchVoucher(keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
+//    }
+@Override
+public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity,
+                                   Double maxPercent, Double minAmount, String status, Pageable pageable) {
+    // Gọi repository với các tham số tìm kiếm và pageable
+    return voucherRepository.searchVoucher(
+            keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
+}
 
     @Transactional
     @Override
@@ -245,6 +247,23 @@ public class VoucherServiceImpl implements VoucherService {
         voucherRepository.save(voucher);
     }
 
+
+    @Override
+    public List<Voucher> findBetterVoucher(BigDecimal amount) {
+        Sort sort;
+        List<Voucher> vouchers = new ArrayList<>();
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+            sort = Sort.by(Sort.Direction.ASC, "minAmount");
+             vouchers = voucherRepository.findTopVouchers(sort);
+        } else {
+            vouchers = voucherRepository.findVoucherWithMinAmountGreaterThan(amount);
+            if (vouchers.isEmpty()){
+                vouchers = voucherRepository.findBestVoucher(amount);
+            }
+        }
+        return vouchers;
+    }
+
     public void updateStatus(Voucher voucher) {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime startDate = voucher.getStartDate();
@@ -258,5 +277,10 @@ public class VoucherServiceImpl implements VoucherService {
             voucher.setStatus("Expired");
         }
         voucherRepository.save(voucher);
+    }
+
+
+    public List<Voucher> getSortedVouchers(Sort sort) {
+        return voucherRepository.findSortAmountVouchers(sort);
     }
 }

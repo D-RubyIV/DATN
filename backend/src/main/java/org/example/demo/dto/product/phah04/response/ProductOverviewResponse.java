@@ -3,6 +3,10 @@ package org.example.demo.dto.product.phah04.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.entity.event.Event;
+import org.example.demo.entity.product.properties.Image;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +29,7 @@ public class ProductOverviewResponse {
     private String materialName;
     private String thicknessName;
     private String elasticityName;
-    private String eventName;
+    private Event event;
+    private List<Image> images;
 
 }

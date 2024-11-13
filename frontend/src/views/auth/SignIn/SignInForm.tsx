@@ -18,13 +18,13 @@ interface SignInFormProps extends CommonProps {
 }
 
 type SignInFormSchema = {
-    userName: string
+    email: string
     password: string
     rememberMe: boolean
 }
 
 const validationSchema = Yup.object().shape({
-    userName: Yup.string().required('Please enter your user name'),
+    email: Yup.string().required('Please enter your user name'),
     password: Yup.string().required('Please enter your password'),
     rememberMe: Yup.bool(),
 })
@@ -45,10 +45,10 @@ const SignInForm = (props: SignInFormProps) => {
         values: SignInFormSchema,
         setSubmitting: (isSubmitting: boolean) => void
     ) => {
-        const { userName, password } = values
+        const { email, password } = values
         setSubmitting(true)
 
-        const result = await signIn({ userName, password })
+        const result = await signIn({ email, password })
 
         if (result?.status === 'failed') {
             setMessage(result.message)
@@ -66,8 +66,8 @@ const SignInForm = (props: SignInFormProps) => {
             )}
             <Formik
                 initialValues={{
-                    userName: 'admin',
-                    password: '123Qwe',
+                    email: 'admin2@gmail.com',
+                    password: 'admin',
                     rememberMe: true,
                 }}
                 validationSchema={validationSchema}
@@ -85,15 +85,15 @@ const SignInForm = (props: SignInFormProps) => {
                             <FormItem
                                 label="User Name"
                                 invalid={
-                                    (errors.userName &&
-                                        touched.userName) as boolean
+                                    (errors.email &&
+                                        touched.email) as boolean
                                 }
-                                errorMessage={errors.userName}
+                                errorMessage={errors.email}
                             >
                                 <Field
                                     type="text"
                                     autoComplete="off"
-                                    name="userName"
+                                    name="email"
                                     placeholder="User Name"
                                     component={Input}
                                 />
@@ -130,6 +130,8 @@ const SignInForm = (props: SignInFormProps) => {
                                 loading={isSubmitting}
                                 variant="solid"
                                 type="submit"
+                                className={`${disableSubmit ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500'}`}
+                                disabled={disableSubmit}
                             >
                                 {isSubmitting ? 'Signing in...' : 'Sign In'}
                             </Button>

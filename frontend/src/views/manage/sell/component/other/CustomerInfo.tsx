@@ -127,16 +127,16 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                         <address className="not-italic my-2">
                             <div className={'flex flex-col gap-3 text-sm pb-4'}>
                                 <div>
-                                    + Tên người nhận: {data?.recipientName || 'N/A'}
+                                    + Tên người nhận: {data?.recipientName || '....'}
                                 </div>
                                 <div>
-                                    + Số điện thoại nhận: {data?.phone || 'N/A'}
+                                    + Số điện thoại nhận: {data?.phone || '....'}
                                 </div>
                             </div>
                             <Input
                                 disabled
                                 value={
-                                    (data?.address || 'N/A') + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName || ''
+                                    (data?.address || '..') + ', ' + (data?.wardName ?? '..') + ', ' + (data?.districtName ?? '..') + ', ' + (data?.provinceName ?? '..')
                                 }
                                 suffix={
                                     <Tooltip title="Chỉnh sửa" className={'text-black'}>

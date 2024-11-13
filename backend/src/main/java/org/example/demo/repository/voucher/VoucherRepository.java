@@ -1,16 +1,19 @@
 package org.example.demo.repository.voucher;
 
+import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +21,7 @@ import java.util.Optional;
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
+    Optional<Voucher> findByCode(String code);
 
     @Query(value = """
             SELECT 
@@ -130,17 +134,17 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
     @Query("""
     SELECT v FROM Voucher v
-    WHERE (:keyword IS NULL OR 
-            v.name LIKE %:keyword% OR 
-            v.code LIKE %:keyword%) 
+    WHERE v.deleted = false AND
+          (:keyword IS NULL OR 
+           v.name LIKE %:keyword% OR 
+           v.code LIKE %:keyword%) 
       AND (:name IS NULL OR v.name LIKE %:name%) 
       AND (:code IS NULL OR v.code LIKE %:code%) 
       AND (:typeTicket IS NULL OR v.typeTicket = :typeTicket) 
       AND (:quantity IS NULL OR v.quantity = :quantity) 
       AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
       AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
-      AND (:status IS NULL OR v.status = :status) 
-    ORDER BY v.createdDate DESC
+      AND (:status IS NULL OR v.status = :status)
 """)
     Page<Voucher> searchVoucher(@Param("keyword") String keyword,
                                 @Param("name") String name,
@@ -151,6 +155,45 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                                 @Param("minAmount") Double minAmount,
                                 @Param("status") String status,
                                 Pageable pageable);
+
+
+
+    @Query("""
+        SELECT v FROM Voucher v
+        WHERE CAST(v.minAmount AS bigdecimal) > :amount
+        AND v.quantity > 0
+        AND v.deleted = FALSE
+        AND v.status = 'Active'
+        ORDER BY v.maxPercent ASC
+        """)
+    List<Voucher> findVoucherWithMinAmountGreaterThan(@Param("amount") BigDecimal amount);
+
+    @Query("""
+        SELECT v FROM Voucher v
+        WHERE CAST(v.minAmount AS bigdecimal) < :amount
+        AND v.quantity > 0
+        AND v.deleted = FALSE
+        AND v.status = 'Active'
+        ORDER BY v.maxPercent DESC
+        """)
+    List<Voucher> findBestVoucher(@Param("amount") BigDecimal amount);
+
+    @Query("""
+    SELECT v FROM Voucher v
+    WHERE v.quantity > 0
+    AND v.deleted = FALSE
+    AND v.status = 'Active'
+    """)
+    List<Voucher> findTopVouchers(Sort sort);
+
+
+    @Query("""
+    SELECT v FROM Voucher v
+    WHERE v.quantity > 0
+    AND v.deleted = FALSE
+    AND v.status = 'Active'
+    """)
+    List<Voucher> findSortAmountVouchers(Sort sort);
 
 
 

@@ -180,7 +180,7 @@ const DetailedProductList: React.FC<DetailedProductListProps> = ({ productCombin
                         </TBody>
                     </Table>
                     <div className="lg:col-span-1">
-                        {/* <ProductImages  /> */}
+                        <ProductImages colorName={color}  />
                     </div>
                 </AdaptableCard>
             ))}

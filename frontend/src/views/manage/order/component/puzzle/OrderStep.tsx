@@ -2,14 +2,12 @@ import { Fragment, useEffect, useState, useRef } from 'react'
 import Steps from '@/components/ui/Steps'
 import { Button, Input, Radio } from '@/components/ui'
 import { OrderResponseDTO, EOrderStatus } from '../../../../../@types/order'
-import { HiArrowLeft, HiPlusCircle } from 'react-icons/hi'
-import Axios from 'axios'
+import { HiPlusCircle } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { compile } from "@fileforge/react-print";
 import Document from './Document'
 import { FileforgeClient } from '@fileforge/client'
 import { displayDoc } from './util'
-import { HiMiniLockClosed } from 'react-icons/hi2'
 
 
 type ExampleAnswers = {
@@ -63,19 +61,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 "Xác nhận hoàn thành đơn hàng",
             ]
         },
-        {
-            "status": "UNPAID",
-            "messages": [
-                "Xác nhận thanh toán",
-                "Xác nhận hủy đơn",
-            ]
-        },
-        {
-            "status": "PAID",
-            "messages": [
-                "Xác nhận hoàn thành",
-            ]
-        },
     ]
 
     const onChange = (nextStep: number) => {
@@ -119,7 +104,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             return (
                 <div className='flex gap-2'>
                     <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('TOSHIP')}>Xác nhận vận chuyển</Button>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('PAID')}>Xác nhận thanh toán</Button>
+                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('DELIVERED')}>Xác nhận thanh toán</Button>
                     <Button block variant="default" size="sm" className='bg-indigo-500 !w-32' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('CANCELED')}>Hủy</Button>
                 </div>
             )
@@ -128,23 +113,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             return (
                 <div className='flex gap-2'>
                     <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('TORECEIVE')}>Xác nhận </Button>
-                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('PENDING')}>Quay lại chờ xác nhận</Button>
-                </div>
-            )
-        }
-        else if (currentStatus === "UNPAID") {
-            return (
-                <div className='flex gap-2'>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('PAID')}>Xác nhận thanh toán</Button>
-                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-auto' icon={<HiArrowLeft />} onClick={() => submitChangeStatus('PENDING')}>Quay lại chờ xác nhận</Button>
-                    <Button block variant="default" size="sm" className='bg-indigo-500 !w-auto' icon={<HiMiniLockClosed />} onClick={() => submitChangeStatus('CANCELED')}>Hủy</Button>
-                </div>
-            )
-        }
-        else if (currentStatus === "PAID") {
-            return (
-                <div className='flex gap-2'>
-                    <Button block variant="solid" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('DELIVERED')}>Xác nhận hoàn thành</Button>
                     <Button block variant="default" size="sm" className='bg-indigo-500 !w-auto' icon={<HiPlusCircle />} onClick={() => submitChangeStatus('PENDING')}>Quay lại chờ xác nhận</Button>
                 </div>
             )

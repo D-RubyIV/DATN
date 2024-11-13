@@ -8,18 +8,35 @@ const instance = Axios.create({
     timeout: 2000,
     headers: {}
   });
-
+// ok
 // Add a request interceptor
-Axios.interceptors.request.use(function (config) {
-    // Do something before request is sent
+instance.interceptors.request.use(function (config) {
+    // Lấy giá trị token từ localStorage
+    const authData = localStorage.getItem("admin");
+    if (authData) {
+        try {
+            // Phân tích chuỗi JSON và lấy token
+            const parsedAuthData = JSON.parse(JSON.parse(authData).auth);
+            const token = parsedAuthData.session.token;
+            console.log(token)
+
+            // Gán token vào headers nếu có
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        } catch (error) {
+            console.error("Failed to parse token:", error);
+        }
+    }
+
     return config;
 }, function (error) {
-    // Do something with request error
+    // Xử lý lỗi xảy ra trước khi request được gửi
     return Promise.reject(error);
 });
 
 // Add a response interceptor
-Axios.interceptors.response.use(function (response) {
+instance.interceptors.response.use(function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     return response;

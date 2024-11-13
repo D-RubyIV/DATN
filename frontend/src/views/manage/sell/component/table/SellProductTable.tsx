@@ -1,14 +1,15 @@
-import { useState, useMemo, useEffect } from 'react'
-import type { ColumnDef } from '@tanstack/react-table'
-import { Avatar, Button, Notification, toast } from '@/components/ui'
-import { NumericFormat } from 'react-number-format'
-import { HiMinus, HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
-import { OrderResponseDTO, OrderDetailResponseDTO } from '@/@types/order'
+import {useState, useMemo, useEffect} from 'react'
+import type {ColumnDef} from '@tanstack/react-table'
+import {Avatar, Button, Notification, toast} from '@/components/ui'
+import {NumericFormat} from 'react-number-format'
+import {HiMinus, HiMinusCircle, HiPlusCircle} from 'react-icons/hi'
+import {OrderResponseDTO, OrderDetailResponseDTO} from '@/@types/order'
 import instance from '@/axios/CustomAxios'
-import { useToastContext } from '@/context/ToastContext'
-import DataTable, { type OnSortParam } from '../../../../../components/shared/DataTable'
+import {useToastContext} from '@/context/ToastContext'
+import DataTable, {type OnSortParam} from '../../../../../components/shared/DataTable'
+import {FiPackage} from 'react-icons/fi'
 
-const SellProductTable = ({ selectedOrder, fetchData }: {
+const SellProductTable = ({selectedOrder, fetchData}: {
     selectedOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
 }) => {
@@ -32,15 +33,15 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
             key: ''
         }
     })
-    const { openNotification } = useToastContext()
+    const {openNotification} = useToastContext()
 
 
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
-            .then(function() {
+            .then(function () {
                 fetchData()
             })
-            .catch(function(err) {
+            .catch(function (err) {
                 console.error('Error updating quantity:', err)
                 if (err.response) {
                     console.log('Status code:', err.response.status) // Trạng thái HTTP từ phản hồi
@@ -55,7 +56,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
 
     const getAllOrderDetailWithIdOrder = async (id: number) => {
-        instance.get(`/order-details/get-by-order/${id}?page=${tableData.pageIndex - 1}&size=${tableData.pageSize}`).then(function(response) {
+        instance.get(`/order-details/get-by-order/${id}?page=${tableData.pageIndex - 1}&size=${tableData.pageSize}`).then(function (response) {
             setData(response.data.content)
             setTableData((prevData) => ({
                 ...prevData,
@@ -84,7 +85,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 header: 'Sản phẩm',
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
-                    return <ProductColumn row={row} />
+                    return <ProductColumn row={row}/>
                 }
             },
             {
@@ -96,14 +97,14 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                             {
                                 (<button className="p-2 text-xl" onClick={() => {
                                     handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
-                                }}><HiPlusCircle /></button>)
+                                }}><HiPlusCircle/></button>)
                             }
 
                             <label>{props.row.original.quantity} </label>
                             {
                                 (<button className="p-2 text-xl" onClick={() => {
                                     handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
-                                }}><HiMinusCircle /></button>)
+                                }}><HiMinusCircle/></button>)
                             }
 
                         </div>
@@ -115,7 +116,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 header: 'Giá',
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
-                    return <PriceAmount amount={row.productDetailResponseDTO.price} />
+                    return <PriceAmount amount={row.productDetailResponseDTO?.price}/>
                 }
             },
             {
@@ -123,7 +124,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 header: 'Tổng',
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
-                    return <PriceAmount amount={row.quantity * row.productDetailResponseDTO.price} />
+                    return <PriceAmount amount={row.quantity * row.productDetailResponseDTO?.price}/>
                 }
             },
             {
@@ -134,7 +135,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     return (
                         <div>
                             <Button
-                                icon={<HiMinus />}
+                                icon={<HiMinus/>}
                                 variant="plain"
                                 onClick={() => openDeleteConfirm(row.id)}
                             ></Button>
@@ -148,7 +149,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
 
     const handlePaginationChange = (pageIndex: number) => {
-        setTableData((prevData) => ({ ...prevData, ...{ pageIndex } }))
+        setTableData((prevData) => ({...prevData, ...{pageIndex}}))
     }
 
     const handleSelectChange = (pageSize: number) => {
@@ -159,8 +160,8 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         }))
     }
 
-    const handleSort = ({ order, key }: OnSortParam) => {
-        console.log({ order, key })
+    const handleSort = ({order, key}: OnSortParam) => {
+        console.log({order, key})
         setTableData((prevData) => ({
             ...prevData,
             sort: {
@@ -169,7 +170,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
             }
         }))
     }
-    const PriceAmount = ({ amount }: { amount: number }) => {
+    const PriceAmount = ({amount}: { amount: number }) => {
         return (
             <NumericFormat
                 displayType="text"
@@ -180,19 +181,30 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         )
     }
 
-    const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
+    const ProductColumn = ({row}: { row: OrderDetailResponseDTO }) => {
         return (
             <div className="flex">
-                <Avatar size={90} src={'https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png'} />
+                {
+                    Array.isArray(row.productDetailResponseDTO.images) && row.productDetailResponseDTO.images.length > 0 ?
+                        (
+                            <Avatar
+                                size={90}
+                                src={row.productDetailResponseDTO.images[0].url}
+                            />
+                        )
+                        : (
+                            <Avatar size={90} icon={<FiPackage/>}/>
+                        )
+                }
                 <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
+                    <h6 className="mb-2">{row.productDetailResponseDTO?.name}</h6>
                     <div className="mb-1">
                         <span className="capitalize">Cỡ: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO.size.name}</span>
+                        <span className="font-semibold">{row.productDetailResponseDTO?.size.name}</span>
                     </div>
                     <div className="mb-1">
                         <span className="capitalize">Màu: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO.color.name}</span>
+                        <span className="font-semibold">{row.productDetailResponseDTO?.color.name}</span>
                     </div>
                 </div>
             </div>

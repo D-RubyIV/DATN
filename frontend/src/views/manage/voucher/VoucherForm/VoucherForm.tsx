@@ -164,10 +164,11 @@ const VoucherForm = forwardRef<FormikRef, VoucherForm>((props, ref) => {
                                         errors={errors}
                                     />
                                 </div>
-                                <div className="lg:col-span-2">
-                                <CustomerTable onSelectedCustomersChange={handleSelectedCustomersChange} />
+                                <div className="lg:col-span-2 border border-gray-300 rounded-lg p-4">
+                                    <CustomerTable onSelectedCustomersChange={handleSelectedCustomersChange} />
                                 </div>
                             </div>
+
                             <StickyFooter
                                 className="-mx-8 px-8 flex items-center justify-between py-4"
                                 stickyClass="border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"

@@ -62,6 +62,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                 discount: response.data.discount || 0,
                 total: response.data.total || 0
             })
+        }).catch(function (error){
+            console.log(error.response.data.error === "Order not found")
+            localStorage.removeItem("orderIds")
+            window.location.reload()
         })
         await sleep(200)
         setIsLoadingComponent(false)
@@ -94,41 +98,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
         if (selectedOrder) {
             setIsLoadingComponent(true)
             try {
-                let data: OrderHistoryResponseDTO = {
+                const data: OrderHistoryResponseDTO = {
                     status: EOrderStatusEnums.DELIVERED,
                     note: 'Đã nhận hàng'
                 }
-                // TAI QUAY
-                if (selectedOrder.type === 'INSTORE') {
-                    if (selectedOrder.payment === EPaymentMethod.TRANSFER) {
-                        data = {
-                            status: EOrderStatusEnums.DELIVERED,
-                            note: 'Đã hoàn thành'
-                        }
-                    }
-                    if (selectedOrder.payment === EPaymentMethod.CASH) {
-                        data = {
-                            status: EOrderStatusEnums.DELIVERED,
-                            note: 'Đã hoàn thành'
-                        }
-                    }
-                }
-                // ONLINE
-                if (selectedOrder.type === 'ONLINE') {
-                    if (selectedOrder.payment === EPaymentMethod.CASH) {
-                        data = {
-                            status: EOrderStatusEnums.TOSHIP,
-                            note: 'Khách đã thanh toán -> Chờ giao hàng'
-                        }
-                    }
-                    if (selectedOrder.payment === EPaymentMethod.TRANSFER) {
-                        data = {
-                            status: EOrderStatusEnums.TOSHIP,
-                            note: 'Khách đã thanh toán -> Chờ giao hàng'
-                        }
-                    }
-                }
-
                 const response = await changeOrderStatus(selectedOrder.id, data)
                 if (response.status === 200) {
                     await sleep(200)
@@ -239,7 +212,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             variant="solid"
                             style={{ backgroundColor: 'rgb(79, 70, 229)' }}
                             className="flex items-center justify-center gap-2 button-bg-important"
-                            disabled={selectedOrder?.orderDetailResponseDTOS.length === 0}
+                            disabled={Array.isArray(selectedOrder?.orderDetailResponseDTOS) && selectedOrder?.orderDetailResponseDTOS.length === 0}
                             onClick={() => setIsOpenConfirmOrder(true)}
                         >
                             Xác nhận đơn hàng
@@ -269,16 +242,8 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                          fetchData={fetchSelectedOrder}></SellVocherModal>)
                 }
             </div>
-            {
-                selectedOrder && (
-                    <QrCodeScanner
-                        isScanning={isScanning}
-                        selectOrder={selectedOrder}
-                        fetchData={fetchSelectedOrder}
-                        setIsScanning={setIsScanning}
-                    ></QrCodeScanner>
-                )
-            }
+            <QrCodeScanner isScanning={isScanning} setIsScanning={setIsScanning}></QrCodeScanner>
+
             <div className={'h-full'}>
                 <Dialog isOpen={dialogIsOpenConfirmOrder} closable={true}>
                     <h5 className="mb-4">Xác nhận đơn hàng</h5>

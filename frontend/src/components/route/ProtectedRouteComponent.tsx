@@ -10,11 +10,10 @@ const ProtectedRouteComponent = () => {
     const { authenticated } = useAuth()
 
     if (!authenticated) {
-        window.alert("99")
+        console.log("----------2-")
         return (
             <Navigate
                 replace
-                // to={`${unAuthenticatedEntryPath}?${REDIRECT_URL_KEY}=${location.pathname}`}
                 to={`${unAuthenticatedEntryPath}`}
             />
         )

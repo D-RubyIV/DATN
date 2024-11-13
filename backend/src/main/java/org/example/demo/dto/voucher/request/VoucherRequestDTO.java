@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VoucherRequestDTO {
-    @NotNull(message = "Code must not be empty!")
     private String code;
 
     @NotNull(message = "Name must not be empty!")
@@ -22,7 +21,6 @@ public class VoucherRequestDTO {
     @NotNull(message = "Quantity must not be empty!")
     private Integer quantity;
 
-    @NotNull(message = "Status must not be empty!")
     private String status;
 
     @NotNull(message = "Min amount must not be empty!")

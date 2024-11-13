@@ -8,6 +8,7 @@ import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable';
 import { format } from 'date-fns';
 import { DatePicker } from '@/components/ui';
 import Switch from '@mui/material/Switch';
+import instance from "@/axios/CustomAxios";
 
 type Todo = {
     id: number;
@@ -165,7 +166,7 @@ const TableBasic: React.FC<ChildComponentProps> = ({ label, url }) => {
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true); // Set loading to true initially
-            const response = await axios.post(url, tableData, {
+            const response = await instance.post(url, tableData, {
                 params: queryParam
             });
             if (response.data) {

@@ -25,7 +25,6 @@ export enum EOrderStatusEnums {
     DELIVERED = "DELIVERED",
     CANCELED = "CANCELED",
     RETURNED = "RETURNED",
-    PAID = "PAID",
     UNPAID = "UNPAID",
 }
 
@@ -41,7 +40,7 @@ export type StatusBill = {
     badge: string
 }
 
-export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED" | "PAID" | "UNPAID"
+export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED" | "UNPAID"
 
 export type EOrderType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 
@@ -143,7 +142,7 @@ export type OrderProductDetail = Entity & {
     material: Entity;
     thickness: Entity;
     elasticity: Entity;
-    image: Entity;
+    images: Entity;
 };
 
 export type OrderDetailResponseDTO = {
@@ -191,4 +190,15 @@ export type ProductDetailOverviewPhah04 = {
     materialName: string;
     thicknessName: string;
     elasticityName: string;
+    images: Image[]
+
+};
+
+type Image = {
+    id: number;
+    createdDate: string;
+    updatedDate: string;
+    code: string;
+    url: string;
+    deleted: boolean;
 };

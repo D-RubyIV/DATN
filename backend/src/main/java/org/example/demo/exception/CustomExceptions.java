@@ -19,4 +19,11 @@ public class CustomExceptions {
         }
     }
 
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public static class CustomBadSecurity extends RuntimeException {
+        public CustomBadSecurity(String message) {
+            super(message);
+        }
+    }
+
 }
