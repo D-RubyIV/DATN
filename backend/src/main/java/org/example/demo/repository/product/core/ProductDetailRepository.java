@@ -27,6 +27,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     ProductDetail findByName(String name, Size size, Color color);
 
     List<ProductDetail> findByProductId(Integer productId);
+
     List<ProductDetail> findAllByProductId(Integer id);
 
     @Query(value = """
@@ -158,6 +159,30 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     Page<ProductClientResponse> productClient(@Param("req")FindProductDetailRequest request, Pageable pageable);
 
 
+//    @Query(
+//            """
+//            SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+//                p.id,
+//                p.code,
+//                p.name,
+//                COUNT(DISTINCT c.id),
+//                COUNT(DISTINCT s.id)
+//            )
+//            FROM Product p
+//            JOIN ProductDetail pd ON p.id = pd.product.id
+//            JOIN Color c ON c.id = pd.color.id
+//            JOIN Size s ON s.id = pd.size.id
+//            WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+//            AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+//            GROUP BY p.id, p.code, p.name
+//            """
+//    )
+//    Page<ProductResponseOverDTO> findCustomPage(
+//            Pageable pageable,
+//            @Param("sizeCodes") List<String> sizeCodes,
+//             @Param("colorCodes") List<String> colorCodes
+//    );
+
     @Query(
             """
             SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
@@ -165,7 +190,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 p.code,
                 p.name,
                 COUNT(DISTINCT c.id),
-                COUNT(DISTINCT s.id)
+                COUNT(DISTINCT s.id),
+                MIN(pd.price)
             )
             FROM Product p
             JOIN ProductDetail pd ON p.id = pd.product.id
@@ -179,7 +205,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     Page<ProductResponseOverDTO> findCustomPage(
             Pageable pageable,
             @Param("sizeCodes") List<String> sizeCodes,
-             @Param("colorCodes") List<String> colorCodes
+            @Param("colorCodes") List<String> colorCodes
     );
 
 
@@ -190,7 +216,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 p.code,
                 p.name,
                 count(DISTINCT c.id),
-                count(DISTINCT s.id)
+                count(DISTINCT s.id),
+                MIN(pd.price)
                 )
                 FROM Product p
                 JOIN ProductDetail pd on p.id = pd.product.id
@@ -204,22 +231,23 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     @Query(
             value = """
-                select new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
-                p.id,
-                p.code,
-                p.name,
-                count(DISTINCT c.id),
-                count(DISTINCT s.id)
-                ) FROM Product p
-                LEFT JOIN ProductDetail pd on p.id = pd.product.id
-                JOIN Color c on c.id = pd.color.id
-                JOIN Size s on s.id = pd.size.id
-                WHERE p.id = :id
-                AND p.deleted = false
-                AND s.deleted = false
-                AND c.deleted = false
-                group by p.id, p.code, p.name
-                """
+                    select new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+                    p.id,
+                    p.code,
+                    p.name,
+                    count(DISTINCT c.id),
+                    count(DISTINCT s.id),
+                    MIN(pd.price)
+                    ) FROM Product p
+                    LEFT JOIN ProductDetail pd on p.id = pd.product.id
+                    JOIN Color c on c.id = pd.color.id
+                    JOIN Size s on s.id = pd.size.id
+                    WHERE p.id = :id
+                    AND p.deleted = false
+                    AND s.deleted = false
+                    AND c.deleted = false
+                    group by p.id, p.code, p.name
+                    """
     )
     Optional<ProductResponseOverDTO> findOneCustom(@Param("id") Integer id);
 
@@ -228,6 +256,5 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             SELECT pd from ProductDetail pd  where pd.product.id in :ids
             """)
     List<ProductDetail> findAllByProductIdCustom(List<Integer> ids);
-    // viewt cho toi 1 cai api nhu v phan trang luong
-//    okko phan trang thi truyen pageable laf null laf dc
+
 }

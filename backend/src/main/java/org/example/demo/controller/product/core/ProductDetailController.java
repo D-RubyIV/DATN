@@ -168,6 +168,7 @@ public class ProductDetailController {
             s.setListColor(listProd.stream().map(pr -> pr.getColor()).toList());
             s.setListSize(listProd.stream().map(pr -> pr.getSize()).toList());
             s.setImage(productImages.stream().map(Image::getUrl).toList());
+            s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0)); // lấy giá nhỏ nhất
         });
         PageImpl<ProductResponseOverDTO> pageResponse = new PageImpl<>(productList, pageable, page.getTotalElements());
         return ResponseEntity.ok(pageResponse);
@@ -221,4 +222,24 @@ public class ProductDetailController {
         List<ProductDetail> list = productDetailRepository.findAllByProductId(id);
         return ResponseEntity.ok(productDetailResponseMapper.toListDTO(list));
     }
+
+
+    @GetMapping("product-detail-of-product/hung/{id}")
+    public ResponseEntity<?> findProductDetailOfProductAndImages(@PathVariable("id") Integer id){
+        Optional<ProductResponseOverDTO> productResponseOverDTOOptional = productDetailRepository.findOneCustom(id);
+        if (productResponseOverDTOOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        ProductResponseOverDTO productResponseOverDTO = productResponseOverDTOOptional.get();
+        List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(List.of(id));
+        List<Image> productImages = new ArrayList<>();
+        listProductDetail.forEach(pd -> {
+            productImages.addAll(pd.getImages());
+        });
+        productResponseOverDTO.setImage(productImages.stream().map(Image::getUrl).toList());
+        return ResponseEntity.ok(productResponseOverDTO);
+    }
+
+
+
 }

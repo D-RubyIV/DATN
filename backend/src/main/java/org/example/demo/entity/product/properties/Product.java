@@ -31,6 +31,9 @@ public class Product extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @Column(name = "description")
+    private String description;
+
     @ManyToMany(mappedBy = "products")
     private List<Event> events = new ArrayList<>();
 }

@@ -4,6 +4,7 @@ import { IoIosSearch } from 'react-icons/io';
 import { Input } from 'antd';
 import instance from "@/axios/CustomAxios";
 
+
 type ICustomer = {
     id: number;
     name: string;
@@ -13,12 +14,12 @@ type ICustomer = {
 
 type CustomerTableProps = {
     onSelectedCustomersChange: (selectedCustomers: ICustomer[]) => void;
+    selectedCustomerIds: number[];
 };
-
-const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
+const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: CustomerTableProps) => {
     const [customers, setCustomers] = useState<ICustomer[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
+    const [selectedCustomerIdsState, setSelectedCustomerIdsState] = useState<number[]>(selectedCustomerIds);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const customersPerPage = 10;
@@ -38,17 +39,24 @@ const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
         };
 
         fetchCustomers();
-    }, [currentPage]); // Dependency array includes currentPage to refetch when the page changes
+    }, [currentPage]);
 
-    // Effect to notify parent of selected customers
+    // Sync selectedCustomerIdsState with prop (but only when the prop changes)
     useEffect(() => {
-        const selectedCustomers = customers.filter(customer => selectedCustomerIds.includes(customer.id));
+        if (JSON.stringify(selectedCustomerIds) !== JSON.stringify(selectedCustomerIdsState)) {
+            setSelectedCustomerIdsState(selectedCustomerIds);
+        }
+    }, [selectedCustomerIds]);
+
+    // Notify parent of selected customers
+    useEffect(() => {
+        const selectedCustomers = customers.filter(customer => selectedCustomerIdsState.includes(customer.id));
         onSelectedCustomersChange(selectedCustomers);
-    }, [selectedCustomerIds, customers]);
+    }, [selectedCustomerIdsState, customers, onSelectedCustomersChange]);
 
     // Handle customer selection
     const handleSelectCustomer = (customerId: number) => {
-        setSelectedCustomerIds((prevSelected) =>
+        setSelectedCustomerIdsState((prevSelected) =>
             prevSelected.includes(customerId)
                 ? prevSelected.filter((id) => id !== customerId)
                 : [...prevSelected, customerId]
@@ -103,7 +111,7 @@ const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
             </div>
 
             {loading ? (
-                <p className="text-gray-500">Loading customers...</p>
+                <p className="text-gray-500 ">Loading customers...</p>
             ) : (
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                     <thead className="bg-gray-200">
@@ -111,51 +119,27 @@ const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
                             <th className="border-b border-gray-300 px-4 py-2">Select</th>
                             <th className="border-b border-gray-300 px-4 py-2">Name</th>
                             <th className="border-b border-gray-300 px-4 py-2">Email</th>
-                            <th className="border-b border-gray-300 px-4 py-2">Phone</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody>
                         {currentCustomers.map((customer) => (
-                            <tr key={customer.id} className="hover:bg-gray-100 transition duration-200">
-                                <td className="border-b border-gray-300 px-4 py-2 text-center">
+                            <tr key={customer.id} className="hover:bg-gray-100">
+                                <td className="border-b border-gray-300 px-4 py-2">
                                     <input
                                         type="checkbox"
-                                        checked={selectedCustomerIds.includes(customer.id)}
+                                        checked={selectedCustomerIdsState.includes(customer.id)}
                                         onChange={() => handleSelectCustomer(customer.id)}
-                                        className="form-checkbox h-5 w-5 text-blue-600"
                                     />
                                 </td>
                                 <td className="border-b border-gray-300 px-4 py-2">{customer.name}</td>
                                 <td className="border-b border-gray-300 px-4 py-2">{customer.email}</td>
-                                <td className="border-b border-gray-300 px-4 py-2">{customer.phone}</td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             )}
-
-            {/* Pagination */}
-            <div className="flex justify-between items-center mt-4">
-                {/* Previous Page */}
-                <div
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    className={`cursor-pointer ${currentPage === 1 ? 'text-gray-400' : 'text-blue-600'}`}
-                >
-                    &lt; {/* This represents the Previous arrow */}
-                </div>
-
-                <span>{`Page ${currentPage} of ${totalPages}`}</span>
-
-                {/* Next Page */}
-                <div
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    className={`cursor-pointer ${currentPage === totalPages ? 'text-gray-400' : 'text-blue-600'}`}
-                >
-                    &gt; {/* This represents the Next arrow */}
-                </div>
-            </div>
         </div>
     );
 };
 
-export default CustomerTable;
+export default CustomerTable; 
