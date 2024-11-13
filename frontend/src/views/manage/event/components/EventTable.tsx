@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import DataTable, { CellContext } from '@/components/shared/DataTable';
-import { Button, Input } from '@/components/ui';
+import { Button, Input, DatePicker } from '@/components/ui';
 import { IoIosSearch } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -35,13 +35,15 @@ const EventTable = () => {
     const [statusFilter, setStatusFilter] = useState<string>();
     const [dialogIsOpen, setIsOpen] = useState(false)
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
 
     // api GetAll, Search, Filter Status
     const fetchEvent = async (
         page: number,
         size: number,
         query?: string,
-        statusFilter?: string
+        statusFilter?: string,
+        dateRange?: [Date | null, Date | null]
     ) => {
         setLoading(true);
         try {
@@ -55,6 +57,11 @@ const EventTable = () => {
             } else if (statusFilter) {
                 url = `/event/filter`;
                 params.status = statusFilter; // phai khop voi params cua api (prams.status)
+            } else if (dateRange && dateRange[0] && dateRange[1]) {
+                // Dùng API filter-date nếu có dateRange
+                url = `http://localhost:8080/api/v1/event/filter-date`;
+                params.startDate = format(dateRange[0], "yyyy-MM-dd'T'HH:mm:ss");
+                params.endDate = format(dateRange[1], "yyyy-MM-dd'T'HH:mm:ss");
             }
 
             const response = await instance.get(url, { params });
@@ -69,8 +76,14 @@ const EventTable = () => {
 
     // useEffect duy nhất để gọi fetchEvent khi pageIndex, pageSize, query hoặc statusFilter thay đổi
     useEffect(() => {
-        fetchEvent(pageIndex, pageSize, query, statusFilter);
-    }, [pageIndex, pageSize, query, statusFilter]);
+        fetchEvent(pageIndex, pageSize, query, statusFilter, dateRange);
+    }, [pageIndex, pageSize, query, statusFilter, dateRange]);
+
+
+    // Hàm xử lý thay đổi của DatePicker
+    const handleDateRangeChange = (newDateRange: [Date | null, Date | null]) => {
+        setDateRange(newDateRange);
+    };
 
     // ham xu ly filter Status
     const handleStatus = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -246,6 +259,15 @@ const EventTable = () => {
                             />
                             <IoIosSearch
                                 className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-2xl"
+                            />
+                        </div>
+
+                        <div className="flex justify-between gap-5">
+                            <DatePicker.DatePickerRange
+                                placeholder="Chọn khoảng ngày"
+                                value={dateRange}
+                                dateViewCount={2}
+                                onChange={handleDateRangeChange}
                             />
                         </div>
 
