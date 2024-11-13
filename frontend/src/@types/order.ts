@@ -116,6 +116,7 @@ export type OrderResponseDTO = {
     voucherResponseDTO: OrderVoucherResponseDTO;
     orderDetailResponseDTOS: OrderDetailResponseDTO[];
     historyResponseDTOS: OrderHistoryResponseDTO[];
+    images: Image[]
 }
 
 export type Entity = {
