@@ -123,7 +123,7 @@ const adminRoute: Routes = [
     },
     {
         key: 'updateEvent',
-        path: `/manage/event/update:id`,
+        path: `/manage/event/update/:id`,
         component: lazy(
             () => import('@/views/manage/event/components/UpdateEvent'),
         ),

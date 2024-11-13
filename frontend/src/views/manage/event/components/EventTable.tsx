@@ -88,6 +88,7 @@ const EventTable = () => {
 
     // ham chuyen sang trang update
     const handleUpdateClick = (eventId: number) => {
+        console.log('Id là: ', eventId);
         navigate(`/admin/manage/event/update/${eventId}`);
     }
 
