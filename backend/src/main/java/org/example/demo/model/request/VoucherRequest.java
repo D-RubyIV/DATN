@@ -43,11 +43,11 @@ public class VoucherRequest extends PageableRequest {
     @NotNull(message = "Please select the voucher type!")
     private Type typeTicket;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @NotNull(message = "Start date must not be empty!")
     private LocalDateTime startDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @NotNull(message = "End date must not be empty!")
     private LocalDateTime endDate;
 

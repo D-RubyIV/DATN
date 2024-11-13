@@ -139,40 +139,74 @@ public class ProductDetailController {
         }
     }
 
+//    @GetMapping("abc")
+//    public ResponseEntity<?> custome(
+//            @PageableDefault(page = 0, size = 10) Pageable pageable,
+//            @RequestParam(value = "colorCodes", required = false) List<String> colorCodes,
+//            @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes
+//    ) {
+//        colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+//        sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+//
+//        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes);
+//        List<ProductResponseOverDTO> productList = page.getContent();
+//        List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
+//        System.out.println("IDS" + productIds);
+//        List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
+//        System.out.println("listProductDetail SIZE " + listProductDetail.size());
+//
+//        productList.forEach(s -> {
+//            Integer idPro = s.getProductId();
+//            List<ProductDetail> listProd = listProductDetail.stream().filter(p -> p.getProduct().getId().equals(idPro)).toList();
+//            System.out.println("listProductDetail 2" + listProd.size());
+//            List<Image> productImages = new ArrayList<>();
+//            listProd.forEach(pd -> {
+//                System.out.println(pd.getCode());
+//                System.out.println("-------");
+//                productImages.addAll(pd.getImages());
+//            });
+//            s.setListColor(listProd.stream().map(pr -> pr.getColor()).toList());
+//            s.setListSize(listProd.stream().map(pr -> pr.getSize()).toList());
+//            s.setImage(productImages.stream().map(Image::getUrl).toList());
+//            s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0)); // lấy giá nhỏ nhất
+//        });
+//        PageImpl<ProductResponseOverDTO> pageResponse = new PageImpl<>(productList, pageable, page.getTotalElements());
+//        return ResponseEntity.ok(pageResponse);
+//    }
+
     @GetMapping("abc")
     public ResponseEntity<?> custome(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam(value = "colorCodes", required = false) List<String> colorCodes,
-            @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes
+            @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice
     ) {
         colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
         sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
 
-        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes);
+        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes, minPrice, maxPrice);
         List<ProductResponseOverDTO> productList = page.getContent();
         List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
-        System.out.println("IDS" + productIds);
+
         List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
-        System.out.println("listProductDetail SIZE " + listProductDetail.size());
 
         productList.forEach(s -> {
             Integer idPro = s.getProductId();
             List<ProductDetail> listProd = listProductDetail.stream().filter(p -> p.getProduct().getId().equals(idPro)).toList();
-            System.out.println("listProductDetail 2" + listProd.size());
             List<Image> productImages = new ArrayList<>();
-            listProd.forEach(pd -> {
-                System.out.println(pd.getCode());
-                System.out.println("-------");
-                productImages.addAll(pd.getImages());
-            });
-            s.setListColor(listProd.stream().map(pr -> pr.getColor()).toList());
-            s.setListSize(listProd.stream().map(pr -> pr.getSize()).toList());
+            listProd.forEach(pd -> productImages.addAll(pd.getImages()));
+
+            s.setListColor(listProd.stream().map(ProductDetail::getColor).toList());
+            s.setListSize(listProd.stream().map(ProductDetail::getSize).toList());
             s.setImage(productImages.stream().map(Image::getUrl).toList());
-            s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0)); // lấy giá nhỏ nhất
+            s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0));
         });
+
         PageImpl<ProductResponseOverDTO> pageResponse = new PageImpl<>(productList, pageable, page.getTotalElements());
         return ResponseEntity.ok(pageResponse);
     }
+
 
     @GetMapping("detail-information/{id}")
     public ResponseEntity<?> detail_information(

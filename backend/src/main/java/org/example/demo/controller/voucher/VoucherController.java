@@ -102,7 +102,7 @@ public class VoucherController {
         if (updateVoucher == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Update voucher successfully");
+        return ResponseEntity.status(HttpStatus.OK).body(updateVoucher);
     }
 
     @PutMapping("/delete/{id}")

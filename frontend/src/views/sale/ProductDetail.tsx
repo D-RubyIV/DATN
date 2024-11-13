@@ -84,17 +84,17 @@ const ProductDetail = () => {
                 }
                 return acc;
             }, [] as typeof listProductDetail[0]["color"][]);
-    
+
             const uniqueSizes = listProductDetail.reduce((acc, item) => {
                 if (!acc.some((size) => size.id === item.size.id)) {
                     acc.push(item.size);
                 }
                 return acc;
             }, [] as typeof listProductDetail[0]["size"][]);
-    
+
             setListColor(uniqueColors);
             setListSize(uniqueSizes);
-    
+
             // Chọn màu và kích thước mặc định nếu có
             if (uniqueColors.length > 0) {
                 setSelectedColor(uniqueColors[0]);  // Chọn màu đầu tiên
@@ -104,7 +104,7 @@ const ProductDetail = () => {
             }
         }
     }, [listProductDetail]);
-    
+
     useEffect(() => {
         // Cập nhật chi tiết sản phẩm khi màu và kích thước đã chọn
         if (selectedColor && selectedSize) {
@@ -144,9 +144,50 @@ const ProductDetail = () => {
     // giá
 
     // Hàm xử lý khi chọn màu
+    // const handleColorSelect = (color: Color) => {
+    //     setSelectedColor(color);
+    //     setSelectedSize(null); // Reset size khi chọn màu mới
+
+    //     // Lọc lại danh sách kích thước dựa trên màu đã chọn
+    //     const filteredSizes = listProductDetail
+    //         .filter((item) => item.color.id === color.id)
+    //         .map((item) => item.size.code);
+    //     setListSizeValid([...new Set(filteredSizes)]);
+    // };
+
+    // // Hàm xử lý khi chọn kích thước
+    // const handleSizeSelect = (size: Size) => {
+    //     setSelectedSize(size);
+
+    //     // Lọc lại danh sách màu sắc dựa trên kích thước đã chọn
+    //     if (selectedColor) {
+    //         const productDetail = listProductDetail.find(
+    //             (item) => item.color.id === selectedColor.id && item.size.id === size.id
+    //         );
+    //         setSelectedProductDetail(productDetail ?? null);
+    //         console.log(productDetail)
+    //     } else {
+    //         const filteredColors = listProductDetail
+    //             .filter((item) => item.size.id === size.id)
+    //             .map((item) => item.color.code);
+    //         setListColorValid([...new Set(filteredColors)]);
+    //     }
+    // };
+
+
+    const handleSizeSelect = (size: Size) => {
+        setSelectedSize(size);
+        setSelectedColor(null); // Reset color khi chọn size mới
+
+        // Lọc lại danh sách màu sắc dựa trên kích thước đã chọn
+        const filteredColors = listProductDetail
+            .filter((item) => item.size.id === size.id)
+            .map((item) => item.color.code);
+        setListColorValid([...new Set(filteredColors)]);
+    };
+
     const handleColorSelect = (color: Color) => {
         setSelectedColor(color);
-        setSelectedSize(null); // Reset size khi chọn màu mới
 
         // Lọc lại danh sách kích thước dựa trên màu đã chọn
         const filteredSizes = listProductDetail
@@ -155,24 +196,6 @@ const ProductDetail = () => {
         setListSizeValid([...new Set(filteredSizes)]);
     };
 
-    // Hàm xử lý khi chọn kích thước
-    const handleSizeSelect = (size: Size) => {
-        setSelectedSize(size);
-
-        // Lọc lại danh sách màu sắc dựa trên kích thước đã chọn
-        if (selectedColor) {
-            const productDetail = listProductDetail.find(
-                (item) => item.color.id === selectedColor.id && item.size.id === size.id
-            );
-            setSelectedProductDetail(productDetail ?? null);
-            console.log(productDetail)
-        } else {
-            const filteredColors = listProductDetail
-                .filter((item) => item.size.id === size.id)
-                .map((item) => item.color.code);
-            setListColorValid([...new Set(filteredColors)]);
-        }
-    };
 
     // Lấy thông tin chi tiết sản phẩm dựa trên màu và kích thước đã chọn
     useEffect(() => {

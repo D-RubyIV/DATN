@@ -62,8 +62,7 @@ const ProductList = () => {
     // Hùng
 
     const initDataProduct = async () => {
-        const response = await instance.get(`/productDetails/abc?colorCodes=${param.colorCodes}&sizeCodes=${param.sizeCodes}`);
-
+        const response = await instance.get(`/productDetails/abc?colorCodes=${param.colorCodes}&sizeCodes=${param.sizeCodes}&minPrice=${param.minPrice}&maxPrice=${param.maxPrice}`);
         setListProduct(response?.data?.content)
     }
     const initListColor = async () => {

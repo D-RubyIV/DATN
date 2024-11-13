@@ -183,29 +183,58 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 //             @Param("colorCodes") List<String> colorCodes
 //    );
 
-    @Query(
-            """
-            SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
-                p.id,
-                p.code,
-                p.name,
-                COUNT(DISTINCT c.id),
-                COUNT(DISTINCT s.id),
-                MIN(pd.price)
-            )
-            FROM Product p
-            JOIN ProductDetail pd ON p.id = pd.product.id
-            JOIN Color c ON c.id = pd.color.id
-            JOIN Size s ON s.id = pd.size.id
-            WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
-            AND (:colorCodes IS NULL OR c.code IN :colorCodes)
-            GROUP BY p.id, p.code, p.name
-            """
+//    @Query(
+//            """
+//            SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+//                p.id,
+//                p.code,
+//                p.name,
+//                COUNT(DISTINCT c.id),
+//                COUNT(DISTINCT s.id),
+//                MIN(pd.price)
+//            )
+//            FROM Product p
+//            JOIN ProductDetail pd ON p.id = pd.product.id
+//            JOIN Color c ON c.id = pd.color.id
+//            JOIN Size s ON s.id = pd.size.id
+//            WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+//            AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+//            GROUP BY p.id, p.code, p.name
+//            """
+//    )
+//    Page<ProductResponseOverDTO> findCustomPage(
+//            Pageable pageable,
+//            @Param("sizeCodes") List<String> sizeCodes,
+//            @Param("colorCodes") List<String> colorCodes
+//    );
+
+
+
+    @Query("""
+    SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+        p.id,
+        p.code,
+        p.name,
+        COUNT(DISTINCT c.id),
+        COUNT(DISTINCT s.id),
+        MIN(pd.price)
     )
+    FROM Product p
+    JOIN ProductDetail pd ON p.id = pd.product.id
+    JOIN Color c ON c.id = pd.color.id
+    JOIN Size s ON s.id = pd.size.id
+    WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+    AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+    AND (:minPrice IS NULL OR pd.price >= :minPrice)
+    AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
+    GROUP BY p.id, p.code, p.name
+""")
     Page<ProductResponseOverDTO> findCustomPage(
             Pageable pageable,
             @Param("sizeCodes") List<String> sizeCodes,
-            @Param("colorCodes") List<String> colorCodes
+            @Param("colorCodes") List<String> colorCodes,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice
     );
 
 
