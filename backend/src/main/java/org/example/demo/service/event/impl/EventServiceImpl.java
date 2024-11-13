@@ -15,7 +15,9 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,18 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Override
+    public Page<EventListDTO> filterDate(LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        if (start == null || end == null) {
+            // Nếu start hoặc end là null, lấy tất cả các sự kiện
+            return eventRepository.findAllEvents(pageable)
+                    .map(EventMapper::toEventListDTO);
+        }
+        // Nếu cả start và end đều không null, tìm theo khoảng thời gian
+        return eventRepository.findByDateRangeOverlap(start, end, pageable)
+                .map(EventMapper::toEventListDTO);
+    }
 
     @Override
     public Page<EventListDTO> filterStatus(String status, Pageable pageable) {

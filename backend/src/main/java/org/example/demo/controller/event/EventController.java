@@ -12,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -21,6 +24,18 @@ public class EventController {
 
     @Autowired
     private ProductService productService;
+
+    @GetMapping("/filter-date")
+    public ResponseEntity<Page<EventListDTO>> filterDate(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<EventListDTO> listDTOPage = eventService.filterDate(startDate, endDate, pageable);
+        return ResponseEntity.ok(listDTOPage);
+    }
 
     @GetMapping("/product-list")
     public ResponseEntity<Page<ProductDTO>> getAllProductDTO(

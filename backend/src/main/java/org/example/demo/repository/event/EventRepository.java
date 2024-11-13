@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
@@ -21,5 +24,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     // filter status
     @Query("select e from Event e where e.status = :status")
     Page<Event> findEventsByStatus(String status, Pageable pageable);
+
+    // filter startDate and endDate
+    @Query("SELECT e FROM Event e WHERE e.startDate <= ?2 AND e.endDate >= ?1")
+    Page<Event> findByDateRangeOverlap(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
 }
