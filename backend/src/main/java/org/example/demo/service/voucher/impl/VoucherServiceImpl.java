@@ -5,6 +5,8 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
+import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
+import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.entity.voucher.enums.Type;
@@ -24,10 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,11 +73,33 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public VoucherResponse findVoucherById(Integer id) {
-        Optional<VoucherResponse> voucherOptional = voucherRepository.findVoucherById(id);
-        return voucherOptional.orElse(null);
+    public VoucherResponseV2DTO findVoucherById(Integer id) {
+        Optional<Voucher> voucherOptional = voucherRepository.findById(id);
+        return toDTO(voucherOptional.get());
     }
 
+
+    public VoucherResponseV2DTO toDTO(Voucher voucher) {
+        VoucherResponseV2DTO dto = new VoucherResponseV2DTO();
+        dto.setId(voucher.getId());
+        dto.setName(voucher.getName());
+        dto.setCode(voucher.getCode());
+        dto.setStartDate(voucher.getStartDate());
+        dto.setEndDate(voucher.getEndDate());
+        dto.setStatus(voucher.getStatus());
+        dto.setQuantity(voucher.getQuantity());
+        dto.setMaxPercent(voucher.getMaxPercent());
+        dto.setMinAmount(voucher.getMinAmount());
+        dto.setTypeTicket(voucher.getTypeTicket().name());
+
+        dto.setCustomers(
+                voucher.getCustomers().stream()
+                        .map(BaseEntity::getId)
+                        .collect(Collectors.toList())
+        );
+
+        return dto;
+    }
 
     private void applySorting(CriteriaBuilder cb, CriteriaQuery<Voucher> query, Root<Voucher> root, Pageable pageable) {
         List<Order> orders = new ArrayList<>();
@@ -133,18 +154,12 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
 
-//    @Override
-//    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent, Double minAmount, String status, int limit, int offset) {
-//        Pageable pageable = PageRequest.of(offset / limit, limit);
-//        return voucherRepository.searchVoucher(keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
-//    }
-@Override
-public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity,
-                                   Double maxPercent, Double minAmount, String status, Pageable pageable) {
-    // Gọi repository với các tham số tìm kiếm và pageable
-    return voucherRepository.searchVoucher(
-            keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
-}
+    @Override
+    public Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity,
+                                       Double maxPercent, Double minAmount, String status, Pageable pageable) {
+        return voucherRepository.searchVoucher(
+                keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
+    }
 
     @Transactional
     @Override
@@ -165,6 +180,7 @@ public Page<Voucher> searchVoucher(String keyword, String name, String code, Str
         return executePagedQuery(query, predicates, pageable);
     }
 
+
     @Override
     @Transactional
     public Voucher addVoucher(VoucherRequest request) {
@@ -176,51 +192,39 @@ public Page<Voucher> searchVoucher(String keyword, String name, String code, Str
         Voucher voucherSaved = voucherRepository.save(voucher);
         updateStatus(voucherSaved);
 
-        if (voucherSaved.getTypeTicket() == Type.Individual) {
-            if (!request.getCustomers().isEmpty()) {
-                List<Integer> idCustomers = request.getCustomers();
-                List<Customer> listCustomers = idCustomers.stream()
-                        .map(idCustomer -> {
-                            Optional<Customer> customerOptional = customerRepository.findById(idCustomer);
-                            return customerOptional.orElseThrow(() ->
-                                    new RuntimeException("Customer not found: " + idCustomer));
-                        })
-                        .collect(Collectors.toList());
-                voucherSaved.setCustomers(listCustomers);
-                voucherSaved = voucherRepository.save(voucherSaved);
-            }
+        if (voucherSaved.getTypeTicket() == Type.Individual && !request.getCustomers().isEmpty()) {
+            List<Integer> idCustomers = request.getCustomers();
+            List<Customer> listCustomers = idCustomers.stream()
+                    .map(idCustomer -> customerRepository.findById(idCustomer)
+                            .orElseThrow(() -> new RuntimeException("Customer not found: " + idCustomer)))
+                    .collect(Collectors.toList());
+            voucherSaved.setCustomers(listCustomers);
+            voucherSaved = voucherRepository.save(voucherSaved);
         }
 
         return voucherSaved;
     }
 
-
     @Override
+    @Transactional
     public Voucher updateVoucher(Integer id, VoucherRequest request) {
-        Voucher voucherUpdate = voucherRepository.findById(id).orElse(null);
-        Voucher voucherSaved = voucherRepository.save(voucherConvert.convertRequestToEntity(id, request));
-        if (voucherSaved != null) {
-            updateStatus(voucherUpdate);
-        }
-        if (voucherSaved.getTypeTicket() == Type.Individual) {
-            if (!request.getCustomers().isEmpty()) {
-                List<Integer> idCustomers = request.getCustomers();
-                List<Customer> listCustomers = idCustomers.stream()
-                        .map(idCustomer -> {
-                            Optional<Customer> customerOptional = customerRepository.findById(idCustomer);
-                            return customerOptional.orElseThrow(() ->
-                                    new RuntimeException("Customer not found: " + idCustomer));
-                        })
-                        .collect(Collectors.toList());
-                voucherSaved.setCustomers(listCustomers);
-                voucherSaved = voucherRepository.save(voucherSaved);
-            }
+        Voucher voucherUpdate = voucherRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Voucher not found with ID " + id));
+        Voucher voucherSaved = voucherConvert.convertRequestToEntity(id, request);
+        updateStatus(voucherUpdate);
+        if (voucherSaved.getTypeTicket() == Type.Individual && !request.getCustomers().isEmpty()) {
+            List<Integer> idCustomers = request.getCustomers();
+            List<Customer> listCustomers = idCustomers.stream()
+                    .map(idCustomer -> customerRepository.findById(idCustomer)
+                            .orElseThrow(() -> new RuntimeException("Customer not found: " + idCustomer)))
+                    .collect(Collectors.toList());
+            voucherSaved.setCustomers(listCustomers);
+            voucherSaved = voucherRepository.save(voucherSaved);
         } else {
             voucherSaved.setCustomers(Collections.emptyList());
             voucherSaved = voucherRepository.save(voucherSaved);
         }
-
-        return voucherSaved;
+        return voucherRepository.save(voucherSaved);
     }
 
     @Override
@@ -237,12 +241,10 @@ public Page<Voucher> searchVoucher(String keyword, String name, String code, Str
     }
 
     @Override
+    @Transactional
     public void deleteVoucher(Integer id) {
-        Optional<Voucher> optionalVoucher = voucherRepository.findById(id);
-        if (optionalVoucher.isEmpty()) {
-            throw new RuntimeException("Voucher with ID not found: " + id);
-        }
-        Voucher voucher = optionalVoucher.get();
+        Voucher voucher = voucherRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Voucher with ID not found: " + id));
         voucher.setDeleted(true);
         voucherRepository.save(voucher);
     }
@@ -254,10 +256,10 @@ public Page<Voucher> searchVoucher(String keyword, String name, String code, Str
         List<Voucher> vouchers = new ArrayList<>();
         if (amount.compareTo(BigDecimal.ZERO) == 0) {
             sort = Sort.by(Sort.Direction.ASC, "minAmount");
-             vouchers = voucherRepository.findTopVouchers(sort);
+            vouchers = voucherRepository.findTopVouchers(sort);
         } else {
             vouchers = voucherRepository.findVoucherWithMinAmountGreaterThan(amount);
-            if (vouchers.isEmpty()){
+            if (vouchers.isEmpty()) {
                 vouchers = voucherRepository.findBestVoucher(amount);
             }
         }

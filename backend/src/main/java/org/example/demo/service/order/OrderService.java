@@ -115,6 +115,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found"));
     }
 
+    public Order findByCode(String code) {
+        return orderRepository.findByCode(code).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found"));
+    }
+
     @Override
     @Transactional
     public Order delete(Integer id) {
@@ -295,6 +299,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         calculateDiscount(order);
         try {
             if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE) {
+                System.out.println("DISTRICT: " + order.getDistrictId());
+                System.out.println("PROVINCE: " + order.getProvinceId());
+                System.out.println("WARD: " + order.getWardId());
                 JsonNode feeObject = calculateFee(order.getId());
                 if (feeObject != null) {
                     String feeString = String.valueOf(feeObject.get("data").get("total"));

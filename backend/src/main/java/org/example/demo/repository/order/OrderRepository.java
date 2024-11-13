@@ -20,9 +20,11 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
+    Optional<Order> findByCode(String code);
     @Query(value = """
             SELECT DISTINCT b FROM Order b
             LEFT JOIN FETCH b.customer bc

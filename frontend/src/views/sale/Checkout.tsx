@@ -9,6 +9,7 @@ import {useToastContext} from "@/context/ToastContext";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from 'yup';
+import {useSaleContext} from "@/views/sale/SaleContext";
 
 export interface Image {
     id: number;
@@ -149,6 +150,7 @@ const Checkout = () => {
     const [selectedCart, setSelectedCart] = useState<CartResponseDTO>()
     const navigate = useNavigate();
     const {openNotification} = useToastContext()
+    const { setIsOpenCartDrawer } = useSaleContext();
 
 
     // SCHEMA
@@ -221,7 +223,7 @@ const Checkout = () => {
                 instance.get(`/orders/convert/${id}`).then(function (response) {
                     if (response.status === 200 && response.data) {
                         getDetailAboutCart();
-                        navigate("/client")
+                        navigate("/thank")
                         localStorage.removeItem("myCartId")
                     }
                 })
@@ -242,7 +244,7 @@ const Checkout = () => {
                                     const url = response?.data?.data?.paymentUrl
                                     console.log(url)
                                     if (url) {
-                                        // window.location.href = url // Mở đường dẫn mới
+                                        window.location.href = url // Mở đường dẫn mới
                                     }
                                 }
                             })
@@ -284,6 +286,7 @@ const Checkout = () => {
         })
         handleFindAllProvinces()
         getDetailAboutCart()
+        setIsOpenCartDrawer(false)
     }, []);
 
 

@@ -1,11 +1,15 @@
 import {ReactNode, createContext, useContext, useState, useEffect} from 'react'
 import instance from "@/axios/CustomAxios";
+import {CartDetailResponseDTO} from "@/views/sale/index";
 
 type AppContextType = {
     isOpenCartDrawer: boolean;
     setIsOpenCartDrawer: React.Dispatch<React.SetStateAction<boolean>>;
     myCartId: number | undefined;
     setMyCartId: React.Dispatch<React.SetStateAction<number | undefined>>;
+    listCartDetailResponseDTO: CartDetailResponseDTO[],
+    setListCartDetailResponseDTO:  React.Dispatch<React.SetStateAction<CartDetailResponseDTO[]>>
+    getCartDetailInCard: () => void;
 };
 
 const SaleContext = createContext<AppContextType>({
@@ -14,12 +18,31 @@ const SaleContext = createContext<AppContextType>({
     },
     myCartId: undefined,
     setMyCartId: () => {
-    }
+    },
+    listCartDetailResponseDTO: [],
+    setListCartDetailResponseDTO: () => {
+    },
+    getCartDetailInCard: () => {}
 });
 
 const SaleProvider = ({children}: { children: ReactNode }) => {
     const [isOpenCartDrawer, setIsOpenCartDrawer] = useState<boolean>(false)
     const [myCartId, setMyCartId] = useState<number | undefined>(Number(localStorage.getItem("myCartId")) ?? undefined)
+    const [listCartDetailResponseDTO, setListCartDetailResponseDTO] = useState<CartDetailResponseDTO[]>([])
+
+    const getCartDetailInCard = () => {
+        instance.get(`cart-details/in-cart/${myCartId}`).then(function (response){
+            console.log(response)
+            if (response?.data) {
+                setListCartDetailResponseDTO(response?.data)
+            }
+        })
+    }
+    useEffect(() => {
+        if (isOpenCartDrawer) {
+            getCartDetailInCard()
+        }
+    }, [isOpenCartDrawer]);
 
     const createNewCart = async () => {
         const response = await instance.get("/cart/new-cart")
@@ -50,7 +73,7 @@ const SaleProvider = ({children}: { children: ReactNode }) => {
     }, [myCartId]);
 
     return (
-        <SaleContext.Provider value={{isOpenCartDrawer, setIsOpenCartDrawer, myCartId, setMyCartId}}>
+        <SaleContext.Provider value={{getCartDetailInCard, listCartDetailResponseDTO, setListCartDetailResponseDTO, isOpenCartDrawer, setIsOpenCartDrawer, myCartId, setMyCartId}}>
             {children}
         </SaleContext.Provider>
     );

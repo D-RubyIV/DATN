@@ -18,16 +18,18 @@ public class ProductResponseOverDTO {
     private Long countColor;
     private Long countSize;
     private Long discountPercent;
+    private Double price;
     private List<String> image;
     private List<String> mass;
     private List<Color> listColor;
     private List<Size> listSize;
 
-    public ProductResponseOverDTO(Integer productId, String productCode, String productName, Long countColor, Long countSize) {
+    public ProductResponseOverDTO(Integer productId, String productCode, String productName, Long countColor, Long countSize, Double price) {
         this.productId = productId;
         this.productCode = productCode;
         this.productName = productName;
         this.countColor = countColor;
         this.countSize = countSize;
+        this.price = price;
     }
 }

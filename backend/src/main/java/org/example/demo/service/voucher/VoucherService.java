@@ -2,6 +2,7 @@ package org.example.demo.service.voucher;
 
 
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
+import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
@@ -22,7 +23,7 @@ public interface VoucherService {
 
     PageableObject<VoucherResponse> getAll(VoucherRequest request);
 
-    VoucherResponse findVoucherById(Integer id);
+    VoucherResponseV2DTO findVoucherById(Integer id);
 
     Page<Voucher> getAllVouchers(int limit, int offset);
 

@@ -3,7 +3,7 @@ import {
     NAV_ITEM_TYPE_ITEM,
     NAV_ITEM_TYPE_COLLAPSE
 } from '@/constants/navigation.constant'
-import type { NavigationTree } from '@/@types/navigation'
+import type {NavigationTree} from '@/@types/navigation'
 
 const navigationConfig: NavigationTree[] = [
     {
@@ -85,6 +85,129 @@ const navigationConfig: NavigationTree[] = [
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: []
+    },
+    {
+        key: 'propertiesManager',
+        path: '',
+        title: 'Collapse menu item 2',
+        translateKey: 'nav.propertiesTitle',
+        icon: 'order',
+        type: NAV_ITEM_TYPE_COLLAPSE,
+        authority: [],
+        subMenu: [
+            {
+                key: 'brandTitle',
+                path: 'manage/product/brand-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.brandTitle',
+                icon: 'order',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'originTitle',
+                path: 'manage/product/origin-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.originTitle',
+                icon: 'order',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'styleTitle',
+                path: 'manage/product/style-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.styleTitle',
+                icon: 'order',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'materialTitle',
+                path: 'manage/product/material-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.materialTitle',
+                icon: 'order',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'collarTitle',
+                path:  'manage/product/collar-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.collarTitle',
+                icon: 'event',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'sleeveTitle',
+                path: 'manage/product/sleeve-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.sleeveTitle',
+                icon: 'event',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'textureTitle',
+                path: 'manage/product/texture-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.textureTitle',
+                icon: 'event',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'thicknessTitle',
+                path: 'manage/product/thickness-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.thicknessTitle',
+                icon: 'event',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'elasticityTitle',
+                path: 'manage/product/elasticity-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.elasticityTitle',
+                icon: 'event',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'sizeTitle',
+                path: 'manage/product/size-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.sizeTitle',
+                icon: 'event',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+            {
+                key: 'colorTitle',
+                path: 'manage/product/color-list',
+                title: 'Collapse menu item 2',
+                translateKey: 'nav.colorTitle',
+                icon: 'event',
+                type: NAV_ITEM_TYPE_ITEM,
+                authority: [],
+                subMenu: []
+            },
+
+
+        ]
     },
 ]
 

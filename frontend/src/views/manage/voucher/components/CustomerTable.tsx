@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from "@/components/ui";
 import { IoIosSearch } from 'react-icons/io';
 import { Input } from 'antd';
 import instance from "@/axios/CustomAxios";
+
 
 type ICustomer = {
     id: number;
@@ -13,12 +14,13 @@ type ICustomer = {
 
 type CustomerTableProps = {
     onSelectedCustomersChange: (selectedCustomers: ICustomer[]) => void;
+    selectedCustomerIds: number[];
 };
 
-const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
+const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: CustomerTableProps) => {
     const [customers, setCustomers] = useState<ICustomer[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedCustomerIds, setSelectedCustomerIds] = useState<number[]>([]);
+    const [selectedCustomerIdsState, setSelectedCustomerIdsState] = useState<number[]>(selectedCustomerIds);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const customersPerPage = 10;
@@ -40,20 +42,25 @@ const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
         fetchCustomers();
     }, [currentPage]); // Dependency array includes currentPage to refetch when the page changes
 
-    // Effect to notify parent of selected customers
-    useEffect(() => {
-        const selectedCustomers = customers.filter(customer => selectedCustomerIds.includes(customer.id));
-        onSelectedCustomersChange(selectedCustomers);
-    }, [selectedCustomerIds, customers]);
-
-    // Handle customer selection
-    const handleSelectCustomer = (customerId: number) => {
-        setSelectedCustomerIds((prevSelected) =>
+    const handleSelectCustomer = useCallback((customerId: number) => {
+        setSelectedCustomerIdsState((prevSelected) =>
             prevSelected.includes(customerId)
                 ? prevSelected.filter((id) => id !== customerId)
                 : [...prevSelected, customerId]
         );
-    };
+    }, []);
+
+    useEffect(() => {
+        setSelectedCustomerIdsState(selectedCustomerIds);
+    }, [selectedCustomerIds]);
+
+    useEffect(() => {
+        if (selectedCustomerIdsState.length === selectedCustomerIds.length) return; // Prevent unnecessary updates
+        const selectedCustomers = customers.filter(customer =>
+            selectedCustomerIdsState.includes(customer.id)
+        );
+        onSelectedCustomersChange(selectedCustomers);
+    }, [selectedCustomerIdsState, customers, onSelectedCustomersChange]);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
@@ -61,10 +68,12 @@ const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
     };
 
     // Filtered customers
-    const filteredCustomers = customers.filter((customer) =>
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.email.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredCustomers = useMemo(() => {
+        return customers.filter((customer) =>
+            customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [customers, searchTerm]);
 
     // Pagination logic
     const indexOfLastCustomer = currentPage * customersPerPage;
@@ -120,7 +129,7 @@ const CustomerTable = ({ onSelectedCustomersChange }: CustomerTableProps) => {
                                 <td className="border-b border-gray-300 px-4 py-2 text-center">
                                     <input
                                         type="checkbox"
-                                        checked={selectedCustomerIds.includes(customer.id)}
+                                        checked={selectedCustomerIdsState.includes(customer.id)}
                                         onChange={() => handleSelectCustomer(customer.id)}
                                         className="form-checkbox h-5 w-5 text-blue-600"
                                     />

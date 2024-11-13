@@ -120,7 +120,7 @@ const VoucherTable = () => {
                 accessorKey: 'maxPercent',
             },
             {
-                header: 'Số Lượng Tối Thiếu',
+                header: 'Giá Tối Thiếu',
                 accessorKey: 'minAmount',
             },
             {

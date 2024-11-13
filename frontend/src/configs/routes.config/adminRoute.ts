@@ -1,6 +1,5 @@
 import { lazy } from 'react'
 import type { Routes } from '@/@types/routes'
-import { APP_PREFIX_PATH } from '@/constants/route.constant'
 
 
 const adminRoute: Routes = [
@@ -217,3 +216,4 @@ const adminRoute: Routes = [
 ]
 
 export default adminRoute
+

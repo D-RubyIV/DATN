@@ -4,22 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class VoucherResponseDTO {
-
+@Data
+public class VoucherResponseV2DTO {
     private Integer id;
     private String name;
     private String code;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String status;
-    private Long quantity;
+    private Integer quantity;
     private Integer maxPercent;
-    private Double minAmount;
+    private Integer minAmount;
     private String typeTicket;
-
+    private List<Integer> customers;
 }
