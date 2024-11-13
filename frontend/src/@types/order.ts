@@ -95,6 +95,7 @@ export type OrderHistoryResponseDTO = {
 
 export type OrderResponseDTO = {
     id: number;
+    name: string;
     code: string;
     address: string;
     phone: string;

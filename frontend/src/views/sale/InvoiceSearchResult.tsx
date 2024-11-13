@@ -53,12 +53,23 @@ const InvoiceSearchResult = () => {
                                 {
                                     orderResponseDTO?.images && Array.isArray(orderResponseDTO?.images) && orderResponseDTO?.images.length > 0 ?
                                         (<div>
-                                            <Avatar src={orderResponseDTO?.images[0].url}></Avatar>
+                                            <Avatar size={90} src={orderResponseDTO?.images[0].url}></Avatar>
                                         </div>) :
                                         (<div>
-                                            <Avatar icon={<FiPackage/>}></Avatar>
+                                            <Avatar size={90} icon={<FiPackage/>}></Avatar>
                                         </div>)
                                 }
+                                <div className="ltr:ml-2 rtl:mr-2">
+                                    <h6 className="mb-2">{orderResponseDTO?.name}</h6>
+                                    <div className="mb-1">
+                                        <span className="capitalize">Cỡ: </span>
+                                        <span className="font-semibold">{}</span>
+                                    </div>
+                                    <div className="mb-1">
+                                        <span className="capitalize">Màu: </span>
+                                        <span className="font-semibold">{}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
