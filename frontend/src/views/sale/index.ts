@@ -18,6 +18,7 @@ export type Product = BaseEntity & {
 };
 export type ProductDetailResponseDTO = {
     id: number;
+    name: string;
     code: string;
     price: number;
     quantity: number;

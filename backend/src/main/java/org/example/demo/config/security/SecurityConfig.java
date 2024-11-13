@@ -64,7 +64,7 @@ public class SecurityConfig {
                                 .requestMatchers(mvcMatcherBuilder.pattern("cart/v2")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("cart/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("cart-details/**")).permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 );
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.exceptionHandling(ex -> {
