@@ -14,6 +14,12 @@ module.exports = {
     darkMode: 'class',
     theme: {
         fontFamily: {
+            roboto: [
+                'Roboto'
+            ],
+            hm: [
+                "HM Sans"
+            ],
             sans: [
                 'Inter',
                 'ui-sans-serif',
