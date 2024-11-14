@@ -114,7 +114,7 @@ const Navbar = () => {
                         <div className="relative group hidden sm:block">
                             <input
                                 type="text"
-                                placeholder="search"
+                                placeholder="Tìm kiếm"
                                 className="w-[250px] sm:w-[250px] group-hover:w-[300px] transition-all duration-300 rounded-none border-2 border-black px-2 py-1 focus:outline-none focus:border-1 focus:border-primary dark:border-gray-500 dark:bg-gray-800  "
                             />
                             <IoMdSearch
