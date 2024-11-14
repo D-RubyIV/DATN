@@ -2,17 +2,12 @@ package org.example.demo.dto.staff.request;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.demo.entity.human.role.Role;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 
 @AllArgsConstructor
@@ -49,6 +44,8 @@ public class StaffRequestDTO {
     private String status;
 
     //    @NotNull(message = "NotNull")
-    private Role role; // Assume Role is included directly, or you might want to use roleId instead
-}
+//    private Role role; // Assume Role is included directly, or you might want to use roleId instead
 
+    @JsonProperty("role_id")
+    private Integer roleId;
+}

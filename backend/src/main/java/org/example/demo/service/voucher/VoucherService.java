@@ -1,17 +1,17 @@
 package org.example.demo.service.voucher;
 
 
-import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
-import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface VoucherService {
 
     PageableObject<VoucherResponse> getAll(VoucherRequest request);
 
-    VoucherResponse findVoucherById(Integer id);
+    VoucherResponseV2DTO findVoucherById(Integer id);
 
     Page<Voucher> getAllVouchers(int limit, int offset);
 
@@ -38,11 +38,15 @@ public interface VoucherService {
 
     Voucher addVoucher(VoucherRequest request);
 
-    Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, int limit, int offset);
+    Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, Pageable pageable);
 
     Voucher updateVoucher(Integer id, VoucherRequest request);
 
     void updateStatusVoucher();
 
     void deleteVoucher(Integer id);
+
+    List<Voucher> findBetterVoucher(BigDecimal amount);
+
+    List<Voucher> getSortedVouchers(Sort sort);
 }

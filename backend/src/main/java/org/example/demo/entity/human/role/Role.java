@@ -20,4 +20,12 @@ public class Role extends BaseEntity {
 
     @Column(name = "code")
     private String code;
+
+
+    // Hung : Add Column name to Entity 14/10/2024
+    @Column(name = "name")
+    private String name;
+
+    public static String ADMIN = "ADMIN";
+    public static String USER = "USER";
 }

@@ -17,6 +17,7 @@ import ProductModal from './ProductModal'
 import { ConfirmDialog } from '@/components/shared'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
+import { FiPackage } from 'react-icons/fi'
 
 
 const OrderProducts = ({ data, selectObject, fetchData }: {
@@ -34,16 +35,16 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div className="flex">
-                <Avatar size={90} src={'https://www.bunyanbug.com/images/gone-fishing/fly%20fishing-1.png'} />
+                <Avatar size={90} icon={<FiPackage />} />
                 <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.productDetail.name}</h6>
+                    <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
                     <div className="mb-1">
                         <span className="capitalize">Cỡ: </span>
-                        <span className="font-semibold">{row.productDetail.size.name}</span>
+                        <span className="font-semibold">{row.productDetailResponseDTO.size.name}</span>
                     </div>
                     <div className="mb-1">
                         <span className="capitalize">Màu: </span>
-                        <span className="font-semibold">{row.productDetail.color.name}</span>
+                        <span className="font-semibold">{row.productDetailResponseDTO.color.name}</span>
                     </div>
                 </div>
             </div>
@@ -112,7 +113,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     }
 
     const columns = [
-        columnHelper.accessor('productDetail.name', {
+        columnHelper.accessor('productDetailResponseDTO.name', {
             header: 'Sản phẩm',
             cell: (props) => {
                 const row = props.row.original
@@ -142,21 +143,21 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 )
             }
         }),
-        columnHelper.accessor('productDetail.price', {
+        columnHelper.accessor('productDetailResponseDTO.price', {
             header: 'Giá',
             cell: (props) => {
                 const row = props.row.original
-                return <PriceAmount amount={row.productDetail.price} />
+                return <PriceAmount amount={row.productDetailResponseDTO.price} />
             }
         }),
-        columnHelper.accessor('productDetail', {
+        columnHelper.accessor('productDetailResponseDTO', {
             header: 'Tổng',
             cell: (props) => {
                 const row = props.row.original
-                return <PriceAmount amount={row.quantity * row.productDetail.price} />
+                return <PriceAmount amount={row.quantity * row.productDetailResponseDTO.price} />
             }
         }),
-        columnHelper.accessor('productDetail.id', {
+        columnHelper.accessor('productDetailResponseDTO.id', {
             header: 'Hành động',
             cell: (props) => {
                 const row = props.row.original

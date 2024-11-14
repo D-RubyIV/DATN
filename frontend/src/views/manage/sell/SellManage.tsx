@@ -1,13 +1,13 @@
 // import { Link } from "react-router-dom";
-import SellProvider from './context/SellContext'
-import IndexView from './IndexView'
-import { Link } from 'react-router-dom'
+import SellProvider from "./context/SellContext";
+import IndexView from "./IndexView";
+import {Link} from "react-router-dom";
 
 const SellManage = () => {
     return (
         <SellProvider>
             <div className="bg-white h-full">
-                <div className="p-5 shadow-md rounded-md card card-border  h-full">
+                <div className="p-5 rounded-md card h-full card-border">
                     <div className="lg:flex items-center justify-between mb-4">
                         <nav className="flex" aria-label="Breadcrumb">
                             <ol className="inline-flex items-center space-x-1 md:space-x-3">
@@ -35,13 +35,13 @@ const SellManage = () => {
                             </ol>
                         </nav>
                     </div>
-                    <div className="h-full">
+                    <div className="">
                         <IndexView></IndexView>
                     </div>
                 </div>
             </div>
         </SellProvider>
-    )
+    );
 }
 
-export default SellManage
+export default SellManage;

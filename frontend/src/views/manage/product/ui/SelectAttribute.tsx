@@ -5,6 +5,7 @@ import { setSelectedOption } from '../../../../store/slices/producSlices/selecte
 import UiSelect from './UiSelect';
 import AddAttribute from './AddAttribute';
 import { useAppContext } from '@/store/ProductContext';
+import instance from "@/axios/CustomAxios";
 
 type Attribute = {
     label?: string;
@@ -39,7 +40,7 @@ const SelectAttribute: React.FC<ChildComponentProps> = ({ attribute }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(url);
+            const response = await instance.get(url);
             return response.data as DataAttribute[];
         } catch (error) {
             console.error("Error fetching data:", error);

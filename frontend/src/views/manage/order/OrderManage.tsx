@@ -32,7 +32,7 @@ const OrderManage = () => {
                         </ol>
                     </nav>
                 </div>
-                <div className="p-5">
+                <div>
                     <OrderTable></OrderTable>
                 </div>
             </div>

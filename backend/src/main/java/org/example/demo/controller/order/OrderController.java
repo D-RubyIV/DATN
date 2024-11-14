@@ -1,15 +1,13 @@
 package org.example.demo.controller.order;
 
 import jakarta.validation.Valid;
-import lombok.Data;
 import org.example.demo.controller.IControllerBasic;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
-import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
-import org.example.demo.dto.order.other.UseVoucherDTO;
+import org.example.demo.dto.order.other.UseOrderVoucherDTO;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.example.demo.service.order.OrderService;
@@ -19,7 +17,6 @@ import org.example.demo.validate.group.GroupCreate;
 import org.example.demo.validate.group.GroupUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,9 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -92,13 +87,18 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.findById(id)));
     }
 
+    @GetMapping(value = "by-code/{code}")
+    public ResponseEntity<OrderResponseDTO> detailByCode(@PathVariable String code) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.findByCode(code)));
+    }
+
     @PutMapping(value = "status/change/{id}")
     public ResponseEntity<OrderResponseDTO> changeStatus(@PathVariable Integer id, @RequestBody HistoryRequestDTO requestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeStatus(id, requestDTO)));
     }
 
     @PostMapping(value = "use-voucher")
-    public ResponseEntity<OrderResponseDTO> addVoucher(@Valid @RequestBody UseVoucherDTO requestDTO) {
+    public ResponseEntity<OrderResponseDTO> addVoucher(@Valid @RequestBody UseOrderVoucherDTO requestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.addVoucher(requestDTO)));
     }
 
@@ -133,5 +133,10 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(pdfBytes);
+    }
+
+    @GetMapping(value = "convert/{id}")
+    public ResponseEntity<?> convert(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.convertCartToOrder(id)));
     }
 }

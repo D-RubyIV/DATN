@@ -6,9 +6,10 @@ import { Form, Formik, FormikProps } from 'formik';
 import BasicInformationFields from './components/BasicInformationFields';
 import OrganizationFields from './components/OrganizationFields';
 import DetailedProductList from './components/DetailedProductList';
-import type { Option, DetailedProduct } from './store';
+import type { Option, DetailedProduct,Product } from './store';
 import { AiOutlineSave } from 'react-icons/ai';
 import * as Yup from 'yup';
+import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import { v4 as uuidv4 } from 'uuid';
 import reducer, {
     getProductData,
@@ -45,7 +46,7 @@ type InitialData = {
     id?: number;
     name?: string;
     code?: string;
-    product?: Options | null;
+    product?: Product | null;
     size: Options[];
     color: Options[];
     brand?: Options | null;
@@ -60,6 +61,8 @@ type InitialData = {
     price?: number;
     quantity?: number;
     mass?:number;
+    description?:string;
+
 };
 
 export type FormModel = DetailedProduct
@@ -124,6 +127,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
             mass:500,
             price: 100000,
             quantity: 40,
+            description:''
         },
         onFormSubmit,
         onDiscard,
@@ -171,9 +175,15 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
             value: item,
         })) || [];
     };
+    const mapProducts = (items: Product[] | undefined) => {
+        return items?.map(item => ({
+            label: item.name,
+            value: item,
+        })) || [];
+    };
 
     const combinedData = {
-        products: mapOptions(productData),
+        products: mapProducts(productData),
         brands: mapOptions(brandData),
         origins: mapOptions(originData),
         styles: mapOptions(styleData),
@@ -210,9 +220,10 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                 style: initialData.style || null,
                 texture: initialData.texture || null,
                 thickness: initialData.thickness || null,
-                price: initialData.price || 0,
+                price: initialData.price || 0, 
                 quantity: initialData.quantity || 0,
                 mass: initialData.mass || 0,
+                images:[],
                 deleted: false,
                 createdDate: new Date().toISOString(),
                 modifiedDate: new Date().toISOString(),
@@ -247,8 +258,8 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
             }}
             validationSchema={validationSchema}
             onSubmit={(values, { setSubmitting }) => {
-                // console.log('Combinations in Redux:', combinations); // Sử dụng biến đã lấy
                 onFormSubmit?.(combinations.data, setSubmitting)
+                // console.log(combinations.data)
             }}
         >
             {({ values, touched, errors, isSubmitting, setFieldValue }) => {
@@ -269,9 +280,10 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                     ) {
                         const combinations = generateCombinations(values.color, values.size, values);
                         dispatch(setCombinations(combinations)); // Ghi vào Redux
-                    } else {
-                        dispatch(setCombinations([])); // Xóa nếu không có thuộc tính nào
                     }
+                    //  else {
+                    //     dispatch(setCombinations([])); // Xóa nếu không có thuộc tính nào
+                    // }
                 }, [values]);
 
                 const productCombinations = useAppSelector((state) => state.dataDetailedProduct.detailedProduct.data) || [];
@@ -296,7 +308,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                                         data={combinedData}
                                     />
                                 </div>
-                                {productCombinations.length > 0 && (
+                                {productCombinations.length > 0 ? (
                                     <div className="lg:col-span-1">
                                         <DetailedProductList
                                             productCombinations={productCombinations}
@@ -304,7 +316,19 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                                             touched={touched}
                                         />
                                     </div>
-                                )}
+                                 ):(
+                                        <div className="flex flex-col justify-center items-center h-full">
+                                            <DoubleSidedImage
+                                                className="max-w-[200px]"
+                                                src="/img/others/no-mail-selected.png"
+                                                darkModeSrc="/img/others/no-mail-selected-dark.png"
+                                            />
+                                            <div className="mt-4 text-2xl font-semibold">
+                                                Chọn các thuộc tính để hiển thị sản phẩm chi tiết.
+                                            </div>
+                                        </div>
+                                 )
+                                 } 
                             </div>
                             <StickyFooter
                                 className="-mx-8 px-8 flex items-center justify-between py-4"

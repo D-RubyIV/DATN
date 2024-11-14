@@ -10,6 +10,7 @@ import { SingleValue } from "react-select";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { toast } from 'react-toastify';
+import instance from "@/axios/CustomAxios";
 
 
 type CustomerDTO = {
@@ -30,7 +31,7 @@ type AddressDTO = {
   phone: string;
   provinceId: number;
   districtId: number;
-  wardId: string;
+  wardId: number;
   province: string | null;
   district: string | null;
   ward: string | null;
@@ -52,7 +53,7 @@ interface District {
 
 
 interface Ward {
-  WardCode: string;
+  WardCode: number;
   DistrictID: number;
   WardName: string;
 }
@@ -78,12 +79,9 @@ const validationSchema = Yup.object({
     .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
       return value.trim() === value
     })
-    .test("email-gmail", "Email phải kết thúc bằng @gmail.com", value => {
-      return value ? value.endsWith("@gmail.com") : true; // Chỉ kiểm tra nếu có giá trị
-    })
     .test("email-unique", "Email đã tồn tại", async (email: string) => {
       // Gọi API kiểm tra email có trùng hay không
-      const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
+      const response = await instance.get(`/customer/check-email`, { params: { email } });
       // Đảo ngược giá trị trả về: exists: true nghĩa là email tồn tại, nên bạn trả về false để không hợp lệ
       return !response.data.exists; // API trả về { exists: true: chưa tồn tại / false: chưa tồn tại }
     }),
@@ -93,7 +91,7 @@ const validationSchema = Yup.object({
     .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
     .test("phone-unique", "Số điện thoại đã tồn tại", async (phone: string) => {
       // Gọi API kiểm tra phone có trùng không
-      const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
+      const response = await instance.get(`/customer/check-phone`, { params: { phone } });
       return !response.data.exists; // API trả về { exists: true: Tồn tại / false: chưa tồn tại }
     }),
 
@@ -130,7 +128,7 @@ const AddCustomer = () => {
     phone: '',
     provinceId: 0,
     districtId: 0,
-    wardId: '',
+    wardId: 0,
     province: null,
     district: null,
     ward: null,
@@ -299,7 +297,7 @@ const AddCustomer = () => {
           selectedAddress.province = newValue?.NameExtension[1];
           selectedAddress.districtId = 0;
           selectedAddress.district = null;
-          selectedAddress.wardId = '';
+          selectedAddress.wardId = 0;
           selectedAddress.ward = null;
 
           // Cập nhật Formik và gọi fetchDistricts
@@ -315,7 +313,7 @@ const AddCustomer = () => {
           // Cập nhật giá trị district
           selectedAddress.districtId = newValue.DistrictID;
           selectedAddress.district = newValue.DistrictName;
-          selectedAddress.wardId = '';
+          selectedAddress.wardId = 0;
           selectedAddress.ward = null;
 
           // Cập nhật Formik và gọi fetchWards
@@ -353,7 +351,7 @@ const AddCustomer = () => {
 
       console.log('Submitting formatted values:', formattedValues);
 
-      const response = await axios.post('http://localhost:8080/api/v1/customer/save', formattedValues);
+      const response = await instance.post('/customer/save', formattedValues);
       toast.success('Lưu thành công');
       resetForm();
       if (response.status === 201) {

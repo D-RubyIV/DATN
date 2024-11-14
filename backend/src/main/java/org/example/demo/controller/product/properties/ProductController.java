@@ -50,10 +50,6 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAll(pageable));
     }
 
-
-
-
-
     @RequestMapping(value = "overview")
     public ResponseEntity<Page<ProductWithQuantityResponseDTO>> findAllByPageV3(
             @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
@@ -71,21 +67,21 @@ public class ProductController {
 
 
     @GetMapping("/product-list")
-    public ResponseEntity<Map<String, List<Product>>> findAll() {
+    public ResponseEntity<Map<String, List<ProductResponseDTO>>> findAll() {
         List<Product> products = productService.findAllList();
-        Map<String, List<Product>> response = new HashMap<>();
-        response.put("data", products);
+        Map<String, List<ProductResponseDTO>> response = new HashMap<>();
+        response.put("data", productResponseMapper.toListDTO(products));
         return ResponseEntity.ok(response);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductDetailById(@PathVariable Integer id) throws BadRequestException {
+    public ResponseEntity<?> getProductDetailById(@PathVariable Integer id) throws BadRequestException {
         Product product = productService.findById(id);
         if (product == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ProductDetail not found");
         }
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(productResponseMapper.toDTO(product));
     }
     @PutMapping("/update/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(
@@ -148,5 +144,4 @@ public class ProductController {
         }
         return ResponseEntity.ok(product);
     }
-
 }

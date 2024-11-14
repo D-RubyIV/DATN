@@ -2,16 +2,15 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import DataTable, { CellContext } from '@/components/shared/DataTable';
 import { Button, Input, Switcher } from '@/components/ui';
-import { GrEdit } from "react-icons/gr";
 import { IoIosSearch } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
-import { FiPlusCircle } from "react-icons/fi";
 import { toast } from 'react-toastify';
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { FaFileDownload } from "react-icons/fa";
 import { HiPencil, HiPlusCircle } from 'react-icons/hi';
+import instance from "@/axios/CustomAxios";
 
 type AddressDTO = {
     id: number;
@@ -46,7 +45,7 @@ const CustomerTable = () => {
     const [loading, setLoading] = useState(false);
     const [total, setTotal] = useState(0);
     const [pageIndex, setPageIndex] = useState(1)
-    const [pageSize, setPageSize] = useState(5);
+    const [pageSize, setPageSize] = useState(10);
     const [query, setQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
@@ -57,17 +56,17 @@ const CustomerTable = () => {
     const fetchData = async (page: number, size: number, searchTerm: string, status?: string | null) => {
         setLoading(true);
         try {
-            let url = `http://localhost:8080/api/v1/customer?page=${page}&size=${size}`;
+            let url = `/customer?page=${page}&size=${size}`;
 
             if (searchTerm) {
-                url = `http://localhost:8080/api/v1/customer/search?query=${searchTerm}&page=${page}&size=${size}`;
+                url = `/customer/search?query=${searchTerm}&page=${page}&size=${size}`;
             }
 
             if (status && status !== '') {
                 url += `&status=${status}`;
             }
 
-            const response = await axios.get(url);
+            const response = await instance.get(url);
             const data = response.data;
             let fetchedCustomers: CustomerListDTO[] = [];
 
@@ -90,7 +89,7 @@ const CustomerTable = () => {
 
     const updateStatus = async (id: number, newStatus: boolean) => {
         try {
-            await axios.patch(`http://localhost:8080/api/v1/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
+            await instance.patch(`/customer/status/${id}`, { status: newStatus ? 'Active' : 'Inactive' });
             toast.success('cập nhật thành công');
             fetchData(pageIndex, pageSize, query)
         } catch (error) {
@@ -115,7 +114,7 @@ const CustomerTable = () => {
                     : 'N/A',
             };
         });
-    
+
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Customer');
@@ -300,8 +299,8 @@ const CustomerTable = () => {
                         variant="solid"
                         style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
                         className='flex items-center justify-center gap-2 button-bg-important'
+                        icon={<HiPlusCircle />}
                         onClick={handleAddClick}
-                        icon={<HiPlusCircle />} 
                     >
                         Thêm mới
                     </Button>

@@ -3,15 +3,16 @@ package org.example.demo.service.order;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.example.demo.dto.ghn.FeeDTO;
 import org.example.demo.dto.ghn.ItemDTO;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
-import org.example.demo.dto.order.core.response.CountOrderDetailInOrder;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
-import org.example.demo.dto.order.other.UseVoucherDTO;
+import org.example.demo.dto.order.other.UseOrderVoucherDTO;
+import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
+import org.example.demo.entity.cart.core.CartDetail;
+import org.example.demo.entity.cart.properties.Cart;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Payment;
@@ -19,14 +20,17 @@ import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
+import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.order.core.request.OrderRequestMapper;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.model.response.ICountOrderDetailInOrder;
+import org.example.demo.repository.cart.CartRepository;
 import org.example.demo.repository.history.HistoryRepository;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.customer.CustomerRepository;
+import org.example.demo.repository.order_detail.OrderDetailRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
@@ -36,7 +40,6 @@ import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,6 +83,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Autowired
     private FeeService feeService;
 
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
     public Page<OrderOverviewResponseDTO> findAllOverviewByPage(
             String status,
             String type,
@@ -106,6 +115,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found"));
     }
 
+    public Order findByCode(String code) {
+        return orderRepository.findByCode(code).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found"));
+    }
+
     @Override
     @Transactional
     public Order delete(Integer id) {
@@ -124,7 +137,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setDeleted(false);
         entityMapped.setStatus(Status.PENDING);
         entityMapped.setPayment(Payment.CASH);
-        entityMapped.setCode("HD" + randomCodeGenerator.generateRandomCode());
+        entityMapped.setCode("HDI" + randomCodeGenerator.generateRandomCode());
         entityMapped.setStaff(staffDemo);
 
         entityMapped.setSubTotal(0.0);
@@ -236,7 +249,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Transactional
-    public Order addVoucher(UseVoucherDTO request) {
+    public Order addVoucher(UseOrderVoucherDTO request) {
         Order orderFound = findById(request.getIdOrder());
         Voucher voucherFound = voucherRepository.findById(request.getIdVoucher()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Voucher not found"));
         System.out.println(orderFound.getCode());
@@ -286,6 +299,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         calculateDiscount(order);
         try {
             if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE) {
+                System.out.println("DISTRICT: " + order.getDistrictId());
+                System.out.println("PROVINCE: " + order.getProvinceId());
+                System.out.println("WARD: " + order.getWardId());
                 JsonNode feeObject = calculateFee(order.getId());
                 if (feeObject != null) {
                     String feeString = String.valueOf(feeObject.get("data").get("total"));
@@ -358,4 +374,60 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             return null;
         }
     }
+
+    public List<StatisticOverviewResponse> fetchOrdersByStatusAndRangeTime(Status status, LocalDateTime from, LocalDateTime to){
+        return orderRepository.findAllByStatusAndCreatedDateBetweenOrderByCreatedDateDesc(status, from, to);
+    }
+
+    public Order convertCartToOrder(Integer cartId){
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không xác đingj được giỏ hàng"));
+        Order order = new Order();
+        order.setCode("HDO" + randomCodeGenerator.generateRandomCode());
+        order.setAddress(cart.getAddress());
+        order.setProvinceId(cart.getProvinceId());
+        order.setProvinceName(cart.getProvinceName());
+        order.setDistrictId(cart.getDistrictId());
+        order.setDistrictName(cart.getDistrictName());
+        order.setWardId(cart.getWardId());
+        order.setWardName(cart.getWardName());
+        order.setPhone(cart.getPhone());
+        order.setDeleted(Boolean.FALSE);
+        order.setTotal(cart.getTotal());
+        order.setDeliveryFee(cart.getDeliveryFee());
+        order.setDiscount(cart.getDiscount());
+        order.setSubTotal(cart.getSubTotal());
+        order.setType(Type.ONLINE);
+        order.setPayment(cart.getPayment());
+        // status
+        if (cart.getStatus() == org.example.demo.entity.cart.enums.Status.PENDING){
+            order.setStatus(Status.PENDING);
+        } else if (cart.getStatus() == org.example.demo.entity.cart.enums.Status.SUCCESS) {
+            order.setStatus(Status.DELIVERED);
+        } else if (cart.getStatus() == org.example.demo.entity.cart.enums.Status.TOSHIP) {
+            order.setStatus(Status.TOSHIP);
+        }
+        //
+        order.setCustomer(null);
+        order.setVoucher(cart.getVoucher());
+        List<OrderDetail> list = new ArrayList<>();
+        List<CartDetail> listCardDetail = cart.getCartDetails();
+        orderRepository.save(order);
+        listCardDetail.forEach(s -> {
+            OrderDetail od = new OrderDetail();
+            od.setOrder(order);
+            od.setQuantity(s.getQuantity());
+            od.setProductDetail(s.getProductDetail());
+            od.setDeleted(false);
+            list.add(od);
+        });
+        List<OrderDetail> orderDetailListSaved = orderDetailRepository.saveAll(list);
+        order.setOrderDetails(orderDetailListSaved);
+
+        Order result = orderRepository.save(order);
+        cart.setDeleted(Boolean.TRUE);
+        cartRepository.save(cart);
+        return result;
+    }
+
+
 }

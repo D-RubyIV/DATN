@@ -15,11 +15,6 @@ export const clientRoutes: Routes = [
     ...clientRoute
 ]
 export const adminRoutes = [
-    {
-        key: 'home',
-        path: '/home',
-        component: lazy(() => import('@/views/Home')),
-        authority: []
-    },
+
     ...adminRoute,
 ]

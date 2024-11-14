@@ -17,6 +17,9 @@ import org.example.demo.entity.product.core.ProductDetail;
 @Table(name = "cart_detail", uniqueConstraints = @UniqueConstraint(columnNames = {"code"}))
 public class CartDetail extends BaseEntity {
 
+    @Column(name = "code")
+    private String code;
+
     @Column(name = "quantity")
     private Integer quantity;
 

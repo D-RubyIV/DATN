@@ -9,6 +9,8 @@ import VoucherTableTool from './VoucherTableTool'
 import { Tooltip } from 'antd'
 import { FaPen } from 'react-icons/fa'
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
+import instance from "@/axios/CustomAxios";
+import { useNavigate } from 'react-router-dom'
 
 type IVoucher = {
     id: number
@@ -28,6 +30,7 @@ const VoucherTable = () => {
     const [loading, setLoading] = useState(false)
     const [searchKeyword, setSearchKeyword] = useState('')
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
     const [tableData, setTableData] = useState({
         pageIndex: 1,
         pageSize: 10,
@@ -45,6 +48,8 @@ const VoucherTable = () => {
         totalItems: 0,
         pageSize: 10,
     });
+
+
 
     useEffect(() => {
         fetchData();
@@ -68,13 +73,19 @@ const VoucherTable = () => {
         setTableData(prevData => ({ ...prevData, pageSize, pageIndex: 1 }));
     };
 
+    
+
     const handleSort = ({ order, key }: OnSortParam) => {
-        setTableData(prevData => ({
-            ...prevData,
-            sort: { order, key },
-            pageIndex: 1,
-        }));
+        setTableData(prevData => {
+            const newOrder = (prevData.sort.key === key && prevData.sort.order === 'asc') ? 'desc' : 'asc';
+            return {
+                ...prevData,
+                sort: { order: newOrder, key },
+                pageIndex: 1,
+            };
+        });
     };
+    
 
     const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setTableData(prevData => ({
@@ -83,6 +94,8 @@ const VoucherTable = () => {
             pageIndex: 1,
         }));
     };
+
+
 
     const columns: ColumnDef<IVoucher>[] = useMemo(
         () => [
@@ -107,7 +120,7 @@ const VoucherTable = () => {
                 accessorKey: 'maxPercent',
             },
             {
-                header: 'Số Lượng Tối Thiếu',
+                header: 'Giá Tối Thiếu',
                 accessorKey: 'minAmount',
             },
             {
@@ -175,7 +188,7 @@ const VoucherTable = () => {
                             </Tooltip>
 
                             <Tooltip title="Cập nhật">
-                                <Button size="xs">
+                                <Button size="xs" onClick={() => handleUpdate(id)}>
                                     <FaPen />
                                 </Button>
                             </Tooltip>
@@ -190,7 +203,7 @@ const VoucherTable = () => {
 
     const softDelete = async (id: number) => {
         try {
-            const response = await axios.delete(`http://localhost:8080/api/v1/voucher/delete/${id}`);
+            const response = await instance.put(`/voucher/delete/${id}`);
             if (response.status === 200) {
                 toast.success('Xoá thành công');
                 fetchData();
@@ -235,7 +248,7 @@ const VoucherTable = () => {
 
             console.log('Fetching data with params:', params);
 
-            const response = await axios.get('http://localhost:8080/api/v1/voucher/page', { params });
+            const response = await instance.get('/voucher/page', { params });
 
             if (response.data) {
                 setData(response.data.content);
@@ -254,6 +267,11 @@ const VoucherTable = () => {
         }
     };
 
+    const handleUpdate =  (id: number) => {
+        navigate(`/admin/manage/voucher/update/${id}`)
+    };
+
+
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(event.target.value);
     };
@@ -266,7 +284,7 @@ const VoucherTable = () => {
 
     return (
         <>
-            <div className="bg-white p-5 mb-6 w-full">
+            <div className="bg-white mb-6 w-full">
                 <div className="mb-4">
                     <p className="text-xl font-bold mx-auto mb-5 text-black uppercase">Quản Lý Phiếu Giảm Giá</p>
                     <div

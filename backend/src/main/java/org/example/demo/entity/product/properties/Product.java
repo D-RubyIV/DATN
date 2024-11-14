@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.event.Event;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -22,10 +25,12 @@ public class Product extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
+    @ManyToMany(mappedBy = "products")
+    private List<Event> events = new ArrayList<>();
 }

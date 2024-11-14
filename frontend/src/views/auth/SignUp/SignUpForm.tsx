@@ -64,8 +64,8 @@ const SignUpForm = (props: SignUpFormProps) => {
             )}
             <Formik
                 initialValues={{
-                    userName: 'admin1',
-                    password: '123Qwe1',
+                    userName: 'dat@gmail.com',
+                    password: '12345',
                     confirmPassword: '123Qwe1',
                     email: 'test@testmail.com',
                 }}

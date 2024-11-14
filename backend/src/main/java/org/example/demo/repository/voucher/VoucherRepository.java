@@ -1,16 +1,20 @@
 package org.example.demo.repository.voucher;
 
+import org.example.demo.dto.voucher.response.VoucherResponseDTO;
+import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +22,7 @@ import java.util.Optional;
 @Repository
 public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
+    Optional<Voucher> findByCode(String code);
 
     @Query(value = """
             SELECT 
@@ -62,38 +67,61 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
             """, nativeQuery = true)
     List<VoucherResponse> getAllVouchersWithCustomers(@Param("idCustomer") Integer id, @Param("req") VoucherRequest request);
 
-    @Query(value = """
-                SELECT
-                    ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
-                    STRING_AGG(CAST(vc.customer_id AS VARCHAR(MAX)), ',') AS customer,
-                    v.id AS id,
-                    v.code AS code,
-                    v.name AS name,
-                    v.type_ticket AS typeTicket,
-                    v.quantity AS quantity,
-                    v.start_date AS startDate,
-                    v.end_date AS endDate,
-                    v.max_percent AS maxPercent,
-                    v.min_amount AS minAmount,
-                    v.status AS status
-                FROM voucher v
-                LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
-                LEFT JOIN customer c ON vc.customer_id = c.id
-                WHERE v.id = :id
-                GROUP BY
-                    v.id,
-                    v.code,
-                    v.name,
-                    v.type_ticket,
-                    v.quantity,
-                    v.start_date,
-                    v.end_date,
-                    v.max_percent,
-                    v.min_amount,
-                    v.status,
-                    v.created_date
-            """, nativeQuery = true)
-    Optional<VoucherResponse> findVoucherById(Integer id);
+//    @Query(value = """
+//                SELECT
+//                    ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
+//                    STRING_AGG(CAST(c.name AS VARCHAR(MAX)), ', ') AS customerNames,  -- Chuỗi tên khách hàng
+//                    STRING_AGG(CAST(vc.customer_id AS VARCHAR(MAX)), ',') AS customerIds, -- Chuỗi ID khách hàng
+//                    v.id AS id,
+//                    v.code AS code,
+//                    v.name AS name,
+//                    v.type_ticket AS typeTicket,
+//                    v.quantity AS quantity,
+//                    v.start_date AS startDate,
+//                    v.end_date AS endDate,
+//                    v.max_percent AS maxPercent,
+//                    v.min_amount AS minAmount,
+//                    v.status AS status
+//                FROM voucher v
+//                LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
+//                LEFT JOIN customer c ON vc.customer_id = c.id
+//                WHERE v.id = :id
+//                GROUP BY
+//                    v.id,
+//                    v.code,
+//                    v.name,
+//                    v.type_ticket,
+//                    v.quantity,
+//                    v.start_date,
+//                    v.end_date,
+//                    v.max_percent,
+//                    v.min_amount,
+//                    v.status,
+//                    v.created_date
+//            """, nativeQuery = true)
+//    Optional<VoucherResponseV2DTO> findVoucherById(Integer id);
+
+
+//    @Query("""
+//            SELECT new org.example.demo.dto.voucher.response.VoucherResponseV2DTO(
+//                ROW_NUMBER() OVER (ORDER BY v.createdDate DESC),
+//                v.id,
+//                v.name,
+//                v.code,
+//                v.startDate,
+//                v.endDate,
+//                v.status,
+//                v.quantity,
+//                v.maxPercent,
+//                v.minAmount,
+//                v.typeTicket,
+//                (SELECT STRING_AGG(c.name, ', ') FROM Customer c JOIN VoucherCustomer vc ON vc.customerId = c.id WHERE vc.voucherId = v.id),
+//                (SELECT STRING_AGG(vc.customerId, ', ') FROM VoucherCustomer vc WHERE vc.voucherId = v.id)
+//            )
+//            FROM Voucher v
+//            WHERE v.id = :id
+//            """)
+//    Optional<VoucherResponseV2DTO> findVoucherById(@Param("id") Integer id);
 
     @Query(value = """
             SELECT 
@@ -130,17 +158,17 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
     @Query("""
     SELECT v FROM Voucher v
-    WHERE (:keyword IS NULL OR 
-            v.name LIKE %:keyword% OR 
-            v.code LIKE %:keyword%) 
+    WHERE v.deleted = false AND
+          (:keyword IS NULL OR 
+           v.name LIKE %:keyword% OR 
+           v.code LIKE %:keyword%) 
       AND (:name IS NULL OR v.name LIKE %:name%) 
       AND (:code IS NULL OR v.code LIKE %:code%) 
       AND (:typeTicket IS NULL OR v.typeTicket = :typeTicket) 
       AND (:quantity IS NULL OR v.quantity = :quantity) 
       AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
       AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
-      AND (:status IS NULL OR v.status = :status) 
-    ORDER BY v.createdDate DESC
+      AND (:status IS NULL OR v.status = :status)
 """)
     Page<Voucher> searchVoucher(@Param("keyword") String keyword,
                                 @Param("name") String name,
@@ -151,6 +179,45 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                                 @Param("minAmount") Double minAmount,
                                 @Param("status") String status,
                                 Pageable pageable);
+
+
+
+    @Query("""
+        SELECT v FROM Voucher v
+        WHERE CAST(v.minAmount AS bigdecimal) > :amount
+        AND v.quantity > 0
+        AND v.deleted = FALSE
+        AND v.status = 'Active'
+        ORDER BY v.maxPercent ASC
+        """)
+    List<Voucher> findVoucherWithMinAmountGreaterThan(@Param("amount") BigDecimal amount);
+
+    @Query("""
+        SELECT v FROM Voucher v
+        WHERE CAST(v.minAmount AS bigdecimal) < :amount
+        AND v.quantity > 0
+        AND v.deleted = FALSE
+        AND v.status = 'Active'
+        ORDER BY v.maxPercent DESC
+        """)
+    List<Voucher> findBestVoucher(@Param("amount") BigDecimal amount);
+
+    @Query("""
+    SELECT v FROM Voucher v
+    WHERE v.quantity > 0
+    AND v.deleted = FALSE
+    AND v.status = 'Active'
+    """)
+    List<Voucher> findTopVouchers(Sort sort);
+
+
+    @Query("""
+    SELECT v FROM Voucher v
+    WHERE v.quantity > 0
+    AND v.deleted = FALSE
+    AND v.status = 'Active'
+    """)
+    List<Voucher> findSortAmountVouchers(Sort sort);
 
 
 

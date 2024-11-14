@@ -10,6 +10,20 @@
         "staffTitle": "Nhân viên",
         "voucherTitle": "Phiếu giảm giá",
         "orderTitle": "Hóa đơn",
+        "eventTitle": "Đợt giảm giá",
+
+        "propertiesTitle": "Thuộc tính",
+        "brandTitle": "Thương hiệu",
+        "originTitle": "Xuất xứ",
+        "styleTitle": "Kiểu dáng",
+        "materialTitle": "Chất liệu",
+        "collarTitle": "Cổ áo",
+        "sleeveTitle": "Tay áo",
+        "textureTitle": "Kết cấu",
+        "thicknessTitle": "Độ dày",
+        "elasticityTitle": "Co dãn",
+        "sizeTitle": "Kích cỡ",
+        "colorTitle": "Màu sắc",
 
         "singleMenuItem": "Single menu item",
         "collapseMenu": {

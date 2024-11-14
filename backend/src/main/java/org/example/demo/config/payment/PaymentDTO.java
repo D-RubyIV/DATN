@@ -3,9 +3,8 @@ package org.example.demo.config.payment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-public class PaymentDTO {
+public abstract class PaymentDTO {
 
     @Getter
     @AllArgsConstructor // Generate a public constructor for all fields

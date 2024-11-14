@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("customer")
 public class CustomerController {
 
     @Autowired
@@ -47,7 +47,6 @@ public class CustomerController {
         CustomerDTO customerDTO = customerService.getCustomerDetailById(id);
         return ResponseEntity.ok(customerDTO);
     }
-
 
     // API kiểm tra email có tồn tại hay không
     @GetMapping("/check-email")

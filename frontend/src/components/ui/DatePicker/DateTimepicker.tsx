@@ -15,16 +15,16 @@ import type { FocusEvent, ChangeEvent } from 'react'
 
 export interface DateTimepickerProps
     extends CommonProps,
-        Omit<
-            CalendarSharedProps,
-            | 'onMonthChange'
-            | 'onChange'
-            | 'isDateInRange'
-            | 'isDateFirstInRange'
-            | 'isDateLastInRange'
-            | 'month'
-        >,
-        BasePickerSharedProps {
+    Omit<
+        CalendarSharedProps,
+        | 'onMonthChange'
+        | 'onChange'
+        | 'isDateInRange'
+        | 'isDateFirstInRange'
+        | 'isDateLastInRange'
+        | 'month'
+    >,
+    BasePickerSharedProps {
     closePickerOnChange?: boolean
     defaultOpen?: boolean
     defaultValue?: Date | null
@@ -112,8 +112,8 @@ const DateTimepicker = forwardRef<HTMLInputElement, DateTimepickerProps>(
         const [inputState, setInputState] = useState(
             _value instanceof Date
                 ? capitalize(
-                      dayjs(_value).locale(finalLocale).format(dateFormat)
-                  )
+                    dayjs(_value).locale(finalLocale).format(dateFormat)
+                )
                 : ''
         )
 
@@ -133,11 +133,8 @@ const DateTimepicker = forwardRef<HTMLInputElement, DateTimepickerProps>(
             }
 
             if (value instanceof Date && !focused) {
-                setInputState(
-                    dayjs(value).locale(finalLocale).format(dateFormat)
-                )
+                setInputState(dayjs(value).locale(finalLocale).format("DD/MM/YYYY HH:mm"))
             }
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value, focused])
 
         const handleValueChange = (date: Date) => {
@@ -151,19 +148,14 @@ const DateTimepicker = forwardRef<HTMLInputElement, DateTimepickerProps>(
             }
             setValue(date)
             if (!value && !closePickerOnChange) {
-                setInputState(
-                    dayjs(date).locale(finalLocale).format(dateFormat)
-                )
+                setInputState(dayjs(date).locale(finalLocale).format("DD/MM/YYYY HH:mm"))
             }
             closePickerOnChange &&
-                setInputState(
-                    capitalize(
-                        dayjs(date).locale(finalLocale).format(dateFormat)
-                    )
-                )
+                setInputState(dayjs(date).locale(finalLocale).format("DD/MM/YYYY HH:mm"))
             closePickerOnChange && closeDropdown()
             window.setTimeout(() => inputRef.current?.focus(), 0)
         }
+
 
         const handleClear = () => {
             setValue(null)

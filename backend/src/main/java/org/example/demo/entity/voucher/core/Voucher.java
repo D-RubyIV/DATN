@@ -1,6 +1,7 @@
 package org.example.demo.entity.voucher.core;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,9 +60,10 @@ public class Voucher extends BaseEntity {
     @ManyToMany
     @JoinTable(
             name = "voucher_customer",
-            joinColumns = @JoinColumn(name = "customer_id"),
-            inverseJoinColumns = @JoinColumn(name = "voucher_id")
+            joinColumns = @JoinColumn(name = "voucher_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
     )
     private List<Customer> customers;
+
 
 }

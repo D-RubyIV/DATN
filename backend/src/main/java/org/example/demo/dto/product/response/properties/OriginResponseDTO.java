@@ -15,9 +15,6 @@ public class OriginResponseDTO {
     private String code;
     private String name;
     private Boolean deleted;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private  LocalDateTime modifiedDate;
-
 }

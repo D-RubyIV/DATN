@@ -13,6 +13,7 @@ import instance from '@/axios/CustomAxios';
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal';
 import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import { PaymentSummaryProps } from '@/@types/payment'
+import { FiPackage } from 'react-icons/fi'
 
 const OrderDetails = () => {
 
@@ -96,7 +97,7 @@ const CustomerInfo = ({ data }: { data: OrderResponseDTO }) => {
                 to="/app/crm/customer-details?id=11"
             >
                 <div className="flex items-center">
-                    <Avatar shape="circle" src={"https://th.bing.com/th/id/OIP.QypR4Rt5VeZ3Po2g8HQ2_QAAAA?rs=1&pid=ImgDetMain"} />
+                    <Avatar icon={<FiPackage />} />
                     <div className="ltr:ml-2 rtl:mr-2">
                         <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
                             {customer.name || "Khách lẻ"}

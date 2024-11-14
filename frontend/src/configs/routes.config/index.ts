@@ -1,1 +1,1 @@
-export { adminRoutes, clientRoutes, publicRoutes, authRoutes } from './routes.config'
+export {publicRoutes} from './routes.config'

@@ -2,17 +2,18 @@ package org.example.demo.mapper.product.response.core;
 
 import org.example.demo.dto.product.phah04.response.ProductOverviewResponse;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
-import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.entity.product.core.ProductDetail;
-import org.example.demo.entity.product.properties.Product;
 import org.example.demo.mapper.IMapperBasic;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
+@Qualifier("productDetailResponseMapperPhah04")
 public interface ProductDetailResponseMapper extends IMapperBasic<ProductDetail, ProductDetailResponseDTO> {
+
 
     @Mapping(target = "sizeName", source = "size.name")
     @Mapping(target = "colorName", source = "color.name")

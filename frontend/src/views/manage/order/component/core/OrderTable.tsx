@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, ChangeEvent } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
@@ -22,7 +23,6 @@ type BadgeType =
     | 'countDelivered'
     | 'countCancelled'
     | 'countReturned'
-    | 'countPaid'
     | 'countUnPaid'
 
 interface ICountStatus {
@@ -33,7 +33,6 @@ interface ICountStatus {
     countDelivered: number;  // Số lượng hóa đơn đang giao hàng
     countCancelled: number;  // Số lượng hóa đơn đã hủy
     countReturned: number;   // Số lượng hóa đơn trả hàng
-    countPaid: number;   // Số lượng hóa đơn trả hàng
     countUnPaid: number;   // Số lượng hóa đơn trả hàng
 }
 
@@ -62,7 +61,6 @@ export const OrderTable = () => {
         countDelivered: 0,
         countReturned: 0,
         countToReceive: 0,
-        countPaid: 0,
         countUnPaid: 0
     })
     const [queryParam, setQueryParam] = useState<{
@@ -145,7 +143,7 @@ export const OrderTable = () => {
 
     const calculateDistanceTime = (formattedDate: string) => {
         const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
-        const dateMinus12Hours = subHours(date, 12)
+        const dateMinus12Hours = subHours(date, -12)
         const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi })
         return distance
     }
@@ -231,7 +229,7 @@ export const OrderTable = () => {
                     size="xs"
                     block
                     variant="solid"
-                    className={`${props.row.original.status === 'PENDING'
+                    className={`bg-white ${props.row.original.status === 'PENDING'
                         ? '!text-yellow-500'
                         : props.row.original.status === 'TOSHIP'
                             ? '!text-blue-500'
@@ -243,12 +241,10 @@ export const OrderTable = () => {
                                         ? '!text-red-500'
                                         : props.row.original.status === 'RETURNED'
                                             ? '!text-orange-500'
-                                            : props.row.original.status === 'PAID'
-                                                ? '!text-teal-500'
                                                 : props.row.original.status === 'UNPAID'
                                                     ? '!text-pink-500'
                                                     : '!text-gray-500'
-                    }`}
+                        }`}
                 >
                     <span className={`flex items-center font-bold`}>
                         <span
@@ -264,28 +260,24 @@ export const OrderTable = () => {
                                                 ? '!bg-red-500'
                                                 : props.row.original.status === 'RETURNED'
                                                     ? '!bg-orange-500'
-                                                    : props.row.original.status === 'PAID'
-                                                        ? '!bg-teal-500'
                                                         : props.row.original.status === 'UNPAID'
                                                             ? '!bg-pink-500'
                                                             : '!bg-gray-500'
-                            }`}></span>
+                                }`}></span>
                         <span>
                             <p>
                                 {props.row.original.status === 'PENDING'
                                     ? 'Chờ xác nhân'
                                     : props.row.original.status === 'TOSHIP'
-                                        ? 'Đợi giao hàng'
+                                        ? 'Chờ vận chuyển'
                                         : props.row.original.status === 'TORECEIVE'
-                                            ? 'Đang giao hàng'
+                                            ? 'Đang vận chuyển'
                                             : props.row.original.status === 'DELIVERED'
                                                 ? 'Đã hoàn thành'
                                                 : props.row.original.status === 'CANCELED'
                                                     ? 'Đã hủy đơn'
                                                     : props.row.original.status === 'RETURNED'
                                                         ? 'Đã trả hàng'
-                                                        : props.row.original.status === 'PAID'
-                                                            ? 'Đã thanh toán'
                                                             : props.row.original.status === 'UNPAID'
                                                                 ? 'Chưa thanh toán'
                                                                 : 'Không xác định'}
@@ -304,6 +296,7 @@ export const OrderTable = () => {
                     size="xs"
                     block
                     variant="solid"
+                    className={'bg-white'}
                 >
 
                     <span
@@ -330,7 +323,7 @@ export const OrderTable = () => {
             cell: (props) => (
                 <Button size="xs" className="w-full flex justify-start items-center" variant="plain">
                     <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className="mr-3 text-2xl"
-                                                                               style={{ cursor: 'pointer' }} /></Link>
+                        style={{ cursor: 'pointer' }} /></Link>
                 </Button>
 
             )
@@ -341,10 +334,9 @@ export const OrderTable = () => {
         { label: 'TẤT CẢ', value: EOrderStatusEnums.EMPTY, badge: 'countAll' },
         { label: 'CHỜ XÁC NHẬN', value: EOrderStatusEnums.PENDING, badge: 'countPending' },
         { label: 'CHỜ THANH TOÁN', value: EOrderStatusEnums.UNPAID, badge: 'countUnPaid' },
-        { label: 'ĐÃ THANH TOÁN', value: EOrderStatusEnums.PAID, badge: 'countPaid' },
         { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
         { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
-        { label: 'ĐÃ GIAO', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },
+        { label: 'ĐÃ HOÀN THÀNH', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },
         { label: 'ĐÃ HỦY', value: EOrderStatusEnums.CANCELED, badge: 'countCancelled' },
         { label: 'TRẢ HÀNG', value: EOrderStatusEnums.RETURNED, badge: 'countReturned' }
     ]
@@ -408,7 +400,7 @@ export const OrderTable = () => {
     ]
 
     const fetchCountAnyStatus = async () => {
-        instance.get('orders/count-any-status').then(function(response) {
+        instance.get('orders/count-any-status').then(function (response) {
             if (response.data) {
                 setCountAnyStatus(response.data as ICountStatus)
             }
@@ -458,10 +450,10 @@ export const OrderTable = () => {
                     {
                         statusBills.map((item, index) => (
                             <TabNav key={index}
-                                    className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
-                                    value={item.value}>
+                                className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
+                                value={item.value}>
                                 <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)}
-                                       maxCount={99} innerClass="bg-red-50 text-red-500">
+                                    maxCount={99} innerClass="bg-red-50 text-red-500">
                                     <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
                                         {item.label}
                                     </button>

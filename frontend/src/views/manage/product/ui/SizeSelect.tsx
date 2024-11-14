@@ -4,6 +4,7 @@ import makeAnimated from 'react-select/animated';
 import axios from 'axios';
 import { useDispatch } from 'react-redux'; // Nếu cần sử dụng redux
 import { useAppContext } from '@/store/ProductContext';
+import instance from "@/axios/CustomAxios";
 
 const animatedComponents = makeAnimated();
 
@@ -30,7 +31,7 @@ const SizeSelect: React.FC<ChildComponentProps> = ({ urlSize }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(url);
+            const response = await instance.get(url);
             const formattedData = response.data.map((item: DataAttribute) => ({
                 label: item.name,
                 value: item,

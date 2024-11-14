@@ -536,7 +536,7 @@ const UpdateCustomer = () => {
 
             if (response.status === 200) {
                 toast.success('Cập nhật thành công');
-                navigate('/admin/manage/customer');
+                navigate('/manage/customer');
             } else {
                 alert('Failed to update customer. Please try again.');
             }
@@ -687,7 +687,7 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.name}
                                     >
                                         <Field type="text" autoComplete="off" name="name" style={{ height: '44px' }}
-                                            placeholder="Tên khách hàng..." component={Input} />
+                                               placeholder="Tên khách hàng..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -697,7 +697,7 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.email}
                                     >
                                         <Field type="text" autoComplete="off" name="email" style={{ height: '44px' }}
-                                            placeholder="Email..." component={Input} />
+                                               placeholder="Email..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -707,12 +707,12 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.phone}
                                     >
                                         <Field type="text" autoComplete="off" name="phone" style={{ height: '44px' }}
-                                            placeholder="Số điện thoại..." component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                            }} />
+                                               placeholder="Số điện thoại..." component={Input}
+                                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                   const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                   setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                   setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                               }} />
                                     </FormItem>
 
                                     <FormItem
@@ -756,11 +756,11 @@ const UpdateCustomer = () => {
                                             {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                 <>
                                                     <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'}
-                                                        onChange={() => form.setFieldValue('gender', 'Nam')}>
+                                                           onChange={() => form.setFieldValue('gender', 'Nam')}>
                                                         Nam
                                                     </Radio>
                                                     <Radio value="Nữ" checked={field.value === 'Nữ'}
-                                                        onChange={() => form.setFieldValue('gender', 'Nữ')}>
+                                                           onChange={() => form.setFieldValue('gender', 'Nữ')}>
                                                         Nữ
                                                     </Radio>
                                                 </>
@@ -770,16 +770,16 @@ const UpdateCustomer = () => {
 
                                     <FormItem>
                                         <Button type="reset" className="ltr:mr-2 rtl:ml-2"
-                                            style={{ backgroundColor: '#fff', height: '40px' }}
-                                            disabled={isSubmitting} onClick={() => {
-                                                resetForm();
-                                                resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
-                                            }}>
+                                                style={{ backgroundColor: '#fff', height: '40px' }}
+                                                disabled={isSubmitting} onClick={() => {
+                                            resetForm();
+                                            resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
+                                        }}>
                                             Tải lại
                                         </Button>
                                         <Button variant="solid" type="submit"
-                                            style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                            disabled={isSubmitting}>
+                                                style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                                disabled={isSubmitting}>
                                             Cập nhật
                                         </Button>
                                     </FormItem>
@@ -844,11 +844,11 @@ const UpdateCustomer = () => {
                                                                         style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
-                                                                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                    //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                                    //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                                    //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                                                    // }}
+                                                                        // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                        //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                                        //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                                        //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                                                        // }}
                                                                     />
                                                                 </FormItem>
                                                             </div>
@@ -864,9 +864,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].province`}>
                                                                         {({
-                                                                            field,
-                                                                            form
-                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                              field,
+                                                                              form
+                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             // Log giá trị tỉnh/thành phố hiện tại
                                                                             console.log('Dữ liệu tỉnh:', field.value);
 
@@ -898,9 +898,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].district`}>
                                                                         {({
-                                                                            field,
-                                                                            form
-                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                              field,
+                                                                              form
+                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             console.log('Dữ liệu quận:', field.value);
                                                                             return (
                                                                                 <Select
@@ -930,9 +930,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].ward`}>
                                                                         {({
-                                                                            field,
-                                                                            form
-                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                              field,
+                                                                              form
+                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             console.log('Dữ liệu xã:', field.value);
 
                                                                             return (
@@ -964,9 +964,9 @@ const UpdateCustomer = () => {
                                                             errorMessage={errors.addressDTOS?.[index]?.detail}
                                                         >
                                                             <Field type="text" name={`addressDTOS[${index}].detail`}
-                                                                style={{ height: '44px' }}
-                                                                placeholder="Nhập địa chỉ chi tiết"
-                                                                component={Input} />
+                                                                   style={{ height: '44px' }}
+                                                                   placeholder="Nhập địa chỉ chi tiết"
+                                                                   component={Input} />
                                                         </FormItem>
 
                                                         <FormItem label="Địa chỉ mặc định">
