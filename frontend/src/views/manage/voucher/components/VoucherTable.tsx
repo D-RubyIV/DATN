@@ -203,7 +203,7 @@ const VoucherTable = () => {
 
     const softDelete = async (id: number) => {
         try {
-            const response = await instance.delete(`/voucher/delete/${id}`);
+            const response = await instance.put(`/voucher/delete/${id}`);
             if (response.status === 200) {
                 toast.success('Xoá thành công');
                 fetchData();

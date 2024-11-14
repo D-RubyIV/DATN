@@ -61,7 +61,7 @@ public class SecurityConfig {
                                 .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, "orders/**")).hasAnyAuthority("ROLE_ADMIN")
                                 .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "orders/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("voucher/**")).permitAll()
-                                .requestMatchers(mvcMatcherBuilder.pattern("customer/**")).hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers(mvcMatcherBuilder.pattern("customer/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("product/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("cart/v2")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("cart/**")).permitAll()
