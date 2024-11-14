@@ -11,7 +11,6 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { SingleValue } from 'react-select';
 import { toast } from 'react-toastify';
 import { Pagination } from 'antd';
-import instance from "@/axios/CustomAxios";
 
 
 
@@ -179,7 +178,7 @@ const UpdateCustomer = () => {
                 if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra email có trùng không
-                const response = await instance.get(`/customer/check-email`, { params: { email } });
+                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
                 return !response.data.exists; // Nếu email đã tồn tại, trả về false
             }),
 
@@ -190,7 +189,7 @@ const UpdateCustomer = () => {
                 if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra số điện thoại có trùng không
-                const response = await instance.get(`/customer/check-phone`, { params: { phone } });
+                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
                 return !response.data.exists; // Nếu phone đã tồn tại, trả về false
             }),
 
@@ -231,7 +230,7 @@ const UpdateCustomer = () => {
                         if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                         // Gọi API kiểm tra số điện thoại có trùng không
-                        const response = await instance.get(`/customer/check-phone`, { params: { phone } });
+                        const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
                         return !response.data.exists; // Nếu phone đã tồn tại, trả về false
                     }),
 
@@ -393,12 +392,68 @@ const UpdateCustomer = () => {
 
     dayjs.extend(customParseFormat);
 
+    // Hàm lấy khách hàng theo ID
+    // const fetchCustomer = async (id: string, currentPage: number) => {
+    //     try {
+
+    //         const response = await axios.get(`http://localhost:8080/api/v1/customer/customer/${id}/addresses`, {
+    //             params: {
+    //                 page: currentPage,
+    //                 size: pageSize
+    //             }
+    //         });
+    //         if (response.status === 200) {
+
+    //             const customerData = response.data;
+
+    //             // Cập nhật tổng số địa chỉ và số trang
+    //             if (customerData.totalAddresses) {
+    //                 setTotalAddresses(customerData.totalAddresses);
+    //                 setTotalPages(Math.ceil(customerData.totalAddresses / pageSize));
+    //             }
+
+    //             // Cập nhật thông tin email và phone của khách hàng
+    //             setInitialContact({
+    //                 currentEmail: customerData.email,
+    //                 currentPhone: customerData.phone,
+    //             });
+    //             // Log giá trị birthDate từ backend
+    //             console.log('Giá trị birthDate từ backend:', customerData.birthDate);
+
+    //             // Chuyển đổi ngày sinh từ 'DD-MM-YYYY' sang 'YYYY-MM-DD' cho frontend
+    //             if (customerData.birthDate) {
+    //                 // Phân tích ngày với định dạng 'DD-MM-YYYY'
+    //                 const parsedDate = dayjs(customerData.birthDate, 'DD-MM-YYYY');
+
+    //                 // Log ngày đã phân tích để kiểm tra
+    //                 console.log('Parsed Date:', parsedDate.format());
+
+    //                 if (parsedDate.isValid()) {
+    //                     // Định dạng lại ngày cho frontend
+    //                     customerData.birthDate = parsedDate.format('YYYY-MM-DD');
+    //                     console.log('Formatted birthDate:', customerData.birthDate); // Log để kiểm tra xem ngày đã định dạng chưa
+    //                 } else {
+    //                     console.error('Ngày sinh không hợp lệ:', customerData.birthDate);
+    //                 }
+    //             }
+
+    //             setUpdateCustomer(customerData);
+    //             console.log('Customer data:', customerData);
+    //             setFormModes(response.data.addressDTOS.map(() => 'edit'));
+    //         } else {
+    //             console.error('Failed to fetch customer data:', response.statusText);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching customer data:', error);
+    //     }
+    // };
+
     const fetchCustomer = async (id: string, currentPage: number) => {
         try {
 
-            const response = await instance.get(`/customer/customer/${id}/addresses`, {
+            const response = await axios.get(`http://localhost:8080/api/v1/customer/${id}/detail`, {
                 params: {
-                    page: currentPage,
+                    page: currentPage > 0 ? currentPage - 1 : 0, // Chuyển đổi currentPage về định dạng 0
                     size: pageSize
                 }
             });
@@ -474,14 +529,14 @@ const UpdateCustomer = () => {
 
             // Định dạng ngày sinh trước khi gửi
             const formattedBirthDate = dayjs(values.birthDate, 'YYYY-MM-DD').format('DD-MM-YYYY');
-            const response = await instance.put(`/customer/update/${values.id}`, {
+            const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, {
                 ...values,
                 birthDate: formattedBirthDate, // Gửi ngày đã định dạng
             });
 
             if (response.status === 200) {
                 toast.success('Cập nhật thành công');
-                navigate('/admin/manage/customer');
+                navigate('/manage/customer');
             } else {
                 alert('Failed to update customer. Please try again.');
             }
@@ -520,7 +575,7 @@ const UpdateCustomer = () => {
 
             let response;
             if (mode === 'add') {
-                response = await instance.post(`/customer/${customerId}/address`, address);
+                response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
                 console.log('Dữ liệu địa chỉ vừa thêm:', response.data);
                 if (response.status === 201) {
                     // Thêm địa chỉ mới vào đầu danh sách sau khi thành công
@@ -531,7 +586,7 @@ const UpdateCustomer = () => {
                 toast.success('Thêm địa chỉ mới thành công');
             } else {
                 // Gửi yêu cầu cập nhật với các trường ID quận và xã
-                response = await instance.put(`/address/update/${addressId}`, {
+                response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, {
                     ...address, // Bao gồm cả districtId và wardId
                     districtId: address.districtId, // Đảm bảo ID quận được gửi
                     wardId: address.wardId // Đảm bảo ID xã được gửi
@@ -554,8 +609,8 @@ const UpdateCustomer = () => {
     const updateDefaultAddress = async (addressId: string, isDefault: boolean) => {
         try {
             console.log('Updating address ID:', addressId, 'to default:', isDefault);
-            const response = await instance.put(
-                `/customer/${addressId}/default`,
+            const response = await axios.put(
+                `http://localhost:8080/api/v1/customer/${addressId}/default`,
                 null,
                 {
                     params: {
@@ -632,7 +687,7 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.name}
                                     >
                                         <Field type="text" autoComplete="off" name="name" style={{ height: '44px' }}
-                                            placeholder="Tên khách hàng..." component={Input} />
+                                               placeholder="Tên khách hàng..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -642,7 +697,7 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.email}
                                     >
                                         <Field type="text" autoComplete="off" name="email" style={{ height: '44px' }}
-                                            placeholder="Email..." component={Input} />
+                                               placeholder="Email..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -652,12 +707,12 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.phone}
                                     >
                                         <Field type="text" autoComplete="off" name="phone" style={{ height: '44px' }}
-                                            placeholder="Số điện thoại..." component={Input}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                            }} />
+                                               placeholder="Số điện thoại..." component={Input}
+                                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                   const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                   setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                   setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                               }} />
                                     </FormItem>
 
                                     <FormItem
@@ -701,11 +756,11 @@ const UpdateCustomer = () => {
                                             {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                 <>
                                                     <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'}
-                                                        onChange={() => form.setFieldValue('gender', 'Nam')}>
+                                                           onChange={() => form.setFieldValue('gender', 'Nam')}>
                                                         Nam
                                                     </Radio>
                                                     <Radio value="Nữ" checked={field.value === 'Nữ'}
-                                                        onChange={() => form.setFieldValue('gender', 'Nữ')}>
+                                                           onChange={() => form.setFieldValue('gender', 'Nữ')}>
                                                         Nữ
                                                     </Radio>
                                                 </>
@@ -715,16 +770,16 @@ const UpdateCustomer = () => {
 
                                     <FormItem>
                                         <Button type="reset" className="ltr:mr-2 rtl:ml-2"
-                                            style={{ backgroundColor: '#fff', height: '40px' }}
-                                            disabled={isSubmitting} onClick={() => {
-                                                resetForm();
-                                                resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
-                                            }}>
+                                                style={{ backgroundColor: '#fff', height: '40px' }}
+                                                disabled={isSubmitting} onClick={() => {
+                                            resetForm();
+                                            resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
+                                        }}>
                                             Tải lại
                                         </Button>
                                         <Button variant="solid" type="submit"
-                                            style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                            disabled={isSubmitting}>
+                                                style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                                disabled={isSubmitting}>
                                             Cập nhật
                                         </Button>
                                     </FormItem>
@@ -789,11 +844,11 @@ const UpdateCustomer = () => {
                                                                         style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
-                                                                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                    //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                                    //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                                    //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                                                    // }}
+                                                                        // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                        //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                                        //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                                        //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                                                        // }}
                                                                     />
                                                                 </FormItem>
                                                             </div>
@@ -809,9 +864,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].province`}>
                                                                         {({
-                                                                            field,
-                                                                            form
-                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                              field,
+                                                                              form
+                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             // Log giá trị tỉnh/thành phố hiện tại
                                                                             console.log('Dữ liệu tỉnh:', field.value);
 
@@ -843,9 +898,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].district`}>
                                                                         {({
-                                                                            field,
-                                                                            form
-                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                              field,
+                                                                              form
+                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             console.log('Dữ liệu quận:', field.value);
                                                                             return (
                                                                                 <Select
@@ -875,9 +930,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].ward`}>
                                                                         {({
-                                                                            field,
-                                                                            form
-                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                              field,
+                                                                              form
+                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             console.log('Dữ liệu xã:', field.value);
 
                                                                             return (
@@ -909,9 +964,9 @@ const UpdateCustomer = () => {
                                                             errorMessage={errors.addressDTOS?.[index]?.detail}
                                                         >
                                                             <Field type="text" name={`addressDTOS[${index}].detail`}
-                                                                style={{ height: '44px' }}
-                                                                placeholder="Nhập địa chỉ chi tiết"
-                                                                component={Input} />
+                                                                   style={{ height: '44px' }}
+                                                                   placeholder="Nhập địa chỉ chi tiết"
+                                                                   component={Input} />
                                                         </FormItem>
 
                                                         <FormItem label="Địa chỉ mặc định">

@@ -1,15 +1,15 @@
-import {Fragment, useEffect, useState} from "react";
-import {Badge, Button, Card, Input, Radio, Select} from "@/components/ui";
-import {IAddress, IDistrict, IProvince, IWard} from "@/@types/address";
-import {fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards} from "@/services/AddressService";
-import {EPaymentMethod} from "@/views/manage/sell";
-import {useNavigate, useParams} from "react-router-dom";
-import instance from "@/axios/CustomAxios";
-import {useToastContext} from "@/context/ToastContext";
-import {useForm} from "react-hook-form";
-import {yupResolver} from "@hookform/resolvers/yup";
-import * as yup from 'yup';
-import {useSaleContext} from "@/views/sale/SaleContext";
+import { Fragment, useEffect, useState } from 'react'
+import { Badge, Button, Card, Input, Radio, Select } from '@/components/ui'
+import { IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
+import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
+import { EPaymentMethod } from '@/views/manage/sell'
+import { useNavigate, useParams } from 'react-router-dom'
+import instance from '@/axios/CustomAxios'
+import { useToastContext } from '@/context/ToastContext'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import * as yup from 'yup'
+import { useSaleContext } from '@/views/sale/SaleContext'
 
 export interface Image {
     id: number;
@@ -146,27 +146,27 @@ const Checkout = () => {
     const [wards, setWards] = useState<IWard[]>([])
     const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>(EPaymentMethod.CASH)
     const [listCartDetailResponseDTO, setListCartDetailResponseDTO] = useState<CartDetailResponseDTO[]>([])
-    const {id} = useParams();
+    const { id } = useParams()
     const [selectedCart, setSelectedCart] = useState<CartResponseDTO>()
-    const navigate = useNavigate();
-    const {openNotification} = useToastContext()
-    const { setIsOpenCartDrawer } = useSaleContext();
+    const navigate = useNavigate()
+    const { openNotification } = useToastContext()
+    const { setIsOpenCartDrawer } = useSaleContext()
 
 
     // SCHEMA
     const schemaRecipientName: yup.ObjectSchema<RecipientDTO> = yup.object({
-        recipientName: yup.string().default("").required('Tên người nhận không được để trống'),
-        phone: yup.string().default("").required('Số điện thoại không được để trống'),
-        address: yup.string().default("").required('Địa chỉ không được để trống'),
-        provinceId: yup.string().default("").required('Tỉnh/ thành không được để trống'),
-        districtId: yup.string().default("").required('Quận/huyện không được để trống'),
-        wardId: yup.string().default("").required('Xã/ phường không được để trống'),
-    });
+        recipientName: yup.string().default('').required('Tên người nhận không được để trống'),
+        phone: yup.string().default('').required('Số điện thoại không được để trống'),
+        address: yup.string().default('').required('Địa chỉ không được để trống'),
+        provinceId: yup.string().default('').required('Tỉnh/ thành không được để trống'),
+        districtId: yup.string().default('').required('Quận/huyện không được để trống'),
+        wardId: yup.string().default('').required('Xã/ phường không được để trống')
+    })
     const validationSchema = yup.object({
-        recipientName: yup.string().required("Vui lòng nhập tên"),
+        recipientName: yup.string().required('Vui lòng nhập tên'),
         email: yup.string(),
-        address: yup.string().required("Vui lòng nhập địa chỉ"),
-        phone: yup.string().required("Vui lòng nhập số điện thoại"),
+        address: yup.string().required('Vui lòng nhập địa chỉ'),
+        phone: yup.string().required('Vui lòng nhập số điện thoại'),
         provinceId: yup.string().required('Vui lòng chọn tỉnh'),
         districtId: yup.string().required('Vui lòng chọn thành phố'),
         wardId: yup.string().required('Vui lòng chọn xã/phường')
@@ -175,71 +175,71 @@ const Checkout = () => {
     const {
         register,
         handleSubmit,
-        formState: {errors},
-    } = useForm<VoucherFormValues>();
+        formState: { errors }
+    } = useForm<VoucherFormValues>()
     const {
         register: registerFormRecipient,
         handleSubmit: handleSubmitFormRecipient,
         getValues: getValuesFormRecipient,
-        formState: {errors: errorsFormRecipient},
+        formState: { errors: errorsFormRecipient },
         setValue: setValuesFormRecipient
     } = useForm<RecipientDTO>({
         resolver: yupResolver(schemaRecipientName)
-    });
+    })
 
 
     const customHandleSubmit = async (data: VoucherFormValues) => {
-        event?.preventDefault();
+        event?.preventDefault()
         // Giả sử bạn có logic kiểm tra mã giảm giá với API hoặc điều kiện khác
-        console.log("Mã nhập vào:", data.voucherCode);
+        console.log('Mã nhập vào:', data.voucherCode)
 
         // Giả lập một API call (có thể thay bằng gọi API thực tế)
 
         const payload = {
-            "idCartId": id,
-            "voucherCode": data.voucherCode
+            'idCartId': id,
+            'voucherCode': data.voucherCode
         }
-        instance.post(`cart/use-voucher`, payload).then(function (response) {
+        instance.post(`cart/use-voucher`, payload).then(function(response) {
             console.log(response)
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
 
-                openNotification("Sử dụng thành công")
+                openNotification('Sử dụng thành công')
             }
-        }).catch(function (error) {
+        }).catch(function(error) {
             console.log(error)
             console.log(error.response.data)
             openNotification(error.response.data.error)
         })
-    };
+    }
 
     const handleConfirmCart = async () => {
-        console.log("-----")
-        if (selectedCart?.payment === "CASH") {
+        console.log('-----')
+        if (selectedCart?.payment === 'CASH') {
             const data = {
-                "status": "PENDING",
+                'status': 'PENDING'
             }
             await handleUpdateCart(data).then(() => {
-                instance.get(`/orders/convert/${id}`).then(function (response) {
+                instance.get(`/orders/convert/${id}`).then(function(response) {
                     if (response.status === 200 && response.data) {
-                        getDetailAboutCart();
-                        navigate("/thank")
-                        localStorage.removeItem("myCartId")
+                        getDetailAboutCart()
+                        navigate('/thank')
+                        localStorage.removeItem('myCartId')
                     }
                 })
             })
-        } else if (selectedCart?.payment === "TRANSFER") {
+        } else if (selectedCart?.payment === 'TRANSFER') {
             const data = {
-                "status": "PENDING"
+                'status': 'PENDING'
             }
-            instance.put(`/cart/v2/${id}`, data).then(function (response) {
+            instance.put(`/cart/v2/${id}`, data).then(function(response) {
                 if (response.status === 200 && response.data) {
-                    instance.get(`/orders/convert/${id}`).then(function (response) {
+                    instance.get(`/orders/convert/${id}`).then(function(response) {
                         if (response.status === 200 && response.data) {
                             const idOrder = response.data.id
-                            console.log("idOrder", idOrder)
-                            const amount = Math.round(selectedCart.subTotal);
-                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function (response) {
+                            console.log('idOrder', idOrder)
+                            const amount = Math.round(selectedCart.subTotal)
+                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function(response) {
                                 if (response.status === 200 && response.data) {
                                     const url = response?.data?.data?.paymentUrl
                                     console.log(url)
@@ -257,28 +257,28 @@ const Checkout = () => {
 
 
     const handleUpdateCart = async (data: any) => {
-        instance.put(`/cart/v2/${id}`, data).then(function (response) {
+        instance.put(`/cart/v2/${id}`, data).then(function(response) {
             if (response.status === 200 && response.data) {
-                getDetailAboutCart();
+                getDetailAboutCart()
             }
         })
     }
 
 
     const getDetailAboutCart = async () => {
-        instance.get(`cart/detail/${id}`).then(function (response) {
+        instance.get(`cart/detail/${id}`).then(function(response) {
             console.log(response)
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
                 setPaymentMethod(response.data.payment)
-                console.log("setSelectedCart")
+                console.log('setSelectedCart')
                 console.log(response.data)
             }
         })
     }
 
     useEffect(() => {
-        instance.get(`cart-details/in-cart/${id}`).then(function (response) {
+        instance.get(`cart-details/in-cart/${id}`).then(function(response) {
             console.log(response)
             if (response?.data) {
                 setListCartDetailResponseDTO(response?.data)
@@ -287,27 +287,27 @@ const Checkout = () => {
         handleFindAllProvinces()
         getDetailAboutCart()
         setIsOpenCartDrawer(false)
-    }, []);
+    }, [])
 
 
     useEffect(() => {
-        setValuesFormRecipient('recipientName', (selectedCart as CartResponseDTO)?.recipientName ?? "")
-        setValuesFormRecipient('phone', (selectedCart as CartResponseDTO)?.phone ?? "")
-        setValuesFormRecipient('address', (selectedCart as CartResponseDTO)?.address ?? "")
-        setValuesFormRecipient('provinceId', (selectedCart as CartResponseDTO)?.provinceId?.toString() ?? "")
-        setValuesFormRecipient('districtId', (selectedCart as CartResponseDTO)?.districtId?.toString() ?? "")
-        setValuesFormRecipient('wardId', (selectedCart as CartResponseDTO)?.wardId?.toString() ?? "")
+        setValuesFormRecipient('recipientName', (selectedCart as CartResponseDTO)?.recipientName ?? '')
+        setValuesFormRecipient('phone', (selectedCart as CartResponseDTO)?.phone ?? '')
+        setValuesFormRecipient('address', (selectedCart as CartResponseDTO)?.address ?? '')
+        setValuesFormRecipient('provinceId', (selectedCart as CartResponseDTO)?.provinceId?.toString() ?? '')
+        setValuesFormRecipient('districtId', (selectedCart as CartResponseDTO)?.districtId?.toString() ?? '')
+        setValuesFormRecipient('wardId', (selectedCart as CartResponseDTO)?.wardId?.toString() ?? '')
         if ((selectedCart as CartResponseDTO)?.provinceId !== undefined && (selectedCart as CartResponseDTO)?.provinceId !== null) {
-            const provinceId = (selectedCart as CartResponseDTO)?.provinceId.toString();
-            handleFindAllDistricts(provinceId);
+            const provinceId = (selectedCart as CartResponseDTO)?.provinceId.toString()
+            handleFindAllDistricts(provinceId)
         }
 
         if ((selectedCart as CartResponseDTO)?.districtId !== undefined && (selectedCart as CartResponseDTO)?.districtId !== null) {
-            const districtId = (selectedCart as CartResponseDTO)?.districtId.toString();
-            handleFindAllWards(districtId);
+            const districtId = (selectedCart as CartResponseDTO)?.districtId.toString()
+            handleFindAllWards(districtId)
         }
 
-    }, [selectedCart]);
+    }, [selectedCart])
 
     useEffect(() => {
         if (IAddress.iprovince) {
@@ -323,7 +323,7 @@ const Checkout = () => {
                 provinceName: IAddress.iprovince.ProvinceID,
                 wardId: IAddress.iward?.WardCode,
                 wardName: IAddress.iward?.WardName
-            };
+            }
             handleUpdateCart(data)
         }
     }, [IAddress])
@@ -346,7 +346,7 @@ const Checkout = () => {
     const onChangeMethod = async (val: EPaymentMethod) => {
         setPaymentMethod(val)
         const data = {
-            "payment": val
+            'payment': val
         }
         handleUpdateCart(data)
     }
@@ -365,10 +365,11 @@ const Checkout = () => {
                             <div className={'flex flex-col gap-5'}>
                                 <div className={'grid grid-cols-6 gap-2'}>
                                     <div className={'col-span-3'}>
-                                        <p>Họ và tên</p>
+                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Họ và tên</p>
                                         <Input
+                                            className={'border-2 rounded-none border-black'}
                                             placeholder={'Họ và tên'}
-                                            {...registerFormRecipient("recipientName")}
+                                            {...registerFormRecipient('recipientName')}
                                             onChange={(el) => {
                                                 setValuesFormRecipient('recipientName', el.target.value)
                                             }}
@@ -378,10 +379,11 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div className={'col-span-3'}>
-                                        <p>Số điện thoại</p>
+                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Số điện thoại</p>
                                         <Input
+                                            className={'border-2 rounded-none border-black'}
                                             placeholder="Số điện thoại"
-                                            {...registerFormRecipient("phone")}
+                                            {...registerFormRecipient('phone')}
                                             onChange={(el) => {
                                                 setValuesFormRecipient('phone', el.target.value)
                                             }}
@@ -393,17 +395,18 @@ const Checkout = () => {
                                 </div>
                                 <div className={'grid grid-cols-3 gap-2'}>
                                     <div>
-                                        <p>Tỉnh thành</p>
+                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Tỉnh thành</p>
                                         <Select
+                                            className={'border-2 rounded-none border-black'}
                                             options={provinces}
                                             placeholder="Tỉnh/thành"
-                                            {...registerFormRecipient("provinceId")}
+                                            {...registerFormRecipient('provinceId')}
                                             onChange={(el) => {
-                                                setIAddress((prev) => ({...prev, iprovince: (el as IProvince)}))
+                                                setIAddress((prev) => ({ ...prev, iprovince: (el as IProvince) }))
                                                 setValuesFormRecipient('provinceId', (el as IProvince).ProvinceID)
                                             }}
                                             value={provinces.find(s => {
-                                                if(s.ProvinceID.toString() === getValuesFormRecipient('provinceId')){
+                                                if (s.ProvinceID.toString() === getValuesFormRecipient('provinceId')) {
                                                     return s
                                                 }
                                             })}
@@ -413,17 +416,18 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <p>Quận/huyện</p>
+                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Quận/huyện</p>
                                         <Select
+                                            className={'border-2 rounded-none border-black'}
                                             options={districts}
                                             placeholder="Quận/huyện"
-                                            {...registerFormRecipient("districtId")}
+                                            {...registerFormRecipient('districtId')}
                                             onChange={(el) => {
-                                                setIAddress((prev) => ({...prev, idistrict: (el as IDistrict)}))
+                                                setIAddress((prev) => ({ ...prev, idistrict: (el as IDistrict) }))
                                                 setValuesFormRecipient('districtId', (el as IDistrict).DistrictID)
                                             }}
                                             value={districts.find(s => {
-                                                if(s.DistrictID.toString() === getValuesFormRecipient('districtId')){
+                                                if (s.DistrictID.toString() === getValuesFormRecipient('districtId')) {
                                                     return s
                                                 }
                                             })}
@@ -433,18 +437,19 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <p>Xã/phường</p>
+                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Xã/phường</p>
                                         <Select
+                                            className={'border-2 rounded-none border-black'}
                                             options={wards}
                                             placeholder="Xã/phường"
-                                            {...registerFormRecipient("wardId")}
+                                            {...registerFormRecipient('wardId')}
 
                                             onChange={(el) => {
-                                                setIAddress((prev) => ({...prev, iward: (el as IWard)}))
+                                                setIAddress((prev) => ({ ...prev, iward: (el as IWard) }))
                                                 setValuesFormRecipient('wardId', (el as IWard).WardCode)
                                             }}
                                             value={wards.find(s => {
-                                                if(s.WardCode.toString() === getValuesFormRecipient('wardId')){
+                                                if (s.WardCode.toString() === getValuesFormRecipient('wardId')) {
                                                     return s
                                                 }
                                             })}
@@ -455,10 +460,11 @@ const Checkout = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <p>Địa chỉ</p>
+                                    <p className={'font-hm text-black text-[18px] font-semibold'}>Địa chỉ</p>
                                     <Input
+                                        className={'border-2 rounded-none border-black'}
                                         placeholder={'Địa chỉ'}
-                                        {...registerFormRecipient("address")}
+                                        {...registerFormRecipient('address')}
                                         onChange={(el) => {
                                             setValuesFormRecipient('address', el.target.value)
                                         }}
@@ -472,7 +478,7 @@ const Checkout = () => {
                                     <div className={'py-2 text-black font-semibold text-[18px]'}>
                                         <p>Phương thức vận chuyển</p>
                                     </div>
-                                    <Card>
+                                    <Card className={'border-2 rounded-none border-black'}>
                                         <Radio checked>Vận chuyển</Radio>
                                     </Card>
                                 </div>
@@ -480,7 +486,7 @@ const Checkout = () => {
                                     <div className={'py-2 text-black font-semibold text-[18px]'}>
                                         Phương thức thanh toán
                                     </div>
-                                    <Card>
+                                    <Card className={'border-2 rounded-none border-black'}>
                                         <Radio.Group
                                             vertical
                                             className={'gap-1'}
@@ -497,11 +503,11 @@ const Checkout = () => {
                         </Fragment>
                     </div>
                     {/*BLOCK 2*/}
-                    <div className="order-1 md:order-2 h-full">
+                    <div className="order-1 md:order-2 h-full col-span-2">
                         <div className={'py-2 text-black font-semibold text-[18px]'}>
                             Danh sách sản phẩm
                         </div>
-                        <div className="grid">
+                        <div className="grid  border-2 border-black p-5">
                             <div
                                 className="dark:text-gray-500 bg-white flex flex-col justify-between">
                                 <div>
@@ -544,27 +550,27 @@ const Checkout = () => {
                                                                 <div
                                                                     className="mt-2 text-[14px] text-gray-600 space-y-1">
                                                                     <p>
-                                                                        Màu:{" "}
+                                                                        Màu:{' '}
                                                                         <span className="text-gray-800">
                                                                                 {item.productDetailResponseDTO?.color?.name}
                                                                             </span>
                                                                     </p>
                                                                     <p>
-                                                                        Size:{" "}
+                                                                        Size:{' '}
                                                                         <span className="text-gray-800">
                                                                                 {item.productDetailResponseDTO?.size?.name}
                                                                             </span>
                                                                     </p>
                                                                     <p>
-                                                                        Thương hiệu:{" "}
+                                                                        Thương hiệu:{' '}
                                                                         <span className="text-gray-800">
                                                                                 {item.productDetailResponseDTO?.brand?.name}
                                                                             </span>
                                                                     </p>
                                                                     <p>
-                                                                        Đơn giá:{" "}
+                                                                        Đơn giá:{' '}
                                                                         <span className="text-red-800">
-                                                                                {Math.round(item.productDetailResponseDTO?.price).toLocaleString("vi-VN") + "₫"}
+                                                                                {Math.round(item.productDetailResponseDTO?.price).toLocaleString('vi-VN') + '₫'}
                                                                             </span>
                                                                     </p>
                                                                 </div>
@@ -576,7 +582,7 @@ const Checkout = () => {
                                                                 <div></div>
                                                                 <span
                                                                     className="font-semibold text-red-500 text-[16px]">
-                                                                        {Math.round(item.productDetailResponseDTO?.price * item?.quantity).toLocaleString("vi-VN") + "₫"}
+                                                                        {Math.round(item.productDetailResponseDTO?.price * item?.quantity).toLocaleString('vi-VN') + '₫'}
                                                                     </span>
                                                             </div>
                                                         </div>
@@ -612,12 +618,12 @@ const Checkout = () => {
                                         <div className={'col-span-10'}>
                                             <Input
                                                 placeholder="Mã giảm giá"
-                                                className={errors.voucherCode ? "border-red-500" : ""}
-                                                {...register("voucherCode", {
-                                                    required: "Mã giảm giá không được để trống",
+                                                className={`${errors.voucherCode ? 'border-red-500' : ''} border-2 rounded-none border-black`}
+                                                {...register('voucherCode', {
+                                                    required: 'Mã giảm giá không được để trống',
                                                     minLength: {
                                                         value: 5,
-                                                        message: "Mã giảm giá phải có ít nhất 3 ký tự",
+                                                        message: 'Mã giảm giá phải có ít nhất 3 ký tự'
                                                     }
                                                 })}
                                             />
@@ -626,7 +632,7 @@ const Checkout = () => {
                                             )}
                                         </div>
                                         <div className={'col-span-2 w-full'}>
-                                            <Button className="w-full"
+                                            <Button className="w-full border-2 !rounded-none !border-black"
                                                     onClick={handleSubmit(customHandleSubmit)}>
                                                 Sử dụng
                                             </Button>
@@ -635,27 +641,28 @@ const Checkout = () => {
                                     <div className="py-2 flex justify-between">
                                         <span>Tạm tính:</span>
                                         <span
-                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? "n/a" + "₫"}</span>
+                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? 'n/a' + '₫'}</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Phí vận chuyển:</span>
                                         <span
-                                            className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') + "₫"}</span>
+                                            className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') + '₫'}</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Gỉảm giá:</span>
                                         <span
-                                            className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') + "₫"}</span>
+                                            className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') + '₫'}</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Tổng tiền:</span>
                                         <span
-                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') + "₫"}</span>
+                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') + '₫'}</span>
                                     </div>
                                     <button
-                                            className="bg-black w-full py-2 font-thin rounded-md text-white"
-                                            onClick={handleSubmitFormRecipient(handleConfirmCart)}
-                                    >Xác nhận đơn hàng
+                                        className="bg-black w-full py-2 font-thin rounded-none text-white"
+                                        onClick={handleSubmitFormRecipient(handleConfirmCart)}
+                                    >
+                                        <p className={'font-hm'}>Xác nhận đơn hàng</p>
                                     </button>
                                 </div>
                             </div>
