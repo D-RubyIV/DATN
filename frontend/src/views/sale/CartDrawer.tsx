@@ -34,21 +34,22 @@ const CartDrawer = () => {
                 className={`z-40 fixed border-2 rounded-none border-black h-[100svh] top-0 from-indigo-900 bg-gradient-to-l 2xl:w-3/12 md:w-4/12 transition-all duration-500 block ${isOpenCartDrawer ? 'right-0' : '-right-full'}`}>
                 <div className="grid h-[100svh]">
                     <div
-                        className="dark:text-gray-500 bg-white px-6 md:px-10 py-4 flex flex-col justify-between">
+                        className="dark:text-gray-500 bg-white flex flex-col justify-between">
                         <div>
                             {/* TOP */}
-                            <div className="flex justify-between py-3 md:py-4 row-span-4">
+                            <div className="flex justify-between py-3 md:py-4 row-span-4 border-black border-b-2 p-5">
                                 <div><span className="text-xl font-semibold font-hm text-black">Giỏ hàng</span></div>
                                 <div>
-                                    <CloseButton onClick={() => setIsOpenCartDrawer(false)}></CloseButton>
+                                    <CloseButton className={'text-xl text-black'}
+                                                 onClick={() => setIsOpenCartDrawer(false)}></CloseButton>
                                 </div>
                             </div>
                             {/* CENTER */}
-                            <div className={`overflow-y-auto h-[calc(100svh-10.75rem)]`}>
+                            <div className={`overflow-y-auto h-[calc(100svh-10.75rem)] px-5`}>
                                 {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 && listCartDetailResponseDTO.map((item, index) => (
                                         <Fragment key={index}>
                                             <div
-                                                className="text-[13.5px] grid grid-cols-12 gap-2 border-b border-dashed border-gray-400 py-3">
+                                                className="text-[13.5px] grid grid-cols-12 gap-2 border-b border-black py-3">
                                                 <div className="inline-flex justify-center items-center col-span-4 gap-1">
                                                     <div>
                                                         {
@@ -66,18 +67,23 @@ const CartDrawer = () => {
                                                 </div>
                                                 <div className="col-span-8">
                                                     <div className="flex items-center">
-                                                        <span className="text-[16px] font-hm text-black font-semibold text-xl">
+                                                        <span
+                                                            className="text-[16px] font-hm text-black font-semibold text-xl">
                                                                 {(item.productDetailResponseDTO as ProductDetailResponseDTO)?.name}
                                                         </span>
 
                                                     </div>
-                                                    <div className="font-hm text-black font-semibold text-sm">
+                                                    <div className="font-hm text-black font-semibold text-[15px] pb-1">
                                                         <span>Màu: </span>
                                                         <span>{((item.productDetailResponseDTO as ProductDetailResponseDTO)?.color as Color)?.name}</span>
                                                     </div>
-                                                    <div className="font-hm text-black font-semibold">
+                                                    <div className="font-hm text-black font-semibold text-[15px] pb-1">
                                                         <span>Size: </span>
                                                         <span>{((item.productDetailResponseDTO as ProductDetailResponseDTO)?.size as Size)?.name}</span>
+                                                    </div>
+                                                    <div className="font-hm text-black font-semibold text-[15px] pb-1">
+                                                        <span>Đơn giá: </span>
+                                                        <span className={'text-red-500'}>{Math.round(((item.productDetailResponseDTO as ProductDetailResponseDTO)?.price))?.toLocaleString('vi') + "đ"}</span>
                                                     </div>
                                                     <div className="flex justify-between">
                                                         <div
@@ -99,13 +105,15 @@ const CartDrawer = () => {
                                                             </button>
                                                         </div>
                                                         <div>
-                                                                    <span
-                                                                        className="font-semibold">{(item.productDetailResponseDTO as ProductDetailResponseDTO)?.price.toLocaleString('vi-VN') + '₫'}</span>
+                                                            <span
+                                                                className="font-semibold text-red-500">{Math.round(((item.productDetailResponseDTO as ProductDetailResponseDTO)?.price * item.quantity))?.toLocaleString('vi') + "đ"}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div className="flex justify-end">
-                                                                <span
-                                                                    className="text-[12.5px]">Kho: {(item.productDetailResponseDTO as ProductDetailResponseDTO).quantity}</span>
+                                                        <span
+                                                            className="text-[12.5px] text-black">Kho: {(item.productDetailResponseDTO as ProductDetailResponseDTO).quantity}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -130,9 +138,8 @@ const CartDrawer = () => {
                         </div>
                         {/* BOTTOM */}
                         <div className="text-sm">
-
-                            <div className="py-2 flex justify-between font-hm text-xl">
-                                <span>Tổng tiền:</span>
+                            <div className="py-2 flex justify-between font-hm text-xl px-5">
+                                <span className={'text-black !font-hm font-semibold'}>Tổng tiền:</span>
                                 <span className="text-red-500 font-semibold">
                                     {(() => {
                                         let quantity = 0
@@ -145,7 +152,7 @@ const CartDrawer = () => {
                             </div>
                             <Link to={`/checkout/${myCartId}`}>
                                 <button
-                                    className="bg-white text-black w-full py-2 font-thin border border-black font-hm text-xl">Thanh
+                                    className="bg-black text-white w-full font-thin border border-black font-hm text-xl py-5">Thanh
                                     toán
                                 </button>
                             </Link>
