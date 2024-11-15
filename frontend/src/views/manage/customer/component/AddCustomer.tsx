@@ -6,7 +6,6 @@ import { Field, FieldProps, Form, Formik, FormikHelpers, FormikProps } from 'for
 import Button from '@/components/ui/Button';
 import { Input, Radio, Select } from "@/components/ui";
 import DatePicker from '@/components/ui/DatePicker';
-import { SingleValue } from "react-select";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { toast } from 'react-toastify';
@@ -79,6 +78,12 @@ const validationSchema = Yup.object({
     .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => {
       return value.trim() === value
     })
+    .test('no-leading-trailing-dot', 'Email không được chứa dấu chấm ở đầu hoặc cuối', value => {
+      return value ? !/^\./.test(value) && !/\.$/.test(value) : true;
+    })
+    .test('no-consecutive-dots', 'Email không được chứa hai dấu chấm liên tiếp', value => {
+      return value ? !/\.\./.test(value) : true;
+    })
     .test("email-unique", "Email đã tồn tại", async (email: string) => {
       // Gọi API kiểm tra email có trùng hay không
       const response = await instance.get(`/customer/check-email`, { params: { email } });
@@ -89,6 +94,10 @@ const validationSchema = Yup.object({
   phone: Yup.string()
     .required("Số điện thoại là bắt buộc")
     .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
+    .test('valid-vietnam-phone', 'Số điện thoại phải bắt đầu bằng đầu số hợp lệ', value => {
+      const vietnamesePrefixes = ["03", "05", "07", "08", "09", "012", "016", "018", "019"];
+      return value ? vietnamesePrefixes.some(prefix => value.startsWith(prefix)) : false;
+    })
     .test("phone-unique", "Số điện thoại đã tồn tại", async (phone: string) => {
       // Gọi API kiểm tra phone có trùng không
       const response = await instance.get(`/customer/check-phone`, { params: { phone } });
@@ -116,7 +125,19 @@ const validationSchema = Yup.object({
       province: Yup.string().required('Vui lòng chọn tỉnh/thành phố'),
       district: Yup.string().required('Vui lòng chọn quận/huyện'),
       ward: Yup.string().required('Vui lòng chọn xã/phường/thị trấn'),
-      detail: Yup.string().required('Vui lòng nhập địa chỉ cụ thể'),
+      detail: Yup.string()
+        .required('Vui lòng nhập địa chỉ cụ thể')
+        .min(5, 'Địa chỉ cụ thể phải có ít nhất 5 ký tự')
+        .max(200, 'Địa chỉ cụ thể không vượt quá 200 ký tự')
+        .test('no-leading-trailing-whitespace', 'Không được có khoảng trắng đầu hoặc cuối', value => {
+          return value ? value.trim() === value : false;
+        })
+        .test('no-consecutive-whitespace', 'Không được chứa nhiều khoảng trắng liên tiếp', value => {
+          return value ? !/\s{2,}/.test(value) : false;
+        })
+        .test('valid-characters', 'Chỉ được chứa ký tự chữ, số và dấu phân cách thông dụng', value => {
+          return value ? /^[\p{L}0-9\s,.-]+$/u.test(value) : false;
+        })
     })
   ),
 })
