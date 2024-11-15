@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         authorize -> authorize
+                                .requestMatchers(mvcMatcherBuilder.pattern("users/login")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("users/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("v2/product")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("color/color-list")).permitAll()

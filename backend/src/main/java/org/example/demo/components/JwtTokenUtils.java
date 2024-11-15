@@ -5,7 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.entity.security.Account;
 import org.example.demo.entity.security.TokenRecord;
 import org.example.demo.repository.security.TokenRepository;
 import org.slf4j.Logger;
@@ -38,16 +38,16 @@ public class JwtTokenUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtils.class);
     private final TokenRepository tokenRepository;
 
-    public String generateToken(Staff staff) {
+    public String generateToken(Account account) {
         Map<String, Object> claims = new HashMap<>();
-        String subject = getSubject(staff);
-        claims.put("subject",subject);
-        claims.put("staffId", staff.getId());
+        String subject = account.getUsername();
+        claims.put("subject", subject);
+        claims.put("accountId", account.getId());
         try {
             String token = Jwts.builder()
                     .setClaims(claims) // how to extract claims from this ?
-                    .setSubject(staff.getEmail())
-                    .setExpiration(new Date(System.currentTimeMillis() + expiration *100L))
+                    .setSubject(subject)
+                    .setExpiration(new Date(System.currentTimeMillis() + expiration * 100L))
                     .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                     .compact();
             return token;
@@ -62,15 +62,6 @@ public class JwtTokenUtils {
         return Keys.hmacShaKeyFor(bytes);
     }
 
-    private static String getSubject(Staff staff) {
-        // Determine subject identifier (phone number or email)
-        String subject = staff.getEmail();
-        if (subject == null || subject.isBlank()) {
-            // If phone number is null or blank, use email as subject
-            subject = staff.getPhone();
-        }
-        return subject;
-    }
 
     private String generateSecretKey() {
         SecureRandom random = new SecureRandom();
@@ -90,10 +81,11 @@ public class JwtTokenUtils {
     }
 
 
-    public  <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = this.extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
     //check expiration
     public boolean isTokenExpired(String token) {
         Date expirationDate = this.extractClaim(token, Claims::getExpiration);
@@ -101,36 +93,15 @@ public class JwtTokenUtils {
     }
 
     public String getSubject(String token) {
-        return  extractClaim(token, Claims::getSubject);
+        return extractClaim(token, Claims::getSubject);
     }
 
-
-
-//    public boolean validateToken(String token, Staff staffDetails) {
-//        try {
-//            String email = extractEmail(token);
-//            Token existingToken = tokenRepository.findByToken(token);
-//            if (existingToken == null || existingToken.isRevoked() == true || !staffDetails.isEnabled()) {
-//                return false;
-//            }
-//            return (email.equals(staffDetails.getUsername())) && !isTokenExpired(token);
-//        } catch (MalformedJwtException e) {
-//            logger.error("Invalid JWT token: {}", e.getMessage());
-//        } catch (ExpiredJwtException e) {
-//            logger.error("JWT token is expired: {}", e.getMessage());
-//        } catch (UnsupportedJwtException e) {
-//            logger.error("JWT token is unsupported: {}", e.getMessage());
-//        } catch (IllegalArgumentException e) {
-//            logger.error("JWT claims string is empty: {}", e.getMessage());
-//        }
-//        return false;
-//    }
-    public boolean validateToken(String token, Staff userDetails) {
+    public boolean validateToken(String token, Account userDetails) {
         try {
             String subject = extractClaim(token, Claims::getSubject);
             //subject is phoneNumber or email
             TokenRecord existingTokenRecord = tokenRepository.findByToken(token);
-            if(existingTokenRecord == null ||
+            if (existingTokenRecord == null ||
                     existingTokenRecord.isRevoked() == true ||
                     !userDetails.isEnabled()
             ) {

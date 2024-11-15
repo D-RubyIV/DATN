@@ -43,9 +43,6 @@ public class StaffRequestDTO {
 
     private String status;
 
-    //    @NotNull(message = "NotNull")
-//    private Role role; // Assume Role is included directly, or you might want to use roleId instead
-
     @JsonProperty("role_id")
     private Integer roleId;
 }

@@ -47,10 +47,5 @@ public class TokenRecord extends BaseEntity {
     private boolean expired;
 
     @ManyToOne
-    @JoinColumn(name = "staff_id")
-    private Staff staff;
-
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private Account account;
 }
