@@ -8,9 +8,13 @@ import org.example.demo.dto.product.requests.core.ProductDetailRequestDTO;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
+import org.example.demo.entity.BaseEntity;
+import org.example.demo.entity.event.Event;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Image;
+import org.example.demo.mapper.event.response.EventResponseMapper;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
+import org.example.demo.repository.event.EventRepository;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.service.product.core.ProductDetailService;
 import org.example.demo.util.phah04.PageableObject;
@@ -40,10 +44,16 @@ public class ProductDetailController {
     private ProductDetailRepository productDetailRepository; // dung nhanh tam
 
     @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
     private ProductDetailService productDetailService;
 
     @Autowired
     private ProductDetailResponseMapper productDetailResponseMapper;
+
+    @Autowired
+    private EventResponseMapper eventResponseMapper;
 
     @GetMapping("")
     public ResponseEntity<Page<ProductDetail>> findAll(Pageable pageable) {
@@ -179,15 +189,18 @@ public class ProductDetailController {
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam(value = "colorCodes", required = false) List<String> colorCodes,
             @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes,
+            @RequestParam(value = "brancCodes", required = false) List<String> brancCodes,
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice
     ) {
         colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
         sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
 
-        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes, minPrice, maxPrice);
+        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes, brancCodes, minPrice, maxPrice);
         List<ProductResponseOverDTO> productList = page.getContent();
         List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
+        List<Event> events = eventRepository.findListEvent();
+
 
         List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
 
@@ -201,6 +214,17 @@ public class ProductDetailController {
             s.setListSize(listProd.stream().map(ProductDetail::getSize).toList());
             s.setImage(productImages.stream().map(Image::getUrl).toList());
             s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0));
+
+            //set events
+            List<Event> evv = new ArrayList<>();
+            events.forEach(event -> {
+                List<Integer> id_products = event.getProducts().stream().map(BaseEntity::getId).toList();
+                if (id_products.contains(s.getProductId())){
+                    evv.add(event);
+                }
+            });
+            s.setListEvent(eventResponseMapper.toListDTO(evv));
+
         });
 
         PageImpl<ProductResponseOverDTO> pageResponse = new PageImpl<>(productList, pageable, page.getTotalElements());

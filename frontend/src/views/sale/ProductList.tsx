@@ -1,12 +1,20 @@
-import {Fragment, useEffect, useState} from "react";
-import instance from "@/axios/CustomAxios";
-import {Button} from "@/components/ui";
-import {Link, useNavigate} from "react-router-dom";
-import {IoBagHandle} from "react-icons/io5";
-import {FaEye} from "react-icons/fa";
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
-import {useSaleContext} from "@/views/sale/SaleContext";
+import { Fragment, useEffect, useState } from 'react'
+import instance from '@/axios/CustomAxios'
+import { Badge, Button, Pagination, Select } from '@/components/ui'
+import { Link } from 'react-router-dom'
+import { IoBagHandle } from 'react-icons/io5'
+import { FaEye } from 'react-icons/fa'
+import Slider from 'rc-slider'
+import 'rc-slider/assets/index.css'
+
+type Event = {
+    discountPercent: number;
+    startDate: string; // ISO 8601 date string
+    endDate: string;   // ISO 8601 date string
+    name: string;
+    description: string | null;
+    status: boolean;
+};
 
 type Product = {
     productId: number;
@@ -20,6 +28,7 @@ type Product = {
     discountAmount: number;
     image: string[];
     mass: number;
+    listEvent: Event[]
 };
 type CommonObject = {
     name: string,
@@ -32,14 +41,28 @@ type Param = {
     maxPrice: number;
 }
 
-// Dữ liệu ví dụ:
-const categories = [
-    {id: 1, name: "Áo Phông có cổ"},
-    {id: 2, name: "Áo phông không cố"},
-    // Thêm các danh mục khác
-];
+type Option = {
+    value: number
+    label: string
+}
+const options: Option[] = [
+    { value: 10, label: '10 / page' },
+    { value: 20, label: '20 / page' },
+    { value: 50, label: '50 / page' }
+]
 
 const ProductList = () => {
+    const [pageSize, setPageSize] = useState(10)
+
+    const onPageSizeChange = (val: Option) => {
+        setPageSize(val.value)
+    }
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage)
+    }
+    const [currentPage, setCurrentPage] = useState<number>(0)
+    const [totalElement, setTotalElement] = useState(0)
 
     const [listProduct, setListProduct] = useState<Product[]>([])
     const [listColor, setSetListColor] = useState<CommonObject[]>([])
@@ -47,57 +70,58 @@ const ProductList = () => {
     const [listSizeSelected, setListSizeSelected] = useState<CommonObject[]>([])
     const [listColorSelected, setListColorSelected] = useState<CommonObject[]>([])
     // Hùng
-    const [hoveredProductId, setHoveredProductId] = useState<number | null>(null);
-    const [priceRange, setPriceRange] = useState([0, 5000000]);
-    const [isNewProductSelected, setIsNewProductSelected] = useState(false);
-    const [isOnSaleSelected, setIsOnSaleSelected] = useState(false);
+    const [hoveredProductId, setHoveredProductId] = useState<number | null>(null)
+    const [priceRange, setPriceRange] = useState([0, 5000000])
+    const [isNewProductSelected, setIsNewProductSelected] = useState(false)
+    const [isOnSaleSelected, setIsOnSaleSelected] = useState(false)
 
     const [param, setParam] = useState<Param>({
         sizeCodes: [],
         colorCodes: [],
         minPrice: priceRange[0],
-        maxPrice: priceRange[1],
+        maxPrice: priceRange[1]
     })
 
     // Hùng
 
     const initDataProduct = async () => {
-        const response = await instance.get(`/productDetails/abc?colorCodes=${param.colorCodes}&sizeCodes=${param.sizeCodes}&minPrice=${param.minPrice}&maxPrice=${param.maxPrice}`);
+        const response = await instance.get(`/productDetails/abc?colorCodes=${param.colorCodes}&sizeCodes=${param.sizeCodes}&minPrice=${param.minPrice}&maxPrice=${param.maxPrice}&page=${currentPage}&size=${pageSize}`)
         setListProduct(response?.data?.content)
+        setTotalElement(response?.data?.totalElements)
     }
     const initListColor = async () => {
-        const response = await instance.get("/color/color-list")
+        const response = await instance.get('/color/color-list')
         if (response.data.data && Array.isArray(response.data.data)) {
             setSetListColor(response.data.data)
         }
-
     }
     const initListSize = async () => {
-        const response = await instance.get("/size/size-list")
+        const response = await instance.get('/size/size-list')
         if (response.data.data && Array.isArray(response.data.data)) {
             setSetListSize(response.data.data)
         }
     }
     useEffect(() => {
         initDataProduct()
-        initListColor();
-        initListSize();
-    }, [param]);
+        initListColor()
+        initListSize()
+    }, [param, pageSize, currentPage])
+
 
     const handleSelectColor = (color: CommonObject) => {
         console.log(color)
         if (!listColorSelected.find(s => s.code === color.code)) {
             // Nếu màu chưa được chọn, thêm vào danh sách
-            setListColorSelected((prev) => [...prev, color]);
+            setListColorSelected((prev) => [...prev, color])
         } else {
             // Nếu màu đã được chọn, loại bỏ khỏi danh sách
-            setListColorSelected(listColorSelected.filter(s => s.code !== color.code));
+            setListColorSelected(listColorSelected.filter(s => s.code !== color.code))
         }
     }
     const handleSelectSize = (size: CommonObject) => {
         console.log(size)
         if (!listSizeSelected.find(s => s.code === size.code)) {
-            setListSizeSelected((prev) => [...prev, size]);
+            setListSizeSelected((prev) => [...prev, size])
         } else {
             setListSizeSelected(listSizeSelected.filter(s => s.code !== size.code))
         }
@@ -105,18 +129,18 @@ const ProductList = () => {
     }
     const handlePriceChange = (value: number | number[]) => {
         if (Array.isArray(value)) {
-            setPriceRange(value);
+            setPriceRange(value)
             setParam((prevParam) => ({
                 ...prevParam,
                 minPrice: value[0],
-                maxPrice: value[1],
-            }));
+                maxPrice: value[1]
+            }))
         }
-    };
+    }
 
     // const handleSelectCategory = (category :string) => setSelectedCategory(category.id);
-    const handleFilterNewProducts = () => setIsNewProductSelected(!isNewProductSelected);
-    const handleFilterOnSale = () => setIsOnSaleSelected(!isOnSaleSelected);
+    const handleFilterNewProducts = () => setIsNewProductSelected(!isNewProductSelected)
+    const handleFilterOnSale = () => setIsOnSaleSelected(!isOnSaleSelected)
 
     useEffect(() => {
         setParam((prevParam) => ({
@@ -124,19 +148,19 @@ const ProductList = () => {
             colorCodes: listColorSelected.map(item => item.code),
             sizeCodes: listSizeSelected.map(item => item.code),
             minPrice: priceRange[0],
-            maxPrice: priceRange[1],
-        }));
-        console.log(listSizeSelected);
-        console.log(listColorSelected);
-    }, [listSizeSelected, listColorSelected, priceRange]);
+            maxPrice: priceRange[1]
+        }))
+        console.log(listSizeSelected)
+        console.log(listColorSelected)
+    }, [listSizeSelected, listColorSelected, priceRange])
 
 
     return (
         <Fragment>
-            <div className={'grid grid-cols-12 2xl:px-32 md:px-8 py-16 gap-10'}>
+            <div className={'grid grid-cols-12 2xl:px-32 md:px-8 py-8 gap-10'}>
                 <div className={'col-span-3'}>
                     <div className={'py-5'}>
-                        <h3>Bộ lọc</h3>
+                        <h3 className={'uppercase'}>Bộ lọc</h3>
                     </div>
 
                     <div className={'py-4'}>
@@ -151,7 +175,7 @@ const ProductList = () => {
                                 step={1000}
                                 value={priceRange}
                                 onChange={handlePriceChange}
-                                trackStyle={[{backgroundColor: 'gray', height: 8}]}
+                                trackStyle={[{ backgroundColor: 'gray', height: 8 }]}
                                 handleStyle={[
                                     {
                                         borderColor: 'black',
@@ -170,7 +194,7 @@ const ProductList = () => {
                                         backgroundColor: 'white'
                                     }
                                 ]}
-                                railStyle={{backgroundColor: 'lightgray', height: 8}}
+                                railStyle={{ backgroundColor: 'lightgray', height: 8 }}
                             />
                             <div className="flex justify-between w-full mt-3">
                                 {/* Hiển thị giá theo định dạng có dấu phẩy và "đ" */}
@@ -229,7 +253,7 @@ const ProductList = () => {
                             {
                                 listColor.map((item, index) => (
                                     <button key={index}
-                                            className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border  ${listColorSelected.find(s => s.code === item.code) ? "border-black border" : "border-gray-300"}`}
+                                            className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border  ${listColorSelected.find(s => s.code === item.code) ? '!bg-black text-white' : 'border-black border'}`}
                                             onClick={() => handleSelectColor(item)}>
                                         <p>{item.name}</p>
                                     </button>
@@ -247,7 +271,7 @@ const ProductList = () => {
                                 listSize.map((item, index) => (
                                     <div key={index} className={'py-2'}>
                                         <button key={index}
-                                                className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border ${listSizeSelected.find(s => s.code === item.code) ? "border-black border" : "border-gray-300"}`}
+                                                className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border ${listSizeSelected.find(s => s.code === item.code) ? '!bg-black text-white' : 'border-black border'}`}
                                                 onClick={() => handleSelectSize(item)}>
                                             <p>{item.name}</p>
                                         </button>
@@ -259,18 +283,31 @@ const ProductList = () => {
                 </div>
                 <div className={'col-span-9'}>
                     <div className={'py-5'}>
-                        <h3>Sản phẩm nổi bật</h3>
+                        <h3 className={'uppercase'}>Sản phẩm nổi bật</h3>
                     </div>
                     <div
-                        className={"grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-x-5 gap-y-10 "}>
+                        className={'grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-x-5 gap-y-10 '}>
                         {
                             listProduct.map((product, index) => (
                                 <Fragment key={index}>
+
+
                                     <div
-                                        className={'bg-white p-4 rounded shadow flex justify-center flex-col duration-500 ease-in-out hover:scale-110 '}
+                                        className={'bg-white p-4 flex justify-center flex-col duration-500 ease-in-out hover:scale-110 relative border-black border'}
                                         onMouseEnter={() => setHoveredProductId(product.productId)}
                                         onMouseLeave={() => setHoveredProductId(null)}
                                     >
+                                        {
+                                            Array.isArray(product.listEvent)
+                                            && product.listEvent.length > 0
+                                            && (
+                                                <div
+                                                    className={'absolute top-2 right-2 bg-red-600 text-white p-2 border border-black z-20'}>
+                                                    - {product.listEvent[0].discountPercent}%
+                                                </div>
+                                            )
+                                        }
+
                                         <div className="mb-2 relative group overflow-hidden  aspect-square ">
                                             {
                                                 product.image.length > 0 ?
@@ -283,15 +320,15 @@ const ProductList = () => {
                                                             }
                                                             alt={product.productName}
                                                             className={`transition-transform duration-500 ease-in-out ${hoveredProductId === product.productId
-                                                                ? "transform scale-110"
-                                                                : "transform scale-100"
+                                                                ? 'transform scale-110'
+                                                                : 'transform scale-100'
                                                             }`}
                                                         />
                                                     ) :
                                                     (
                                                         <img
-                                                            src={"https://product.hstatic.net/200000690725/product/54099335584_5b22d198e9_c_5111716a79a24f28a4fb706cfa1dceee_master.jpg"}
-                                                            alt={""}
+                                                            src={'https://product.hstatic.net/200000690725/product/54099335584_5b22d198e9_c_5111716a79a24f28a4fb706cfa1dceee_master.jpg'}
+                                                            alt={''}
                                                         />
                                                     )
                                             }
@@ -300,14 +337,14 @@ const ProductList = () => {
                                                 <Link to={`/products/${product.productId}`} className="flex-1 mr-1">
                                                     <Button
                                                         className=" bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center overflow-hidden">
-                                                        <IoBagHandle/>
+                                                        <IoBagHandle />
                                                     </Button>
                                                 </Link>
 
                                                 <Link to={`/products/${product.productId}`} className="flex-1 ml-1">
                                                     <Button
                                                         className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
-                                                        <FaEye className="mr-2"/>
+                                                        <FaEye className="mr-2" />
                                                     </Button>
                                                 </Link>
                                             </div>
@@ -319,12 +356,27 @@ const ProductList = () => {
                                         <div className={'font-semibold text-[16px] py-1 text-black'}>
                                             <p>{product.productName}</p>
                                         </div>
-                                        <div className={'font-semibold text-[14px] text-black py-2'}>
-                                            <p>{Math.round(product.price).toLocaleString('vi') + "₫"}</p>
+                                        <div
+                                            className={'font-semibold text-[14px] text-black py-2'}>
+                                            {
+                                                Array.isArray(product.listEvent)
+                                                && product.listEvent.length > 0
+                                                    ? (
+                                                        <div className={' flex justify-between'}>
+                                                            <p className={'line-through'}>{Math.round(product.price).toLocaleString('vi') + '₫'}</p>
+                                                            <p className={'text-red-600'}>{Math.round(product.price / 100 * (100 - product.listEvent[0].discountPercent)).toLocaleString('vi') + '₫'}</p>
+                                                        </div>
+                                                    )
+                                                    :
+                                                    (
+                                                        <p className={'text-red-600'}>{Math.round(product.price).toLocaleString('vi') + '₫'}</p>
+                                                    )
+                                            }
+
                                         </div>
                                         <div>
                                             <Link to={`/products/${product.productId}`}>
-                                                <Button className={'w-full'}>Thêm vào giỏ hàng</Button>
+                                                <Button className={'w-full !rounded-none !border !border-black !text-black font-'}>Thêm vào giỏ hàng</Button>
                                             </Link>
                                         </div>
                                     </div>
@@ -332,6 +384,23 @@ const ProductList = () => {
                             ))
                         }
                     </div>
+                </div>
+            </div>
+            <div className="flex items-center justify-center pb-10">
+                <Pagination
+                    current={currentPage} // Trực tiếp sử dụng currentPage mà không cần +1
+                    pageSize={pageSize}
+                    total={totalElement}
+                    onChange={handlePageChange}
+                />
+                <div style={{ minWidth: 120 }}>
+                    <Select
+                        size="sm"
+                        isSearchable={false}
+                        defaultValue={options[0]}
+                        options={options}
+                        onChange={selected => onPageSizeChange(selected as Option)}
+                    />
                 </div>
             </div>
         </Fragment>

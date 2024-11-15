@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
@@ -29,4 +30,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     @Query("SELECT e FROM Event e WHERE e.startDate <= ?2 AND e.endDate >= ?1")
     Page<Event> findByDateRangeOverlap(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
+    // phah04
+    @Query("SELECT e FROM Event e where CURRENT_TIMESTAMP > e.endDate order by e.discountPercent")
+    List<Event> findListEvent();
 }

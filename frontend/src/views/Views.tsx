@@ -103,7 +103,7 @@ const AllPublicRoutes = (props: AllRoutesProps) => {
                     />
                 ))}
             </Route>
-            <Route path="*" element={<Navigate replace to="/" />} />
+            <Route path="*" element={<PageNotFound/>} />
         </Routes>
     )
 }

@@ -223,8 +223,10 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     JOIN ProductDetail pd ON p.id = pd.product.id
     JOIN Color c ON c.id = pd.color.id
     JOIN Size s ON s.id = pd.size.id
+    JOIN Brand b ON b.id = pd.brand.id
     WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
     AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+    AND (:brancCodes IS NULL OR b.code IN :brancCodes)
     AND (:minPrice IS NULL OR pd.price >= :minPrice)
     AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
     GROUP BY p.id, p.code, p.name
@@ -233,6 +235,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             Pageable pageable,
             @Param("sizeCodes") List<String> sizeCodes,
             @Param("colorCodes") List<String> colorCodes,
+            @Param("brancCodes") List<String> brancCodes,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice
     );

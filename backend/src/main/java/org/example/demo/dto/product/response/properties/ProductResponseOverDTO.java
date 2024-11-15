@@ -3,9 +3,11 @@ package org.example.demo.dto.product.response.properties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.dto.event.response.EventResponseDTO;
 import org.example.demo.entity.product.properties.Color;
 import org.example.demo.entity.product.properties.Size;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -21,8 +23,9 @@ public class ProductResponseOverDTO {
     private Double price;
     private List<String> image;
     private List<String> mass;
-    private List<Color> listColor;
-    private List<Size> listSize;
+    private List<Color> listColor = new ArrayList<>();;
+    private List<Size> listSize = new ArrayList<>();;
+    private List<EventResponseDTO> listEvent = new ArrayList<>();
 
     public ProductResponseOverDTO(Integer productId, String productCode, String productName, Long countColor, Long countSize, Double price) {
         this.productId = productId;

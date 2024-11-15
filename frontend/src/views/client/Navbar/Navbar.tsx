@@ -6,7 +6,7 @@ import { FaCaretDown, FaUser } from 'react-icons/fa'
 import DarkMode from './DarkMode'
 import Login from '../Popup/Login'
 import { useSaleContext } from '@/views/sale/SaleContext'
-import { HiOutlineShoppingBag, HiShoppingBag, HiUser, HiUserCircle } from 'react-icons/hi'
+import { HiMenu, HiOutlineMenu, HiOutlineShoppingBag, HiShoppingBag, HiUser, HiUserCircle } from 'react-icons/hi'
 
 const Menu = [
     {
@@ -25,21 +25,6 @@ const Menu = [
 const DropdownLinks = [
     {
         id: 1,
-        name: 'Sản Phẩm Thịnh Hành',
-        link: '/#'
-    },
-    {
-        id: 2,
-        name: 'Bán chạy nhất',
-        link: '/#'
-    },
-    {
-        id: 3,
-        name: 'Sản Phẩm Top 1',
-        link: '/#'
-    },
-    {
-        id: 4,
         name: 'Tra cứu đơn hàng',
         link: '/check-order'
     }
@@ -60,13 +45,13 @@ const Navbar = () => {
     }
 
     return (
-        <div className="shadow bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40">
+        <div className="relative top-0 shadow text-black dark:text-white duration-200 w-full z-40 navbar">
             {/* upper Navbar */}
             <div className=" py-8">
-                <div className="container flex justify-between items-center">
+                <div className="px-[8%] flex justify-between items-center">
                     <div>
                         <a href="/"
-                           className="text-2xl sm:text-3xl flex gap-2 text-black dark:text-white font-hm font-bold">
+                           className="md:text-4xl sm:text-3xl flex gap-2 text-black dark:text-white font-hm font-bold menu-title">
                             CANTH
                         </a>
                     </div>
@@ -77,69 +62,81 @@ const Navbar = () => {
                                 <li key={data.id}>
                                     <a
                                         href={data.link}
-                                        className="inline-block px-4 hover:text-primary duration-200 text-[18px] text-black dark:text-white font-hm font-bold"
+                                        className="inline-block px-4 duration-200 text-xl hover:underline hover:text-gray-200 underline-offset-4 text-black dark:text-white font-sans font-bold menu-title"
                                     >
                                         {data.name}
                                     </a>
                                 </li>
                             ))}
                             {/* Simple Dropdown and Links */}
-                            <li className="group relative cursor-pointer">
-                                <a href="#" className="flex items-center gap-[2px] py-2 ">
-                                    <p className={' font-hm font-bold text-[18px] text-black'}>Sản Phẩm Hot</p>
-                                    <span>
-                                        <FaCaretDown className="transition-all duration-200 group-hover:rotate-180" />
-                                    </span>
-                                </a>
-                                <div
-                                    className="absolute z-[9999] hidden group-hover:block w-[200px] rounded-md bg-white p-2 text-black shadow-md">
-                                    <ul>
-                                        {DropdownLinks.map((data) => (
-                                            <li key={data.id}>
-                                                <a
-                                                    href={data.link}
-                                                    className="inline-block w-full rounded-md p-2 hover:bg-primary/20 "
-                                                >
-                                                    {data.name}
-                                                </a>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </li>
+
                         </ul>
                     </div>
                     {/* search bar */}
                     <div className="flex justify-between items-center gap-4">
-                        <div className="relative group hidden sm:block">
-                            <input
-                                type="text"
-                                placeholder="Tìm kiếm"
-                                className="w-[250px] sm:w-[250px] group-hover:w-[300px] transition-all duration-300 rounded-none border-2 border-black px-2 py-1 focus:outline-none focus:border-1 focus:border-primary dark:border-gray-500 dark:bg-gray-800  "
-                            />
-                            <IoMdSearch
-                                className="text-gray-500 group-hover:text-primary absolute top-1/2 -translate-y-1/2 right-3" />
+                        {/*<div className="relative group hidden sm:block">*/}
+                        {/*    <input*/}
+                        {/*        type="text"*/}
+                        {/*        placeholder="Tìm kiếm"*/}
+                        {/*        className="w-[250px] sm:w-[250px] group-hover:w-[300px] transition-all duration-300 rounded-none border-2 border-black px-2 py-1 focus:outline-none focus:border-1 focus:border-primary dark:border-gray-500   "*/}
+                        {/*    />*/}
+                        {/*    <IoMdSearch*/}
+                        {/*        className="text-gray-500 group-hover:text-primary absolute top-1/2 -translate-y-1/2 right-3" />*/}
+                        {/*</div>*/}
+                        {/* order button */}
+
+                        <div>
+                            <ul>
+                                <li className="group relative cursor-pointer">
+                                    <a href="#" className="flex items-center">
+                                        <p className={'text-black menu-title'}>
+                                            <HiOutlineMenu size={25} />
+                                        </p>
+                                        <p>
+                                            <FaCaretDown
+                                                className="transition-all duration-200 group-hover:rotate-180 text-xl" />
+                                        </p>
+                                    </a>
+                                    <div
+                                        className="absolute z-[9999] hidden group-hover:block w-[250px] rounded-md  p-2 text-black shadow-md">
+                                        <ul>
+                                            {DropdownLinks.map((data) => (
+                                                <li key={data.id}>
+                                                    <a
+                                                        href={data.link}
+                                                        className="inline-block w-full rounded-md p-2 hover:text-white hover:bg-gray-100 hover:bg-opacity-50 text-black menu-title"
+                                                    >
+                                                        {data.name}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
 
-                        {/* order button */}
                         <button
+                            className="text-black menu-title"
                             onClick={() => setIsOpenCartDrawer(!isOpenCartDrawer)}
                         >
-                            <HiOutlineShoppingBag size={25} className={'text-black'}/>
+                            <HiOutlineShoppingBag size={25} />
                         </button>
 
                         <button
-                            className=""
+                            className="text-black menu-title"
                             onClick={() => handLoginPopup()}
                         >
-                            <HiUser size={25}  className={'text-black'}/>
-
+                            <div>
+                                <HiUser size={25} />
+                            </div>
                         </button>
                         <Login isVisible={isModalVisible} onClose={handleCloseModal} />
                         {/* Darkmode Switch */}
-                        <div>
-                            <DarkMode />
-                        </div>
+                        {/*<div>*/}
+                        {/*    <DarkMode />*/}
+                        {/*</div>*/}
+
                     </div>
                 </div>
             </div>

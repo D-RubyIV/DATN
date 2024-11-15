@@ -7,6 +7,8 @@ import Layout from '@/components/layouts';
 import './locales';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+
 /**
  * Đặt enableMock(Default false) thành true tại configs/app.config.js
  * Nếu bạn muốn kích hoạt mock api

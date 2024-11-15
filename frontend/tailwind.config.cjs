@@ -14,6 +14,12 @@ module.exports = {
     darkMode: 'class',
     theme: {
         fontFamily: {
+            uniqlo: [
+                'Unica One'
+            ],
+            poppins: [
+                'Poppins'
+            ],
             roboto: [
                 'Roboto'
             ],
