@@ -52,7 +52,6 @@ const UpdateEvent = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/v1/event/detail/${id}`);
                 setUpdateEvent(response.data);
-                setSelectedProducts(response.data.productDTOS.map((product: ProductDTO) => product.id));
             } catch (error) {
                 console.error("Error fetching event details:", error);
             }
@@ -61,6 +60,12 @@ const UpdateEvent = () => {
         fetchEventDetails();
         fetchProductDTO(pageIndex, pageSize);
     }, [id, pageIndex, pageSize]);
+
+    useEffect(() => {
+        if (updateEvent) {
+            setSelectedProducts(updateEvent.productDTOS.map((product: ProductDTO) => product.id));
+        }
+    }, [updateEvent]);
 
     // Lấy danh sách sản phẩm
     const fetchProductDTO = async (pageIndex: number, pageSize: number) => {
@@ -78,51 +83,65 @@ const UpdateEvent = () => {
     // api updateEvent
     const handleSubmit = async (values: EventDTO, { resetForm, setSubmitting }: FormikHelpers<EventDTO>) => {
         try {
-            // Xác định giá trị ngày ban đầu từ updateEvent
-            const initialStartDate = dayjs(updateEvent?.startDate, "DD-MM-YYYY'T'HH:mm");
-            const initialEndDate = dayjs(updateEvent?.endDate, "DD-MM-YYYY'T'HH:mm");
+            console.log("Received form values:", values);
 
-            // Chuyển đổi giá trị ngày hiện tại trong form
-            const startDate = dayjs(values.startDate, "DD-MM-YYYY'T'HH:mm", true);
-            const endDate = dayjs(values.endDate, "DD-MM-YYYY'T'HH:mm", true);
+            // Lấy giá trị startDate và endDate ban đầu từ API
+            const initialStartDate = updateEvent?.startDate || "";
+            const initialEndDate = updateEvent?.endDate || "";
+            console.log("Initial startDate from API:", initialStartDate);
+            console.log("Initial endDate from API:", initialEndDate);
 
-            // Kiểm tra nếu ngày bắt đầu hoặc kết thúc có thay đổi so với giá trị ban đầu
-            const isStartDateChanged = !startDate.isSame(initialStartDate);
-            const isEndDateChanged = !endDate.isSame(initialEndDate);
+            // Kiểm tra xem startDate và endDate có thay đổi hay không
+            const isStartDateChanged = values.startDate !== initialStartDate;
+            const isEndDateChanged = values.endDate !== initialEndDate;
+            console.log("Is startDate changed:", isStartDateChanged);
+            console.log("Is endDate changed:", isEndDateChanged);
 
-            // Nếu ngày đã thay đổi, kiểm tra tính hợp lệ
+            // Chuyển đổi giá trị ngày trong form
+            const startDate = isStartDateChanged
+                ? dayjs(values.startDate, "DD-MM-YYYY'T'HH:mm", true)
+                : dayjs(initialStartDate, "DD-MM-YYYYTHH:mm", true);
+            const endDate = isEndDateChanged
+                ? dayjs(values.endDate, "DD-MM-YYYY'T'HH:mm", true)
+                : dayjs(initialEndDate, "DD-MM-YYYYTHH:mm", true);
+
+            console.log("Parsed startDate:", startDate.toString());
+            console.log("Parsed endDate:", endDate.toString());
+
+            // Kiểm tra tính hợp lệ của ngày nếu chúng thay đổi
             if ((isStartDateChanged && !startDate.isValid()) || (isEndDateChanged && !endDate.isValid())) {
+                console.error("Invalid date detected. Start or end date is not valid.");
                 toast.error("Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
                 setSubmitting(false);
                 return;
             }
 
-            // Nếu ngày không thay đổi, giữ nguyên giá trị ban đầu
+            // Chuẩn bị payload với giá trị ngày chính xác
             const formattedPayload = {
                 ...values,
-                startDate: isStartDateChanged ? startDate.format("DD-MM-YYYYTHH:mm") : initialStartDate.format("DD-MM-YYYYTHH:mm"),
-                endDate: isEndDateChanged ? endDate.format("DD-MM-YYYYTHH:mm") : initialEndDate.format("DD-MM-YYYYTHH:mm"),
-                productDTOS: selectedProducts.map(id => ({ id }))
+                startDate: startDate.format("DD-MM-YYYYTHH:mm"), // Sử dụng giá trị mới hoặc cũ
+                endDate: endDate.format("DD-MM-YYYYTHH:mm"), // Sử dụng giá trị mới hoặc cũ
+                productDTOS: selectedProducts.map((id) => ({ id })),
             };
+
+            console.log("Formatted payload:", formattedPayload);
 
             // Gửi yêu cầu PUT để cập nhật sự kiện
             const response = await axios.put(`http://localhost:8080/api/v1/event/update/${id}`, formattedPayload);
 
             if (response.status === 200) {
-                toast.success('Cập nhật thành công');
+                console.log("Update response:", response);
+                toast.success("Cập nhật thành công");
                 resetForm();
-                navigate('/admin/manage/event');
+                navigate("/admin/manage/event");
             }
         } catch (error) {
-            console.error("Lỗi khi lưu sự kiện:", error);
+            console.error("Error while updating the event:", error);
             toast.error("Cập nhật sự kiện thất bại");
         } finally {
             setSubmitting(false);
         }
     };
-
-
-
 
 
     const handleProductSelect = (selectedRowKeys: string[]) => {
