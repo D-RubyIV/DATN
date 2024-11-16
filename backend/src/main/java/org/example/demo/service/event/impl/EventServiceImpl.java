@@ -112,7 +112,6 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventDTO(savedEvent);
     }
 
-
     @Override
     @Transactional
     public EventDTO updateEvent(Integer id, EventDTO eventDTO) {
