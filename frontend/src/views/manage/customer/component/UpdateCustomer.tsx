@@ -8,9 +8,9 @@ import DatePicker from '@/components/ui/DatePicker';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { SingleValue } from 'react-select';
 import { toast } from 'react-toastify';
 import { Pagination } from 'antd';
+import Dialog from '@/components/ui/Dialog'
 
 
 
@@ -104,6 +104,8 @@ const UpdateCustomer = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [formModes, setFormModes] = useState<string[]>([]);
+    const [dialogIsOpen, setIsOpen] = useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
     // State riêng để lưu email và phone ban đầu
     const [initialContact, setInitialContact] = useState({
@@ -391,8 +393,6 @@ const UpdateCustomer = () => {
     };
 
     dayjs.extend(customParseFormat);
-
-    // Hàm lấy khách hàng theo ID
     // const fetchCustomer = async (id: string, currentPage: number) => {
     //     try {
 
@@ -505,6 +505,39 @@ const UpdateCustomer = () => {
         }
     };
 
+    // mở dialog xác nhận xóa
+    const openDialog = (addressId: string) => {
+        setSelectedAddressId(addressId);
+        setIsOpen(true);
+    }
+
+    // Đóng dialog mà không xóa
+    const onDialogClose = () => {
+        setIsOpen(false);
+        setSelectedAddressId(null);
+    };
+
+    // Delete Address
+    const handleDelete = async (id: string, index: number, remove: (index: number) => void) => {
+        try {
+            const response = await axios.delete(`http://localhost:8080/api/v1/address/delete/${id}`);
+            if (response.status === 200) {
+                toast('Xóa thành công')
+                remove(index);
+                setFormModes(prev => prev.filter((_, i) => i !== index));
+                setIsOpen(false)
+            } else {
+                console.error('Lỗi khi xóa địa chỉ:', response.statusText);
+                toast('Xóa thất bại');
+            }
+        } catch (error) {
+            console.error('Lỗi xóa khách hàng:', error);
+            toast('Xóa thất bại')
+        }
+    }
+
+
+
     const handlePageChange = (newPage: number) => {
         if (newPage < 1) {
             console.warn('Số trang phải lớn hơn hoặc bằng 1')
@@ -535,8 +568,8 @@ const UpdateCustomer = () => {
             });
 
             if (response.status === 200) {
-                toast.success('Cập nhật thành công');
-                navigate('/manage/customer');
+                toast('Cập nhật thành công');
+                navigate('/admin/manage/customer');
             } else {
                 alert('Failed to update customer. Please try again.');
             }
@@ -583,7 +616,7 @@ const UpdateCustomer = () => {
 
                     setFormModes((prev) => ['edit', ...prev]); // Cập nhật formModes
                 }
-                toast.success('Thêm địa chỉ mới thành công');
+                toast('Thêm địa chỉ mới thành công');
             } else {
                 // Gửi yêu cầu cập nhật với các trường ID quận và xã
                 response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, {
@@ -595,7 +628,7 @@ const UpdateCustomer = () => {
                 updatedAddressDTOS[addressIndex] = response.data;
                 // setFieldValue('addressDTOS', updatedAddressDTOS); // Cập nhật lại danh sách sau khi chỉnh sửa
                 console.log('dữ liệu cập nhật lại địa chỉ: ', updatedAddressDTOS)
-                toast.success('Cập nhật địa chỉ thành công');
+                toast('Cập nhật địa chỉ thành công');
             }
             fetchCustomer(customerId, currentPage);
         } catch (error) {
@@ -642,7 +675,7 @@ const UpdateCustomer = () => {
 
             // Cập nhật địa chỉ trong state (tạm thời)
             setUpdateCustomer({ ...updateCustomer, addressDTOS: updatedAddresses });
-            toast.success('cập nhật địa chỉ mặc định thành công');
+            toast('cập nhật địa chỉ mặc định thành công');
             // Gọi API chỉ một lần để cập nhật địa chỉ mặc định và các địa chỉ khác
             await updateDefaultAddress(updateCustomer.addressDTOS[index].id, true);
 
@@ -687,7 +720,7 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.name}
                                     >
                                         <Field type="text" autoComplete="off" name="name" style={{ height: '44px' }}
-                                               placeholder="Tên khách hàng..." component={Input} />
+                                            placeholder="Tên khách hàng..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -697,7 +730,7 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.email}
                                     >
                                         <Field type="text" autoComplete="off" name="email" style={{ height: '44px' }}
-                                               placeholder="Email..." component={Input} />
+                                            placeholder="Email..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -707,12 +740,12 @@ const UpdateCustomer = () => {
                                         errorMessage={errors.phone}
                                     >
                                         <Field type="text" autoComplete="off" name="phone" style={{ height: '44px' }}
-                                               placeholder="Số điện thoại..." component={Input}
-                                               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                   const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                   setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                   setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                               }} />
+                                            placeholder="Số điện thoại..." component={Input}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                            }} />
                                     </FormItem>
 
                                     <FormItem
@@ -756,11 +789,11 @@ const UpdateCustomer = () => {
                                             {({ field, form }: FieldProps<string, FormikProps<CustomerDTO>>) => (
                                                 <>
                                                     <Radio className="mr-4" value="Nam" checked={field.value === 'Nam'}
-                                                           onChange={() => form.setFieldValue('gender', 'Nam')}>
+                                                        onChange={() => form.setFieldValue('gender', 'Nam')}>
                                                         Nam
                                                     </Radio>
                                                     <Radio value="Nữ" checked={field.value === 'Nữ'}
-                                                           onChange={() => form.setFieldValue('gender', 'Nữ')}>
+                                                        onChange={() => form.setFieldValue('gender', 'Nữ')}>
                                                         Nữ
                                                     </Radio>
                                                 </>
@@ -770,16 +803,16 @@ const UpdateCustomer = () => {
 
                                     <FormItem>
                                         <Button type="reset" className="ltr:mr-2 rtl:ml-2"
-                                                style={{ backgroundColor: '#fff', height: '40px' }}
-                                                disabled={isSubmitting} onClick={() => {
-                                            resetForm();
-                                            resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
-                                        }}>
+                                            style={{ backgroundColor: '#fff', height: '40px' }}
+                                            disabled={isSubmitting} onClick={() => {
+                                                resetForm();
+                                                resetProvincesDistrictsWards(updateCustomer);  // Gọi hàm để load lại dữ liệu tỉnh, quận, xã
+                                            }}>
                                             Tải lại
                                         </Button>
                                         <Button variant="solid" type="submit"
-                                                style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                                disabled={isSubmitting}>
+                                            style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                            disabled={isSubmitting}>
                                             Cập nhật
                                         </Button>
                                     </FormItem>
@@ -844,11 +877,11 @@ const UpdateCustomer = () => {
                                                                         style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
-                                                                        // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                        //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                                        //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                                        //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                                                        // }}
+                                                                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                                                    //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
+                                                                    //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
+                                                                    //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
+                                                                    // }}
                                                                     />
                                                                 </FormItem>
                                                             </div>
@@ -864,9 +897,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].province`}>
                                                                         {({
-                                                                              field,
-                                                                              form
-                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                            field,
+                                                                            form
+                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             // Log giá trị tỉnh/thành phố hiện tại
                                                                             console.log('Dữ liệu tỉnh:', field.value);
 
@@ -898,9 +931,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].district`}>
                                                                         {({
-                                                                              field,
-                                                                              form
-                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                            field,
+                                                                            form
+                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             console.log('Dữ liệu quận:', field.value);
                                                                             return (
                                                                                 <Select
@@ -930,9 +963,9 @@ const UpdateCustomer = () => {
                                                                 >
                                                                     <Field name={`addressDTOS[${index}].ward`}>
                                                                         {({
-                                                                              field,
-                                                                              form
-                                                                          }: FieldProps<string, FormikProps<CustomerDTO>>) => {
+                                                                            field,
+                                                                            form
+                                                                        }: FieldProps<string, FormikProps<CustomerDTO>>) => {
                                                                             console.log('Dữ liệu xã:', field.value);
 
                                                                             return (
@@ -964,9 +997,9 @@ const UpdateCustomer = () => {
                                                             errorMessage={errors.addressDTOS?.[index]?.detail}
                                                         >
                                                             <Field type="text" name={`addressDTOS[${index}].detail`}
-                                                                   style={{ height: '44px' }}
-                                                                   placeholder="Nhập địa chỉ chi tiết"
-                                                                   component={Input} />
+                                                                style={{ height: '44px' }}
+                                                                placeholder="Nhập địa chỉ chi tiết"
+                                                                component={Input} />
                                                         </FormItem>
 
                                                         <FormItem label="Địa chỉ mặc định">
@@ -1004,19 +1037,31 @@ const UpdateCustomer = () => {
                                                                 type="button"
                                                                 variant="default"
                                                                 style={{ backgroundColor: '#fff', height: '40px' }}
-                                                                onClick={() => {
-                                                                    remove(index);
-                                                                    setFormModes((prev) => prev.filter((_, i) => i !== index));
-                                                                }}
+                                                                onClick={() => openDialog(address.id)}
                                                             >
                                                                 Xóa
                                                             </Button>
                                                         </div>
                                                     </FormContainer>
+                                                    {/* Dialog xác nhận xóa */}
+                                                    <Dialog isOpen={dialogIsOpen} closable={false} onClose={onDialogClose} >
+                                                        <h5 className="mb-4">Xác nhận xóa sự kiện</h5>
+                                                        <p>Bạn có chắc chắn muốn xóa sự kiện này không?</p>
+                                                        <div className="text-right mt-6">
+                                                            <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
+                                                                Hủy
+                                                            </Button>
+                                                            <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} type='submit' onClick={() => handleDelete(address.id, index, remove)}>
+                                                                Xác nhận
+                                                            </Button>
+                                                        </div>
+                                                    </Dialog>
                                                 </div>
+
                                             ))}
                                         </div>
                                     )}
+
                                 </FieldArray>
                                 <div>
                                     <Pagination

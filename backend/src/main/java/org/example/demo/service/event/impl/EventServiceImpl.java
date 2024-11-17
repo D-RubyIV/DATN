@@ -70,7 +70,6 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventDTO(event);
     }
 
-
     @Override
     @Transactional
     public EventDTO saveEvent(EventDTO eventDTO) {
@@ -112,7 +111,6 @@ public class EventServiceImpl implements EventService {
         // Chuyển đổi entity sự kiện đã lưu trở lại DTO và trả về
         return EventMapper.toEventDTO(savedEvent);
     }
-
 
     @Override
     @Transactional

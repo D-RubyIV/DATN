@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import DataTable, { CellContext } from '@/components/shared/DataTable';
 import { Button, Input, DatePicker } from '@/components/ui';
 import { IoIosSearch } from "react-icons/io";
@@ -135,6 +134,7 @@ const EventTable = () => {
                 await instance.delete(`/event/delete/${selectedEventId}`);
                 toast.success('Xóa thành công');
                 setData(data.filter(data => data.id !== selectedEventId))
+                setIsOpen(false);
             } catch (error) {
                 toast.error('Xóa thất bại');
             }
