@@ -139,7 +139,7 @@ const ProductDetail = () => {
         setCurrentImageIndex(index)
     }
 
-    const defaultImage = 'https://product.hstatic.net/200000690725/product/fwcl002_54051885890_o_bfeab2ca9ca7439bb557e70b1ede9c20_master.jpg'
+    const defaultImage = "https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"
     // ảnh
 
     // Giá

@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorize -> authorize
                                 .requestMatchers(mvcMatcherBuilder.pattern("users/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("v2/product")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("color/color-list")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("size/size-list")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("productDetails/abc")).permitAll()

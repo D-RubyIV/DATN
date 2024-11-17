@@ -121,7 +121,7 @@ const PaymentSummary = ({selectedOrder, data, fetchSelectedOrder, setIsOpenVouch
                                         listVoucherSuggest[0]?.minAmount > selectedOrder.subTotal ? (
                                                 <div className={'py-2 flex'}>
                                                     <p className={'text-red-500'}>Cần mua thêm tối
-                                                        thiểu {listVoucherSuggest[0]?.minAmount - selectedOrder.subTotal} giá
+                                                        thiểu {Math.round(listVoucherSuggest[0]?.minAmount - selectedOrder.subTotal).toLocaleString('vi') + "đ"} giá
                                                         trị đơn hàng
                                                         để có thể sử dụng khuyễn mãi tốt hơn
                                                         giảm {listVoucherSuggest[0]?.maxPercent} %

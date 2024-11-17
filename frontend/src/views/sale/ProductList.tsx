@@ -327,7 +327,7 @@ const ProductList = () => {
                                                     ) :
                                                     (
                                                         <img
-                                                            src={'https://product.hstatic.net/200000690725/product/54099335584_5b22d198e9_c_5111716a79a24f28a4fb706cfa1dceee_master.jpg'}
+                                                            src="https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"
                                                             alt={''}
                                                         />
                                                     )

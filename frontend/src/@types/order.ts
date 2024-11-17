@@ -194,7 +194,8 @@ export type ProductDetailOverviewPhah04 = {
     materialName: string;
     thicknessName: string;
     elasticityName: string;
-    images: Image[]
+    images: Image[],
+    eventResponseDTOS: EventResponseDTO[]
 
 };
 
@@ -205,4 +206,13 @@ type Image = {
     code: string;
     url: string;
     deleted: boolean;
+};
+
+type EventResponseDTO = {
+    discountPercent: number; // Tỷ lệ giảm giá
+    startDate: string; // Ngày bắt đầu (ISO format)
+    endDate: string; // Ngày kết thúc (ISO format)
+    name: string; // Tên chương trình giảm giá
+    description: string | null; // Mô tả (có thể null)
+    status: boolean; // Trạng thái (true: hoạt động, false: không hoạt động)
 };
