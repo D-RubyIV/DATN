@@ -60,12 +60,11 @@ const PaymentCallback = () => {
             sleep(500).then(() => {
                 setIsLoading(false)
             })
-        })
-
-        instance.get(`orders/${idOrder}`).then(function (response){
-            if(response.status === 200){
-                setSelectedOrder(response.data)
-            }
+            instance.get(`orders/${idOrder}`).then(function (response){
+                if(response.status === 200){
+                    setSelectedOrder(response.data)
+                }
+            })
         })
     }, [location])
 

@@ -56,6 +56,7 @@ public class CartServiceV2 {
     @Transactional
     public Cart update(Integer id, CartRequestDTOV2 requestDTO) {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found with id: " + id));
+        String address = "";
         // update customer
         if (requestDTO.getCustomer() != null) {
             if (requestDTO.getCustomer().getId() != null) {
@@ -86,25 +87,33 @@ public class CartServiceV2 {
         if (requestDTO.getStatus() != null) {
             cart.setStatus(requestDTO.getStatus());
         }
-        // province
-        if (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) {
-            cart.setProvinceName(requestDTO.getProvinceName());
-            cart.setProvinceId(requestDTO.getProvinceId());
-        }
-        // district
-        if (requestDTO.getDistrictId() != null && !DataUtils.isNullOrEmpty(requestDTO.getDistrictName())) {
-            cart.setDistrictName(requestDTO.getDistrictName());
-            cart.setDistrictId(requestDTO.getDistrictId());
+        // address
+        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
+            address += requestDTO.getAddress();
         }
         // ward
         if (requestDTO.getWardId() != null && !DataUtils.isNullOrEmpty(requestDTO.getWardName())) {
             cart.setWardName(requestDTO.getWardName());
             cart.setWardId(requestDTO.getWardId());
+            address += ", " + requestDTO.getWardName();
         }
-        // address
-        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
-            cart.setAddress(requestDTO.getAddress());
+        // district
+        if (requestDTO.getDistrictId() != null && !DataUtils.isNullOrEmpty(requestDTO.getDistrictName())) {
+            cart.setDistrictName(requestDTO.getDistrictName());
+            cart.setDistrictId(requestDTO.getDistrictId());
+            address += ", " + requestDTO.getDistrictName();
         }
+        // province
+        if (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) {
+            cart.setProvinceName(requestDTO.getProvinceName());
+            cart.setProvinceId(requestDTO.getProvinceId());
+            address +=  ", " + requestDTO.getProvinceName();
+        }
+        // set address
+        if (!DataUtils.isNullOrEmpty(address)) {
+            cart.setAddress(address);
+        }
+
         // phone
         if(requestDTO.getPhone() != null  && !DataUtils.isNullOrEmpty(requestDTO.getPhone())){
             cart.setPhone(requestDTO.getPhone());

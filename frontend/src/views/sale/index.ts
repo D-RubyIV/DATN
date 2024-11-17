@@ -7,6 +7,17 @@ type BaseEntity = {
     deleted: boolean;
 };
 
+type Event = {
+    id: number;
+    discountCode: string;
+    name: string;
+    discountPercent: number;
+    startDate: string; // Có thể đổi thành Date nếu cần parse và xử lý ngày
+    endDate: string;   // Tương tự, đổi thành Date nếu cần
+    quantityDiscount: number;
+    status: string;
+};
+
 export type Image = BaseEntity & {
     url: string;
 };
@@ -14,7 +25,7 @@ export type Image = BaseEntity & {
 export type Size = BaseEntity;
 export type Color = BaseEntity;
 export type Product = BaseEntity & {
-    events: any[];
+    eventDTOList: Event[];
 };
 export type ProductDetailResponseDTO = {
     id: number;
@@ -25,6 +36,7 @@ export type ProductDetailResponseDTO = {
     size: Size;
     color: Color;
     brand: BaseEntity;
+    product: Product;
     material: BaseEntity;
     images: Image[];
 };

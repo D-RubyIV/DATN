@@ -14,6 +14,7 @@ import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -53,4 +54,6 @@ public class OrderResponseDTO {
     private VoucherResponseDTO voucherResponseDTO;
     private List<OrderDetailResponseDTO> orderDetailResponseDTOS;
     private List<HistoryResponseDTO> historyResponseDTOS;
+
+    private LocalDateTime createdDate;
 }

@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { useSaleContext } from '@/views/sale/SaleContext'
 import CloseButton from '@/components/ui/CloseButton'
-import { HiDocumentRemove, HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
+import { HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
 import { CartDetailResponseDTO, Color, ProductDetailResponseDTO, Size } from '@/views/sale/index'
 import { Link } from 'react-router-dom'
 import { Avatar } from '@/components/ui'
@@ -12,7 +12,6 @@ const CartDrawer = () => {
     const {
         getCartDetailInCard,
         listCartDetailResponseDTO,
-        setListCartDetailResponseDTO,
         myCartId,
         isOpenCartDrawer,
         setIsOpenCartDrawer
@@ -27,6 +26,48 @@ const CartDrawer = () => {
             }
         })
     }
+
+    const getFinalPrice = (item: CartDetailResponseDTO) => {
+        const { price, product } = item.productDetailResponseDTO;
+        const discountPercent = product.eventDTOList.length > 0
+            ? product.eventDTOList[0].discountPercent
+            : 0;
+
+        return Math.round(price * (1 - discountPercent / 100));
+    };
+
+
+
+    const PriceProductDetail = ({ item }: { item: CartDetailResponseDTO }) => {
+        const getFinalPrice = (item: CartDetailResponseDTO) => {
+            const { price, product } = item.productDetailResponseDTO;
+            const discountPercent = product.eventDTOList.length > 0
+                ? product.eventDTOList[0].discountPercent
+                : 0;
+
+            return Math.round(price * (1 - discountPercent / 100));
+        };
+
+        const { productDetailResponseDTO } = item;
+
+        return (
+            <div>
+                {productDetailResponseDTO.product.eventDTOList.length > 0 ? (
+                    <p className={'flex gap-3 text-red-600'}>
+                        <span>{getFinalPrice(item).toLocaleString('vi') + ' đ'}</span>
+                        <span
+                            className={'line-through'}>{Math.round(productDetailResponseDTO.price).toLocaleString('vi') + ' đ'}
+                        </span>
+                    </p>
+                ) : (
+                    <p>
+                        <span>{getFinalPrice(item).toLocaleString("vi") + " đ"}</span>
+                    </p>
+                )}
+            </div>
+        );
+    };
+
 
     return (
         <Fragment>
@@ -83,7 +124,9 @@ const CartDrawer = () => {
                                                     </div>
                                                     <div className="font-hm text-black font-semibold text-[15px] pb-1">
                                                         <span>Đơn giá: </span>
-                                                        <span className={'text-red-500'}>{Math.round(((item.productDetailResponseDTO as ProductDetailResponseDTO)?.price))?.toLocaleString('vi') + "đ"}</span>
+                                                        <span>
+                                                            <PriceProductDetail item={item} ></PriceProductDetail>
+                                                        </span>
                                                     </div>
                                                     <div className="flex justify-between">
                                                         <div
@@ -106,7 +149,7 @@ const CartDrawer = () => {
                                                         </div>
                                                         <div>
                                                             <span
-                                                                className="font-semibold text-red-500">{Math.round(((item.productDetailResponseDTO as ProductDetailResponseDTO)?.price * item.quantity))?.toLocaleString('vi') + "đ"}
+                                                                className="font-semibold text-red-600">{(getFinalPrice(item) * item.quantity).toLocaleString("vi") + " đ"}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -144,7 +187,7 @@ const CartDrawer = () => {
                                     {(() => {
                                         let quantity = 0
                                         listCartDetailResponseDTO.forEach((item) => {
-                                            quantity += item.quantity * (item.productDetailResponseDTO as ProductDetailResponseDTO)?.price
+                                            quantity += item.quantity * getFinalPrice(item)
                                         })
                                         return quantity.toLocaleString('vi-VN') + '₫'
                                     })()}

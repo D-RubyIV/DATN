@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.dto.event.EventDTO;
+import org.example.demo.entity.event.Event;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +22,5 @@ public class ProductResponseDTO {
     private Boolean deleted;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
+    private List<EventDTO> eventDTOList = new ArrayList<>();
 }

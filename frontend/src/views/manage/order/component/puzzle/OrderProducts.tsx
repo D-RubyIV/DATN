@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
 import { Button, Drawer } from '@/components/ui'
-import { HiMinus, HiMinusCircle, HiPencil, HiPlusCircle, HiViewList } from 'react-icons/hi'
+import { HiLockClosed, HiMinus, HiMinusCircle, HiPlusCircle, HiViewList } from 'react-icons/hi'
 import { OrderResponseDTO, OrderDetailResponseDTO } from '../../../../../@types/order'
 import History from './History'
 import ProductModal from './ProductModal'
@@ -35,7 +35,18 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div className="flex">
-                <Avatar size={90} icon={<FiPackage />} />
+                {
+                    Array.isArray(row.productDetailResponseDTO.images)
+                    && row.productDetailResponseDTO.images.length > 0 ?
+                        (
+                            <Avatar size={90} src={row.productDetailResponseDTO.images[0]?.url} />
+
+                        ) :
+                        (
+                            <Avatar size={90} icon={<FiPackage />} />
+
+                        )
+                }
                 <div className="ltr:ml-2 rtl:mr-2">
                     <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
                     <div className="mb-1">
@@ -94,9 +105,19 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
 
     const ActionColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
-            <div className="flex gap-2">
-                <button><HiPencil size={20}></HiPencil></button>
-                <button onClick={() => onOpenDeleteOrderDetail(row.id)}><HiMinus size={20}></HiMinus></button>
+            <div>
+                {
+                    selectObject.status === 'PENDING' ? (
+                        <div className="flex gap-2">
+                            {/*<button><HiPencil size={20}></HiPencil></button>*/}
+                            <button onClick={() => onOpenDeleteOrderDetail(row.id)}><HiMinus size={20}></HiMinus>
+                            </button>
+                        </div>
+                    ) : (
+                        <button><HiLockClosed size={20}></HiLockClosed></button>
+                    )
+                }
+
             </div>
         )
     }
@@ -165,18 +186,6 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             }
         })
     ]
-
-    enum Action {
-        CREATE = 'CREATE',
-        UPDATE = 'UPDATE'
-    }
-
-    const [action, setAction] = useState<Action>(Action.UPDATE)
-
-    const handleModal = (bool: boolean, action: Action) => {
-        setAction(action)
-        setIsOpenProductModal(bool)
-    }
 
     const table = useReactTable({
         data,

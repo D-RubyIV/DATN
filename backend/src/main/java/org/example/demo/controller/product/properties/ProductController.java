@@ -89,18 +89,7 @@ public class ProductController {
             @RequestBody ProductRequestDTO requestDTO) {
         try {
             Product updatedProduct = productService.update(id, requestDTO);
-
-            ProductResponseDTO responseDTO = new ProductResponseDTO(
-                    updatedProduct.getId(),
-                    updatedProduct.getCode(),
-                    updatedProduct.getName(),
-                    updatedProduct.getDeleted(),
-                    updatedProduct.getCreatedDate(),
-                    updatedProduct.getUpdatedDate()
-
-            );
-
-            return ResponseEntity.ok(responseDTO);
+            return ResponseEntity.ok(productResponseMapper.toDTO(updatedProduct));
         } catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -119,17 +108,7 @@ public class ProductController {
     public ResponseEntity<ProductResponseDTO> saveProduct(@RequestBody ProductRequestDTO requestDTO) {
         try {
             Product product = productService.save(requestDTO);
-
-            ProductResponseDTO responseDTO = new ProductResponseDTO(
-                    product.getId(),
-                    product.getCode(),
-                    product.getName(),
-                    product.getDeleted(),
-                    product.getCreatedDate(),
-                    product.getUpdatedDate()
-            );
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(productResponseMapper.toDTO(product));
         } catch (BadRequestException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

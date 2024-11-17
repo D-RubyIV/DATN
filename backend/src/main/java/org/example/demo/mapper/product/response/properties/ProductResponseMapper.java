@@ -19,9 +19,11 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {EventResponseMapper.class})
 public interface ProductResponseMapper extends IMapperBasic<Product, ProductResponseDTO> {
 
+    @Mapping(target = "eventDTOList", source = "events")
+    ProductResponseDTO toDTO(Product e);
+    List<ProductResponseDTO> toListDTO(List<Product> e);
+
     Product toEntity(ProductResponseDTO dto);
     List<Product> toListEntity(List<ProductResponseDTO> dtoList);
-
-
 }
 

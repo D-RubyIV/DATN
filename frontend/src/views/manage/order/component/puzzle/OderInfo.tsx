@@ -63,8 +63,8 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
                 <div className='flex gap-3 justify-between'>
                     <h5 className="mb-4">Đơn hàng #{data.code}</h5>
                     <div className=''>
-                        <Button className='me-2' onClick={run} id='btnPrint' size='sm'>In hóa đơn</Button>
-                        <Button className='' onClick={() => setViewInvoice(true)} id='btnPrint' size='sm'>Xem hóa đơn</Button>
+                        <Button className='me-2' id='btnPrint' size='sm' onClick={() => run()}>In hóa đơn</Button>
+                        {/*<Button className='' onClick={() => setViewInvoice(true)} id='btnPrint' size='sm'>Xem hóa đơn</Button>*/}
                     </div>
                 </div>
                 <ul>

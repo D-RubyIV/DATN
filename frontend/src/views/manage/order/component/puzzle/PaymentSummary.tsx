@@ -10,14 +10,12 @@ const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
             }`}
         >
             <span>{label}</span>
-            <span className="font-semibold">
+            <span className="font-semibold text-red-600">
                 <NumericFormat
                     displayType="text"
-                    value={(Math.round((value as number) * 100) / 100).toFixed(
-                        2
-                    )}
+                    value={(Math.round((value as number) * 100) / 100).toFixed(0)}
                     prefix={prefix}
-                    suffix={'₫'}
+                    suffix={' ₫'}
                     thousandSeparator={true}
                     allowNegative={false}
                 />

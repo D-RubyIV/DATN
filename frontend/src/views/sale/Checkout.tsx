@@ -162,20 +162,12 @@ const Checkout = () => {
         districtId: yup.string().default('').required('Quận/huyện không được để trống'),
         wardId: yup.string().default('').required('Xã/ phường không được để trống')
     })
-    const validationSchema = yup.object({
-        recipientName: yup.string().required('Vui lòng nhập tên'),
-        email: yup.string(),
-        address: yup.string().required('Vui lòng nhập địa chỉ'),
-        phone: yup.string().required('Vui lòng nhập số điện thoại'),
-        provinceId: yup.string().required('Vui lòng chọn tỉnh'),
-        districtId: yup.string().required('Vui lòng chọn thành phố'),
-        wardId: yup.string().required('Vui lòng chọn xã/phường')
-    })
     // YUP
     const {
         register,
         handleSubmit,
-        formState: { errors }
+        formState: { errors },
+        setValue
     } = useForm<VoucherFormValues>()
     const {
         register: registerFormRecipient,
@@ -216,18 +208,41 @@ const Checkout = () => {
     const handleConfirmCart = async () => {
         console.log('-----')
         if (selectedCart?.payment === 'CASH') {
-            const data = {
-                'status': 'PENDING'
-            }
-            await handleUpdateCart(data).then(() => {
-                instance.get(`/orders/convert/${id}`).then(function(response) {
+            try {
+                const data = {
+                    status: 'PENDING',
+                    recipientName: getValuesFormRecipient('recipientName'),
+                    phone: getValuesFormRecipient('phone'),
+                    address: getValuesFormRecipient('address'),
+                    provinceId: getValuesFormRecipient('provinceId'),
+                    districtId: getValuesFormRecipient('districtId'),
+                    wardId: getValuesFormRecipient('wardId'),
+                    provinceName: IAddress.iprovince?.ProvinceName,
+                    districtName: IAddress.idistrict?.DistrictName,
+                    wardName: IAddress.iward?.WardName
+                }
+
+                // Update cart
+                await handleUpdateCart(data)
+                instance.put(`/cart/v2/${id}`, data).then(function(response) {
                     if (response.status === 200 && response.data) {
+                         instance.get(`/orders/convert/${id}`).then(function(response){
+                            if (response.status === 200 && response.data) {
+                                getDetailAboutCart()
+                                navigate('/thank')
+                                localStorage.removeItem('myCartId')
+                            }
+                        })
                         getDetailAboutCart()
-                        navigate('/thank')
-                        localStorage.removeItem('myCartId')
                     }
                 })
-            })
+
+                // Convert cart to order
+
+            } catch (error) {
+                console.error('Error processing payment:', error)
+                // Add appropriate error handling (e.g., show a notification to the user)
+            }
         } else if (selectedCart?.payment === 'TRANSFER') {
             const data = {
                 'status': 'PENDING'
@@ -273,6 +288,11 @@ const Checkout = () => {
                 setPaymentMethod(response.data.payment)
                 console.log('setSelectedCart')
                 console.log(response.data)
+
+                if((response.data.voucherResponseDTO as VoucherResponseDTO)){
+                    console.log("sssssssss")
+                    setValue("voucherCode", response.data.voucherResponseDTO.code)
+                }
             }
         })
     }
@@ -282,6 +302,8 @@ const Checkout = () => {
             console.log(response)
             if (response?.data) {
                 setListCartDetailResponseDTO(response?.data)
+
+
             }
         })
         handleFindAllProvinces()
@@ -324,7 +346,6 @@ const Checkout = () => {
                 wardId: IAddress.iward?.WardCode,
                 wardName: IAddress.iward?.WardName
             }
-            handleUpdateCart(data)
         }
     }, [IAddress])
 
@@ -353,7 +374,7 @@ const Checkout = () => {
 
 
     return (
-        <div className="h-full bg-white">
+        <div className=" bg-white">
             <Card className={'px-40'}>
                 <form className={'grid 2xl:grid-cols-1 grid-cols-1 gap-20 h-full xl:p-20'}>
                     {/*BLOCK 1*/}
@@ -519,7 +540,7 @@ const Checkout = () => {
                                                         className="flex justify-between gap-6 border-b border-gray-300 py-5">
                                                         {/* Hình ảnh sản phẩm */}
                                                         <div className="flex-shrink-0">
-                                                            <Badge content={item?.quantity} maxCount={9}>
+                                                            <Badge content={item?.quantity} maxCount={9999}>
                                                                 <div className="w-28 h-28">
                                                                     {item.productDetailResponseDTO?.images[0]?.url ? (
                                                                         <img
@@ -620,7 +641,7 @@ const Checkout = () => {
                                                 placeholder="Mã giảm giá"
                                                 className={`${errors.voucherCode ? 'border-red-500' : ''} border-2 rounded-none border-black`}
                                                 {...register('voucherCode', {
-                                                    required: 'Mã giảm giá không được để trống',
+                                                    required: 'Mã giảm giá không hợp lệ',
                                                     minLength: {
                                                         value: 5,
                                                         message: 'Mã giảm giá phải có ít nhất 3 ký tự'

@@ -253,7 +253,7 @@ const ProductList = () => {
                             {
                                 listColor.map((item, index) => (
                                     <button key={index}
-                                            className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border  ${listColorSelected.find(s => s.code === item.code) ? '!bg-black text-white' : 'border-black border'}`}
+                                            className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${listColorSelected.find(s => s.code === item.code) ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
                                             onClick={() => handleSelectColor(item)}>
                                         <p>{item.name}</p>
                                     </button>
@@ -271,7 +271,7 @@ const ProductList = () => {
                                 listSize.map((item, index) => (
                                     <div key={index} className={'py-2'}>
                                         <button key={index}
-                                                className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center rounded border ${listSizeSelected.find(s => s.code === item.code) ? '!bg-black text-white' : 'border-black border'}`}
+                                                className={`hover:bg-gray-200 p-2 aspect-square w-[50px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${listSizeSelected.find(s => s.code === item.code) ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
                                                 onClick={() => handleSelectSize(item)}>
                                             <p>{item.name}</p>
                                         </button>

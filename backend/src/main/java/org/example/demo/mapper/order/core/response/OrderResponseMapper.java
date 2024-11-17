@@ -9,6 +9,7 @@ import org.example.demo.mapper.event.response.EventResponseMapper;
 import org.example.demo.mapper.history.response.HistoryResponseMapper;
 import org.example.demo.mapper.order.properties.response.OrderDetailResponseMapper;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
+import org.example.demo.mapper.product.response.properties.ProductResponseMapper;
 import org.example.demo.mapper.staff.response.StaffResponseMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,7 +20,7 @@ import java.util.List;
  * @author PHAH04
  * Vui lòng không chỉnh sửa, có sửa hãy copy =))
  */
-@Mapper(componentModel = "spring", uses = {AddressResponseMapper.class, HistoryResponseMapper.class, CustomerResponseMapper.class, StaffResponseMapper.class, ProductDetailResponseMapper.class, OrderDetailResponseMapper.class, EventResponseMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressResponseMapper.class, HistoryResponseMapper.class, CustomerResponseMapper.class, StaffResponseMapper.class, ProductDetailResponseMapper.class, OrderDetailResponseMapper.class, EventResponseMapper.class, ProductResponseMapper.class})
 public interface OrderResponseMapper {
     Order toEntity(OrderResponseDTO d);
 

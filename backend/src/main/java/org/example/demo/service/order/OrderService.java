@@ -170,6 +170,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found with id: " + id));
         History history = new History();
         history.setOrder(order);
+        String address = "";
         // update customer
         if (requestDTO.getCustomer() != null) {
             if (requestDTO.getCustomer().getId() != null) {
@@ -202,24 +203,35 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         if (requestDTO.getStatus() != null) {
             order.setStatus(requestDTO.getStatus());
         }
-        // province
-        if (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) {
-            order.setProvinceName(requestDTO.getProvinceName());
-            order.setProvinceId(requestDTO.getProvinceId());
-        }
-        // district
-        if (requestDTO.getDistrictId() != null && !DataUtils.isNullOrEmpty(requestDTO.getDistrictName())) {
-            order.setDistrictName(requestDTO.getDistrictName());
-            order.setDistrictId(requestDTO.getDistrictId());
+        // address
+        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
+            String detail = requestDTO.getAddress();
+            address += detail;
         }
         // ward
         if (requestDTO.getWardId() != null && !DataUtils.isNullOrEmpty(requestDTO.getWardName())) {
+            address += ", " + requestDTO.getWardName();
             order.setWardName(requestDTO.getWardName());
             order.setWardId(requestDTO.getWardId());
         }
-        // address
-        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
-            order.setAddress(requestDTO.getAddress());
+        // district
+        if (requestDTO.getDistrictId() != null && !DataUtils.isNullOrEmpty(requestDTO.getDistrictName())) {
+            address += ", " + requestDTO.getDistrictName();
+            order.setDistrictName(requestDTO.getDistrictName());
+            order.setDistrictId(requestDTO.getDistrictId());
+        }
+        // province
+        if (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) {
+            address +=  ", " + requestDTO.getProvinceName();
+            order.setProvinceName(requestDTO.getProvinceName());
+            order.setProvinceId(requestDTO.getProvinceId());
+        }
+        // set address
+        if (!DataUtils.isNullOrEmpty(address)) {
+            order.setAddress(address);
+        }
+        else {
+            System.out.println("+++++++++++++++++++++++");
         }
         // phone
         if(requestDTO.getPhone() != null  && !DataUtils.isNullOrEmpty(requestDTO.getPhone())){
@@ -383,6 +395,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không xác đingj được giỏ hàng"));
         Order order = new Order();
         order.setCode("HDO" + randomCodeGenerator.generateRandomCode());
+        order.setRecipientName(cart.getRecipientName());
+        order.setPhone(cart.getPhone());
+        order.setAddress(cart.getAddress() + " " + cart.getDistrictName() + " " + cart.getDistrictName() + " " + cart.getProvinceName());
         order.setAddress(cart.getAddress());
         order.setProvinceId(cart.getProvinceId());
         order.setProvinceName(cart.getProvinceName());

@@ -81,7 +81,7 @@ function LandingPage() {
                 direction={'vertical'}
                 slidesPerView={1}
                 effect="fade"
-                spaceBetween={300}
+                spaceBetween={0}
                 speed={1500}
                 mousewheel={true}
                 pagination={{

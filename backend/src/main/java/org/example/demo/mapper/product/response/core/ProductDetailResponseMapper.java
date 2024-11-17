@@ -4,13 +4,15 @@ import org.example.demo.dto.product.phah04.response.ProductOverviewResponse;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.mapper.IMapperBasic;
+import org.example.demo.mapper.event.response.EventResponseMapper;
+import org.example.demo.mapper.product.response.properties.ProductResponseMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {EventResponseMapper.class, ProductResponseMapper.class})
 @Qualifier("productDetailResponseMapperPhah04")
 public interface ProductDetailResponseMapper extends IMapperBasic<ProductDetail, ProductDetailResponseDTO> {
 
