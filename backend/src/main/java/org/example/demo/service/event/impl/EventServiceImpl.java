@@ -148,7 +148,7 @@ public class EventServiceImpl implements EventService {
         // Ví dụ logic: Mã giảm giá dựa trên tên sự kiện và ngày bắt đầu
         String eventName = eventDTO.getName().toUpperCase().replaceAll("[^A-Z0-9]", ""); // Làm sạch tên
 //        String datePart = eventDTO.getStartDate().toLocalDate().toString().replaceAll("-", ""); // Định dạng ngày dưới dạng YYYYMMDD
-        return "MGG-" + eventName;
+        return "GG-" + eventName;
     }
 }
 

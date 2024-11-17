@@ -578,7 +578,7 @@ const AddCustomer = () => {
                             form.setFieldValue("addressDTOS[0].ward", newValue ? newValue.WardName : '');
                             form.setFieldTouched("addressDTOS[0].ward", true, false); // Đánh dấu trường đã tương tác
                           }}
-                          onBlur={() => form.setFieldTouched("addressDTOS[0].ward", true)} // Đánh dấu khi mất focus
+                          onBlur={() => form.setFieldTouched("addressDTOS[0].ward", true)} // Đánh dấu khi mấtfocus
                         />
                       )}
                     </Field>
