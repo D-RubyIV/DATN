@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.demo.components.JwtTokenUtils;
 import org.example.demo.components.LocalizationUtils;
 import org.example.demo.dto.auth.request.AccountRequestDTO;
+import org.example.demo.dto.customer.request.CustomerRequestDTO;
+import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.user.UserLoginDTO;
 import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.security.Account;
@@ -178,5 +180,14 @@ public class AccountService {
 //        return customerOptional.map(Customer::getAccount);
 //    }
 
+    @Transactional
+    public void updateStaff(StaffRequestDTO requestDTO) {
+
+    }
+
+    @Transactional
+    public void updateCustomer(CustomerRequestDTO customerRequestDTO) {
+
+    }
 
 }

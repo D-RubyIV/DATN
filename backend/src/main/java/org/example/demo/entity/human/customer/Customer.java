@@ -44,7 +44,7 @@ public class Customer extends BaseEntity {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<Address> addresses;
 
     @OneToOne
