@@ -362,7 +362,6 @@ const AddCustomer = () => {
     }
   };
 
-
   const handleSubmit = async (values: CustomerDTO, { resetForm, setSubmitting }: FormikHelpers<CustomerDTO>) => {
     try {
       const formattedValues = {
@@ -462,7 +461,6 @@ const AddCustomer = () => {
                       inputtable
                       inputtableBlurClose={false}
                       placeholder="Chọn ngày sinh..."
-                      // Utilizes Formik's values for date display
                       value={values.birthDate ? dayjs(values.birthDate, 'YYYY-MM-DD').toDate() : null}
                       disableDate={(current) => {
                         return dayjs(current).isAfter(dayjs().endOf('day'));
