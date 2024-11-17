@@ -66,7 +66,7 @@ public class AccountService {
                 .role(role)
                 .provider(accountRequestDTO.getProvider())
                 .enabled(true)
-                .status("ACTIVE")
+                .status("Hoạt Động")
                 .build();
 
         if (role.getName().equalsIgnoreCase(Role.USER)) {
