@@ -18,8 +18,15 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
+  
+
+
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        console.log("OkOk", user)
+    }, [user])
 
     // Kiểm tra người dùng đã đăng nhập chưa
     const checkAuth = async () => {
@@ -27,8 +34,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (token) {
             try {
                 const userDetail = await getUserDetail(token); // Lấy thông tin người dùng từ API
+                console.log(userDetail.data.username)
                 setUser({
-                    username: userDetail.username
+                    username: userDetail.data.username
                 });
             } catch (err) {
                 console.error('Failed to get user details:', err);
@@ -88,22 +96,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
+            console.log("HAVE TOKEN")
             getUserDetail(token)
                 .then(userDetail => {
                     setUser({
                         username: userDetail.username
                     });
+                    console.log( "Username", userDetail.username)
                 })
                 .catch(err => {
                     console.error('Failed to get user details:', err);
                     logout(); // Nếu có lỗi khi lấy thông tin người dùng, đăng xuất
                 });
         } else {
+            console.log("NO HAVE TOKEN")
+
             setUser(null);  // Nếu không có token, đảm bảo user là null
         }
         setLoading(false);
     }, []);
-    
+
 
     // Kiểm tra trạng thái người dùng khi component được mount
     useEffect(() => {
@@ -128,3 +140,7 @@ export const useAuth = () => {
 };
 
 export default AuthProvider;
+
+
+// toio nghix no o doan nay api login tra ve data kieu khac apiu detail tra api kiueu khac nen no bij hoac o cai dr
+// dropdown ben navber

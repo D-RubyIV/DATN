@@ -83,14 +83,12 @@ const AdminLayout = () => {
 const PublicLayout = () => {
     return (
         <Fragment>
-            <AuthProvider>
                 <SaleProvider>
                     <Navbar />
                     <PublicViews />
                     <Footer />
                     <CartDrawer></CartDrawer>
                 </SaleProvider>
-            </AuthProvider>
         </Fragment>
     )
 }

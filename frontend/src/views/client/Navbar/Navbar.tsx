@@ -157,7 +157,7 @@ const Navbar = () => {
                                                 <div className="flex items-center gap-3">
                                                     <HiUserCircle className="text-gray-500" size={30} />
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900">{user.username}</p>
+                                                        <p className="text-sm font-medium text-gray-900  menu-title">{user.username}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -198,3 +198,33 @@ const Navbar = () => {
 export default Navbar
 
 
+// {
+//     "message": "Get user's detail successfully",
+//     "status": "OK",
+//     "data": {
+//         "username": "hungit2301@gmail.com",
+//         "status": "Ho?t Ð?ng",
+//         "enabled": true,
+//         "roleName": null,
+//         "provider": null,
+//         "socialId": null
+//     }
+// }
+
+// {
+//     "message": "Login successfully",
+//     "status": "OK",
+//     "data": {
+//         "tokenType": "Bearer",
+//         "id": 5,
+//         "username": "hungit2301@gmail.com",
+//         "roles": [
+//             "ROLE_CUSTOMER"
+//         ],
+//         "message": "Login successfully",
+//         "token": "eyJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50SWQiOjUsInN1YmplY3QiOiJodW5naXQyMzAxQGdtYWlsLmNvbSIsInN1YiI6Imh1bmdpdDIzMDFAZ21haWwuY29tIiwiZXhwIjoxNzMyMTg3NDMxfQ.oSgVWSTw1RMyJJCloRoQ3Hp4ixi-zvsL5eNHqXyrcbs",
+//         "refresh_token": "7eb4c679-ea02-4ba0-b5e7-0fae13b2203a"
+//     }
+// }
+
+// vay la do cai dropdown soa ychacws ko phai
