@@ -36,7 +36,20 @@ export interface Product {
     deleted: boolean;
     createdDate: string;
     updatedDate: string;
+    eventDTOList: EventDTO[];
 }
+
+type EventDTO = {
+    id: number;
+    discountCode: string;
+    name: string;
+    discountPercent: number;
+    startDate: string; // ISO 8601 format or can use Date type
+    endDate: string; // ISO 8601 format or can use Date type
+    quantityDiscount: number;
+    status: string;
+    productDTOS: any[] | null; // Replace `any` with the actual type if available
+};
 
 export interface ProductDetailResponseDTO {
     id: number;
@@ -162,28 +175,67 @@ const Checkout = () => {
         districtId: yup.string().default('').required('Quận/huyện không được để trống'),
         wardId: yup.string().default('').required('Xã/ phường không được để trống')
     })
+
     // YUP
     const {
         register,
         handleSubmit,
         formState: { errors },
         setValue
-    } = useForm<VoucherFormValues>()
+    } = useForm<VoucherFormValues>({ mode: 'onChange' })
+
     const {
         register: registerFormRecipient,
         handleSubmit: handleSubmitFormRecipient,
         getValues: getValuesFormRecipient,
-        formState: { errors: errorsFormRecipient },
+        formState: { errors: errorsFormRecipient, isValid: isValidFormRecipient },
+        watch,
         setValue: setValuesFormRecipient
     } = useForm<RecipientDTO>({
-        resolver: yupResolver(schemaRecipientName)
+        resolver: yupResolver(schemaRecipientName),
+        mode: 'onChange'
     })
 
+    const formValues = watch()
+
+
+    // COMMON
+    const getFinalPrice = (item: ProductDetailResponseDTO) => {
+        const price = item.price
+        const discountPercent = item.product.eventDTOList.length > 0
+            ? item.product.eventDTOList[0].discountPercent
+            : 0
+
+        return Math.round(price * (1 - discountPercent / 100))
+    }
+
+    const hasSale = (item: ProductDetailResponseDTO) => {
+        return item.product.eventDTOList.length > 0
+    }
+
+
+    useEffect(() => {
+        if (isValidFormRecipient && (
+            selectedCart?.address !== getValuesFormRecipient('address')
+        )) {
+            const data = {
+                recipientName: getValuesFormRecipient('recipientName'),
+                phone: getValuesFormRecipient('phone'),
+                address: getValuesFormRecipient('address'),
+                provinceId: getValuesFormRecipient('provinceId'),
+                districtId: getValuesFormRecipient('districtId'),
+                wardId: getValuesFormRecipient('wardId'),
+                provinceName: IAddress.iprovince?.ProvinceName,
+                districtName: IAddress.idistrict?.DistrictName,
+                wardName: IAddress.iward?.WardName
+            }
+            handleUpdateCart(data)
+        }
+    }, [formValues])
 
     const customHandleSubmit = async (data: VoucherFormValues) => {
         event?.preventDefault()
         // Giả sử bạn có logic kiểm tra mã giảm giá với API hoặc điều kiện khác
-        console.log('Mã nhập vào:', data.voucherCode)
 
         // Giả lập một API call (có thể thay bằng gọi API thực tế)
 
@@ -192,7 +244,6 @@ const Checkout = () => {
             'voucherCode': data.voucherCode
         }
         instance.post(`cart/use-voucher`, payload).then(function(response) {
-            console.log(response)
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
 
@@ -200,13 +251,11 @@ const Checkout = () => {
             }
         }).catch(function(error) {
             console.log(error)
-            console.log(error.response.data)
             openNotification(error.response.data.error)
         })
     }
 
     const handleConfirmCart = async () => {
-        console.log('-----')
         if (selectedCart?.payment === 'CASH') {
             try {
                 const data = {
@@ -227,7 +276,7 @@ const Checkout = () => {
                 await handleUpdateCart(data)
                 instance.put(`/cart/v2/${id}`, data).then(function(response) {
                     if (response.status === 200 && response.data) {
-                         instance.get(`/orders/convert/${id}`).then(function(response){
+                        instance.get(`/orders/convert/${id}`).then(function(response) {
                             if (response.status === 200 && response.data) {
                                 getDetailAboutCart()
                                 navigate('/thank')
@@ -263,12 +312,10 @@ const Checkout = () => {
                     instance.get(`/orders/convert/${id}`).then(function(response) {
                         if (response.status === 200 && response.data) {
                             const idOrder = response.data.id
-                            console.log('idOrder', idOrder)
                             const amount = Math.round(selectedCart.subTotal)
                             instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function(response) {
                                 if (response.status === 200 && response.data) {
                                     const url = response?.data?.data?.paymentUrl
-                                    console.log(url)
                                     if (url) {
                                         window.location.href = url // Mở đường dẫn mới
                                     }
@@ -293,16 +340,12 @@ const Checkout = () => {
 
     const getDetailAboutCart = async () => {
         instance.get(`cart/detail/${id}`).then(function(response) {
-            console.log(response)
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
                 setPaymentMethod(response.data.payment)
-                console.log('setSelectedCart')
-                console.log(response.data)
 
-                if((response.data.voucherResponseDTO as VoucherResponseDTO)){
-                    console.log("sssssssss")
-                    setValue("voucherCode", response.data.voucherResponseDTO.code)
+                if ((response.data.voucherResponseDTO as VoucherResponseDTO)) {
+                    setValue('voucherCode', response.data.voucherResponseDTO.code)
                 }
             }
         })
@@ -310,7 +353,6 @@ const Checkout = () => {
 
     useEffect(() => {
         instance.get(`cart-details/in-cart/${id}`).then(function(response) {
-            console.log(response)
             if (response?.data) {
                 setListCartDetailResponseDTO(response?.data)
 
@@ -343,19 +385,29 @@ const Checkout = () => {
     }, [selectedCart])
 
     useEffect(() => {
+        console.log(IAddress)
         if (IAddress.iprovince) {
+            console.log('Change provine')
             handleFindAllDistricts(IAddress.iprovince.ProvinceID)
             if (IAddress.idistrict) {
+                console.log('Change district')
                 handleFindAllWards(IAddress.idistrict.DistrictID)
-            }
-            const data = {
-                address: IAddress.address,
-                districtId: IAddress.idistrict?.DistrictID,
-                districtName: IAddress.idistrict?.DistrictName,
-                provinceId: IAddress.iprovince.ProvinceID,
-                provinceName: IAddress.iprovince.ProvinceID,
-                wardId: IAddress.iward?.WardCode,
-                wardName: IAddress.iward?.WardName
+                if (IAddress.iward) {
+                    console.log('Change iward')
+                    const data = {
+                        payment: paymentMethod,
+                        recipientName: getValuesFormRecipient('recipientName'),
+                        phone: getValuesFormRecipient('phone'),
+                        address: getValuesFormRecipient('address'),
+                        districtId: IAddress.idistrict?.DistrictID,
+                        districtName: IAddress.idistrict?.DistrictName,
+                        provinceId: IAddress.iprovince.ProvinceID,
+                        provinceName: IAddress.iprovince.ProvinceID,
+                        wardId: IAddress.iward?.WardCode,
+                        wardName: IAddress.iward?.WardName
+                    }
+                    handleUpdateCart(data)
+                }
             }
         }
     }, [IAddress])
@@ -434,11 +486,9 @@ const Checkout = () => {
                                                 setIAddress((prev) => ({ ...prev, iprovince: (el as IProvince) }))
                                                 setValuesFormRecipient('provinceId', (el as IProvince).ProvinceID)
                                             }}
-                                            value={provinces.find(s => {
-                                                if (s.ProvinceID.toString() === getValuesFormRecipient('provinceId')) {
-                                                    return s
-                                                }
-                                            })}
+                                            value={
+                                                provinces.find(s => s.ProvinceID.toString() === getValuesFormRecipient('provinceId').toString() ?? null)
+                                            }
                                         />
                                         {errorsFormRecipient.provinceId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.provinceId.message}</p>
@@ -455,11 +505,8 @@ const Checkout = () => {
                                                 setIAddress((prev) => ({ ...prev, idistrict: (el as IDistrict) }))
                                                 setValuesFormRecipient('districtId', (el as IDistrict).DistrictID)
                                             }}
-                                            value={districts.find(s => {
-                                                if (s.DistrictID.toString() === getValuesFormRecipient('districtId')) {
-                                                    return s
-                                                }
-                                            })}
+                                            value={districts.find(s => s.DistrictID.toString() === getValuesFormRecipient('districtId')?.toString()) ?? null}
+
                                         />
                                         {errorsFormRecipient.districtId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.districtId.message}</p>
@@ -477,11 +524,7 @@ const Checkout = () => {
                                                 setIAddress((prev) => ({ ...prev, iward: (el as IWard) }))
                                                 setValuesFormRecipient('wardId', (el as IWard).WardCode)
                                             }}
-                                            value={wards.find(s => {
-                                                if (s.WardCode.toString() === getValuesFormRecipient('wardId')) {
-                                                    return s
-                                                }
-                                            })}
+                                            value={wards.find(s => s.WardCode.toString() === getValuesFormRecipient('wardId')?.toString()) ?? null}
                                         />
                                         {errorsFormRecipient.wardId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.wardId.message}</p>
@@ -598,22 +641,32 @@ const Checkout = () => {
                                                                     </p>
                                                                     <p>
                                                                         Đơn giá:{' '}
-                                                                        <span className="text-red-800">
+                                                                        <span
+                                                                            className={`text-red-600 ${hasSale(item.productDetailResponseDTO) ? 'line-through' : ''}`}>
                                                                                 {Math.round(item.productDetailResponseDTO?.price).toLocaleString('vi-VN') + '₫'}
                                                                             </span>
                                                                     </p>
+                                                                    {
+                                                                        item.productDetailResponseDTO.product.eventDTOList.length > 0 &&
+                                                                        (
+                                                                            <p>
+                                                                                Giá khuyễn mãi:{' '}
+                                                                                <span
+                                                                                    className="text-red-600">{getFinalPrice(item.productDetailResponseDTO).toLocaleString('vi-VN') + '₫'} </span>
+                                                                            </p>
+                                                                        )
+                                                                    }
                                                                 </div>
                                                             </div>
-
                                                             {/* Giá sản phẩm */}
-                                                            <div
-                                                                className="flex justify-between items-center mt-4">
-                                                                <div></div>
-                                                                <span
-                                                                    className="font-semibold text-red-500 text-[16px]">
-                                                                        {Math.round(item.productDetailResponseDTO?.price * item?.quantity).toLocaleString('vi-VN') + '₫'}
-                                                                    </span>
-                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className="flex justify-between items-center mt-4">
+                                                            <div></div>
+                                                            <span
+                                                                className="font-semibold text-red-600 text-[16px]">
+                                                                        {Math.round(getFinalPrice(item.productDetailResponseDTO) * item?.quantity).toLocaleString('vi-VN') + '₫'}
+                                                                </span>
                                                         </div>
                                                     </div>
                                                 </Fragment>

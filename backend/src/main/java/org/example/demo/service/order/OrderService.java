@@ -13,6 +13,7 @@ import org.example.demo.dto.order.other.UseOrderVoucherDTO;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.entity.cart.core.CartDetail;
 import org.example.demo.entity.cart.properties.Cart;
+import org.example.demo.entity.event.Event;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Payment;
@@ -21,6 +22,7 @@ import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
 import org.example.demo.entity.order.properties.OrderDetail;
+import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.order.core.request.OrderRequestMapper;
@@ -228,10 +230,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         // set address
         if (!DataUtils.isNullOrEmpty(address)) {
-            order.setAddress(address);
-        }
-        else {
-            System.out.println("+++++++++++++++++++++++");
+            order.setAddress(requestDTO.getAddress());
         }
         // phone
         if(requestDTO.getPhone() != null  && !DataUtils.isNullOrEmpty(requestDTO.getPhone())){
@@ -297,14 +296,32 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
+    private double getFinalPrice(ProductDetail productDetail) {
+        double originPrice = productDetail.getPrice();
+        double finalPrice = productDetail.getPrice();
+        List<Event> eventList = productDetail.getProduct().getEvents();
+        eventList.sort((e1, e2) -> Integer.compare(e2.getDiscountPercent(), e1.getDiscountPercent()));
+        if (!eventList.isEmpty()) {
+            eventList.forEach(s -> {
+                System.out.println(s.getDiscountCode() + " " + s.getDiscountPercent());
+            });
+            finalPrice = finalPrice / 100 * (100 - eventList.get(0).getDiscountPercent());
+        }
+        System.out.println("ORIGIN PRICE: " + originPrice);
+        System.out.println("FINAL PRICE: " + finalPrice);
+        return finalPrice;
+    }
+
     public Double fetchTotal(Order order) {
         return Optional.ofNullable(order.getOrderDetails())
                 .orElse(Collections.emptyList())
                 .stream()
-                .mapToDouble(s -> s.getProductDetail().getPrice() * s.getQuantity())
+                .mapToDouble(s -> {
+                    getFinalPrice(s.getProductDetail());
+                    return getFinalPrice(s.getProductDetail()) * s.getQuantity();
+                })
                 .sum();
     }
-
 
     public void reloadSubTotalOrder(Order order) {
         order.setSubTotal(fetchTotal(order));

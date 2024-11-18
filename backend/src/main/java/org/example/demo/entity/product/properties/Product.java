@@ -10,6 +10,7 @@ import org.example.demo.entity.event.Event;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,4 +34,10 @@ public class Product extends BaseEntity {
 
     @ManyToMany(mappedBy = "products")
     private List<Event> events = new ArrayList<>();
+
+    public List<Event> getEvents() {
+        return events.stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getDiscountPercent(), e1.getDiscountPercent()))
+                .collect(Collectors.toList());
+    }
 }

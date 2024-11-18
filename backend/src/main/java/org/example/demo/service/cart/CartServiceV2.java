@@ -7,10 +7,12 @@ import org.example.demo.dto.ghn.FeeDTO;
 import org.example.demo.dto.ghn.ItemDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.entity.cart.properties.Cart;
+import org.example.demo.entity.event.Event;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
+import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.cart.CartRepository;
@@ -88,7 +90,7 @@ public class CartServiceV2 {
             cart.setStatus(requestDTO.getStatus());
         }
         // address
-        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
+        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())) {
             address += requestDTO.getAddress();
         }
         // ward
@@ -107,20 +109,19 @@ public class CartServiceV2 {
         if (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) {
             cart.setProvinceName(requestDTO.getProvinceName());
             cart.setProvinceId(requestDTO.getProvinceId());
-            address +=  ", " + requestDTO.getProvinceName();
+            address += ", " + requestDTO.getProvinceName();
         }
-        // set address
-        if (!DataUtils.isNullOrEmpty(address)) {
-            cart.setAddress(address);
-        }
-
         // phone
-        if(requestDTO.getPhone() != null  && !DataUtils.isNullOrEmpty(requestDTO.getPhone())){
+        if (requestDTO.getPhone() != null && !DataUtils.isNullOrEmpty(requestDTO.getPhone())) {
             cart.setPhone(requestDTO.getPhone());
         }
         // recipientName;
-        if(requestDTO.getRecipientName() != null  && !DataUtils.isNullOrEmpty(requestDTO.getRecipientName())){
+        if (requestDTO.getRecipientName() != null && !DataUtils.isNullOrEmpty(requestDTO.getRecipientName())) {
             cart.setRecipientName(requestDTO.getRecipientName());
+        }
+        // set address
+        if (!DataUtils.isNullOrEmpty(address)) {
+            cart.setAddress(requestDTO.getAddress());
         }
         // return order
         reloadSubTotalOrder(cart);
@@ -151,11 +152,30 @@ public class CartServiceV2 {
         cartRepository.save(cart);
     }
 
+    private double getFinalPrice(ProductDetail productDetail) {
+        double originPrice = productDetail.getPrice();
+        double finalPrice = productDetail.getPrice();
+        List<Event> eventList = productDetail.getProduct().getEvents();
+        eventList.sort((e1, e2) -> Integer.compare(e2.getDiscountPercent(), e1.getDiscountPercent()));
+        if (!eventList.isEmpty()) {
+            eventList.forEach(s -> {
+                System.out.println(s.getDiscountCode() + " " + s.getDiscountPercent());
+            });
+            finalPrice = finalPrice / 100 * (100 - eventList.get(0).getDiscountPercent());
+        }
+        System.out.println("ORIGIN PRICE: " + originPrice);
+        System.out.println("FINAL PRICE: " + finalPrice);
+        return finalPrice;
+    }
+
     public Double fetchTotal(Cart cart) {
         return Optional.ofNullable(cart.getCartDetails())
                 .orElse(Collections.emptyList())
                 .stream()
-                .mapToDouble(s -> s.getProductDetail().getPrice() * s.getQuantity())
+                .mapToDouble(s -> {
+                    getFinalPrice(s.getProductDetail());
+                    return getFinalPrice(s.getProductDetail()) * s.getQuantity();
+                })
                 .sum();
     }
 
