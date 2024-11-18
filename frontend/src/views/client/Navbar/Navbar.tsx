@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import Logo from '../../../assets/logo.png'
-import { IoMdSearch } from 'react-icons/io'
-import { FaCartShopping } from 'react-icons/fa6'
-import { FaCaretDown, FaUser } from 'react-icons/fa'
+import { FaCaretDown } from 'react-icons/fa'
 import { useSaleContext } from '@/views/sale/SaleContext'
-import { HiMenu, HiOutlineMenu, HiOutlineShoppingBag, HiShoppingBag, HiUser, HiUserCircle } from 'react-icons/hi'
-import LoginModal from '../Popup/LoginModal'
+import { HiOutlineMenu, HiOutlineShoppingBag, HiUser, HiUserCircle } from 'react-icons/hi'
+import AuthModal from '../Popup/AuthModal'
+import { useAuth } from '../auth/AuthContext'
+import { getUserDetail } from '../auth/api'
+
 
 const Menu = [
     {
@@ -33,13 +33,23 @@ const DropdownLinks = [
 
 const Navbar = () => {
     const [isModalVisible, setModalVisible] = useState(false)
-    const [isModalOpen, setModalOpen] = useState(false);
-    const [user, setUser] = useState<{ email: string } | null>(null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
-    const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext()
+    const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { user, setUser } = useAuth();
 
-    const handleLoginSuccess = (userData: { email: string }) => {
-        setUser(userData);
+
+    const handleLoginClick = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleLogoutClick = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        // Reset user state after logout
+        setIsModalOpen(false); // Đóng modal khi đăng xuất
+        setDropdownVisible(false);
+        setUser(null);
     };
 
 
@@ -60,21 +70,8 @@ const Navbar = () => {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [user]);
 
-
-    const handLoginPopup = () => {
-        setModalVisible(true)
-    }
-
-    const handleCloseModal = () => {
-        setModalVisible(false)
-    }
-
-    const handleLogout = () => {
-        setUser(null);
-        setDropdownVisible(false);
-    };
 
 
     return (
@@ -107,16 +104,7 @@ const Navbar = () => {
                     </div>
                     {/* search bar */}
                     <div className="flex justify-between items-center gap-4">
-                        {/*<div className="relative group hidden sm:block">*/}
-                        {/*    <input*/}
-                        {/*        type="text"*/}
-                        {/*        placeholder="Tìm kiếm"*/}
-                        {/*        className="w-[250px] sm:w-[250px] group-hover:w-[300px] transition-all duration-300 rounded-none border-2 border-black px-2 py-1 focus:outline-none focus:border-1 focus:border-primary dark:border-gray-500   "*/}
-                        {/*    />*/}
-                        {/*    <IoMdSearch*/}
-                        {/*        className="text-gray-500 group-hover:text-primary absolute top-1/2 -translate-y-1/2 right-3" />*/}
-                        {/*</div>*/}
-                        {/* order button */}
+
 
                         <div>
                             <ul>
@@ -155,50 +143,45 @@ const Navbar = () => {
                         >
                             <HiOutlineShoppingBag size={25} />
                         </button>
-
                         <div className="relative">
-                            <button
-                                id="user-button"
-                                onClick={() => user ? setDropdownVisible(!dropdownVisible) : setModalOpen(true)}
-                                className="flex items-center gap-2 text-white hover:text-gray-600 transition-colors"
-                            >
-                                <HiUser size={25} />
-                                <span className="text-sm font-medium">
-                                    {user ? user.email : 'Đăng nhập'}
-                                </span>
-                            </button>
-
-                            {/* User Dropdown */}
-                            {user && dropdownVisible && (
-                                <div
-                                    id="user-dropdown"
-                                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
-                                >
-                                    <div className="px-4 py-3 border-b border-gray-100">
-                                        <div className="flex items-center gap-3">
-                                            <HiUserCircle className="text-gray-500" size={30} />
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-900">
-                                                    {user.email}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                                    >
-                                        Đăng xuất
+                            {user ? (
+                                <>
+                                    {/* User Dropdown */}
+                                    <button id="user-button" onClick={() => setDropdownVisible(!dropdownVisible)} className="flex items-center gap-2 text-white hover:text-gray-600 transition-colors">
+                                        <HiUserCircle size={25} />
+                                        <span className="text-sm font-medium">{user.username}</span>
                                     </button>
-                                </div>
+                                    {dropdownVisible && (
+                                        <div id="user-dropdown" className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                            <div className="px-4 py-3 border-b border-gray-100">
+                                                <div className="flex items-center gap-3">
+                                                    <HiUserCircle className="text-gray-500" size={30} />
+                                                    <div>
+                                                        <p className="text-sm font-medium text-gray-900  menu-title">{user.username}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={handleLogoutClick}
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                            >
+                                                Đăng xuất
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <button
+                                    onClick={handleLoginClick}
+                                    className="flex items-center gap-2 text-white hover:text-gray-600 transition-colors"
+                                >
+                                    <HiUser size={25} />
+                                    <span className="text-sm font-medium">Đăng nhập</span>
+                                </button>
                             )}
 
-                            {/* Login Modal */}
-                            <LoginModal
-                                isOpen={isModalOpen}
-                                onClose={() => setModalOpen(false)}
-                                onLoginSuccess={handleLoginSuccess}
-                            />
+                            {/* Auth Modal */}
+                            <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
                         </div>
 
                     </div>
@@ -215,3 +198,33 @@ const Navbar = () => {
 export default Navbar
 
 
+// {
+//     "message": "Get user's detail successfully",
+//     "status": "OK",
+//     "data": {
+//         "username": "hungit2301@gmail.com",
+//         "status": "Ho?t Ð?ng",
+//         "enabled": true,
+//         "roleName": null,
+//         "provider": null,
+//         "socialId": null
+//     }
+// }
+
+// {
+//     "message": "Login successfully",
+//     "status": "OK",
+//     "data": {
+//         "tokenType": "Bearer",
+//         "id": 5,
+//         "username": "hungit2301@gmail.com",
+//         "roles": [
+//             "ROLE_CUSTOMER"
+//         ],
+//         "message": "Login successfully",
+//         "token": "eyJhbGciOiJIUzI1NiJ9.eyJhY2NvdW50SWQiOjUsInN1YmplY3QiOiJodW5naXQyMzAxQGdtYWlsLmNvbSIsInN1YiI6Imh1bmdpdDIzMDFAZ21haWwuY29tIiwiZXhwIjoxNzMyMTg3NDMxfQ.oSgVWSTw1RMyJJCloRoQ3Hp4ixi-zvsL5eNHqXyrcbs",
+//         "refresh_token": "7eb4c679-ea02-4ba0-b5e7-0fae13b2203a"
+//     }
+// }
+
+// vay la do cai dropdown soa ychacws ko phai
