@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import instance from '@/axios/CustomAxios'
-import { Badge, Button, Pagination, Select } from '@/components/ui'
+import { Button, Pagination, Select } from '@/components/ui'
 import { Link } from 'react-router-dom'
 import { IoBagHandle } from 'react-icons/io5'
 import { FaEye } from 'react-icons/fa'

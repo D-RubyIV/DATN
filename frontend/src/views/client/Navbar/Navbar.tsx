@@ -32,7 +32,6 @@ const DropdownLinks = [
 
 
 const Navbar = () => {
-    const [isModalVisible, setModalVisible] = useState(false)
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -149,15 +148,15 @@ const Navbar = () => {
                                     {/* User Dropdown */}
                                     <button id="user-button" onClick={() => setDropdownVisible(!dropdownVisible)} className="menu-title flex items-center gap-2 text-black dark:text-white hover:text-gray-600 transition-colors">
                                         <HiUserCircle size={25} />
-                                        <span className="text-sm font-medium text-black dark:text-white">{user.username}</span>
+                                        <span className="text-sm font-medium">{user.username}</span>
                                     </button>
                                     {dropdownVisible && (
-                                        <div id="user-dropdown" className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                        <div id="user-dropdown" className="absolute right-0 mt-2 w-48 bg-white bg-opacity-50 rounded-md shadow-lg py-1 z-50">
                                             <div className="px-4 py-3 border-b border-gray-100">
                                                 <div className="flex items-center gap-3">
                                                     <HiUserCircle className="text-gray-500" size={30} />
                                                     <div>
-                                                        <p className="text-sm font-medium text-black dark:text-white menu-title">{user.username}</p>
+                                                        <p className="text-sm font-medium text-black dark:text-white">{user.username}</p>
                                                     </div>
                                                 </div>
                                             </div>

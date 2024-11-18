@@ -129,12 +129,22 @@ export type Entity = {
     deleted: boolean;
 };
 
+export type ProductD = {
+    id: number;
+    createdDate: string;
+    updatedDate: string;
+    code: string;
+    name: string;
+    deleted: boolean;
+    eventDTOList: EventResponseDTO[]
+};
+
 export type OrderProductDetail = Entity & {
     price: number;
     quantity: number;
     size: Entity;
     color: Entity;
-    product: Entity;
+    product: ProductD;
     texture: Entity;
     origin: Entity;
     brand: Entity;
@@ -145,6 +155,7 @@ export type OrderProductDetail = Entity & {
     thickness: Entity;
     elasticity: Entity;
     images: Image[];
+
 };
 
 export type OrderDetailResponseDTO = {
