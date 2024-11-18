@@ -14,43 +14,66 @@ type SalesByCategoriesProps = {
     data: number[]
 }
 
-const SalesByCategories = () => {
-    const dispatch = useAppDispatch()
-    const result = useAppSelector((state) => state.statistic.saleByCategoriesData)
 
+// const chartOptions = {
+//     series: [{
+//         name: 'Data',
+//         data: [1, 2, 3, 4],
+//     }],
+//     chart: {
+//         type: 'line',
+//     },
+// };
+
+const SalesByCategories = () => {
+    const dispatch = useAppDispatch();
+    const result = useAppSelector((state) => state.statistic.saleByCategoriesData);
+
+    // Kiểm tra nếu `result` không phải là null hoặc undefined
     const resultData: SalesByCategoriesProps = {
-        data: [
-            (result as OrderCounts)?.countPending,
-            (result as OrderCounts)?.countUnPaid,
-            (result as OrderCounts)?.countToShip,
-            (result as OrderCounts)?.countToReceive,
-            (result as OrderCounts)?.countDelivered,
-            (result as OrderCounts)?.countCancelled,
-            (result as OrderCounts)?.countReturned
+        data: result
+            ? [
+                result.countPending || 0,
+                result.countUnPaid || 0,
+                result.countToShip || 0,
+                result.countToReceive || 0,
+                result.countDelivered || 0,
+                result.countCancelled || 0,
+                result.countReturned || 0,
+            ]
+            : [], // Nếu result không có dữ liệu, trả về mảng rỗng
+        labels: [
+            'Chờ xác nhận',
+            'Chờ thanh toán',
+            'Chờ vận chuyển',
+            'Đang vận chuyển',
+            'Đã hoàn thành',
+            'Đã hủy hàng',
+            'Đã trả hàng',
         ],
-        labels: ['Chờ xác nhận', 'Chờ thanh toán', 'Chờ vận chuyển', 'Đang vận chuyển', 'Đã hoàn thành', 'Đã hủy hàng', 'Đã trả hàng']
-    }
+    };
 
     useEffect(() => {
-        dispatch(getSaleByCategories())
-        console.log('dispatch(getSaleByCategories())')
-        console.log(resultData)
-        console.log((result as OrderCounts)?.countDelivered)
-    }, [])
+        // Chỉ dispatch khi cần thiết (kiểm tra nếu result chưa có dữ liệu)
+        if (!result) {
+            dispatch(getSaleByCategories());
+        }
+    }, [dispatch, result]); // Thêm `result` vào dependencies
 
     return (
         <Card>
             <h4>Danh mục</h4>
             <div className="mt-6">
-                {resultData.data.length > 0 && (
-                    <div className={'grid grid-cols-2'}>
+                {/* Kiểm tra điều kiện để render chart */}
+                {Array.isArray(resultData.data) && resultData.data.length > 0 && (
+                    <div className="grid grid-cols-2">
                         <div>
                             <Chart
-                                donutTitle={`${Array.isArray(resultData) && resultData.data.reduce(
+                                donutTitle={`${resultData.data.reduce(
                                     (a, b) => a + b,
                                     0
                                 )}`}
-                                donutText="Product Sold"
+                                donutText="Đơn hàng"
                                 series={resultData.data}
                                 customOptions={{ labels: resultData.labels }}
                                 type="donut"
@@ -59,18 +82,13 @@ const SalesByCategories = () => {
                         {resultData.data.length === resultData.labels.length && (
                             <div className="mt-6 grid grid-cols-1 gap-4 w-4/5 mx-auto">
                                 {resultData.labels.map((value, index) => (
-                                    <div
-                                        key={value}
-                                        className="flex items-center gap-1"
-                                    >
+                                    <div key={value} className="flex items-center gap-1">
                                         <Badge
                                             badgeStyle={{
-                                                backgroundColor: COLORS[index]
+                                                backgroundColor: COLORS[index],
                                             }}
                                         />
-                                        <span className="font-semibold">
-                                            {value}
-                                        </span>
+                                        <span className="font-semibold">{value}</span>
                                     </div>
                                 ))}
                             </div>
@@ -79,7 +97,9 @@ const SalesByCategories = () => {
                 )}
             </div>
         </Card>
-    )
-}
+    );
+};
 
-export default SalesByCategories
+export default SalesByCategories;
+
+

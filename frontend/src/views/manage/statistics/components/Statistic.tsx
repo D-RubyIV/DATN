@@ -19,7 +19,6 @@ const StatisticCard = ({
                            growShrink,
                            label,
                            valuePrefix,
-                           date,
                            message
                        }: StatisticCardProps) => {
     return (
