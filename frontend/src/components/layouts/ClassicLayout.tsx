@@ -14,6 +14,7 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 import SaleProvider from '@/views/sale/SaleContext'
 import CartDrawer from '@/views/sale/CartDrawer'
+import { AuthProvider } from '@/views/client/auth/AuthContext'
 
 const HeaderActionsStart = () => {
     return (
@@ -82,12 +83,14 @@ const AdminLayout = () => {
 const PublicLayout = () => {
     return (
         <Fragment>
-            <SaleProvider>
-                <Navbar/>
-                <PublicViews />
-                <Footer/>
-                <CartDrawer></CartDrawer>
-            </SaleProvider>
+            <AuthProvider>
+                <SaleProvider>
+                    <Navbar />
+                    <PublicViews />
+                    <Footer />
+                    <CartDrawer></CartDrawer>
+                </SaleProvider>
+            </AuthProvider>
         </Fragment>
     )
 }
