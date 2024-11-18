@@ -176,9 +176,9 @@ const Navbar = () => {
                                 >
                                     <div className="px-4 py-3 border-b border-gray-100">
                                         <div className="flex items-center gap-3">
-                                            <HiUser className="text-white" size={30} />
+                                            <HiUserCircle className="text-gray-500" size={30} />
                                             <div>
-                                                <p className="text-sm font-medium text-white">
+                                                <p className="text-sm font-medium text-gray-900">
                                                     {user.email}
                                                 </p>
                                             </div>
@@ -213,3 +213,5 @@ const Navbar = () => {
 }
 
 export default Navbar
+
+

@@ -30,7 +30,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
 
       if (response.ok) {
         localStorage.setItem("user", JSON.stringify(data));
-        onLoginSuccess({ email: data.email });
+        onLoginSuccess({ email: data.username });
+        console.log(email)
         onClose();
       } else {
         setError("Invalid email or password");
