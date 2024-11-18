@@ -211,6 +211,7 @@ const Checkout = () => {
             try {
                 const data = {
                     status: 'PENDING',
+                    payment: paymentMethod,
                     recipientName: getValuesFormRecipient('recipientName'),
                     phone: getValuesFormRecipient('phone'),
                     address: getValuesFormRecipient('address'),
@@ -245,7 +246,17 @@ const Checkout = () => {
             }
         } else if (selectedCart?.payment === 'TRANSFER') {
             const data = {
-                'status': 'PENDING'
+                'status': 'PENDING',
+                payment: paymentMethod,
+                recipientName: getValuesFormRecipient('recipientName'),
+                phone: getValuesFormRecipient('phone'),
+                address: getValuesFormRecipient('address'),
+                provinceId: getValuesFormRecipient('provinceId'),
+                districtId: getValuesFormRecipient('districtId'),
+                wardId: getValuesFormRecipient('wardId'),
+                provinceName: IAddress.iprovince?.ProvinceName,
+                districtName: IAddress.idistrict?.DistrictName,
+                wardName: IAddress.iward?.WardName
             }
             instance.put(`/cart/v2/${id}`, data).then(function(response) {
                 if (response.status === 200 && response.data) {
@@ -366,10 +377,7 @@ const Checkout = () => {
 
     const onChangeMethod = async (val: EPaymentMethod) => {
         setPaymentMethod(val)
-        const data = {
-            'payment': val
-        }
-        handleUpdateCart(data)
+
     }
 
 

@@ -60,12 +60,23 @@ public class SecurityConfig {
                                     "/users/register",
                                     "/users/login"
                             ).permitAll()
-                            // sale
+                            // client
                             .requestMatchers(GET, "cart/new-cart").permitAll()
                             .requestMatchers(GET, "productDetails/abc").permitAll()
                             .requestMatchers(GET, "color/color-list").permitAll()
                             .requestMatchers(GET, "size/size-list").permitAll()
-                            .requestMatchers(GET, "cart/check-cart-active").permitAll()
+                            .requestMatchers(GET, "cart/check-cart-active/*").permitAll()
+                            .requestMatchers(GET, "product/*").permitAll()
+                            .requestMatchers(POST, "cart-details/create").permitAll()
+                            .requestMatchers(GET, "productDetails/product-detail-of-product/*").permitAll()
+                            .requestMatchers(GET, "cart-details/in-cart/*").permitAll()
+                            .requestMatchers(GET, "cart/detail/*").permitAll()
+                            .requestMatchers(POST, "cart/use-voucher").permitAll()
+                            .requestMatchers(PUT, "cart/v2/*").permitAll()
+                            .requestMatchers(GET, "payment/vn-pay").permitAll()
+                            .requestMatchers(PUT, "orders/status/change/*").permitAll()
+                            .requestMatchers(GET, "orders/by-code/*").permitAll()
+                            .requestMatchers(GET, "cart-details/quantity/update/*").permitAll()
                             // role
                             .requestMatchers(GET, "/roles**").permitAll()
                             // product
