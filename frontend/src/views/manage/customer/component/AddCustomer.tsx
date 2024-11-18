@@ -362,7 +362,6 @@ const AddCustomer = () => {
     }
   };
 
-
   const handleSubmit = async (values: CustomerDTO, { resetForm, setSubmitting }: FormikHelpers<CustomerDTO>) => {
     try {
       const formattedValues = {
@@ -462,7 +461,6 @@ const AddCustomer = () => {
                       inputtable
                       inputtableBlurClose={false}
                       placeholder="Chọn ngày sinh..."
-                      // Utilizes Formik's values for date display
                       value={values.birthDate ? dayjs(values.birthDate, 'YYYY-MM-DD').toDate() : null}
                       disableDate={(current) => {
                         return dayjs(current).isAfter(dayjs().endOf('day'));
@@ -580,7 +578,7 @@ const AddCustomer = () => {
                             form.setFieldValue("addressDTOS[0].ward", newValue ? newValue.WardName : '');
                             form.setFieldTouched("addressDTOS[0].ward", true, false); // Đánh dấu trường đã tương tác
                           }}
-                          onBlur={() => form.setFieldTouched("addressDTOS[0].ward", true)} // Đánh dấu khi mất focus
+                          onBlur={() => form.setFieldTouched("addressDTOS[0].ward", true)} // Đánh dấu khi mấtfocus
                         />
                       )}
                     </Field>
