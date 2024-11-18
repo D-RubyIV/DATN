@@ -190,7 +190,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         entityMapped.setStatus("Active");
         entityMapped.setCode(generateRandomMaNV(requestDTO.getName()));
 //        entityMapped.setPassword(generateRandomPassword());
-        entityMapped.setPassword(passwordEncoder.encode(generateRandomPassword()));
+//        entityMapped.setPassword(passwordEncoder.encode(generateRandomPassword()));
         entityMapped.setDeleted(false);
         return staffRepository.save(entityMapped);
     }

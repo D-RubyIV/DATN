@@ -30,7 +30,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             LEFT JOIN FETCH b.customer bc
             LEFT JOIN FETCH b.staff bs
             LEFT JOIN FETCH b.voucher bv
-            LEFT JOIN FETCH bs.role
             LEFT JOIN FETCH bv.customers
             WHERE
             (

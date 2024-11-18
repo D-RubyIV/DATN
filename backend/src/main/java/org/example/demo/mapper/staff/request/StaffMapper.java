@@ -20,7 +20,6 @@ public class StaffMapper {
         staff.setNote(dto.getNote());
         staff.setDeleted(dto.getDeleted());
         staff.setCode(dto.getCode());
-        staff.setPassword(dto.getPassword());
         return staff;
     }
 }

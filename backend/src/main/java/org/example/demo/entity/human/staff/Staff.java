@@ -7,15 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
-import org.example.demo.entity.human.role.Role;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.example.demo.entity.security.Account;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,7 +18,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "staff", uniqueConstraints = @UniqueConstraint(columnNames = {"code", "email", "phone"}))
-public class Staff extends BaseEntity implements UserDetails {
+public class Staff extends BaseEntity {
     @Column(name = "code")
     private String code;
 
@@ -36,8 +31,6 @@ public class Staff extends BaseEntity implements UserDetails {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "password")
-    private String password;
 
     @Column(name = "citizen_id")
     private String citizenId;
@@ -70,39 +63,8 @@ public class Staff extends BaseEntity implements UserDetails {
     @Column(name = "gender")
     private Boolean gender;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @OneToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    private Account account;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_"+getRole().getName().toUpperCase()));
-        return authorities;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
 }

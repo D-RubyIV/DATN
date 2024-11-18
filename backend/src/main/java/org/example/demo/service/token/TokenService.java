@@ -3,6 +3,7 @@ package org.example.demo.service.token;
 import lombok.RequiredArgsConstructor;
 import org.example.demo.components.JwtTokenUtils;
 import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.entity.security.Account;
 import org.example.demo.entity.security.TokenRecord;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.exception.ExpiredTokenException;
@@ -32,8 +33,8 @@ public class TokenService implements  ITokenService{
 
     @Override
     @Transactional
-    public TokenRecord addToken(Staff staff, String token, boolean isMobileDevice) {
-        List<TokenRecord> userTokenRecords = tokenRepository.findByStaff(staff);
+    public TokenRecord addToken(Account account, String token, boolean isMobileDevice) {
+        List<TokenRecord> userTokenRecords = tokenRepository.findByAccount(account);
         int tokenCount = userTokenRecords.size();
         // neu so luong token vuot qua gioi han , xoa 1 token cu
         if (tokenCount >= MAX_TOKENS) {
@@ -72,7 +73,7 @@ public class TokenService implements  ITokenService{
 
     @Override
     @Transactional
-    public TokenRecord refreshToken(String refresh, Staff staff) throws Exception {
+    public TokenRecord refreshToken(String refresh, Account account) throws Exception {
         TokenRecord existingTokenRecord = tokenRepository.findByRefreshToken(refresh);
         if (existingTokenRecord == null) {
             throw  new DataNotFoundException("Refresh token does not exist");
@@ -81,7 +82,7 @@ public class TokenService implements  ITokenService{
             tokenRepository.delete(existingTokenRecord);
             throw  new ExpiredTokenException("Refresh token is expired");
         }
-        String token = jwtTokenUtils.generateToken(staff);
+        String token = jwtTokenUtils.generateToken(account);
         LocalDateTime expirationDateTime = LocalDateTime.now().plusSeconds(expiration);
         existingTokenRecord.setExpirationDate(expirationDateTime);
         existingTokenRecord.setToken(token);
