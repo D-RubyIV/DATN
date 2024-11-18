@@ -40,7 +40,6 @@ import java.util.List;
 public class OrderController implements IControllerBasic<Integer, OrderRequestDTO> {
     @Autowired
     private OrderService orderService;
-
     @Autowired
     private OrderResponseMapper orderResponseMapper;
     @Autowired

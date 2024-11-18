@@ -23,6 +23,7 @@ import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.entity.security.Account;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.order.core.request.OrderRequestMapper;
@@ -42,6 +43,8 @@ import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,9 +135,18 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Override
     @Transactional
     public Order save(OrderRequestDTO requestDTO) {
+
+
+
         History orderHistory = new History();
         Order entityMapped = orderRequestMapper.toEntity(requestDTO);
         Staff staffDemo = staffRepository.findById(38).orElse(null); // demo nen set mac dinh
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.isAuthenticated()){
+            Account account = (Account) authentication.getPrincipal();
+            entityMapped.setStaff(account.getStaff());
+        }
 
         entityMapped.setDeleted(false);
         entityMapped.setStatus(Status.PENDING);
@@ -430,6 +442,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setSubTotal(cart.getSubTotal());
         order.setType(Type.ONLINE);
         order.setPayment(cart.getPayment());
+        order.setCustomer(cart.getCustomer());
         // status
         if (cart.getStatus() == org.example.demo.entity.cart.enums.Status.PENDING){
             order.setStatus(Status.PENDING);

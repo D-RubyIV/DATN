@@ -13,6 +13,7 @@ import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
 import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.entity.security.Account;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.cart.CartRepository;
@@ -21,6 +22,8 @@ import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.fee.FeeService;
 import org.example.demo.util.DataUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,14 +63,13 @@ public class CartServiceV2 {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found with id: " + id));
         String address = "";
         // update customer
-        if (requestDTO.getCustomer() != null) {
-            if (requestDTO.getCustomer().getId() != null) {
-                Customer selectedCustomer = customerRepository.findById(requestDTO.getCustomer().getId()).orElse(null);
-                if (selectedCustomer != null) {
-                    cart.setCustomer(selectedCustomer);
-                }
-            }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.isAuthenticated()){
+            Account account = (Account) authentication.getPrincipal();
+            System.out.println(account.getCustomer().getId());
+            cart.setCustomer(account.getCustomer());
         }
+        System.out.println();
         // update voucher
         if (requestDTO.getVoucher() != null) {
             if (requestDTO.getVoucher().getId() != null) {
