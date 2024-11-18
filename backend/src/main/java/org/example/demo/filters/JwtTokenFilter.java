@@ -66,7 +66,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             System.out.println("Request path: " + request.getServletPath());
             System.out.println("Request method: " + request.getMethod());
 
-
             if (isBypassToken(request)) {
                 System.out.println("Bypassing token check for path: " + request.getServletPath());
                 filterChain.doFilter(request, response);
@@ -74,9 +73,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
             final String authHeader = request.getHeader("Authorization");
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "authHeader null or not started with Bearer");
+                filterChain.doFilter(request, response);
                 return;
             }
             final String token = authHeader.substring(7);
@@ -95,16 +92,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                             );
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//                    System.out.println("Authentication set in SecurityContext: " + SecurityContextHolder.getContext().getAuthentication());
-
                 }
             }
+            filterChain.doFilter(request, response);
 
-
-
-            filterChain.doFilter(request, response); //enable bypass
-
-            // ... rest of the method stays the same
         } catch (Exception e) {
             System.out.println("Filter error: " + e.getMessage());
             e.printStackTrace();

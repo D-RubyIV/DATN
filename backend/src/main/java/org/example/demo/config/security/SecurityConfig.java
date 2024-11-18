@@ -21,8 +21,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
@@ -61,13 +60,29 @@ public class SecurityConfig {
                                     "/users/register",
                                     "/users/login"
                             ).permitAll()
+                            // sale
+                            .requestMatchers(GET, "cart/new-cart").permitAll()
+                            .requestMatchers(GET, "productDetails/abc").permitAll()
+                            .requestMatchers(GET, "color/color-list").permitAll()
+                            .requestMatchers(GET, "size/size-list").permitAll()
+                            .requestMatchers(GET, "cart/check-cart-active").permitAll()
+                            // role
                             .requestMatchers(GET, "/roles**").permitAll()
+                            // product
                             .requestMatchers(GET, "/products/**").permitAll()
                             .requestMatchers(GET, "/products/images/*").permitAll()
+                            // order
                             .requestMatchers(GET, "/orders/**").permitAll()
                             .requestMatchers(GET, "/order_details/**").permitAll()
-                            .requestMatchers(GET, "/voucher/**").hasRole("USER")
+                            // voucher
+                            .requestMatchers(GET, "/voucher/**").permitAll()
+                            .requestMatchers(POST, "/voucher/**").hasRole("ADMIN")
+                            .requestMatchers(PUT, "/voucher/**").hasRole("ADMIN")
+                            .requestMatchers(DELETE, "/voucher/**").hasRole("ADMIN")
+                            // customer
                             .requestMatchers(GET, "/customer/**").hasRole("ADMIN")
+                            // staff
+
                             .anyRequest()
                             .authenticated();
 //                            .permitAll();

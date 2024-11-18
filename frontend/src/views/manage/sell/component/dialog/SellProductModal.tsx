@@ -14,7 +14,6 @@ import { OrderResponseDTO, ProductDetailOverviewPhah04 } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 import { Avatar } from '@/components/ui'
 import { FiPackage } from 'react-icons/fi'
-import { CartDetailResponseDTO } from '@/views/sale'
 
 const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     setIsOpenProductModal: Dispatch<SetStateAction<boolean>>,
