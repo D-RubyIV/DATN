@@ -25,7 +25,6 @@ import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
-@EnableWebMvc
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
