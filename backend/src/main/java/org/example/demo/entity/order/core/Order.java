@@ -61,6 +61,9 @@ public class Order extends BaseEntity {
     @Column(name = "surcharge")
     private Double surcharge;
 
+    @Column(name = "refund")
+    private Double refund;
+
     @Column(name = "total")
     private Double total;
 

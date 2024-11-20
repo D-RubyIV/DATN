@@ -336,6 +336,19 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return Optional.ofNullable(order.getOrderDetails())
                 .orElse(Collections.emptyList())
                 .stream()
+                .filter(orderDetail -> !orderDetail.getDeleted())
+                .mapToDouble(s -> {
+                    getFinalPrice(s.getProductDetail());
+                    return getFinalPrice(s.getProductDetail()) * s.getQuantity();
+                })
+                .sum();
+    }
+
+    public Double refundTotal(Order order) {
+        return Optional.ofNullable(order.getOrderDetails())
+                .orElse(Collections.emptyList())
+                .stream()
+                .filter(OrderDetail::getDeleted)
                 .mapToDouble(s -> {
                     getFinalPrice(s.getProductDetail());
                     return getFinalPrice(s.getProductDetail()) * s.getQuantity();

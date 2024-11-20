@@ -26,7 +26,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
     const { openNotification } = useToastContext()
 
     const validationSchema = Yup.object({
-        note: Yup.string().required('Vui lòng nhập nội dung'),
+        note: Yup.string().required('Vui lòng nhập nội dung').min(5, 'Nội dung phải có ít nhất 5 ký tự'),
     })
     const {
         register,
@@ -95,7 +95,9 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         setNoteValue('note', value)
     }
 
-
+    const onChangeNote = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setNoteValue('note', e.target.value) // Cập nhật giá trị trong form
+    }
     const submitChangeStatus = (status: EOrderStatus) => {
         const data = {
             'status': status,
@@ -123,11 +125,11 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                         selectObject.payment === "TRANSFER" && selectObject.type === "ONLINE" ?
                             (
                                 <Button block variant="default" size="sm" className="bg-indigo-500" icon={<HiPlusCircle />}
-                                        onClick={() => setIsOpenCancelOnlineOrder(true)}>Hủy đơn đã thanh toán</Button>
+                                        onClick={handleSubmit(() => setIsOpenCancelOnlineOrder(true))}>Hủy đơn đã thanh toán</Button>
                             )
                             :(
                                 <Button block variant="default" size="sm" className="bg-indigo-500 !w-32" icon={<HiPlusCircle />}
-                                        onClick={() => submitChangeStatus('CANCELED')}>Hủy đơn hàng</Button>
+                                        onClick={handleSubmit(() => submitChangeStatus('CANCELED'))}>Hủy đơn hàng</Button>
                             )
                     }
 
@@ -137,16 +139,16 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             return (
                 <div className="flex gap-2">
                     <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiPlusCircle />}
-                            onClick={() => submitChangeStatus('TORECEIVE')}>Xác nhận </Button>
+                            onClick={handleSubmit(() => submitChangeStatus('TORECEIVE'))}>Xác nhận </Button>
                     <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto" icon={<HiPlusCircle />}
-                            onClick={() => submitChangeStatus('PENDING')}>Quay lại chờ xác nhận</Button>
+                            onClick={handleSubmit(() => submitChangeStatus('PENDING'))}>Quay lại chờ xác nhận</Button>
                 </div>
             )
         } else if (currentStatus === 'TORECEIVE') {
             return (
                 <div className="flex gap-2">
                     <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiPlusCircle />}
-                            onClick={() => submitChangeStatus('DELIVERED')}>Xác nhận hoàn thành</Button>
+                            onClick={handleSubmit(() => submitChangeStatus('DELIVERED'))}>Xác nhận hoàn thành</Button>
                 </div>
             )
         } else if (currentStatus === 'DELIVERED') {
@@ -207,6 +209,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                             className="!w-full !min-h-12"
                             rows={2}
                             onFocus={focusTextarea} // Đảm bảo focus khi cần
+                            onChange={onChangeNote} // Đảm bảo cập nhật giá trị trong form khi nhập
                         />
                         {errors.note && (
                             <p className="text-red-500 text-sm mt-2">{errors.note.message}</p>
@@ -224,7 +227,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
 
     return (
-        <div className="bg-white p-5 card card-border min-h-[280px] h-auto">
+        <div className="bg-white p-5 card card-border min-h-[320px] h-auto">
            <div className={'max-w-full py-5 overflow-auto'}>
                {
                    selectObject.historyResponseDTOS.length > 0 ? (
@@ -242,8 +245,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                    )
                }
            </div>
-
-            <div className=" bg-gray-50 dark:bg-gray-700 rounded">
+            <div className="dark:bg-gray-700 rounded">
                 <ChangeForPending />
             </div>
             <Dialog

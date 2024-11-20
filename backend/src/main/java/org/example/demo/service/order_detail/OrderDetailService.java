@@ -3,6 +3,7 @@ package org.example.demo.service.order_detail;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
+import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.exception.CustomExceptions;
@@ -92,13 +93,19 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
     public OrderDetail updateQuantity(Integer integer, int newQuantity) {
         OrderDetail orderDetail = findById(integer);
+        Order order = orderDetail.getOrder();
         int quantityInStorage = orderDetail.getProductDetail().getQuantity();
         int quantityInOrder = orderDetail.getQuantity();
 
         if (newQuantity > quantityInStorage) {
             throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
         } else if (newQuantity == 0) {
-            orderDetailRepository.delete(orderDetail);
+            if (order.getIsPayment()){
+                orderDetail.setDeleted(true);
+            }
+            else {
+                orderDetailRepository.delete(orderDetail);
+            }
             orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return orderDetail;
         } else {
