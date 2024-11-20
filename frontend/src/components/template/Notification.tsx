@@ -22,6 +22,8 @@ import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useAppSelector } from '@/store'
 import useResponsive from '@/utils/hooks/useResponsive'
 import acronym from '@/utils/acronym'
+import { Client } from '@stomp/stompjs'
+import io from 'socket.io-client' // Thêm thư viện socket.io-client
 
 type NotificationList = {
     id: string
@@ -36,17 +38,7 @@ type NotificationList = {
     readed: boolean
 }
 
-const notificationHeight = 'h-72'
-const imagePath = '/img/avatars/'
-
-const GeneratedAvatar = ({ target }: { target: string }) => {
-    const color = useTwColorByName()
-    return (
-        <Avatar shape="circle" className={`${color(target)}`}>
-            {acronym(target)}
-        </Avatar>
-    )
-}
+const WebSocketURL = 'http://localhost:8080/api/v1/ws'; // Đường dẫn WebSocket backend
 
 const notificationTypeAvatar = (data: {
     type: number
@@ -58,9 +50,9 @@ const notificationTypeAvatar = (data: {
     switch (type) {
         case 0:
             if (image) {
-                return <Avatar shape="circle" src={`${imagePath}${image}`} />
+                return <Avatar shape="circle" src={`/img/avatars/${image}`} />
             } else {
-                return <GeneratedAvatar target={target} />
+                return <Avatar shape="circle">{target[0]}</Avatar> // Giả sử acronym từ target
             }
         case 1:
             return (
@@ -74,18 +66,11 @@ const notificationTypeAvatar = (data: {
             return (
                 <Avatar
                     shape="circle"
-                    className={
-                        status === 'succeed'
-                            ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100'
-                            : 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100'
+                    className={status === 'succeed'
+                        ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-100'
+                        : 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-100'
                     }
-                    icon={
-                        status === 'succeed' ? (
-                            <HiOutlineClipboardCheck />
-                        ) : (
-                            <HiOutlineBan />
-                        )
-                    }
+                    icon={status === 'succeed' ? <HiOutlineClipboardCheck /> : <HiOutlineBan />}
                 />
             )
         default:
@@ -101,7 +86,7 @@ const NotificationToggle = ({
     dot: boolean
 }) => {
     return (
-        <div className={classNames('text-2xl', className)}>
+        <div className={className}>
             {dot ? (
                 <Badge badgeStyle={{ top: '3px', right: '6px' }}>
                     <HiOutlineBell />
@@ -114,58 +99,67 @@ const NotificationToggle = ({
 }
 
 const _Notification = ({ className }: { className?: string }) => {
-    const [notificationList, setNotificationList] = useState<
-        NotificationList[]
-    >([])
+    const [notificationList, setNotificationList] = useState<NotificationList[]>([])
     const [unreadNotification, setUnreadNotification] = useState(false)
-    const [noResult] = useState(false)
     const [loading] = useState(false)
 
-    const { bgTheme } = useThemeClass()
-
-    const { larger } = useResponsive()
-
-    const direction = useAppSelector((state) => state.theme.direction)
-
-    const getNotificationCount = async () => {
-        // Fetch Notification count
-    }
+    const updateUnreadStatus = useCallback(() => {
+        const hasUnread = notificationList.some((item) => !item.readed)
+        setUnreadNotification(hasUnread)
+    }, [notificationList])
 
     useEffect(() => {
-        getNotificationCount()
+        const socket = io(WebSocketURL); // Sử dụng socket.io-client
+        socket.on('connect', () => {
+            console.log('Connected to WebSocket')
+        })
+
+        // Lắng nghe sự kiện mới từ server
+        socket.on('new-notification', (notification) => {
+            setNotificationList((prev) => [
+                {
+                    id: Date.now().toString(),
+                    target: notification.target || 'Unknown',
+                    description: notification.message,
+                    date: new Date().toISOString(),
+                    image: '',
+                    type: 0,
+                    location: '',
+                    locationLabel: '',
+                    status: 'new',
+                    readed: false,
+                },
+                ...prev,
+            ])
+        })
+
+        return () => {
+            socket.disconnect()
+        }
     }, [])
 
-    const onNotificationOpen = async () => {
-        // Fetch NotificationList
-    }
+    useEffect(() => {
+        updateUnreadStatus()
+    }, [notificationList, updateUnreadStatus])
 
     const onMarkAllAsRead = useCallback(() => {
-        const list = notificationList.map((item: NotificationList) => {
-            if (!item.readed) {
-                item.readed = true
-            }
-            return item
-        })
+        const list = notificationList.map((item) => ({
+            ...item,
+            readed: true,
+        }))
         setNotificationList(list)
         setUnreadNotification(false)
     }, [notificationList])
 
     const onMarkAsRead = useCallback(
         (id: string) => {
-            const list = notificationList.map((item) => {
-                if (item.id === id) {
-                    item.readed = true
-                }
-                return item
-            })
+            const list = notificationList.map((item) =>
+                item.id === id ? { ...item, readed: true } : item
+            )
             setNotificationList(list)
-            const hasUnread = notificationList.some((item) => !item.readed)
-
-            if (!hasUnread) {
-                setUnreadNotification(false)
-            }
+            updateUnreadStatus()
         },
-        [notificationList]
+        [notificationList, updateUnreadStatus]
     )
 
     return (
@@ -177,8 +171,7 @@ const _Notification = ({ className }: { className?: string }) => {
                 />
             }
             menuClass="p-0 min-w-[280px] md:min-w-[340px]"
-            placement={larger.md ? 'bottom-end' : 'bottom-center'}
-            onOpen={onNotificationOpen}
+            placement="bottom-end"
         >
             <Dropdown.Item variant="header">
                 <div className="border-b border-gray-200 dark:border-gray-600 px-4 py-2 flex items-center justify-between">
@@ -194,85 +187,39 @@ const _Notification = ({ className }: { className?: string }) => {
                     </Tooltip>
                 </div>
             </Dropdown.Item>
-            <div className={classNames('overflow-y-auto', notificationHeight)}>
-                <ScrollBar direction={direction}>
-                    {notificationList.length > 0 &&
-                        notificationList.map((item, index) => (
-                            <div
-                                key={item.id}
-                                className={`relative flex px-4 py-4 cursor-pointer hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-black dark:hover:bg-opacity-20  ${
-                                    !isLastChild(notificationList, index)
-                                        ? 'border-b border-gray-200 dark:border-gray-600'
-                                        : ''
-                                }`}
-                                onClick={() => onMarkAsRead(item.id)}
-                            >
-                                <div>{notificationTypeAvatar(item)}</div>
-                                <div className="ltr:ml-3 rtl:mr-3">
-                                    <div>
-                                        {item.target && (
-                                            <span className="font-semibold heading-text">
-                                                {item.target}{' '}
-                                            </span>
-                                        )}
-                                        <span>{item.description}</span>
-                                    </div>
-                                    <span className="text-xs">{item.date}</span>
+            <div className="overflow-y-auto h-72">
+                {notificationList.length > 0 &&
+                    notificationList.map((item, index) => (
+                        <div
+                            key={item.id}
+                            className={`relative flex px-4 py-4 cursor-pointer hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-black dark:hover:bg-opacity-20`}
+                            onClick={() => onMarkAsRead(item.id)}
+                        >
+                            <div>{notificationTypeAvatar(item)}</div>
+                            <div className="ml-3">
+                                <div>
+                                    {item.target && (
+                                        <span className="font-semibold">{item.target}</span>
+                                    )}
+                                    <span>{item.description}</span>
                                 </div>
-                                <Badge
-                                    className="absolute top-4 ltr:right-4 rtl:left-4 mt-1.5"
-                                    innerClass={`${
-                                        item.readed ? 'bg-gray-300' : bgTheme
-                                    } `}
-                                />
+                                <span className="text-xs">{item.date}</span>
                             </div>
-                        ))}
-                    {loading && (
-                        <div
-                            className={classNames(
-                                'flex items-center justify-center',
-                                notificationHeight
-                            )}
-                        >
-                            <Spinner size={40} />
+                            <Badge
+                                className="absolute top-4 right-4 mt-1.5"
+                                innerClass={`${item.readed ? 'bg-gray-300' : 'bg-theme'}`}
+                            />
                         </div>
-                    )}
-                    {noResult && (
-                        <div
-                            className={classNames(
-                                'flex items-center justify-center',
-                                notificationHeight
-                            )}
-                        >
-                            <div className="text-center">
-                                <img
-                                    className="mx-auto mb-2 max-w-[150px]"
-                                    src="/img/others/no-notification.png"
-                                    alt="no-notification"
-                                />
-                                <h6 className="font-semibold">
-                                    No notifications!
-                                </h6>
-                                <p className="mt-1">Please Try again later</p>
-                            </div>
-                        </div>
-                    )}
-                </ScrollBar>
+                    ))}
+                {loading && (
+                    <div className="flex items-center justify-center h-72">
+                        <Spinner size={40} />
+                    </div>
+                )}
             </div>
-            <Dropdown.Item variant="header">
-                <div className="flex justify-center border-t border-gray-200 dark:border-gray-600 px-4 py-2">
-                    <Link
-                        to="/app/account/activity-log"
-                        className="font-semibold cursor-pointer p-2 px-3 text-gray-600 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
-                    >
-                        View All Activity
-                    </Link>
-                </div>
-            </Dropdown.Item>
         </Dropdown>
     )
 }
 
-const Notification = withHeaderItem(_Notification)
-
+const Notification = _Notification
 export default Notification

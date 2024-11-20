@@ -15,6 +15,7 @@ import 'aos/dist/aos.css'
 import SaleProvider from '@/views/sale/SaleContext'
 import CartDrawer from '@/views/sale/CartDrawer'
 import { AuthProvider } from '@/views/client/auth/AuthContext'
+import Notification from '../template/Notification'
 
 const HeaderActionsStart = () => {
     return (
@@ -28,6 +29,7 @@ const HeaderActionsStart = () => {
 const HeaderActionsEnd = () => {
     return (
         <>
+            <Notification/>
             <SidePanel />
             <UserDropdown hoverable={false} />
         </>

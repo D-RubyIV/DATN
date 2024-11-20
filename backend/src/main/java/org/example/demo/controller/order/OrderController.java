@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -40,6 +41,9 @@ import java.util.List;
 public class OrderController implements IControllerBasic<Integer, OrderRequestDTO> {
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     private OrderResponseMapper orderResponseMapper;
@@ -65,6 +69,7 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     @Override
     @PostMapping(value = "")
     public ResponseEntity<OrderResponseDTO> create(@Validated(GroupCreate.class) @RequestBody OrderRequestDTO billResponseDTO) {
+        messagingTemplate.convertAndSend("/topic/notifications","New order placed: " +billResponseDTO);
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.save(billResponseDTO)));
     }
 

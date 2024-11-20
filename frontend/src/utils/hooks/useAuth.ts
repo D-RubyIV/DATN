@@ -122,6 +122,7 @@ import type { SignInCredential, SignUpCredential } from '@/@types/auth'
 type Status = 'OK' | 'failed';
 
 
+// toi di test not module r mai sua validate man nay nua
 function useAuth() {
     const dispatch = useAppDispatch()
 
