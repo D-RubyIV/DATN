@@ -40,9 +40,11 @@ import org.example.demo.service.IService;
 import org.example.demo.service.fee.FeeService;
 import org.example.demo.util.DataUtils;
 import org.example.demo.util.RandomCodeGenerator;
+import org.example.demo.util.event.EventUtil;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author PHAH04
@@ -143,7 +146,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Staff staffDemo = staffRepository.findById(38).orElse(null); // demo nen set mac dinh
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.isAuthenticated()){
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)){
             Account account = (Account) authentication.getPrincipal();
             entityMapped.setStaff(account.getStaff());
         }
@@ -311,13 +315,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     private double getFinalPrice(ProductDetail productDetail) {
         double originPrice = productDetail.getPrice();
         double finalPrice = productDetail.getPrice();
-        List<Event> eventList = productDetail.getProduct().getEvents();
-        eventList.sort((e1, e2) -> Integer.compare(e2.getDiscountPercent(), e1.getDiscountPercent()));
-        if (!eventList.isEmpty()) {
-            eventList.forEach(s -> {
-                System.out.println(s.getDiscountCode() + " " + s.getDiscountPercent());
-            });
-            finalPrice = finalPrice / 100 * (100 - eventList.get(0).getDiscountPercent());
+        List<Event> validEvents = productDetail.getProduct().getValidEvents();
+        if (!validEvents.isEmpty()) {
+            double averageDiscount = EventUtil.getAveragePercentEvent(validEvents);
+            finalPrice = finalPrice / 100 * (100 - averageDiscount);
         }
         System.out.println("ORIGIN PRICE: " + originPrice);
         System.out.println("FINAL PRICE: " + finalPrice);

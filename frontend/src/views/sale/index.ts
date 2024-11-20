@@ -25,6 +25,7 @@ export type Image = BaseEntity & {
 export type Size = BaseEntity;
 export type Color = BaseEntity;
 export type Product = BaseEntity & {
+    averageDiscountPercentEvent: number,
     eventDTOList: Event[];
 };
 export type ProductDetailResponseDTO = {

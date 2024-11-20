@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -31,6 +30,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     Page<Event> findByDateRangeOverlap(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
     // phah04
-    @Query("SELECT e FROM Event e where CURRENT_TIMESTAMP > e.endDate order by e.discountPercent")
-    List<Event> findListEvent();
+    @Query("SELECT e FROM Event e where CURRENT_TIMESTAMP < e.endDate and CURRENT_TIMESTAMP > e.startDate order by e.discountPercent desc ")
+    List<Event> findListEventUseValid();
 }

@@ -32,6 +32,7 @@ public class ProductOverviewResponse {
     private String materialName;
     private String thicknessName;
     private String elasticityName;
+    private Double averageDiscountPercentEvent;
     private Event event;
     private List<Image> images = new ArrayList<>();
     private List<EventResponseDTO> eventResponseDTOS = new ArrayList<>();

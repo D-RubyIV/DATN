@@ -44,6 +44,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         thicknessName: '',
         elasticityName: '',
         images: [],
+        averageDiscountPercentEvent: 0,
         eventResponseDTOS: []
     })
 
@@ -102,7 +103,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const getFinalPrice = (item: ProductDetailOverviewPhah04) => {
         const { price } = item
         const discountPercent = item.eventResponseDTOS.length > 0
-            ? item.eventResponseDTOS[0].discountPercent
+            ? item.averageDiscountPercentEvent
             : 0
 
         return Math.round(price * (1 - discountPercent / 100))
@@ -125,7 +126,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                             props.row.original.eventResponseDTOS.length > 0 && (
                                 <div
                                     className={'absolute top-0 right-0 p-1 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                    <p>-{props.row.original.eventResponseDTOS[0].discountPercent} %</p>
+                                    <p>-{props.row.original.averageDiscountPercentEvent} %</p>
                                 </div>
                             )
                         }
@@ -137,7 +138,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                             props.row.original.eventResponseDTOS.length > 0 && (
                                 <div
                                     className={'absolute top-0 right-0 p-1 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                    <p>-{props.row.original.eventResponseDTOS[0].discountPercent} %</p>
+                                    <p>-{props.row.original.averageDiscountPercentEvent} %</p>
                                 </div>
                             )
                         }

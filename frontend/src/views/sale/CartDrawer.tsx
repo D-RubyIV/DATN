@@ -30,7 +30,7 @@ const CartDrawer = () => {
     const getFinalPrice = (item: CartDetailResponseDTO) => {
         const { price, product } = item.productDetailResponseDTO;
         const discountPercent = product.eventDTOList.length > 0
-            ? product.eventDTOList[0].discountPercent
+            ? product.averageDiscountPercentEvent
             : 0;
 
         return Math.round(price * (1 - discountPercent / 100));
@@ -42,7 +42,7 @@ const CartDrawer = () => {
         const getFinalPrice = (item: CartDetailResponseDTO) => {
             const { price, product } = item.productDetailResponseDTO;
             const discountPercent = product.eventDTOList.length > 0
-                ? product.eventDTOList[0].discountPercent
+                ? product.averageDiscountPercentEvent
                 : 0;
 
             return Math.round(price * (1 - discountPercent / 100));
@@ -91,7 +91,7 @@ const CartDrawer = () => {
                                         <Fragment key={index}>
                                             <div
                                                 className="text-[13.5px] grid grid-cols-12 gap-2 border-b border-black py-3">
-                                                <div className="inline-flex justify-center items-center col-span-4 gap-1">
+                                                <div className="inline-flex justify-center items-center col-span-4 gap-1 relative">
                                                     <div>
                                                         {
                                                             Array.isArray((item.productDetailResponseDTO as ProductDetailResponseDTO).images) && (item.productDetailResponseDTO as ProductDetailResponseDTO).images.length > 0 ?
@@ -102,6 +102,14 @@ const CartDrawer = () => {
                                                                 (<Avatar size={100}
                                                                          icon={<FiPackage />}
                                                                          className="object-cover" alt="Product" />)
+                                                        }
+                                                        {
+                                                            Number(item.productDetailResponseDTO.product.averageDiscountPercentEvent) > 0 &&
+                                                            (
+                                                                <div className={'absolute top-0 right-0 px-[4px] py-[2px] bg-red-600 text-white border border-black'}>
+                                                                    <span>-{item.productDetailResponseDTO.product.averageDiscountPercentEvent}%</span>
+                                                                </div>
+                                                            )
                                                         }
 
                                                     </div>

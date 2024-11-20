@@ -20,6 +20,7 @@ public class ProductResponseDTO {
     private String code;
     private String name;
     private Boolean deleted;
+    private double averageDiscountPercentEvent;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private List<EventDTO> eventDTOList = new ArrayList<>();

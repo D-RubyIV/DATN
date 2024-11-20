@@ -46,7 +46,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
     const getSalePercent = (item: OrderProductDetail) => {
         return Array.isArray(item.product.eventDTOList) && item.product.eventDTOList.length > 0
-            ? item.product.eventDTOList[0].discountPercent
+            ? item.product.averageDiscountPercentEvent
             : 0
     }
 

@@ -226,20 +226,24 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     JOIN Brand b ON b.id = pd.brand.id
     WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
     AND (:colorCodes IS NULL OR c.code IN :colorCodes)
-    AND (:brancCodes IS NULL OR b.code IN :brancCodes)
+    AND (:brandCodes IS NULL OR b.code IN :brandCodes)
     AND (:minPrice IS NULL OR pd.price >= :minPrice)
     AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
+    AND p.deleted = FALSE
+    AND c.deleted = FALSE
+    AND s.deleted = FALSE
+    AND b.deleted = FALSE
+    AND pd.deleted = FALSE
     GROUP BY p.id, p.code, p.name
 """)
     Page<ProductResponseOverDTO> findCustomPage(
             Pageable pageable,
             @Param("sizeCodes") List<String> sizeCodes,
             @Param("colorCodes") List<String> colorCodes,
-            @Param("brancCodes") List<String> brancCodes,
+            @Param("brandCodes") List<String> brandCodes,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice
     );
-
 
     @Query(
             value = """
@@ -253,9 +257,13 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 )
                 FROM Product p
                 JOIN ProductDetail pd on p.id = pd.product.id
-                 JOIN Color c on c.id = pd.color.id
-                 JOIN Size s on s.id = pd.size.id
-                 WHERE p.id = :productId
+                JOIN Color c on c.id = pd.color.id
+                JOIN Size s on s.id = pd.size.id
+                WHERE p.id = :productId
+                AND p.deleted = FALSE
+                AND c.deleted = FALSE
+                AND s.deleted = FALSE
+                AND pd.deleted = FALSE
                 GROUP BY p.id, p.code, p.name
                 """
     )

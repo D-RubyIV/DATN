@@ -256,7 +256,7 @@ const Checkout = () => {
     }
 
     const handleConfirmCart = async () => {
-        if (selectedCart?.payment === 'CASH') {
+        if (paymentMethod === 'CASH') {
             try {
                 const data = {
                     status: 'PENDING',
@@ -293,7 +293,7 @@ const Checkout = () => {
                 console.error('Error processing payment:', error)
                 // Add appropriate error handling (e.g., show a notification to the user)
             }
-        } else if (selectedCart?.payment === 'TRANSFER') {
+        } else if (paymentMethod === 'TRANSFER') {
             const data = {
                 'status': 'PENDING',
                 payment: paymentMethod,

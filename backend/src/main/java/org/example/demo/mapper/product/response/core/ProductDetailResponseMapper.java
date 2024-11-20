@@ -29,6 +29,7 @@ public interface ProductDetailResponseMapper extends IMapperBasic<ProductDetail,
     @Mapping(target = "thicknessName", source = "thickness.name")
     @Mapping(target = "elasticityName", source = "elasticity.name")
     @Mapping(target = "eventResponseDTOS", source = "productDetail.product.events")
+    @Mapping(target = "averageDiscountPercentEvent", source = "productDetail.product.averageDiscountPercentEvent")
     ProductOverviewResponse toOverviewDTOPhah04(ProductDetail productDetail);
     List<ProductOverviewResponse> toOverviewDTOPhah04(List<ProductDetail> productDetailList);
 }

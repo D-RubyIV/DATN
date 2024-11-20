@@ -157,13 +157,13 @@ public class CartServiceV2 {
     private double getFinalPrice(ProductDetail productDetail) {
         double originPrice = productDetail.getPrice();
         double finalPrice = productDetail.getPrice();
-        List<Event> eventList = productDetail.getProduct().getEvents();
-        eventList.sort((e1, e2) -> Integer.compare(e2.getDiscountPercent(), e1.getDiscountPercent()));
-        if (!eventList.isEmpty()) {
-            eventList.forEach(s -> {
-                System.out.println(s.getDiscountCode() + " " + s.getDiscountPercent());
-            });
-            finalPrice = finalPrice / 100 * (100 - eventList.get(0).getDiscountPercent());
+        List<Event> validEvents = productDetail.getProduct().getValidEvents();
+        if (!validEvents.isEmpty()) {
+            double averageDiscount = validEvents.stream()
+                    .mapToInt(Event::getDiscountPercent)
+                    .average()
+                    .orElse(0.0);
+            finalPrice = finalPrice / 100 * (100 - averageDiscount);
         }
         System.out.println("ORIGIN PRICE: " + originPrice);
         System.out.println("FINAL PRICE: " + finalPrice);

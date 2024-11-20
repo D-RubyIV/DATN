@@ -137,6 +137,7 @@ export type ProductD = {
     name: string;
     deleted: boolean;
     eventDTOList: EventResponseDTO[]
+    averageDiscountPercentEvent: number,
 };
 
 export type OrderProductDetail = Entity & {
@@ -205,6 +206,7 @@ export type ProductDetailOverviewPhah04 = {
     materialName: string;
     thicknessName: string;
     elasticityName: string;
+    averageDiscountPercentEvent: number,
     images: Image[],
     eventResponseDTOS: EventResponseDTO[]
 

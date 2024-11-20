@@ -9,7 +9,7 @@ const hasSaleEvent = (item: ProductDetailOverviewPhah04) => {
 const getFinalPrice = (item: ProductDetailOverviewPhah04) => {
     const { price } = item
     const discountPercent = item.eventResponseDTOS.length > 0
-        ? item.eventResponseDTOS[0].discountPercent
+        ? item.averageDiscountPercentEvent
         : 0
 
     return Math.round(price * (1 - discountPercent / 100))
@@ -38,7 +38,7 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
                                         seletedProductDetail.eventResponseDTOS.length > 0 && (
                                             <div
                                                 className={'absolute top-0 right-0  bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                                <p>-{seletedProductDetail.eventResponseDTOS[0].discountPercent} %</p>
+                                                <p>-{seletedProductDetail.averageDiscountPercentEvent} %</p>
                                             </div>
                                         )
                                     }
@@ -50,7 +50,7 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
                                         seletedProductDetail.eventResponseDTOS.length > 0 && (
                                             <div
                                                 className={'absolute top-0 right-0 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                                <p>-{seletedProductDetail.eventResponseDTOS[0].discountPercent} %</p>
+                                                <p>-{seletedProductDetail.averageDiscountPercentEvent} %</p>
                                             </div>
                                         )
                                     }

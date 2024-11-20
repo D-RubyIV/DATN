@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.example.demo.dto.event.response.EventResponseDTO;
 import org.example.demo.entity.product.properties.Color;
 import org.example.demo.entity.product.properties.Size;
+import org.example.demo.util.event.EventUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ProductResponseOverDTO {
     private Double price;
     private List<String> image;
     private List<String> mass;
+    private Double averageDiscountPercentEvent;
     private List<Color> listColor = new ArrayList<>();;
     private List<Size> listSize = new ArrayList<>();;
     private List<EventResponseDTO> listEvent = new ArrayList<>();

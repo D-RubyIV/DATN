@@ -92,10 +92,8 @@ public class SecurityConfig {
                             // customer
                             .requestMatchers(GET, "/customer/**").hasRole("ADMIN")
                             // staff
-
                             .anyRequest()
-                            .authenticated();
-//                            .permitAll();
+                            .permitAll();
                 })
                 .csrf(AbstractHttpConfigurer::disable);
 

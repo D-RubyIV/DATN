@@ -94,7 +94,7 @@ const PaymentCallback = () => {
                         <p className="text-gray-600">Trạng thái đơn hàng: <span className="font-bold">#{(selectedOrder as OrderResponseDTO)?.status  ?? ""}</span></p>
                     </div>
                     <div className={'py-6'}>
-                     <Link to={`/user/purchase/${selectedOrderId}`}>
+                     <Link to={`/user/purchase/${(selectedOrder as OrderResponseDTO)?.code}`}>
                          <Button className={''} variant="default">
                              Xem chi tiết đơn hàng
                          </Button>
