@@ -25,7 +25,6 @@ export enum EOrderStatusEnums {
     DELIVERED = "DELIVERED",
     CANCELED = "CANCELED",
     RETURNED = "RETURNED",
-    UNPAID = "UNPAID",
 }
 
 
@@ -40,7 +39,7 @@ export type StatusBill = {
     badge: string
 }
 
-export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED" | "UNPAID"
+export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
 
 export type EOrderType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 
@@ -90,7 +89,9 @@ export type OrderHistoryResponseDTO = {
     id?: number;
     status: EOrderStatus;
     note: string;
-    createdBy?: string
+    createdBy?: string;
+    createdDate: string;
+    account: any;
 }
 
 export type OrderResponseDTO = {
@@ -104,6 +105,7 @@ export type OrderResponseDTO = {
     status: EOrderStatus;
     type: EOrderType;
     payment: EOrderPayment;
+    isPayment: boolean;
     total: number;
     subTotal: number;
     provinceId: string;    // ID của tỉnh

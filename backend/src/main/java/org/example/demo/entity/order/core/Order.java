@@ -58,6 +58,9 @@ public class Order extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
+    @Column(name = "surcharge")
+    private Double surcharge;
+
     @Column(name = "total")
     private Double total;
 
@@ -66,6 +69,9 @@ public class Order extends BaseEntity {
 
     @Column(name = "discount")
     private Double discount;
+
+    @Column(name = "is_payment")
+    private Boolean isPayment;
 
     @Column(name = "sub_total")
     private Double subTotal;

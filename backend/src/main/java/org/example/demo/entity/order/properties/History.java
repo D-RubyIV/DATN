@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
+import org.example.demo.entity.security.Account;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
@@ -40,5 +41,8 @@ public class History {
     @JsonFormat(pattern = "dd-MM-yyyy hh-mm-ss", shape = JsonFormat.Shape.STRING)
     private LocalDateTime updatedDate;
 
-    private String createdBy = "Admin";
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
 }

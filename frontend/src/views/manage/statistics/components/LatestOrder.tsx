@@ -65,11 +65,6 @@ const orderStatusColor: Record<
         dotClass: 'bg-orange-500',
         textClass: 'text-orange-500'
     },
-    'UNPAID': {
-        label: 'Chờ thanh toán',
-        dotClass: 'bg-pink-500',
-        textClass: 'text-pink-500'
-    }
 }
 
 const orderTypeColor: Record<

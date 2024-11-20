@@ -31,4 +31,15 @@ public class CartDetail extends BaseEntity {
     @JoinColumn(name = "productDetail_id")
     private ProductDetail productDetail;
 
+//    @Column(name = "discount_event")
+//    private Double discountEventPercent;
+//
+//    @Column(name = "event_code")
+//    private String eventCode;
+//
+//    @Column(name = "discount_voucher")
+//    private Double discountVoucherPercent;
+//
+//    @Column(name = "voucher_code")
+//    private String voucherCode;
 }

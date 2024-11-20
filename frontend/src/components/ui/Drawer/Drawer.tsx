@@ -44,6 +44,8 @@ const Drawer = (props: DrawerProps) => {
         ...rest
     } = props
 
+
+
     const onCloseClick = (e: MouseEvent<HTMLSpanElement>) => {
         onClose?.(e)
     }

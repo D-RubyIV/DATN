@@ -34,7 +34,6 @@ const SalesByCategories = () => {
         data: result
             ? [
                 result.countPending || 0,
-                result.countUnPaid || 0,
                 result.countToShip || 0,
                 result.countToReceive || 0,
                 result.countDelivered || 0,

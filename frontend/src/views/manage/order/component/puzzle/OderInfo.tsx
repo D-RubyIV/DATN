@@ -1,14 +1,14 @@
 import Card from '@/components/ui/Card'
-import { NumericFormat } from 'react-number-format'
-import { OrderResponseDTO } from '../../../../../@types/order'
-import { compile } from "@fileforge/react-print";
+import { OrderResponseDTO } from '@/@types/order'
 import { Button } from '@/components/ui';
 import { FileforgeClient } from '@fileforge/client';
-import { displayDoc, displayLoading } from './util';
 import Document from './Document';
 import { useState } from 'react';
 import CloseButton from '@/components/ui/CloseButton';
 import instance from '@/axios/CustomAxios'
+import StatusOrderFormat from '@/views/util/StatusOrderFormat'
+import TypeOrderFormat from '@/views/util/TypeOrderFormat'
+import IsPaymentFormat from '@/views/util/IsPaymentFormat'
 
 const ff = new FileforgeClient({
     apiKey: '029d0f13-d976-43f8-a3ec-16955667b1d2',
@@ -59,7 +59,7 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
 
     return (
         <div className=''>
-            <Card className="mb-5 h-[160px]">
+            <Card className="mb-5 h-[230px]">
                 <div className='flex gap-3 justify-between'>
                     <h5 className="mb-4">Đơn hàng #{data.code}</h5>
                     <div className=''>
@@ -69,14 +69,25 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
                 </div>
                 <ul>
                     <hr className="mb-3" />
-                    <li className='font-semibold py-1'>Loại: {data.type}</li>
-                    <li className='font-semibold py-1'>Trạng thái: {data.status}</li>
+                    <div className="font-semibold py-1 flex justify-items-start items-center">
+                        <span>Loại đơn: </span>
+                        <span>{<TypeOrderFormat status={data.type} />}</span>
+                    </div>
+                    <div className="font-semibold py-1 flex justify-items-start items-center">
+                        <span>Trạng thái: </span>
+                        <span>{<StatusOrderFormat status={data.status} />}</span>
+                    </div>
+                    <div className="font-semibold py-1 flex justify-items-start items-center">
+                        <span>Thanh toán: </span>
+                        <span>{<IsPaymentFormat status={data.isPayment} />}</span>
+                    </div>
                 </ul>
 
             </Card>
 
             {viewInvoice && (
-                <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/4 bg-white p-5 shadow-2xl rounded-md'>
+                <div
+                    className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/4 bg-white p-5 shadow-2xl rounded-md">
                     <div className='flex justify-end'>
                         <CloseButton onClick={() => setViewInvoice(false)}></CloseButton>
                     </div>

@@ -6,7 +6,10 @@ import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.demo.dto.auth.response.AccountResponseDTO;
 import org.example.demo.entity.order.enums.Status;
+import org.example.demo.entity.security.Account;
+
 import java.time.LocalDateTime;
 
 /**
@@ -21,9 +24,9 @@ public class HistoryResponseDTO {
     @Enumerated(EnumType.STRING)
     private Status status;
     private String note;
-    private String createdBy;
-    @JsonFormat(pattern = "dd-MM-yyyy hh-mm-ss", shape = JsonFormat.Shape.STRING)
+    private AccountResponseDTO account;
+    @JsonFormat(pattern = "hh:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    @JsonFormat(pattern = "dd-MM-yyyy hh-mm-ss", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "hh:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime updatedDate;
 }

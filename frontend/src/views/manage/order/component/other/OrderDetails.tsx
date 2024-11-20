@@ -178,8 +178,6 @@ const CustomerInfo = ({ data, fetchData }: { data: OrderResponseDTO, fetchData: 
                             </div>
                         )
                 }
-
-
                 <ul>
 
                 </ul>

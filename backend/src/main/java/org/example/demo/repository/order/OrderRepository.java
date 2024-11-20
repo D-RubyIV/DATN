@@ -64,8 +64,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
             "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
             "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END), " + // Đếm số đơn hàng 'CANCELED'
-            "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END)," + // Đếm số đơn hàng 'RETURNED'
-            "SUM(CASE WHEN o.status = 'UNPAID' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'UNPAID'
+            "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END))" + // Đếm số đơn hàng 'RETURNED'
             "FROM Order o")
     CountStatusOrder getCountStatus();
 

@@ -50,7 +50,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
             : 0
     }
 
-
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
             .then(function() {
@@ -68,7 +67,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 }
             })
     }
-
 
     const getAllOrderDetailWithIdOrder = async (id: number) => {
         instance.get(`/order-details/get-by-order/${id}?page=${tableData.pageIndex - 1}&size=${tableData.pageSize}`).then(function(response) {

@@ -30,6 +30,7 @@ public class OrderResponseDTO {
     private String address;
     private String phone;
     private String recipientName;
+    private Boolean isPayment;
     //
     private String provinceId;
     private String provinceName;

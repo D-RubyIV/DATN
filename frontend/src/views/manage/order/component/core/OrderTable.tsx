@@ -23,7 +23,6 @@ type BadgeType =
     | 'countDelivered'
     | 'countCancelled'
     | 'countReturned'
-    | 'countUnPaid'
 
 interface ICountStatus {
     countAll: number;    // Số lượng hóa đơn chờ xác nhận
@@ -33,7 +32,6 @@ interface ICountStatus {
     countDelivered: number;  // Số lượng hóa đơn đang giao hàng
     countCancelled: number;  // Số lượng hóa đơn đã hủy
     countReturned: number;   // Số lượng hóa đơn trả hàng
-    countUnPaid: number;   // Số lượng hóa đơn trả hàng
 }
 
 type IOveriewBill = {
@@ -61,7 +59,6 @@ export const OrderTable = () => {
         countDelivered: 0,
         countReturned: 0,
         countToReceive: 0,
-        countUnPaid: 0
     })
     const [queryParam, setQueryParam] = useState<{
         type: EOrderTypeEnums,
@@ -241,8 +238,6 @@ export const OrderTable = () => {
                                         ? '!text-red-500'
                                         : props.row.original.status === 'RETURNED'
                                             ? '!text-orange-500'
-                                                : props.row.original.status === 'UNPAID'
-                                                    ? '!text-pink-500'
                                                     : '!text-gray-500'
                         }`}
                 >
@@ -260,8 +255,6 @@ export const OrderTable = () => {
                                                 ? '!bg-red-500'
                                                 : props.row.original.status === 'RETURNED'
                                                     ? '!bg-orange-500'
-                                                        : props.row.original.status === 'UNPAID'
-                                                            ? '!bg-pink-500'
                                                             : '!bg-gray-500'
                                 }`}></span>
                         <span>
@@ -278,8 +271,6 @@ export const OrderTable = () => {
                                                     ? 'Đã hủy đơn'
                                                     : props.row.original.status === 'RETURNED'
                                                         ? 'Đã trả hàng'
-                                                            : props.row.original.status === 'UNPAID'
-                                                                ? 'Chưa thanh toán'
                                                                 : 'Không xác định'}
                             </p>
                         </span>
@@ -333,7 +324,6 @@ export const OrderTable = () => {
     const statusBills: StatusBill[] = [
         { label: 'TẤT CẢ', value: EOrderStatusEnums.EMPTY, badge: 'countAll' },
         { label: 'CHỜ XÁC NHẬN', value: EOrderStatusEnums.PENDING, badge: 'countPending' },
-        { label: 'CHỜ THANH TOÁN', value: EOrderStatusEnums.UNPAID, badge: 'countUnPaid' },
         { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
         { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
         { label: 'ĐÃ HOÀN THÀNH', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },

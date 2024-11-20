@@ -38,8 +38,10 @@ import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
 import org.example.demo.service.fee.FeeService;
+import org.example.demo.service.history.HistoryService;
 import org.example.demo.util.DataUtils;
 import org.example.demo.util.RandomCodeGenerator;
+import org.example.demo.util.auth.AuthUtil;
 import org.example.demo.util.event.EventUtil;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private HistoryService historyService;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -138,16 +143,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Override
     @Transactional
     public Order save(OrderRequestDTO requestDTO) {
-
-
-
         History orderHistory = new History();
         Order entityMapped = orderRequestMapper.toEntity(requestDTO);
-        Staff staffDemo = staffRepository.findById(38).orElse(null); // demo nen set mac dinh
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
-                && !(authentication instanceof AnonymousAuthenticationToken)){
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             Account account = (Account) authentication.getPrincipal();
             entityMapped.setStaff(account.getStaff());
         }
@@ -156,12 +157,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setStatus(Status.PENDING);
         entityMapped.setPayment(Payment.CASH);
         entityMapped.setCode("HDI" + randomCodeGenerator.generateRandomCode());
-        entityMapped.setStaff(staffDemo);
 
         entityMapped.setSubTotal(0.0);
         entityMapped.setTotal(0.);
         entityMapped.setDiscount(0.);
         entityMapped.setDeliveryFee(0.);
+        entityMapped.setSurcharge(0.);
+        entityMapped.setIsPayment(false);
 
         orderHistory.setNote("Tạo Đơn Hàng");
 
@@ -222,7 +224,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             order.setStatus(requestDTO.getStatus());
         }
         // address
-        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())){
+        if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())) {
             String detail = requestDTO.getAddress();
             address += detail;
         }
@@ -240,7 +242,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         // province
         if (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) {
-            address +=  ", " + requestDTO.getProvinceName();
+            address += ", " + requestDTO.getProvinceName();
             order.setProvinceName(requestDTO.getProvinceName());
             order.setProvinceId(requestDTO.getProvinceId());
         }
@@ -249,11 +251,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             order.setAddress(requestDTO.getAddress());
         }
         // phone
-        if(requestDTO.getPhone() != null  && !DataUtils.isNullOrEmpty(requestDTO.getPhone())){
+        if (requestDTO.getPhone() != null && !DataUtils.isNullOrEmpty(requestDTO.getPhone())) {
             order.setPhone(requestDTO.getPhone());
         }
         // recipientName;
-        if(requestDTO.getRecipientName() != null  && !DataUtils.isNullOrEmpty(requestDTO.getRecipientName())){
+        if (requestDTO.getRecipientName() != null && !DataUtils.isNullOrEmpty(requestDTO.getRecipientName())) {
             order.setRecipientName(requestDTO.getRecipientName());
         }
         // return order
@@ -264,12 +266,17 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Transactional
     public Order changeStatus(Integer id, HistoryRequestDTO requestDTO) {
         Order entityFound = findById(id);
+        if (requestDTO.getStatus() == Status.CANCELED && entityFound.getIsPayment() && entityFound.getPayment() == Payment.TRANSFER) {
+            if (DataUtils.isNullOrEmpty(requestDTO.getNote())) {
+                throw new CustomExceptions.CustomBadRequest("Vui lòng nhập nội dung và mã giao dịch trước khi hủy");
+            }
+        }
         entityFound.setStatus(requestDTO.getStatus());
-
         History history = new History();
         history.setOrder(entityFound);
         history.setNote(requestDTO.getNote());
         history.setStatus(requestDTO.getStatus());
+        history.setAccount(AuthUtil.getAccount());
         historyRepository.save(history);
         reloadSubTotalOrder(entityFound);
         return orderRepository.save(entityFound);
@@ -417,12 +424,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
-    public List<StatisticOverviewResponse> fetchOrdersByStatusAndRangeTime(Status status, LocalDateTime from, LocalDateTime to){
+    public List<StatisticOverviewResponse> fetchOrdersByStatusAndRangeTime(Status status, LocalDateTime from, LocalDateTime to) {
         return orderRepository.findAllByStatusAndCreatedDateBetweenOrderByCreatedDateDesc(status, from, to);
     }
 
-    public Order convertCartToOrder(Integer cartId){
-        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không xác đingj được giỏ hàng"));
+    public Order convertCartToOrder(Integer cartId) {
+        boolean isPayment = false;
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không xác định được giỏ hàng"));
+        // BẮT ĐẦU SET THÔNG TIN TỪ CART VÀO HÓA ĐƠN
         Order order = new Order();
         order.setCode("HDO" + randomCodeGenerator.generateRandomCode());
         order.setRecipientName(cart.getRecipientName());
@@ -442,22 +451,23 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setDiscount(cart.getDiscount());
         order.setSubTotal(cart.getSubTotal());
         order.setType(Type.ONLINE);
+        order.setStatus(Status.PENDING);
         order.setPayment(cart.getPayment());
         order.setCustomer(cart.getCustomer());
-        // status
-        if (cart.getStatus() == org.example.demo.entity.cart.enums.Status.PENDING){
-            order.setStatus(Status.PENDING);
-        } else if (cart.getStatus() == org.example.demo.entity.cart.enums.Status.SUCCESS) {
-            order.setStatus(Status.DELIVERED);
-        } else if (cart.getStatus() == org.example.demo.entity.cart.enums.Status.TOSHIP) {
-            order.setStatus(Status.TOSHIP);
+        if (order.getPayment() == Payment.TRANSFER) {
+            isPayment = true;
         }
+        order.setIsPayment(isPayment);
         //
         order.setCustomer(null);
         order.setVoucher(cart.getVoucher());
         List<OrderDetail> list = new ArrayList<>();
         List<CartDetail> listCardDetail = cart.getCartDetails();
-        orderRepository.save(order);
+        Order orderSaved = orderRepository.save(order);
+
+        historyService.createNewHistoryObject(orderSaved, Status.PENDING, "Khởi tạo hóa đơn");
+
+        // HOÀN THÀNH LƯU HÓA ĐƠN MỚI
         listCardDetail.forEach(s -> {
             OrderDetail od = new OrderDetail();
             od.setOrder(order);
@@ -475,5 +485,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return result;
     }
 
+    private void check_case_rollback(Order order) {
+        // DA THANH TOÁN
+
+    }
 
 }

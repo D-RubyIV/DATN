@@ -32,7 +32,6 @@ type OrderResponseDTO = {
 
 const PaymentCallback = () => {
     const location = useLocation()
-    const { sleep } = useLoadingContext()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [selectedOrderId, setSelectedOrderId] = useState<number>()
     const [selectedOrder, setSelectedOrder] = useState<OrderResponseDTO>()
@@ -56,30 +55,15 @@ const PaymentCallback = () => {
         }
 
         setIsLoading(true)
-        handleChangePaidOrder(Number(idOrder)).then(() => {
-            sleep(500).then(() => {
+        instance.get(`orders/${idOrder}`).then(function (response){
+            if(response.status === 200){
+                setSelectedOrder(response.data)
                 setIsLoading(false)
-            })
-            instance.get(`orders/${idOrder}`).then(function (response){
-                if(response.status === 200){
-                    setSelectedOrder(response.data)
-                }
-            })
+            }
         })
+
+
     }, [location])
-
-
-
-    const handleChangePaidOrder = async (idOrder: number) => {
-        const data: OrderHistoryResponseDTO = {
-            status: EOrderStatusEnums.TOSHIP,
-            note: 'Chờ vận chuyển'
-        }
-        const response = await changeOrderStatus(idOrder, data)
-        console.log('=> response: ')
-        console.log(response)
-        setSelectedOrder(response.data)
-    }
 
     return (
         <Loading loading={isLoading} type={'cover'}>

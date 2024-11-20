@@ -47,7 +47,6 @@ export type OrderCounts = {
     countDelivered: number;
     countCancelled: number;
     countReturned: number;
-    countUnPaid: number;
 };
 
 export type ChartOverviewData = {

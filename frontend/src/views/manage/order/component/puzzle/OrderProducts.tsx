@@ -11,13 +11,17 @@ import {
 import { NumericFormat } from 'react-number-format'
 import { Button, Drawer } from '@/components/ui'
 import { HiLockClosed, HiMinus, HiMinusCircle, HiPlusCircle, HiViewList } from 'react-icons/hi'
-import { OrderResponseDTO, OrderDetailResponseDTO } from '../../../../../@types/order'
+import {
+    OrderResponseDTO,
+    OrderDetailResponseDTO,
+    OrderProductDetail
+} from '@/@types/order'
 import History from './History'
-import ProductModal from './ProductModal'
 import { ConfirmDialog } from '@/components/shared'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import { FiPackage } from 'react-icons/fi'
+import SellProductModal from '@/views/manage/sell/component/dialog/SellProductModal'
 
 
 const OrderProducts = ({ data, selectObject, fetchData }: {
@@ -32,21 +36,43 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
 
     const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
+    const hasSaleEvent = (item: OrderProductDetail) => {
+        return item.product.eventDTOList.length > 0
+
+    }
+    const getFinalPrice = (item: OrderProductDetail) => {
+        const discountPercent = item.product.eventDTOList.length > 0
+            ? item.product.averageDiscountPercentEvent
+            : 0
+
+        return Math.round(item.price * (1 - discountPercent / 100))
+    }
+
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div className="flex">
-                {
-                    Array.isArray(row.productDetailResponseDTO.images)
-                    && row.productDetailResponseDTO.images.length > 0 ?
-                        (
-                            <Avatar size={90} src={row.productDetailResponseDTO.images[0]?.url} />
+                <div className={'relative'}>
+                    {
+                        Array.isArray(row.productDetailResponseDTO.images)
+                        && row.productDetailResponseDTO.images.length > 0 ?
+                            (
+                                <Avatar size={90} src={row.productDetailResponseDTO.images[0]?.url} />
 
-                        ) :
-                        (
-                            <Avatar size={90} icon={<FiPackage />} />
+                            ) :
+                            (
+                                <Avatar size={90} icon={<FiPackage />} />
 
+                            )
+                    }
+                    {
+                        row.productDetailResponseDTO.product.averageDiscountPercentEvent > 0 && (
+                            <div
+                                className={'text-[10px] absolute top-0 right-0 bg-red-600 text-white border border-black px-[4px] py-[1px]'}>
+                                <span>-{row.productDetailResponseDTO.product.averageDiscountPercentEvent}%</span>
+                            </div>
                         )
-                }
+                    }
+                </div>
                 <div className="ltr:ml-2 rtl:mr-2">
                     <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
                     <div className="mb-1">
@@ -168,14 +194,25 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             header: 'Giá',
             cell: (props) => {
                 const row = props.row.original
-                return <PriceAmount amount={row.productDetailResponseDTO.price} />
+                return (
+                    <div className={'flex gap-3 text-red-600'}>
+                        <div className={`${hasSaleEvent(row.productDetailResponseDTO) ? 'line-through' : 'hidden'}`}>
+                            <PriceAmount amount={row.productDetailResponseDTO.price} />
+                        </div>
+                        <PriceAmount amount={getFinalPrice(row.productDetailResponseDTO)} />
+                    </div>
+                )
             }
         }),
         columnHelper.accessor('productDetailResponseDTO', {
             header: 'Tổng',
             cell: (props) => {
                 const row = props.row.original
-                return <PriceAmount amount={row.quantity * row.productDetailResponseDTO.price} />
+                return (
+                    <div className={'flex gap-3 text-red-600'}>
+                        <PriceAmount amount={row.quantity * getFinalPrice(row.productDetailResponseDTO)} />
+                    </div>
+                )
             }
         }),
         columnHelper.accessor('productDetailResponseDTO.id', {
@@ -208,7 +245,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
 
 
     return (
-        <div className="h-[555px]">
+        <div className="h-[585px]">
             <ConfirmDialog
                 isOpen={openDelete}
                 type={'danger'}
@@ -222,8 +259,8 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 <p>Xác nhận muốn xóa ?</p>
             </ConfirmDialog>
             {/*  */}
-            {isOpenProductModal && <ProductModal fetchData={fetchData} setIsOpenProductModal={setIsOpenProductModal}
-                                                 selectOrder={selectObject}></ProductModal>}
+            {isOpenProductModal && <SellProductModal fetchData={fetchData} setIsOpenProductModal={setIsOpenProductModal}
+                                                 selectOrder={selectObject}></SellProductModal>}
             {/*  */}
             <div className="">
                 <Drawer
