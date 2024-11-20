@@ -94,8 +94,8 @@ public class SecurityConfig {
                             // staff
 
                             .anyRequest()
-                            .authenticated();
-//                            .permitAll();
+//                            .authenticated();
+                            .permitAll();
                 })
                 .csrf(AbstractHttpConfigurer::disable);
 
