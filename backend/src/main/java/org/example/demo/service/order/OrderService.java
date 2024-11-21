@@ -163,7 +163,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setDiscount(0.);
         entityMapped.setDeliveryFee(0.);
         entityMapped.setSurcharge(0.);
+        entityMapped.setRefund(0.0);
+        entityMapped.setDiscountVoucherPercent(0.0);
         entityMapped.setIsPayment(false);
+        entityMapped.setVoucherMinimumSubtotalRequired(0.0);
 
         orderHistory.setNote("Tạo Đơn Hàng");
 
@@ -288,15 +291,16 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Voucher voucherFound = voucherRepository.findById(request.getIdVoucher()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Voucher not found"));
         System.out.println(orderFound.getCode());
         System.out.println(voucherFound.getCode());
-        Double total = fetchTotal(orderFound);
+
+        double subtotal_of_order = get_subtotal_of_order(orderFound);
         Integer t = voucherFound.getMinAmount();
         // kiêm tra số lương
         if (voucherFound.getQuantity() > 0) {
-            if (total >= t) {
-                double discount = total / 100 * voucherFound.getMaxPercent();
-                orderFound.setTotal(total - discount);
+            if (subtotal_of_order >= t) {
+                double discount = subtotal_of_order / 100 * voucherFound.getMaxPercent();
+                orderFound.setTotal(subtotal_of_order - discount);
                 orderFound.setDiscount(discount);
-                orderFound.setSubTotal(total);
+                orderFound.setSubTotal(subtotal_of_order);
                 orderFound.setVoucher(voucherFound);
             } else {
                 throw new CustomExceptions.CustomBadRequest("Số tiền tối thiểu không đáp ứng");
@@ -306,81 +310,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         reloadSubTotalOrder(orderFound);
         return orderRepository.save(orderFound);
-    }
-
-    public void calculateDiscount(Order order) {
-        Voucher voucher = order.getVoucher();
-        Double total = fetchTotal(order);
-        if (voucher != null) {
-            if (total >= voucher.getMinAmount()) {
-                double discount = total / 100 * voucher.getMaxPercent();
-                order.setDiscount(discount);
-            }
-        }
-    }
-
-    private double getFinalPrice(ProductDetail productDetail) {
-        double originPrice = productDetail.getPrice();
-        double finalPrice = productDetail.getPrice();
-        List<Event> validEvents = productDetail.getProduct().getValidEvents();
-        if (!validEvents.isEmpty()) {
-            double averageDiscount = EventUtil.getAveragePercentEvent(validEvents);
-            finalPrice = finalPrice / 100 * (100 - averageDiscount);
-        }
-        System.out.println("ORIGIN PRICE: " + originPrice);
-        System.out.println("FINAL PRICE: " + finalPrice);
-        return finalPrice;
-    }
-
-    public Double fetchTotal(Order order) {
-        return Optional.ofNullable(order.getOrderDetails())
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter(orderDetail -> !orderDetail.getDeleted())
-                .mapToDouble(s -> {
-                    getFinalPrice(s.getProductDetail());
-                    return getFinalPrice(s.getProductDetail()) * s.getQuantity();
-                })
-                .sum();
-    }
-
-    public Double refundTotal(Order order) {
-        return Optional.ofNullable(order.getOrderDetails())
-                .orElse(Collections.emptyList())
-                .stream()
-                .filter(OrderDetail::getDeleted)
-                .mapToDouble(s -> {
-                    getFinalPrice(s.getProductDetail());
-                    return getFinalPrice(s.getProductDetail()) * s.getQuantity();
-                })
-                .sum();
-    }
-
-    public void reloadSubTotalOrder(Order order) {
-        order.setSubTotal(fetchTotal(order));
-        calculateDiscount(order);
-        try {
-            if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE) {
-                System.out.println("DISTRICT: " + order.getDistrictId());
-                System.out.println("PROVINCE: " + order.getProvinceId());
-                System.out.println("WARD: " + order.getWardId());
-                JsonNode feeObject = calculateFee(order.getId());
-                if (feeObject != null) {
-                    String feeString = String.valueOf(feeObject.get("data").get("total"));
-                    Double feeDouble = DataUtils.safeToDouble(feeString);
-                    order.setDeliveryFee(feeDouble);
-                    order.setTotal(fetchTotal(order) + feeDouble - order.getDiscount());
-                }
-            } else {
-                order.setDeliveryFee(0.0);
-                order.setTotal(fetchTotal(order) - order.getDiscount());
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            log.error(e.getMessage());
-            throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
-        }
-        orderRepository.save(order);
     }
 
     public CountStatusOrder getCountStatusAnyOrder() {
@@ -498,9 +427,87 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return result;
     }
 
-    private void check_case_rollback(Order order) {
-        // DA THANH TOÁN
 
+    public double get_total_value_of_order(Order order) {
+        return get_discount_of_order_that_time(order) - get_discount_of_order_that_time(order);
+    }
+
+    public void reloadSubTotalOrder(Order order){
+        double subtotal = get_subtotal_of_order(order);
+        double discount = get_discount_of_order_that_time(order);
+        double fee_ship = get_fee_ship_of_order(order);
+        double total = subtotal - discount + fee_ship;
+        System.out.println("SUBTOTAL: " + subtotal);
+        System.out.println("DISCOUNT: " + discount);
+        System.out.println("FEE: " + fee_ship);
+        System.out.println("TOTAL: " + total);
+        order.setSubTotal(subtotal);
+        order.setDiscount(discount);
+        order.setDeliveryFee(fee_ship);
+        order.setTotal(total);
+        orderRepository.save(order);
+    }
+
+    // DISCOUNT CỦA HÓA ĐƠN
+    // LẤY TỔNG TIỀN ĐƯỢC GIẢM GIÁ (ĐÃ CÓ VOUCHER)
+    public double get_discount_of_order_that_time(Order order) {
+        // phần trăm đc giảm giá đc lưu vào hóa đơn tại thời điểm tọa hóa đơn chờ
+        double discount_percent_at_that_time = order.getDiscountVoucherPercent();
+        // số tiền tối thiểu cần có để có thể áp dụng voucher
+        double voucherMinimumSubtotalRequired = order.getVoucherMinimumSubtotalRequired();
+        // lấy subtotal cần trả
+        double subtotal_of_order = get_subtotal_of_order(order);
+        // nếu đáp ứng giá trị đơn hàng tối thiểu với voucher
+        if (subtotal_of_order > voucherMinimumSubtotalRequired) {
+            return subtotal_of_order * discount_percent_at_that_time;
+        } else {
+            return 0.0;
+        }
+    }
+
+    // SUBTOTAL CỦA HÓA DƠN
+    // LẤY TỔNG TIỀN THEO HÓA DƠN CHI TIẾT (ĐÃ ẤP DỤNG EVENT)
+    private static double get_price_of_order_detail_at_that_time(OrderDetail s) {
+        ProductDetail productDetail = s.getProductDetail();
+        // lấy giá product detail cho tính toán
+        double productDetailPrice = productDetail.getPrice();
+        // lấy ra phần trăm giảm giá của sự kiện lúc tạo hóa đơn chờ tại thời điểm đó
+        double averageEventPercent = s.getAverageDiscountEventPercent();
+        // tính giá trị của hóa đơn chi tiết này tại thời điểm đó
+        return productDetailPrice * (1 - averageEventPercent / 100);
+    }
+
+    // SUBTOTAL CỦA HÓA DƠN CHI TIẾT
+    // LẤY TỔNG TIỀN THEO HÓA ĐƠN (SUBTOTAL) (CHƯA CÓ VOCHER)
+    public double get_subtotal_of_order(Order order) {
+        double subtotal = 0;
+        // lấy ra các hóa đơn không bị xóa của hóa đơn
+        List<OrderDetail> orderDetailList = order.getOrderDetails().stream().filter((s) -> !s.getDeleted()).toList();
+        // lặp tính tiền hóa đơn
+        for (OrderDetail s : orderDetailList) {
+            // lấy product detail cho việc tính toán
+            double price_of_this_order_detail = get_price_of_order_detail_at_that_time(s) * s.getQuantity();
+            // cộng dồn giá trị vào total;
+            subtotal += price_of_this_order_detail;
+        }
+        return subtotal;
+    }
+
+    public double get_fee_ship_of_order(Order order) {
+        try {
+            if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE) {
+                JsonNode feeObject = calculateFee(order.getId());
+                if (feeObject != null) {
+                    String feeString = String.valueOf(feeObject.get("data").get("total"));
+                    return DataUtils.safeToDouble(feeString);
+                }
+            }
+            return 0;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            log.error(e.getMessage());
+            throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
+        }
     }
 
 }

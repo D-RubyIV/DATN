@@ -26,7 +26,7 @@ public class Product extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
     @Column(name = "description")
@@ -39,7 +39,7 @@ public class Product extends BaseEntity {
     private List<Event> events = new ArrayList<>();
 
     @Transient
-    private Double averageDiscountPercentEvent;
+    private Double nowAverageDiscountPercentEvent;
 
     public List<Event> getEvents() {
         return events.stream()
@@ -61,7 +61,8 @@ public class Product extends BaseEntity {
                 .toList();
     }
 
-    public Double getAverageDiscountPercentEvent() {
+    public Double getNowAverageDiscountPercentEvent() {
         return EventUtil.getAveragePercentEvent(getValidEvents());
+
     }
 }

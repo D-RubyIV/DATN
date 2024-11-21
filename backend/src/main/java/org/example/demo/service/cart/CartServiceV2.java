@@ -21,6 +21,7 @@ import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.fee.FeeService;
 import org.example.demo.util.DataUtils;
+import org.example.demo.util.auth.AuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,12 +64,11 @@ public class CartServiceV2 {
         Cart cart = cartRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found with id: " + id));
         String address = "";
         // update customer
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.isAuthenticated()){
-            Account account = (Account) authentication.getPrincipal();
-            System.out.println(account.getCustomer().getId());
+        Account account = AuthUtil.getAccount();
+        if(account != null){
             cart.setCustomer(account.getCustomer());
         }
+
         System.out.println();
         // update voucher
         if (requestDTO.getVoucher() != null) {

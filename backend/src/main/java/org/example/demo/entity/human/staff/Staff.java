@@ -22,7 +22,7 @@ public class Staff extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
     @Column(name = "email")
@@ -31,26 +31,25 @@ public class Staff extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
-
     @Column(name = "citizen_id")
     private String citizenId;
 
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "NVARCHAR(255)")
     private String address;
 
-    @Column(name = "province")
+    @Column(name = "province", columnDefinition = "NVARCHAR(255)")
     private String province;
 
-    @Column(name = "district")
+    @Column(name = "district", columnDefinition = "NVARCHAR(255)")
     private String district;
 
-    @Column(name = "ward")
+    @Column(name = "ward", columnDefinition = "NVARCHAR(255)")
     private String ward;
 
     @Column(name = "status")
     private String status;
 
-    @Column(name = "note")
+    @Column(name = "note", columnDefinition = "NVARCHAR(255)")
     private String note;
 
     @Column(name = "birth_day")

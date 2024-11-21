@@ -6,10 +6,14 @@ import java.util.List;
 
 public class EventUtil {
     public static double getAveragePercentEvent(List<Event> validEvents) {
-        return validEvents.stream()
-                .mapToInt(Event::getDiscountPercent)
-                .average()
-                .orElse(0.0); // Giá trị mặc định là 0.0 nếu danh sách rỗng
+        return roundPercent(
+                validEvents.stream()
+                        .mapToInt(Event::getDiscountPercent)
+                        .average()
+                        .orElse(0.0)
+        );
+    }
+    public static double roundPercent(double percent){
+        return Math.round(percent * 100) / 100.0;
     }
 }
-

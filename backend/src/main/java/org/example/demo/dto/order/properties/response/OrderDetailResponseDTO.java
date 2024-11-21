@@ -12,5 +12,6 @@ import org.example.demo.entity.product.core.ProductDetail;
 public class OrderDetailResponseDTO {
     private Integer id;
     private Integer quantity;
+    private Double averageDiscountEventPercent;
     private ProductDetailResponseDTO productDetailResponseDTO;
 }

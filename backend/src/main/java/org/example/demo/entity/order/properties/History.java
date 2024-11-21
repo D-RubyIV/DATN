@@ -26,7 +26,7 @@ public class History {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Column(name = "note")
+    @Column(name = "note", columnDefinition = "NVARCHAR(255)")
     private String note;
 
     @ManyToOne

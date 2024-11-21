@@ -2,12 +2,14 @@ package org.example.demo;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
+import org.example.demo.dto.auth.request.AccountRequestDTO;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.security.Account;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.exception.PermissionDenyException;
+import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.repository.security.RoleRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.service.auth.AccountService;
@@ -20,13 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class InitDataBase {
     @Autowired
-    private StaffRepository staffRepository;
+    private AccountRepository accountRepository;
     @Autowired
     private RoleRepository roleRepository;
     @Autowired
-    private AccountService userService;
-    @Autowired
-    private EntityManager entityManager;
+    private AccountService accountService;
 
     @Transactional
     @PostConstruct
@@ -44,22 +44,21 @@ public class InitDataBase {
             role.setName("ROLE_USER");
             roleRepository.save(role);
         }
-        // PAYMENT
-//        if (staffRepository.findByEmail("admin1@gmail.com").isEmpty()){
-//            StaffRequestDTO staff = new StaffRequestDTO();
-//            staff.setEmail("admin1@gmail.com");
-//            staff.setPassword("admin");
-//            staff.setRoleId(roleRepository.findByCode("USER").get().getId());
-//            Staff staf = userService.createStaff(staff);
-//            staf.setRole(roleRepository.findByCode("ADMIN").get());
-//            staffRepository.save(staf);
-//        }
-//        if (staffRepository.findByEmail("admin2@gmail.com").isEmpty()){
-//            StaffRequestDTO staff = new StaffRequestDTO();
-//            staff.setEmail("admin2@gmail.com");
-//            staff.setPassword("admin");
-//            staff.setRoleId(roleRepository.findByCode("USER").get().getId());
-//            userService.createStaff(staff);
-//        }
+        if (accountRepository.findByUsername("admin@gmail.com").isEmpty()){
+            AccountRequestDTO account = new AccountRequestDTO();
+            account.setUsername("admin@gmail.com");
+            account.setPassword("123456");
+            account.setEnabled(true);
+            account.setRoleId(roleRepository.findByCode("ROLE_ADMIN").get().getId());
+            accountService.createAccount(account);
+        }
+        if (accountRepository.findByUsername("user@gmail.com").isEmpty()){
+            AccountRequestDTO account = new AccountRequestDTO();
+            account.setUsername("user@gmail.com");
+            account.setPassword("123456");
+            account.setEnabled(true);
+            account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
+            accountService.createAccount(account);
+        }
     }
 }
