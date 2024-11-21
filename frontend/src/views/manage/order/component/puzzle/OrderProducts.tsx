@@ -40,49 +40,60 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         return item.product.eventDTOList.length > 0
 
     }
-    const getFinalPrice = (item: OrderProductDetail) => {
-        const discountPercent = item.product.eventDTOList.length > 0
-            ? item.product.averageDiscountPercentEvent
+    const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
+        const nowPercent = item.averageDiscountEventPercent
+        const partPercent = item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent
+        return nowPercent === partPercent
+    }
+
+    const getFinalPriceInThePart = (item: OrderDetailResponseDTO) => {
+        const discountPercent = item.averageDiscountEventPercent > 0
+            ? item.averageDiscountEventPercent
             : 0
 
-        return Math.round(item.price * (1 - discountPercent / 100))
+        return Math.round(item.productDetailResponseDTO.price * (1 - discountPercent / 100))
     }
 
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
-            <div className="flex">
-                <div className={'relative'}>
-                    {
-                        Array.isArray(row.productDetailResponseDTO.images)
-                        && row.productDetailResponseDTO.images.length > 0 ?
-                            (
-                                <Avatar size={90} src={row.productDetailResponseDTO.images[0]?.url} />
+            <div>
+                <div className="flex">
+                    <div className={'relative'}>
+                        {
+                            Array.isArray(row.productDetailResponseDTO.images)
+                            && row.productDetailResponseDTO.images.length > 0 ?
+                                (
+                                    <Avatar size={100} src={row.productDetailResponseDTO.images[0]?.url} />
 
-                            ) :
-                            (
-                                <Avatar size={90} icon={<FiPackage />} />
+                                ) :
+                                (
+                                    <Avatar size={100} icon={<FiPackage />} />
 
+                                )
+                        }
+                        {
+                            row.averageDiscountEventPercent > 0 && (
+                                <div
+                                    className={'text-[10px] absolute top-0 right-0 bg-red-600 text-white border border-black px-[4px] py-[1px]'}>
+                                    <span>-{row.averageDiscountEventPercent}%</span>
+                                </div>
                             )
-                    }
-                    {
-                        row.productDetailResponseDTO.product.averageDiscountPercentEvent > 0 && (
-                            <div
-                                className={'text-[10px] absolute top-0 right-0 bg-red-600 text-white border border-black px-[4px] py-[1px]'}>
-                                <span>-{row.productDetailResponseDTO.product.averageDiscountPercentEvent}%</span>
-                            </div>
-                        )
-                    }
+                        }
+                    </div>
+                    <div className="ltr:ml-2 rtl:mr-2">
+                        <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
+                        <div className="mb-1">
+                            <span className="capitalize">Cỡ: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO.size.name}</span>
+                        </div>
+                        <div className="mb-1">
+                            <span className="capitalize">Màu: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO.color.name}</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
-                    <div className="mb-1">
-                        <span className="capitalize">Cỡ: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO.size.name}</span>
-                    </div>
-                    <div className="mb-1">
-                        <span className="capitalize">Màu: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO.color.name}</span>
-                    </div>
+                <div className={'text-orange-700'}>
+                    {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
                 </div>
             </div>
         )
@@ -100,14 +111,14 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const handleConfirmDelete = async () => {
         console.log('Confirm')
         setOpenDelete(false)
-        await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function(response) {
+        await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function() {
             fetchData()
         })
     }
 
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
-            .then(function(response) {
+            .then(function() {
                 fetchData()
             })
             .catch(function(err) {
@@ -135,7 +146,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 {
                     selectObject.status === 'PENDING' ? (
                         <div className="flex gap-2">
-                            {/*<button><HiPencil size={20}></HiPencil></button>*/}
+                        {/*<button><HiPencil size={20}></HiPencil></button>*/}
                             <button onClick={() => onOpenDeleteOrderDetail(row.id)}><HiMinus size={20}></HiMinus>
                             </button>
                         </div>
@@ -170,7 +181,6 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         columnHelper.accessor('quantity', {
             header: 'Số lượng',
             cell: (props) => {
-                const row = props.row.original
                 return (
                     <div className="flex gap-1 items-center justify-start">
                         {
@@ -199,7 +209,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                         <div className={`${hasSaleEvent(row.productDetailResponseDTO) ? 'line-through' : 'hidden'}`}>
                             <PriceAmount amount={row.productDetailResponseDTO.price} />
                         </div>
-                        <PriceAmount amount={getFinalPrice(row.productDetailResponseDTO)} />
+                        <PriceAmount amount={getFinalPriceInThePart(row)} />
                     </div>
                 )
             }
@@ -210,7 +220,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 const row = props.row.original
                 return (
                     <div className={'flex gap-3 text-red-600'}>
-                        <PriceAmount amount={row.quantity * getFinalPrice(row.productDetailResponseDTO)} />
+                        <PriceAmount amount={row.quantity * getFinalPriceInThePart(row)} />
                     </div>
                 )
             }
@@ -236,7 +246,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         setIsOpen(true)
     }
 
-    const onDrawerClose = (e: MouseEvent | any) => {
+    const onDrawerClose = (e: MouseEvent) => {
         console.log('onDrawerClose', e)
         setIsOpen(false)
     }

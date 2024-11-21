@@ -139,7 +139,7 @@ export type ProductD = {
     name: string;
     deleted: boolean;
     eventDTOList: EventResponseDTO[]
-    averageDiscountPercentEvent: number,
+    nowAverageDiscountPercentEvent: number,
 };
 
 export type OrderProductDetail = Entity & {
