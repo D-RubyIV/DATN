@@ -14,6 +14,7 @@ import { OrderResponseDTO, ProductDetailOverviewPhah04 } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 import { Avatar } from '@/components/ui'
 import { FiPackage } from 'react-icons/fi'
+import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
 
 const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     setIsOpenProductModal: Dispatch<SetStateAction<boolean>>,
@@ -22,6 +23,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
 }) => {
     const inputRef = useRef(null)
     const quantityRef = useRef(null)
+    const { setIsOpenOverrideConfirm, checkAllowOverride } = useOrderContext()
     const [data, setData] = useState([])
     const { sleep, isLoadingComponent, setIsLoadingComponent } = useLoadingContext()
     const [isOpenPlacement, setIsOpenPlacement] = useState(false)
@@ -44,7 +46,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         thicknessName: '',
         elasticityName: '',
         images: [],
-        averageDiscountPercentEvent: 0,
+        nowAverageDiscountPercentEvent: 0,
         eventResponseDTOS: []
     })
 
@@ -267,13 +269,23 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     }
 
     const addOrderDetail = async () => {
-        await instance.post('/order-details', orderDetailRequest)
-        await fetchData()
-        setIsOpenPlacement(false)
-        setIsOpenProductModal(false)
-        await sleep(500)
-        openNotification('Thêm thành công!')
-        document.body.style.overflow = 'auto'
+        console.log(orderDetailRequest)
+        const hasChange = await checkAllowOverride(orderDetailRequest)
+        console.log(hasChange)
+        setIsOpenOverrideConfirm(hasChange)
+        if (hasChange) {
+            setIsOpenPlacement(false)
+            setIsOpenProductModal(false)
+        } else {
+            await instance.post('/order-details', orderDetailRequest)
+            await fetchData()
+            setIsOpenPlacement(false)
+            setIsOpenProductModal(false)
+            await sleep(500)
+            openNotification('Thêm thành công!')
+            document.body.style.overflow = 'auto'
+        }
+
     }
 
 
@@ -373,6 +385,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                 </div>
 
             </div>
+
         </div>
     )
 }

@@ -9,6 +9,7 @@ import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.order.OrderProductDetailRepository;
+import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.order_detail.OrderDetailRepository;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.service.IService;
@@ -20,7 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -34,8 +37,12 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
     @Autowired
     private OrderProductDetailRepository orderProductDetailRepository;
+
     @Autowired
     private ProductDetailRepository productDetailRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -152,6 +159,33 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return orderDetailRepository.save(orderDetail);
         }
+    }
+
+    public Map<String, Boolean> checkAllowOverride(OrderDetailRequestDTO orderDetailRequestDTO) {
+        // lấy product detail
+        Optional<ProductDetail> productDetail = productDetailRepository.findById(orderDetailRequestDTO.getProductDetailId());
+        // lấy hóa đơn
+        Optional<Order> order = orderRepository.findById(orderDetailRequestDTO.getOrderId());
+        // lấy hóa đơm chi tiết
+        Optional<OrderDetail> orderDetail = orderDetailRepository.findByOrderIdAndProductDetailId(orderDetailRequestDTO.getOrderId(), orderDetailRequestDTO.getProductDetailId());
+        // nếu đã tồn tại
+        Map<String, Boolean> map = new HashMap<String, Boolean>();
+        boolean changeOfEvent = false;
+        if (orderDetail.isPresent()) {
+            // kiểm tra cho phép ghi đè số lượng hay không
+            changeOfEvent = checkHasChangeOfEvent(orderDetail.get());
+        }
+        log.info("HAS CHANGE EVENT: " + changeOfEvent);
+        map.put("hasChange", changeOfEvent);
+        return map;
+    }
+
+    public boolean checkHasChangeOfEvent(OrderDetail orderDetail) {
+        double oldAverageDiscountEventPercent = orderDetail.getAverageDiscountEventPercent();
+        double newAverageDiscountEventPercent = EventUtil.getAveragePercentEvent(orderDetail.getProductDetail().getProduct().getValidEvents());
+        log.info("OLD : " + oldAverageDiscountEventPercent);
+        log.info("NEW : " + newAverageDiscountEventPercent);
+        return oldAverageDiscountEventPercent != newAverageDiscountEventPercent;
     }
 
     public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable) {

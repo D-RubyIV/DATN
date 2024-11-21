@@ -22,6 +22,7 @@ import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import { FiPackage } from 'react-icons/fi'
 import SellProductModal from '@/views/manage/sell/component/dialog/SellProductModal'
+import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
 
 
 const OrderProducts = ({ data, selectObject, fetchData }: {
@@ -57,38 +58,47 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div>
-                <div className="flex">
+                <div className="flex gap-3">
                     <div className={'relative'}>
                         {
-                            Array.isArray(row.productDetailResponseDTO.images)
-                            && row.productDetailResponseDTO.images.length > 0 ?
+                            Array.isArray(row.productDetailResponseDTO.images) && row.productDetailResponseDTO.images.length > 0 ?
                                 (
-                                    <Avatar size={100} src={row.productDetailResponseDTO.images[0]?.url} />
-
-                                ) :
-                                (
+                                    <Avatar
+                                        size={100}
+                                        src={row.productDetailResponseDTO.images[0].url}
+                                    />
+                                )
+                                : (
                                     <Avatar size={100} icon={<FiPackage />} />
-
                                 )
                         }
                         {
-                            row.averageDiscountEventPercent > 0 && (
+                            row?.averageDiscountEventPercent ? (
                                 <div
-                                    className={'text-[10px] absolute top-0 right-0 bg-red-600 text-white border border-black px-[4px] py-[1px]'}>
-                                    <span>-{row.averageDiscountEventPercent}%</span>
+                                    className={'absolute -top-2 -right-2 text-white p-[2px] bg-red-600 text-[12px] border border-black'}>
+                                    {
+                                        <p>-{row.averageDiscountEventPercent}%</p>
+                                    }
                                 </div>
-                            )
+                            ) : (<div></div>)
                         }
+
                     </div>
                     <div className="ltr:ml-2 rtl:mr-2">
-                        <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
+                        <h6 className="mb-2">
+                            ({row.productDetailResponseDTO?.product.name})
+                            {row.productDetailResponseDTO?.name}</h6>
                         <div className="mb-1">
-                            <span className="capitalize">Cỡ: </span>
-                            <span className="font-semibold">{row.productDetailResponseDTO.size.name}</span>
+                            <span className="capitalize">Mã SCPT: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.code}</span>
                         </div>
                         <div className="mb-1">
-                            <span className="capitalize">Màu: </span>
-                            <span className="font-semibold">{row.productDetailResponseDTO.color.name}</span>
+                            <span className="capitalize">Kích cỡ: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.size.name}</span>
+                        </div>
+                        <div className="mb-1">
+                            <span className="capitalize">Màu sắc: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.color.name}</span>
                         </div>
                     </div>
                 </div>
@@ -96,6 +106,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                     {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
                 </div>
             </div>
+
         )
     }
 
@@ -146,7 +157,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 {
                     selectObject.status === 'PENDING' ? (
                         <div className="flex gap-2">
-                        {/*<button><HiPencil size={20}></HiPencil></button>*/}
+                            {/*<button><HiPencil size={20}></HiPencil></button>*/}
                             <button onClick={() => onOpenDeleteOrderDetail(row.id)}><HiMinus size={20}></HiMinus>
                             </button>
                         </div>
@@ -254,6 +265,23 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
 
 
+    // ==========================================
+    const handleCloseOverride = () => {
+        console.log('Close')
+        setIsOpenOverrideConfirm(false)
+    }
+
+    const handleConfirmOverride = async () => {
+        console.log('Confirm')
+        setIsOpenOverrideConfirm(false)
+        // await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function() {
+        //     fetchData()
+        // })
+    }
+
+    const { isOpenOverrideConfirm, setIsOpenOverrideConfirm } = useOrderContext()
+    // ==========================================
+
     return (
         <div className="h-[585px]">
             <ConfirmDialog
@@ -268,9 +296,21 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             >
                 <p>Xác nhận muốn xóa ?</p>
             </ConfirmDialog>
+            <ConfirmDialog
+                isOpen={isOpenOverrideConfirm}
+                type={'warning'}
+                title={'Xác nhận tạo bản ghi mới ?'}
+                confirmButtonColor={'red-600'}
+                onClose={handleCloseOverride}
+                onRequestClose={handleCloseOverride}
+                onCancel={handleCloseOverride}
+                onConfirm={handleConfirmOverride}
+            >
+                <p>Đợt giảm giá cho đơn này đã có sự thay đổi</p>
+            </ConfirmDialog>
             {/*  */}
             {isOpenProductModal && <SellProductModal fetchData={fetchData} setIsOpenProductModal={setIsOpenProductModal}
-                                                 selectOrder={selectObject}></SellProductModal>}
+                                                     selectOrder={selectObject}></SellProductModal>}
             {/*  */}
             <div className="">
                 <Drawer
