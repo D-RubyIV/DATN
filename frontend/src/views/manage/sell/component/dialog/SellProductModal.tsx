@@ -103,7 +103,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const getFinalPrice = (item: ProductDetailOverviewPhah04) => {
         const { price } = item
         const discountPercent = item.eventResponseDTOS.length > 0
-            ? item.averageDiscountPercentEvent
+            ? item.nowAverageDiscountPercentEvent
             : 0
 
         return Math.round(price * (1 - discountPercent / 100))
@@ -125,8 +125,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         {
                             props.row.original.eventResponseDTOS.length > 0 && (
                                 <div
-                                    className={'absolute top-0 right-0 p-1 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                    <p>-{props.row.original.averageDiscountPercentEvent} %</p>
+                                    className={'absolute top-0 -right-4 p-1 bg-red-600 z-50 border-black border text-[10px] text-white mim-w-[45px] text-center font-semibold'}>
+                                    <p>-{props.row.original.nowAverageDiscountPercentEvent} %</p>
                                 </div>
                             )
                         }
@@ -137,8 +137,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         {
                             props.row.original.eventResponseDTOS.length > 0 && (
                                 <div
-                                    className={'absolute top-0 right-0 p-1 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                    <p>-{props.row.original.averageDiscountPercentEvent} %</p>
+                                    className={'absolute top-0 -right-4 p-1 bg-red-600 z-50 border-black border text-[10px] text-white mim-w-[45px] text-center font-semibold'}>
+                                    <p>-{props.row.original.nowAverageDiscountPercentEvent} %</p>
                                 </div>
                             )
                         }

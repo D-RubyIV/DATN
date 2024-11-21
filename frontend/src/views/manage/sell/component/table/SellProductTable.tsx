@@ -226,26 +226,26 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
-            <div className="flex">
+            <div className="flex gap-3">
                 <div className={'relative'}>
                     {
                         Array.isArray(row.productDetailResponseDTO.images) && row.productDetailResponseDTO.images.length > 0 ?
                             (
                                 <Avatar
-                                    size={90}
+                                    size={100}
                                     src={row.productDetailResponseDTO.images[0].url}
                                 />
                             )
                             : (
-                                <Avatar size={90} icon={<FiPackage />} />
+                                <Avatar size={100} icon={<FiPackage />} />
                             )
                     }
                     {
-                        hasSale(row.productDetailResponseDTO) && (
+                        row?.averageDiscountEventPercent && (
                             <div
                                 className={'absolute -top-2 -right-2 text-white p-[2px] bg-red-600 text-[12px] border border-black'}>
                                 {
-                                    <p>-{getSalePercent(row.productDetailResponseDTO)}%</p>
+                                    <p>-{row.averageDiscountEventPercent}%</p>
                                 }
                             </div>
                         )
@@ -253,13 +253,19 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
                 </div>
                 <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.productDetailResponseDTO?.name}</h6>
+                    <h6 className="mb-2">
+                        ({row.productDetailResponseDTO?.product.name})
+                        {row.productDetailResponseDTO?.name}</h6>
                     <div className="mb-1">
-                        <span className="capitalize">Cỡ: </span>
+                        <span className="capitalize">Mã SCPT: </span>
+                        <span className="font-semibold">{row.productDetailResponseDTO?.code}</span>
+                    </div>
+                    <div className="mb-1">
+                        <span className="capitalize">Kích cỡ: </span>
                         <span className="font-semibold">{row.productDetailResponseDTO?.size.name}</span>
                     </div>
                     <div className="mb-1">
-                        <span className="capitalize">Màu: </span>
+                        <span className="capitalize">Màu sắc: </span>
                         <span className="font-semibold">{row.productDetailResponseDTO?.color.name}</span>
                     </div>
                 </div>

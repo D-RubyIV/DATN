@@ -167,6 +167,7 @@ export type OrderDetailResponseDTO = {
     code: string;
     quantity: number;
     productDetailResponseDTO: OrderProductDetail;
+    averageDiscountEventPercent: number
 };
 
 export type ProductOrderDetail = {
@@ -208,7 +209,7 @@ export type ProductDetailOverviewPhah04 = {
     materialName: string;
     thicknessName: string;
     elasticityName: string;
-    averageDiscountPercentEvent: number,
+    nowAverageDiscountPercentEvent: number,
     images: Image[],
     eventResponseDTOS: EventResponseDTO[]
 
