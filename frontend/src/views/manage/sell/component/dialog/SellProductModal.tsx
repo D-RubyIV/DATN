@@ -23,7 +23,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
 }) => {
     const inputRef = useRef(null)
     const quantityRef = useRef(null)
-    const { setIsOpenOverrideConfirm, checkAllowOverride } = useOrderContext()
+    const { setIsOpenOverrideConfirm, checkAllowOverride, setSelectedOrderRequestContext } = useOrderContext()
     const [data, setData] = useState([])
     const { sleep, isLoadingComponent, setIsLoadingComponent } = useLoadingContext()
     const [isOpenPlacement, setIsOpenPlacement] = useState(false)
@@ -274,6 +274,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         console.log(hasChange)
         setIsOpenOverrideConfirm(hasChange)
         if (hasChange) {
+            setSelectedOrderRequestContext(orderDetailRequest)
             setIsOpenPlacement(false)
             setIsOpenProductModal(false)
         } else {

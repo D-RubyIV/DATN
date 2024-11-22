@@ -140,7 +140,7 @@ export const OrderTable = () => {
 
     const calculateDistanceTime = (formattedDate: string) => {
         const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
-        const dateMinus12Hours = subHours(date, -12)
+        const dateMinus12Hours = subHours(date, 0)
         const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi })
         return distance
     }

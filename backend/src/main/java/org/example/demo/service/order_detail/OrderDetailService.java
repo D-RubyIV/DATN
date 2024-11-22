@@ -67,27 +67,61 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     }
 
     @Override
+    @Transactional
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
         // tìm kiếm hóa đơn chi tiết
         Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailId(requestDTO.getOrderId(), requestDTO.getProductDetailId());
         // tìm kiếm sản phẩm chi tiết
         Optional<ProductDetail> productDetailFound = productDetailRepository.findById(requestDTO.getProductDetailId());
         // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
+        // ==> GHI ĐÈ HOẶC TẠO BẢN GHI MỚI
         if (entityFound.isPresent() && productDetailFound.isPresent()) {
-            // cộng dồn số lượng cũ và mới
-            int newCount = entityFound.get().getQuantity() + requestDTO.getQuantity();
-            // nếu không đủ số lượng đáp ứng
-            if (newCount > productDetailFound.get().getQuantity()) {
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+            ProductDetail productDetail = productDetailFound.get();
+            // kiểm tra sự thay đổi event
+            boolean hasChangeOfEvents = checkHasChangeOfEvent(entityFound.get());
+            // nếu có thay đổi event
+            if (hasChangeOfEvents){
+                int oldOrderQuantity = entityFound.get().getQuantity();
+                OrderDetail orderDetail = new OrderDetail();
+                // set trạng thái xóa cho hóa đơn
+                orderDetail.setDeleted(false);
+                // set số lượng
+                // set gia trị event trung bình
+                orderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
+                // set hóa đơn vào hóa đơn chi tiết
+                orderDetail.setOrder(orderService.findById(requestDTO.getOrderId()));
+                // set spct vào hóa đơn chi tiết
+                orderDetail.setProductDetail(productDetail);
+                if (oldOrderQuantity + requestDTO.getQuantity() > productDetailFound.get().getQuantity()){
+                    throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+                }
+                else{
+                    orderDetail.setQuantity(requestDTO.getQuantity());
+                    OrderDetail response = orderDetailRepository.save(orderDetail);
+                    orderService.reloadSubTotalOrder(response.getOrder());
+                    return response;
+                }
+
+
             }
-            // ngược lại nếu đủ số lượng
-            else {
-                entityFound.get().setQuantity(newCount);
-                OrderDetail response = orderDetailRepository.save(entityFound.get());
-                orderService.reloadSubTotalOrder(response.getOrder());
-                return response;
+            // nếu không có thay đổi event
+            else{
+                // cộng dồn số lượng cũ và mới
+                int newCount = entityFound.get().getQuantity() + requestDTO.getQuantity();
+                // nếu không đủ số lượng đáp ứng
+                if (newCount > productDetailFound.get().getQuantity()) {
+                    throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+                }
+                // ngược lại nếu đủ số lượng
+                else {
+                    entityFound.get().setQuantity(newCount);
+                    OrderDetail response = orderDetailRepository.save(entityFound.get());
+                    orderService.reloadSubTotalOrder(response.getOrder());
+                    return response;
+                }
             }
         }
+        // ==> TẠO BẢN GHI MỚI
         // nếu không tìm thấy hóa đơn chi tiết và sản phẩm chi tiết
         else {
             ProductDetail productDetail = productDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found"));
@@ -115,6 +149,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         return null;
     }
 
+    @Transactional
     public OrderDetail updateQuantity(Integer integer, int newQuantity) {
         // tìm hóa đơn chi tiết theo id
         OrderDetail orderDetail = findById(integer);

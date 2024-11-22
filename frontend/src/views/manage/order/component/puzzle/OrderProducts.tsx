@@ -274,12 +274,13 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const handleConfirmOverride = async () => {
         console.log('Confirm')
         setIsOpenOverrideConfirm(false)
-        // await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function() {
-        //     fetchData()
-        // })
+        console.log(selectedOrderRequestContext)
+        await instance.post('/order-details', selectedOrderRequestContext).then(function() {
+            fetchData()
+        })
     }
 
-    const { isOpenOverrideConfirm, setIsOpenOverrideConfirm } = useOrderContext()
+    const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
     // ==========================================
 
     return (

@@ -370,6 +370,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.findAllByStatusAndCreatedDateBetweenOrderByCreatedDateDesc(status, from, to);
     }
 
+    @Transactional
     public Order convertCartToOrder(Integer cartId) {
         boolean isPayment = false;
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không xác định được giỏ hàng"));
@@ -396,6 +397,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setStatus(Status.PENDING);
         order.setPayment(cart.getPayment());
         order.setCustomer(cart.getCustomer());
+        order.setVoucherMinimumSubtotalRequired(0.0);
+        order.setSurcharge(0.0);
+        order.setRefund(0.0);
+        order.setDiscountVoucherPercent(0.0);
         if (order.getPayment() == Payment.TRANSFER) {
             isPayment = true;
         }
@@ -416,6 +421,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             od.setQuantity(s.getQuantity());
             od.setProductDetail(s.getProductDetail());
             od.setDeleted(false);
+            od.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(s.getProductDetail().getProduct().getValidEvents()));
             list.add(od);
         });
         List<OrderDetail> orderDetailListSaved = orderDetailRepository.saveAll(list);
