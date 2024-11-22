@@ -35,6 +35,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 // Remove the apiPrefix from these paths since request.getServletPath()
                 // doesn't include the context path
                 Pair.of("/roles.*", "GET"),
+                Pair.of("/ws.*", "GET"),
                 Pair.of("/products.*", "GET"),
                 Pair.of("/users/register", "POST"),
                 Pair.of("/users/register", "POST"),

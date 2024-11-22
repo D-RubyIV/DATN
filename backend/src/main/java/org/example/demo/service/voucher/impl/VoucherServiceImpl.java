@@ -18,6 +18,7 @@ import org.example.demo.mapper.voucher.response.VoucherResponseMapper;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.example.demo.repository.customer.CustomerRepository;
+import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.voucher.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private AutoGenCode autoGenCode;
@@ -207,9 +211,18 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     @Transactional
-    public Voucher updateVoucher(Integer id, VoucherRequest request) {
+    public VoucherResponseDTO updateVoucher(Integer id, VoucherRequest request) {
+
+
         Voucher voucherUpdate = voucherRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Voucher not found with ID " + id));
+
+        int countOrdersUsingVoucher = orderRepository.countByVoucherId(id);
+        if (countOrdersUsingVoucher > 0) {
+            System.out.println("Number of orders using this voucher: " + countOrdersUsingVoucher);
+
+        }
+
         Voucher voucherSaved = voucherConvert.convertRequestToEntity(id, request);
         updateStatus(voucherUpdate);
         if (voucherSaved.getTypeTicket() == Type.Individual && !request.getCustomers().isEmpty()) {
@@ -224,7 +237,8 @@ public class VoucherServiceImpl implements VoucherService {
             voucherSaved.setCustomers(Collections.emptyList());
             voucherSaved = voucherRepository.save(voucherSaved);
         }
-        return voucherRepository.save(voucherSaved);
+        voucherRepository.save(voucherSaved);
+        return voucherResponseMapper.toDTO(voucherSaved , countOrdersUsingVoucher);
     }
 
     @Override

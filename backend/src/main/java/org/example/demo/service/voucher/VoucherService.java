@@ -40,7 +40,7 @@ public interface VoucherService {
 
     Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, Pageable pageable);
 
-    Voucher updateVoucher(Integer id, VoucherRequest request);
+    VoucherResponseDTO updateVoucher(Integer id, VoucherRequest request);
 
     void updateStatusVoucher();
 

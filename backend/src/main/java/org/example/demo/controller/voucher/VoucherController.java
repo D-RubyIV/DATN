@@ -38,6 +38,7 @@ public class VoucherController {
     public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id, VoucherRequest request) {
         return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id, request));
     }
+
     @GetMapping
     public ResponseEntity<Page<VoucherResponseDTO>> getAllVoucher(
             @RequestParam(name = "limit", defaultValue = "5") int limit,
@@ -46,6 +47,7 @@ public class VoucherController {
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/page")
     public ResponseEntity<Page<VoucherResponseDTO>> searchVoucher(
             @RequestParam(required = false) String keyword,
@@ -73,7 +75,6 @@ public class VoucherController {
     }
 
 
-
     @GetMapping("/get-all")
     public ResponseEntity<List<VoucherResponse>> getAll() {
         List<VoucherResponse> fetchVoucher = this.voucherService.getAll();
@@ -96,13 +97,24 @@ public class VoucherController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Add voucher successfully");
     }
 
+    //    @PutMapping("/update/{id}")
+//    public ResponseEntity<?> updateVoucher(@PathVariable Integer id, @RequestBody VoucherRequest request) {
+//        Voucher updateVoucher = voucherService.updateVoucher(id, request);
+//        if (updateVoucher == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body(updateVoucher);
+//    }
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateVoucher(@PathVariable Integer id, @RequestBody VoucherRequest request) {
-        Voucher updateVoucher = voucherService.updateVoucher(id, request);
-        if (updateVoucher == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
+        try {
+            VoucherResponseDTO updatedVoucher = voucherService.updateVoucher(id, request);
+            return ResponseEntity.ok(updatedVoucher);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(updateVoucher);
     }
 
     @PutMapping("/delete/{id}")
@@ -116,7 +128,7 @@ public class VoucherController {
     }
 
     @GetMapping("/better-voucher")
-    public ResponseEntity<?> findBetterVoucher(@RequestParam("amount") BigDecimal amount){
+    public ResponseEntity<?> findBetterVoucher(@RequestParam("amount") BigDecimal amount) {
         return ResponseEntity.ok(voucherResponseMapper.toListDTO(voucherService.findBetterVoucher(amount)));
     }
 

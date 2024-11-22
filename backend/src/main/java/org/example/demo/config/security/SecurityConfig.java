@@ -66,6 +66,7 @@ public class SecurityConfig {
                             .requestMatchers(GET, "/products/images/*").permitAll()
                             .requestMatchers(GET, "/orders/**").permitAll()
                             .requestMatchers(GET, "/order_details/**").permitAll()
+                            .requestMatchers(GET, "/ws/**").permitAll()
                             .requestMatchers(GET, "/voucher/**").hasRole("USER")
                             .requestMatchers(GET, "/customer/**").hasRole("ADMIN")
                             .anyRequest()
