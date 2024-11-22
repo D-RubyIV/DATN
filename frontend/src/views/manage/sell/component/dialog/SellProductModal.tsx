@@ -32,17 +32,75 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     selectOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
 }) => {
-    const [listColor, setListColor] = useState<Property[]>([])
     const [listSize, setListSize] = useState<Property[]>([])
-    const [listBrand, setListBrand] = useState<Property[]>([])
-    const [listMaterial, setListMaterial] = useState<Property[]>([])
+    const [listColor, setListColor] = useState<Property[]>([])
     const [listProduct, setListProduct] = useState<Property[]>([])
+    const [listTexture, setListTexture] = useState<Property[]>([])
+    const [listOrigin, setListOrigin] = useState<Property[]>([])
+    const [listBrand, setListBrand] = useState<Property[]>([])
+    const [listCollar, setListCollar] = useState<Property[]>([])
+    const [listSleeve, setListSleeve] = useState<Property[]>([])
+    const [listMaterial, setListMaterial] = useState<Property[]>([])
+    const [listThickness, setListThickness] = useState<Property[]>([])
+    const [listElasticity, setListElasticity] = useState<Property[]>([])
+
 
     // const [selectedColor, setSelectedColor] = useState<Property>()
     // const [selectedSize, setSelectedSize] = useState<Property>()
     // const [selectedBrand, setSelectedBrand] = useState<Property>()
     // const [selecteddMaterial, setSelectedMaterial] = useState<Property>()
     // const [selectedProduct, setSelectedProduct] = useState<Property>()
+
+    const handleThicknessChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            thickness: newValue?.id ?? undefined
+        }))
+    }
+    const handleElasticityChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            elasticity: newValue?.id ?? undefined
+        }))
+    }
+    const handleCollarChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            collar: newValue?.id ?? undefined
+        }))
+    }
+    const handleSleeveChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            sleeve: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleOriginChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            origin: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleTextureChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            texture: newValue?.id ?? undefined
+        }))
+    }
 
     const handleColorChange = (newValue, actionMeta) => {
         console.log(`action: ${actionMeta.action}`)
@@ -112,10 +170,35 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             console.log(response.data)
             setListProduct(transformData(response.data.data))
         })
+        instance.get('/texture/texture-list').then(function(response) {
+            console.log(response.data)
+            setListTexture(transformData(response.data.data))
+        })
         instance.get('/material/material-list').then(function(response) {
             console.log(response.data)
             setListMaterial(transformData(response.data.data))
         })
+        instance.get('/origin/origin-list').then(function(response) {
+            console.log(response.data)
+            setListOrigin(transformData(response.data.data))
+        })
+        instance.get('/collar/collar-list').then(function(response) {
+            console.log(response.data)
+            setListCollar(transformData(response.data.data))
+        })
+        instance.get('/sleeve/sleeve-list').then(function(response) {
+            console.log(response.data)
+            setListSleeve(transformData(response.data.data))
+        })
+        instance.get('/thickness/thickness-list').then(function(response) {
+            console.log(response.data)
+            setListThickness(transformData(response.data.data))
+        })
+        instance.get('/elasticity/elasticity-list').then(function(response) {
+            console.log(response.data)
+            setListElasticity(transformData(response.data.data))
+        })
+
     }
     useEffect(() => {
         initProperties()
@@ -334,16 +417,26 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         size: number | undefined,
         color: number | undefined,
         product: number | undefined,
+        texture: number | undefined,
         origin: number | undefined,
         brand: number | undefined,
-        material: number | undefined
+        collar: number | undefined,
+        sleeve: number | undefined,
+        material: number | undefined,
+        thickness: number | undefined,
+        elasticity: number | undefined
     }>({
         size: undefined,
         color: undefined,
         product: undefined,
+        texture: undefined,
         origin: undefined,
         brand: undefined,
-        material: undefined
+        collar: undefined,
+        sleeve: undefined,
+        material: undefined,
+        thickness: undefined,
+        elasticity: undefined,
     })
 
     // FUCTION
@@ -378,11 +471,11 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         setIsLoadingComponent(false)
     }
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value); // Log the input value
-        debounceFn(e.target.value); // Call the debounced function
+        console.log(e.target.value) // Log the input value
+        debounceFn(e.target.value) // Call the debounced function
     }
 
-    const debounceFn = debounce(handleDebounceFn, 500);
+    const debounceFn = debounce(handleDebounceFn, 500)
 
     function handleDebounceFn(val: string) {
         console.log(val)
@@ -501,7 +594,16 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     onChange={handleChange}
                                 />
                             </div>
-
+                            <div>
+                                <p>Kích cỡ</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleSizeChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listSize}
+                                ></Select>
+                            </div>
                             <div>
                                 <p>Màu sắc</p>
                                 <Select
@@ -513,13 +615,76 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                 ></Select>
                             </div>
                             <div>
-                                <p>Kích cỡ</p>
+                                <p>Sản phẩm</p>
                                 <Select
                                     isClearable
-                                    onChange={handleSizeChange}
+                                    onChange={handleProductChange}
                                     size={'sm'}
                                     placeholder="Please Select"
-                                    options={listSize}
+                                    options={listProduct}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Họa tiết</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleTextureChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listTexture}
+                                ></Select>
+                            </div>
+
+
+                            <div>
+                                <p>Xuất xứ</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleOriginChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listOrigin}
+                                ></Select>
+                            </div>
+
+                            <div>
+                                <p>Cổ áo</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleCollarChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listCollar}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Tay áo</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleSleeveChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listSleeve}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Độ dày</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleThicknessChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listThickness}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Độ co dãn</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleElasticityChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listElasticity}
                                 ></Select>
                             </div>
                             <div>
@@ -542,29 +707,20 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     options={listMaterial}
                                 ></Select>
                             </div>
-                            <div>
-                                <p>Sản phẩm</p>
-                                <Select
-                                    isClearable
-                                    onChange={handleProductChange}
-                                    size={'sm'}
-                                    placeholder="Please Select"
-                                    options={listProduct}
-                                ></Select>
-                            </div>
+
                         </div>
                         {
                             data.length > 0 ? (
-                                    <DataTable
-                                        columns={columns}
-                                        data={data}
-                                        loading={isLoadingComponent}
-                                        pagingData={tableData}
-                                        onPaginationChange={handlePaginationChange}
-                                        onSelectChange={handleSelectChange}
-                                        onSort={handleSort}
-                                    />
-                                ):(
+                                <DataTable
+                                    columns={columns}
+                                    data={data}
+                                    loading={isLoadingComponent}
+                                    pagingData={tableData}
+                                    onPaginationChange={handlePaginationChange}
+                                    onSelectChange={handleSelectChange}
+                                    onSort={handleSort}
+                                />
+                            ) : (
                                 <div className={'text-xl font-semibold flex justify-center'}>
                                     <p className={'py-60'}>
                                         Không tìm thấy sản phẩm nào phù hợp

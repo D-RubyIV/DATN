@@ -178,14 +178,14 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>4</SeedValue>
+            <SeedValue>6</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Adidas|BananaRepublic|CalvinKlein|Diesel|Everlane|Armani|Burberry|Champion|Dior|Express</Expression>
@@ -351,14 +351,14 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>10</SeedValue>
+            <SeedValue>14</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Cổ tròn|Cổ V|Cổ bẻ|Cổ áo sơ mi|Cổ cao|Cổ 3/4|Cổ chữ U|Cổ đổ|Cổ phối ren|Cổ lapel</Expression>
@@ -697,17 +697,17 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>16</SeedValue>
+            <SeedValue>20</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Dan hoi 1|Dan hoi 2</Expression>
+            <Expression>Độ dàn hồi 1|Độ dàn hồi 2</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -1341,14 +1341,14 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>22</SeedValue>
+            <SeedValue>32</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Cotton|Linen|Polyester|Silk|Wool|Denim|Rayon|Leather|Nylon|Velvet</Expression>
@@ -1514,14 +1514,14 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>29</SeedValue>
+            <SeedValue>44</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Trung|Ấn độ|Mỹ|Bangladesh</Expression>
@@ -2222,14 +2222,14 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>52</SeedValue>
+            <SeedValue>69</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Tay ngắn|Tay dài|Tay lỡ|Tay lỡ Kimono|Tay bồng|Tay loe|Tay xòe|Tay loe nhún|Tay lệch vai|Tay tôm</Expression>
@@ -2395,17 +2395,17 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>59</SeedValue>
+            <SeedValue>76</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Casual|Business Casual|Formal|Streetwear|Sporty|Vintage|Bohemian|Preppy|Punk|Gothic</Expression>
+            <Expression>Oversized|Cotton|Đen|In logo|Streetwear</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2568,14 +2568,14 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>61</SeedValue>
+            <SeedValue>78</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Sọc|Chấm bi|Carô|Họa tiết hoa|Họa tiết hình học|Camouflage|Zebra|Họa tiết chéo|Chấm|Màu sắc ombre</Expression>
@@ -2741,17 +2741,17 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>63</SeedValue>
+            <SeedValue>80</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Do day 1|Do day 2</Expression>
+            <Expression>2mm|5mm</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
