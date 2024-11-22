@@ -18,7 +18,7 @@ export const queryClient = new QueryClient({
     }
 })
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <React.StrictMode>
+    // <React.StrictMode>
         <OrderProvider>
             <AuthProvider>
                 <ToastProvider>
@@ -33,5 +33,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 </ToastProvider>
             </AuthProvider>
         </OrderProvider>
-    </React.StrictMode>
+    // </React.StrictMode>
 )

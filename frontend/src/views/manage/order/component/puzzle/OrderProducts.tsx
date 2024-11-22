@@ -265,7 +265,6 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
 
 
-    // ==========================================
     const handleCloseOverride = () => {
         console.log('Close')
         setIsOpenOverrideConfirm(false)
@@ -326,8 +325,8 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             </div>
             <AdaptableCard className="mb-4 h-full">
                 <div className="flex justify-end items-center pb-4 gap-2">
-                    <Button onClick={() => openDrawer()} block variant="default" size="sm"
-                            className="bg-indigo-500 !w-auto" icon={<HiViewList />}>
+                    <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
+                            icon={<HiViewList />} onClick={() => openDrawer()}>
                         Xem lịch sử
                     </Button>
                     {
