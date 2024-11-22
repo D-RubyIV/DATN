@@ -137,4 +137,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     Page<TopProductObject> findAllTopProduct(Pageable pageable);
 
 
+    int countByVoucherIdAndStatus(Integer voucherId, Status status);
+
+
 }

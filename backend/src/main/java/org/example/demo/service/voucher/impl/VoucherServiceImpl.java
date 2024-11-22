@@ -8,6 +8,7 @@ import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.exception.CustomExceptions;
@@ -18,6 +19,7 @@ import org.example.demo.mapper.voucher.response.VoucherResponseMapper;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.example.demo.repository.customer.CustomerRepository;
+import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.voucher.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private AutoGenCode autoGenCode;
@@ -205,11 +210,42 @@ public class VoucherServiceImpl implements VoucherService {
         return voucherSaved;
     }
 
+//    @Override
+//    @Transactional
+//    public Voucher updateVoucher(Integer id, VoucherRequest request) {
+//        Voucher voucherUpdate = voucherRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Voucher not found with ID " + id));
+//        Voucher voucherSaved = voucherConvert.convertRequestToEntity(id, request);
+//        updateStatus(voucherUpdate);
+//        if (voucherSaved.getTypeTicket() == Type.Individual && !request.getCustomers().isEmpty()) {
+//            List<Integer> idCustomers = request.getCustomers();
+//            List<Customer> listCustomers = idCustomers.stream()
+//                    .map(idCustomer -> customerRepository.findById(idCustomer)
+//                            .orElseThrow(() -> new RuntimeException("Customer not found: " + idCustomer)))
+//                    .collect(Collectors.toList());
+//            voucherSaved.setCustomers(listCustomers);
+//            voucherSaved = voucherRepository.save(voucherSaved);
+//        } else {
+//            voucherSaved.setCustomers(Collections.emptyList());
+//            voucherSaved = voucherRepository.save(voucherSaved);
+//        }
+//        return voucherRepository.save(voucherSaved);
+//    }
+
     @Override
     @Transactional
-    public Voucher updateVoucher(Integer id, VoucherRequest request) {
+    public VoucherResponseDTO updateVoucher(Integer id, VoucherRequest request) {
+
+
         Voucher voucherUpdate = voucherRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Voucher not found with ID " + id));
+
+        int countOrdersUsingVoucher = orderRepository.countByVoucherIdAndStatus(id, Status.PENDING);
+        if (countOrdersUsingVoucher > 0) {
+            System.out.println("Number of orders using this voucher: " + countOrdersUsingVoucher);
+
+        }
+
         Voucher voucherSaved = voucherConvert.convertRequestToEntity(id, request);
         updateStatus(voucherUpdate);
         if (voucherSaved.getTypeTicket() == Type.Individual && !request.getCustomers().isEmpty()) {
@@ -224,9 +260,12 @@ public class VoucherServiceImpl implements VoucherService {
             voucherSaved.setCustomers(Collections.emptyList());
             voucherSaved = voucherRepository.save(voucherSaved);
         }
-        return voucherRepository.save(voucherSaved);
+        voucherRepository.save(voucherSaved);
+        return voucherResponseMapper.toDTO(voucherSaved , countOrdersUsingVoucher);
     }
 
+
+    // hinh nb
     @Override
     public void updateStatusVoucher() {
         List<Voucher> vouchers = voucherRepository.findAll();

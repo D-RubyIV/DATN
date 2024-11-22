@@ -21,5 +21,5 @@ public class VoucherResponseDTO {
     private Integer maxPercent;
     private Double minAmount;
     private String typeTicket;
-
+    private Integer countOrders;
 }
