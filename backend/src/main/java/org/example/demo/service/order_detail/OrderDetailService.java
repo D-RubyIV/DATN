@@ -70,55 +70,25 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Transactional
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
         // tìm kiếm hóa đơn chi tiết
-        Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailId(requestDTO.getOrderId(), requestDTO.getProductDetailId());
+        Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), requestDTO.getAverageDiscountEventPercent());
         // tìm kiếm sản phẩm chi tiết
         Optional<ProductDetail> productDetailFound = productDetailRepository.findById(requestDTO.getProductDetailId());
         // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
         // ==> GHI ĐÈ HOẶC TẠO BẢN GHI MỚI
         if (entityFound.isPresent() && productDetailFound.isPresent()) {
             ProductDetail productDetail = productDetailFound.get();
-            // kiểm tra sự thay đổi event
-            boolean hasChangeOfEvents = checkHasChangeOfEvent(entityFound.get());
-            // nếu có thay đổi event
-            if (hasChangeOfEvents){
-                int oldOrderQuantity = entityFound.get().getQuantity();
-                OrderDetail orderDetail = new OrderDetail();
-                // set trạng thái xóa cho hóa đơn
-                orderDetail.setDeleted(false);
-                // set số lượng
-                // set gia trị event trung bình
-                orderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
-                // set hóa đơn vào hóa đơn chi tiết
-                orderDetail.setOrder(orderService.findById(requestDTO.getOrderId()));
-                // set spct vào hóa đơn chi tiết
-                orderDetail.setProductDetail(productDetail);
-                if (oldOrderQuantity + requestDTO.getQuantity() > productDetailFound.get().getQuantity()){
-                    throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-                }
-                else{
-                    orderDetail.setQuantity(requestDTO.getQuantity());
-                    OrderDetail response = orderDetailRepository.save(orderDetail);
-                    orderService.reloadSubTotalOrder(response.getOrder());
-                    return response;
-                }
-
-
+            // cộng dồn số lượng cũ và mới
+            int newCount = entityFound.get().getQuantity() + requestDTO.getQuantity();
+            // nếu không đủ số lượng đáp ứng
+            if (newCount > productDetailFound.get().getQuantity()) {
+                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
             }
-            // nếu không có thay đổi event
-            else{
-                // cộng dồn số lượng cũ và mới
-                int newCount = entityFound.get().getQuantity() + requestDTO.getQuantity();
-                // nếu không đủ số lượng đáp ứng
-                if (newCount > productDetailFound.get().getQuantity()) {
-                    throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-                }
-                // ngược lại nếu đủ số lượng
-                else {
-                    entityFound.get().setQuantity(newCount);
-                    OrderDetail response = orderDetailRepository.save(entityFound.get());
-                    orderService.reloadSubTotalOrder(response.getOrder());
-                    return response;
-                }
+            // ngược lại nếu đủ số lượng
+            else {
+                entityFound.get().setQuantity(newCount);
+                OrderDetail response = orderDetailRepository.save(entityFound.get());
+                orderService.reloadSubTotalOrder(response.getOrder());
+                return response;
             }
         }
         // ==> TẠO BẢN GHI MỚI
@@ -201,26 +171,31 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         Optional<ProductDetail> productDetail = productDetailRepository.findById(orderDetailRequestDTO.getProductDetailId());
         // lấy hóa đơn
         Optional<Order> order = orderRepository.findById(orderDetailRequestDTO.getOrderId());
-        // lấy hóa đơm chi tiết
-        Optional<OrderDetail> orderDetail = orderDetailRepository.findByOrderIdAndProductDetailId(orderDetailRequestDTO.getOrderId(), orderDetailRequestDTO.getProductDetailId());
-        // nếu đã tồn tại
+        // lấy danh sách hóa đơm chi tiết dựa vào order id và product id
+        List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderIdAndProductDetailId(
+                orderDetailRequestDTO.getOrderId(),
+                orderDetailRequestDTO.getProductDetailId()
+        );
+        // thu thập list % giảm giá
+        List<Double> listPercent = orderDetailList.stream().map(OrderDetail::getAverageDiscountEventPercent).toList();
+
         Map<String, Boolean> map = new HashMap<String, Boolean>();
         boolean changeOfEvent = false;
-        if (orderDetail.isPresent()) {
-            // kiểm tra cho phép ghi đè số lượng hay không
-            changeOfEvent = checkHasChangeOfEvent(orderDetail.get());
+        // nếu ko có hóa đơn chi tiết cũ làm có giảm giá
+        System.out.println(listPercent.toString());
+        if (!listPercent.isEmpty()){
+            changeOfEvent = checkHasChangeOfEvent(productDetail.get(), listPercent);
         }
         log.info("HAS CHANGE EVENT: " + changeOfEvent);
         map.put("hasChange", changeOfEvent);
         return map;
     }
 
-    public boolean checkHasChangeOfEvent(OrderDetail orderDetail) {
-        double oldAverageDiscountEventPercent = orderDetail.getAverageDiscountEventPercent();
-        double newAverageDiscountEventPercent = EventUtil.getAveragePercentEvent(orderDetail.getProductDetail().getProduct().getValidEvents());
-        log.info("OLD : " + oldAverageDiscountEventPercent);
+    public boolean checkHasChangeOfEvent(ProductDetail productDetail, List<Double> percentList) {
+        double newAverageDiscountEventPercent = EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents());
+        log.info("OLD : " + percentList.toString());
         log.info("NEW : " + newAverageDiscountEventPercent);
-        return oldAverageDiscountEventPercent != newAverageDiscountEventPercent;
+        return !percentList.contains(newAverageDiscountEventPercent);
     }
 
     public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable) {

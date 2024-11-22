@@ -8,12 +8,12 @@ import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
 import { Badge, DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '../../../../../@types/order'
+import { StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '@/@types/order'
 import { Link } from 'react-router-dom'
 import { HiEye, HiOutlineSearch } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
-import { formatDistanceToNow, parse, format, subHours } from 'date-fns'
-import { vi } from 'date-fns/locale'
+import { parse, formatDistanceToNow, format } from 'date-fns'
+import { vi } from "date-fns/locale";
 
 type BadgeType =
     'countAll'
@@ -139,11 +139,21 @@ export const OrderTable = () => {
     }
 
     const calculateDistanceTime = (formattedDate: string) => {
-        const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
-        const dateMinus12Hours = subHours(date, 0)
-        const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi })
-        return distance
-    }
+        console.log("Input formattedDate:", formattedDate);
+
+        // Parse date theo định dạng "yyyy-MM-dd HH:mm:ss.SSSSSS"
+        const date = parse(formattedDate, "HH:mm dd-MM-yyyy", new Date());
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date format");
+            return "Invalid date";
+        }
+
+
+        // Tính khoảng cách thời gian so với hiện tại
+        const distance = formatDistanceToNow(date, { addSuffix: true, locale: vi });
+
+        return distance;
+    };
 
 
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
@@ -215,7 +225,7 @@ export const OrderTable = () => {
             header: 'Thời gian tạo',
             accessorKey: 'createdDate',
             cell: (props) => (
-                calculateDistanceTime(props.row.original.createdDate)
+                calculateDistanceTime(props.row.original.createdDate, props.row.original.code)
             )
         },
         {

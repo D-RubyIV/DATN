@@ -197,7 +197,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                             </div>
                         ) : (
                             <div>
-                                <p className={'line-through'}>{Math.round(props.row.original.price).toLocaleString('vi') + 'đ'}</p>
+                                <p>{Math.round(props.row.original.price).toLocaleString('vi') + 'đ'}</p>
                             </div>
                         )
                     }
@@ -235,7 +235,9 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const setSelectProductDetailAndOpenDrawer = (productDetail: ProductDetailOverviewPhah04, isOpen: boolean) => {
         setIsOpenPlacement(true)
         setSelectedProductDetail(productDetail)
-        setOrderDetailRequest((pre) => ({ ...pre, productDetailId: productDetail.id, quantity: 1 }))
+        console.log("------------------")
+        console.log(productDetail)
+        setOrderDetailRequest((pre) => ({ ...pre, productDetailId: productDetail.id, quantity: 1, averageDiscountEventPercent: productDetail.nowAverageDiscountPercentEvent }))
     }
 
     const fetchDataProduct = async () => {

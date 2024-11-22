@@ -7,11 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Integer> {
     Optional<OrderDetail> findByOrderIdAndProductDetailId(Integer idOrder, Integer idProductDetail);
+    List<OrderDetail> findAllByOrderIdAndProductDetailId(Integer idOrder, Integer idProductDetail);
+    Optional<OrderDetail> findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(Integer idOrder, Integer idProductDetail, double average);
 
     @Query(
             value = "SELECT o from OrderDetail o left join fetch o.order ord where ord.id = :id"
