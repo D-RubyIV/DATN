@@ -11,4 +11,7 @@ export type PaymentSummaryProps = {
     subTotal: number | undefined
     discount: number | undefined
     tax: number | undefined
+    refund: number | undefined
+    surcharge: number | undefined
+    totalPaid: number | undefined
 }

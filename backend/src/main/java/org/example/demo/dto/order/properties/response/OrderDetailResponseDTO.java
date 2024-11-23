@@ -13,5 +13,6 @@ public class OrderDetailResponseDTO {
     private Integer id;
     private Integer quantity;
     private Double averageDiscountEventPercent;
+    private boolean deleted;
     private ProductDetailResponseDTO productDetailResponseDTO;
 }

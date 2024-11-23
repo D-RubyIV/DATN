@@ -5386,30 +5386,6 @@
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
-        <Column Name="refund">
-          <Checked>true</Checked>
-          <DataType>float</DataType>
-          <GeneratorOptions xsi:type="FloatGeneratorOptions">
-            <AllowNulls>false</AllowNulls>
-            <NullProportion>10</NullProportion>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>38</SeedValue>
-            <MinValue>0</MinValue>
-            <MaxValue>0</MaxValue>
-            <UseDefault>false</UseDefault>
-            <DefaultValue />
-            <Scale>2</Scale>
-            <Precision>13</Precision>
-          </GeneratorOptions>
-          <GeneratorType>SqlFloatGenerator</GeneratorType>
-          <GeneratorName>float</GeneratorName>
-          <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
-          <Length>8</Length>
-          <Precision>53</Precision>
-        </Column>
         <Column Name="staff_id">
           <Checked>true</Checked>
           <DataType>int</DataType>
@@ -5457,30 +5433,6 @@
           <Length>8</Length>
           <Precision>53</Precision>
         </Column>
-        <Column Name="surcharge">
-          <Checked>true</Checked>
-          <DataType>float</DataType>
-          <GeneratorOptions xsi:type="FloatGeneratorOptions">
-            <AllowNulls>false</AllowNulls>
-            <NullProportion>10</NullProportion>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>39</SeedValue>
-            <MinValue>0</MinValue>
-            <MaxValue>0</MaxValue>
-            <UseDefault>false</UseDefault>
-            <DefaultValue />
-            <Scale>2</Scale>
-            <Precision>13</Precision>
-          </GeneratorOptions>
-          <GeneratorType>SqlFloatGenerator</GeneratorType>
-          <GeneratorName>float</GeneratorName>
-          <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
-          <Length>8</Length>
-          <Precision>53</Precision>
-        </Column>
         <Column Name="total">
           <Checked>true</Checked>
           <DataType>float</DataType>
@@ -5492,6 +5444,30 @@
             <Increment xsi:type="xsd:double">1</Increment>
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>27</SeedValue>
+            <MinValue>0</MinValue>
+            <MaxValue>999999</MaxValue>
+            <UseDefault>false</UseDefault>
+            <DefaultValue />
+            <Scale>2</Scale>
+            <Precision>13</Precision>
+          </GeneratorOptions>
+          <GeneratorType>SqlFloatGenerator</GeneratorType>
+          <GeneratorName>float</GeneratorName>
+          <GeneratorDescription>fill with floating point numeric values</GeneratorDescription>
+          <Length>8</Length>
+          <Precision>53</Precision>
+        </Column>
+        <Column Name="total_paid">
+          <Checked>true</Checked>
+          <DataType>float</DataType>
+          <GeneratorOptions xsi:type="FloatGeneratorOptions">
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Increment xsi:type="xsd:double">1</Increment>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>41</SeedValue>
             <MinValue>0</MinValue>
             <MaxValue>999999</MaxValue>
             <UseDefault>false</UseDefault>

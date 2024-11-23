@@ -163,8 +163,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setTotal(0.0);
         entityMapped.setDiscount(0.0);
         entityMapped.setDeliveryFee(0.0);
-        entityMapped.setSurcharge(0.);
-        entityMapped.setRefund(0.0);
+        entityMapped.setTotalPaid(0.0);
         entityMapped.setDiscountVoucherPercent(0.0);
         entityMapped.setIsPayment(false);
         entityMapped.setVoucherMinimumSubtotalRequired(0.0);
@@ -402,15 +401,18 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setPayment(cart.getPayment());
         order.setCustomer(cart.getCustomer());
         order.setVoucherMinimumSubtotalRequired(0.0);
-        order.setSurcharge(0.0);
-        order.setRefund(0.0);
+
         order.setDiscountVoucherPercent(0.0);
         if (order.getPayment() == Payment.TRANSFER) {
             isPayment = true;
+            order.setTotalPaid(NumberUtil.roundDouble(cart.getTotal()));
+        }
+        else{
+            order.setTotalPaid(0.0);
         }
         order.setIsPayment(isPayment);
         //
-        order.setCustomer(null);
+        Account account = AuthUtil.getAccount();
         order.setVoucher(cart.getVoucher());
         List<OrderDetail> list = new ArrayList<>();
         List<CartDetail> listCardDetail = cart.getCartDetails();
@@ -446,7 +448,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         double subtotal = get_subtotal_of_order(order);
         double discount = get_discount_of_order_that_time(order);
         double fee_ship = get_fee_ship_of_order(order);
-        double total = NumberUtil.roundDouble(subtotal - discount + fee_ship);
+        double total_paid = NumberUtil.roundDouble(order.getTotalPaid());
+        double total = NumberUtil.roundDouble(subtotal - discount + fee_ship - total_paid);
         log.info("SUBTOTAL: " + subtotal);
         log.info("DISCOUNT: " + discount);
         log.info("FEE: " + fee_ship);
@@ -477,7 +480,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     // SUBTOTAL CỦA HÓA DƠN
     // LẤY TỔNG TIỀN THEO HÓA DƠN CHI TIẾT (ĐÃ ẤP DỤNG EVENT)
-    private static double get_price_of_order_detail_at_that_time(OrderDetail s) {
+    public double get_price_of_order_detail_at_that_time(OrderDetail s) {
         ProductDetail productDetail = s.getProductDetail();
         // lấy giá product detail cho tính toán
         double productDetailPrice = productDetail.getPrice();

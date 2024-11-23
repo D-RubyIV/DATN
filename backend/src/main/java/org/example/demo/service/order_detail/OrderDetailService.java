@@ -122,7 +122,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Transactional
     public OrderDetail updateQuantity(Integer integer, int newQuantity) {
         // tìm hóa đơn chi tiết theo id
+        log.info("ĐANG TÌM HÓA ĐƠN");
         OrderDetail orderDetail = findById(integer);
+        log.info("ĐÃ TÌM THẤY HÓA ĐƠN");
         // tìm hóa đơn
         Order order = orderDetail.getOrder();
         // số lương trong kho
@@ -150,17 +152,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
         // nếu đủ số lượng đáp ứng
         else {
-            // kiểm tra có phải là đơn online đã thanh toán chưa
-            boolean isOnlinePaid = order.getIsPayment() && order.getType() == Type.ONLINE;
-            // nếu là đơn online và đã thanh toán
             orderDetail.setQuantity(newQuantity);
-//            if(isOnlinePaid){
-//
-//            }
-//            else{
-//
-//                // cập nhật lại giá trị
-//            }
             orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return orderDetailRepository.save(orderDetail);
         }
@@ -183,7 +175,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         boolean changeOfEvent = false;
         // nếu ko có hóa đơn chi tiết cũ làm có giảm giá
         System.out.println(listPercent.toString());
-        if (!listPercent.isEmpty()){
+        if (!listPercent.isEmpty()) {
             changeOfEvent = checkHasChangeOfEvent(productDetail.get(), listPercent);
         }
         log.info("HAS CHANGE EVENT: " + changeOfEvent);

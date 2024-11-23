@@ -25,7 +25,10 @@ const OrderDetails = () => {
         tax: 10,
         deliveryFee: 10,
         discount: 1000,
-        total: 1000
+        total: 1000,
+        surcharge: 0,
+        refund: 0,
+        totalPaid: 0
     })
     const [selectObject, setSelectObject] = useState<OrderResponseDTO>()
     const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
@@ -43,7 +46,10 @@ const OrderDetails = () => {
                 tax: response.data.tax || 0,
                 deliveryFee: response.data.deliveryFee || 0,
                 discount: response.data.discount || 0,
-                total: response.data.total || 0
+                total: response.data.total || 0,
+                surcharge: response.data.surcharge || 0,
+                refund: response.data.refund || 0,
+                totalPaid: response.data.totalPaid || 0
             })
         })
     }
@@ -85,7 +91,7 @@ const CustomerInfo = ({ data, fetchData }: { data: OrderResponseDTO, fetchData: 
     const customer = data?.customerResponseDTO || {}
 
     return (
-        <Card className="mb-5 h-[450px]">
+        <Card className="mb-5 h-[420px]">
             {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress}
                                                 fetchData={fetchData}></AddressModal>}
 

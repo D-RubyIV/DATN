@@ -1,5 +1,6 @@
 package org.example.demo.dto.order.core.response;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
+import org.example.demo.util.number.NumberUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,6 +52,9 @@ public class OrderResponseDTO {
     private Double deliveryFee;
     private Double discount;
     private Double subTotal;
+    private Double totalPaid;
+    private Double surcharge;
+    private Double refund;
     private CustomerResponseDTO customerResponseDTO;
     private StaffResponseDTO staffResponseDTO;
     private VoucherResponseDTO voucherResponseDTO;
@@ -57,4 +62,25 @@ public class OrderResponseDTO {
     private List<HistoryResponseDTO> historyResponseDTOS;
 
     private LocalDateTime createdDate;
+
+    private Double discountVoucherPercent;
+    private Double voucherMinimumSubtotalRequired;
+
+    public Double getRefund() {
+        if (!getOrderDetailResponseDTOS().isEmpty()){
+            return totalPaid - (subTotal - discount + deliveryFee) >= 0 && isPayment ? NumberUtil.roundDouble(total) : 0.0;
+        }
+        else {
+            return totalPaid;
+        }
+    }
+
+    public Double getSurcharge() {
+        return (subTotal - discount + deliveryFee) - totalPaid >= 0 && isPayment ? NumberUtil.roundDouble(total) : 0.0;
+    }
+
+    public List<OrderDetailResponseDTO> getOrderDetailResponseDTOS() {
+        return orderDetailResponseDTOS.stream().filter(s -> !s.isDeleted()).toList();
+    }
+
 }

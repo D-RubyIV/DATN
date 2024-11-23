@@ -20,4 +20,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
             value = "SELECT o from OrderDetail o left join fetch o.order ord where ord.id = :id"
     )
     Page<OrderDetail> getPageOrderDetailWithPage(Integer id, Pageable pageable);
+    @Query(
+            value = "SELECT o from OrderDetail o where o.id = :id"
+    )
+    Optional<OrderDetail> findById(Integer id);
 }

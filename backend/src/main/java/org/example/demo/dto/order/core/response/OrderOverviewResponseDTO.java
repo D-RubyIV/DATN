@@ -51,8 +51,6 @@ public class OrderOverviewResponseDTO {
     private String wardName;
     //
     private Boolean isPayment;
-    private Double surcharge;
-    private Double refund;
     private Double discountVoucherPercent;
     private Double voucherMinimumSubtotalRequired;
 }
