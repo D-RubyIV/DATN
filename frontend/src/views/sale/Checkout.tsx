@@ -518,7 +518,11 @@ const Checkout = () => {
                                                 setIAddress((prev) => ({ ...prev, iprovince: (el as IProvince) }))
                                                 setValuesFormRecipient('provinceId', (el as IProvince).ProvinceID)
                                             }}
-                                            value={provinces.find(s => s.ProvinceID.toString() === getValuesFormRecipient('provinceId').toString() ?? null)}
+                                            value={
+                                                provinces.find((s) =>
+                                                    getValuesFormRecipient('provinceId')?.toString() === s.ProvinceID.toString()
+                                                ) ?? null
+                                            }
                                         />
                                         {errorsFormRecipient.provinceId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.provinceId.message}</p>
@@ -535,7 +539,11 @@ const Checkout = () => {
                                                 setIAddress((prev) => ({ ...prev, idistrict: (el as IDistrict) }))
                                                 setValuesFormRecipient('districtId', (el as IDistrict).DistrictID)
                                             }}
-                                            value={districts.find(s => s.DistrictID.toString() === getValuesFormRecipient('districtId')?.toString()) ?? null}
+                                            value={
+                                                districts.find((s) =>
+                                                    getValuesFormRecipient('districtId')?.toString() === s.DistrictID.toString()
+                                                ) ?? null
+                                            }
                                         />
                                         {errorsFormRecipient.districtId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.districtId.message}</p>
@@ -552,7 +560,11 @@ const Checkout = () => {
                                                 setIAddress((prev) => ({ ...prev, iward: (el as IWard) }))
                                                 setValuesFormRecipient('wardId', (el as IWard).WardCode)
                                             }}
-                                            value={wards.find(s => s.WardCode.toString() === getValuesFormRecipient('wardId')?.toString()) ?? null}
+                                            value={
+                                                wards.find((s) =>
+                                                    getValuesFormRecipient('wardId')?.toString() === s.WardCode.toString()
+                                                ) ?? null
+                                            }
                                         />
                                         {errorsFormRecipient.wardId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.wardId.message}</p>
