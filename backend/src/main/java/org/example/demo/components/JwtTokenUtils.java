@@ -35,6 +35,7 @@ public class JwtTokenUtils {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
+
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenUtils.class);
     private final TokenRepository tokenRepository;
 

@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      MSSQL_SA_PASSWORD: "1236fG543$"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1433"
+    volumes:
+      - ./data:/var/opt/mssql/data
+    networks:
+      - project_network
+    restart: always
+
+  backend:
+    container_name: backend-api
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - project_network
+    restart: always
+
+volumes:
+  sql_data:
+    name: sql_data
+
+networks:
+  project_network:
+    driver: bridge
