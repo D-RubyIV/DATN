@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  database:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: datn-database
+    ports:
+      - 1433:1433
+    environment:
+      MSSQL_SA_PASSWORD: ComplexP@ssw0rd
+      MSSQL_DATABASE: final
+      ACCEPT_EULA: Y
+    restart: always
+    command: >
+      /bin/bash -c "
+      /opt/mssql/bin/sqlservr &
+         
+      echo '>>>>>>>>>> SQL Server is ready - executing init script <<<<<<<<<<';
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/init-database.sql;
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/table-database.sql;
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/extra-database.sql;
+
+      sleep infinity;
+      "
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "ComplexP@ssw0rd", "-Q", "SELECT 1", "-C"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - ./init-database.sql:/tmp/init-database.sql:ro
+      - ./table-database.sql:/tmp/table-database.sql:ro
+      - ./extra-database.sql:/tmp/extra-database.sql:ro
+    networks:
+      - dev
+
+networks:
+  dev:
+    driver: bridge
+
+volumes:
+  sql_data:
+    name: sql_data
