@@ -132,7 +132,7 @@ const CustomerInfo = ({ data, fetchData }: { data: OrderResponseDTO, fetchData: 
                     {/* {data?.address} */}
                     <Input
                         disabled
-                        value={data.address}
+                        value={data.address + ", " + data.wardName + ", " + data.districtName + ", " + data.provinceName}
                         suffix={
                             <Tooltip title="Field info">
                                 <HiPencilAlt className="text-lg cursor-pointer ml-1"
