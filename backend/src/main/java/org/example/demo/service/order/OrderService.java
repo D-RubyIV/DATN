@@ -43,6 +43,7 @@ import org.example.demo.util.DataUtils;
 import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.auth.AuthUtil;
 import org.example.demo.util.event.EventUtil;
+import org.example.demo.util.number.NumberUtil;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -159,9 +160,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setCode("HDI" + randomCodeGenerator.generateRandomCode());
 
         entityMapped.setSubTotal(0.0);
-        entityMapped.setTotal(0.);
-        entityMapped.setDiscount(0.);
-        entityMapped.setDeliveryFee(0.);
+        entityMapped.setTotal(0.0);
+        entityMapped.setDiscount(0.0);
+        entityMapped.setDeliveryFee(0.0);
         entityMapped.setSurcharge(0.);
         entityMapped.setRefund(0.0);
         entityMapped.setDiscountVoucherPercent(0.0);
@@ -297,10 +298,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // kiêm tra số lương
         if (voucherFound.getQuantity() > 0) {
             if (subtotal_of_order >= t) {
-                double discount = subtotal_of_order / 100 * voucherFound.getMaxPercent();
+                double discount = NumberUtil.roundDouble(subtotal_of_order / 100 * voucherFound.getMaxPercent());
+                log.info("DISCOUNT VALUE: " + discount);
+                log.info("DISCOUNT PERCENT: " + voucherFound.getMaxPercent());
                 orderFound.setTotal(subtotal_of_order - discount);
                 orderFound.setDiscount(discount);
                 orderFound.setSubTotal(subtotal_of_order);
+                orderFound.setDiscountVoucherPercent(Double.valueOf(voucherFound.getMaxPercent()));
                 orderFound.setVoucher(voucherFound);
             } else {
                 throw new CustomExceptions.CustomBadRequest("Số tiền tối thiểu không đáp ứng");
@@ -442,11 +446,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         double subtotal = get_subtotal_of_order(order);
         double discount = get_discount_of_order_that_time(order);
         double fee_ship = get_fee_ship_of_order(order);
-        double total = subtotal - discount + fee_ship;
-        System.out.println("SUBTOTAL: " + subtotal);
-        System.out.println("DISCOUNT: " + discount);
-        System.out.println("FEE: " + fee_ship);
-        System.out.println("TOTAL: " + total);
+        double total = NumberUtil.roundDouble(subtotal - discount + fee_ship);
+        log.info("SUBTOTAL: " + subtotal);
+        log.info("DISCOUNT: " + discount);
+        log.info("FEE: " + fee_ship);
+        log.info("TOTAL: " + total);
         order.setSubTotal(subtotal);
         order.setDiscount(discount);
         order.setDeliveryFee(fee_ship);
@@ -465,7 +469,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         double subtotal_of_order = get_subtotal_of_order(order);
         // nếu đáp ứng giá trị đơn hàng tối thiểu với voucher
         if (subtotal_of_order > voucherMinimumSubtotalRequired) {
-            return subtotal_of_order * discount_percent_at_that_time;
+            return NumberUtil.roundDouble(subtotal_of_order / 100 * discount_percent_at_that_time);
         } else {
             return 0.0;
         }
@@ -480,7 +484,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // lấy ra phần trăm giảm giá của sự kiện lúc tạo hóa đơn chờ tại thời điểm đó
         double averageEventPercent = s.getAverageDiscountEventPercent();
         // tính giá trị của hóa đơn chi tiết này tại thời điểm đó
-        return productDetailPrice * (1 - averageEventPercent / 100);
+        return NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
     }
 
     // SUBTOTAL CỦA HÓA DƠN CHI TIẾT
@@ -496,7 +500,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             // cộng dồn giá trị vào total;
             subtotal += price_of_this_order_detail;
         }
-        return subtotal;
+        return NumberUtil.roundDouble(subtotal);
     }
 
     public double get_fee_ship_of_order(Order order) {
