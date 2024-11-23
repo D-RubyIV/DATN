@@ -1,8 +1,10 @@
 package org.example.demo.util.caculate;
 
 import org.example.demo.entity.event.Event;
+import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.util.number.NumberUtil;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -31,4 +33,35 @@ public class CalculateUtil {
                 .average()
                 .orElse(0.0);
     }
+
+    public static double getRefund(Order order){
+        double subtotal = order.getSubTotal();
+        double discount = order.getDiscount();
+        double fee_ship = order.getDeliveryFee();
+        double total_paid = order.getTotalPaid();
+        boolean isPayment = order.getIsPayment();
+        double total_un_paid = NumberUtil.roundDouble(subtotal - discount + fee_ship - total_paid);
+
+        List<OrderDetail> orderDetailsUnDeleted = order.getOrderDetails().stream().filter(s -> !s.getDeleted()).toList();
+
+        if (!orderDetailsUnDeleted.isEmpty()){
+            return total_paid - (subtotal - discount + fee_ship) >= 0 && isPayment ? NumberUtil.roundDouble(total_un_paid) : 0.0;
+        }
+        else {
+            return total_un_paid;
+        }
+    }
+
+    public static double getSurcharge(Order order){
+        double subtotal = order.getSubTotal();
+        double discount = order.getDiscount();
+        double fee_ship = order.getDeliveryFee();
+        double total_paid = order.getTotalPaid();
+        boolean isPayment = order.getIsPayment();
+        double total_un_paid = NumberUtil.roundDouble(subtotal - discount + fee_ship - total_paid);
+
+        return (subtotal - discount + fee_ship) - total_paid >= 0 && isPayment ? NumberUtil.roundDouble(total_un_paid) : 0.0;
+    }
+
+
 }

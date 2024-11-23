@@ -17,6 +17,7 @@ import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.util.CurrencyFormat;
+import org.example.demo.util.caculate.CalculateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -98,7 +99,7 @@ public class OrderPdfService {
 
 
             MyTableClass myTable = new MyTableClass(document, contentStream);
-            int[] cellWidths = {50, 150, 50, 60, 50, 100, 110};
+            int[] cellWidths = {50, 180, 50, 60, 50, 90, 90};
             myTable.setTable(cellWidths, 30, 25, pageHeight - 350);
             myTable.setTableFont(font, 10, Color.BLACK);
 
@@ -134,26 +135,35 @@ public class OrderPdfService {
             }
             log.info("PAGE HEIGHT: " + pageHeight);
             log.info("PAGE WIDTH: " + pageWidth);
-            myTextClass.addSingleLineText("Tong: ", 25, pageHeight - 650, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Tong tien: ", 25, pageHeight - 650, font, 16, Color.BLACK);
             myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 650, font, 16, Color.BLACK);
 
-            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 630, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 630, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Phi van chuyen: ", 25, pageHeight - 670, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDeliveryFee()), (int) (pageWidth - 25 - textWidth), pageHeight - 670, font, 16, Color.BLACK);
+
+            myTextClass.addSingleLineText("Giam gia: ", 25, pageHeight - 690, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDiscount()), (int) (pageWidth - 25 - textWidth), pageHeight - 690, font, 16, Color.BLACK);
+
+            myTextClass.addSingleLineText("Da thanh toan: ", 25, pageHeight - 710, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()), (int) (pageWidth - 25 - textWidth), pageHeight - 710, font, 16, Color.BLACK);
+
+            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 730, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 730, font, 16, Color.BLACK);
+
+            myTextClass.addSingleLineText("Phu phi: ", 25, pageHeight - 750, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 750, font, 16, Color.BLACK);
+
+            myTextClass.addSingleLineText("Hoan tra: ", 25, pageHeight - 770, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 770, font, 16, Color.BLACK);
 
 
 //            String[] paymentMethod = {"Methods of payment we accept:", "Cash, PhoneGe, GPay, RuPay", "Visa, Mastercard and American Express"};
 //            myTextClass.addMultiLineText(paymentMethod, 15, 25, 180, italicFont, 10, new Color(122, 122, 122));
 
-            contentStream.setStrokingColor(Color.BLACK);
-            contentStream.setLineWidth(2);
-            contentStream.moveTo(pageWidth - 250, 150);
-            contentStream.lineTo(pageWidth - 25, 150);
-            contentStream.stroke();
-
-            String authorSign = "Cam on quy khach";
-            float authorSignWidth = myTextClass.getTextWidth(authorSign, italicFont, 16);
-            int xpos = pageWidth - 250 + pageWidth - 25;
-            myTextClass.addSingleLineText(authorSign, (int) (xpos - authorSignWidth) / 2, 125, italicFont, 16, Color.BLACK);
+//            String authorSign = "Cam on quy khach";
+//            float authorSignWidth = myTextClass.getTextWidth(authorSign, italicFont, 16);
+//            int xpos = pageWidth - 250 + pageWidth - 25;
+//            myTextClass.addSingleLineText(authorSign, (int) (xpos - authorSignWidth) / 2, 125, italicFont, 16, Color.BLACK);
 
 
 //            String bottomLine = "Rain or shine, time to dinner";
