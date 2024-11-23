@@ -120,6 +120,11 @@ public class VoucherController {
         return ResponseEntity.ok(voucherResponseMapper.toListDTO(voucherService.findBetterVoucher(amount)));
     }
 
+    @GetMapping("/able-voucher")
+    public ResponseEntity<?> findListAbleToUseVoucher(@RequestParam("amount") BigDecimal amount){
+        return ResponseEntity.ok(voucherResponseMapper.toListDTO(voucherService.findListAbleToUseVoucher(amount)));
+    }
+
     @GetMapping("/sorted")
     public ResponseEntity<List<VoucherResponseDTO>> getSortedVouchers() {
         Sort sort = Sort.by(Sort.Order.desc("maxPercent"));

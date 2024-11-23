@@ -203,6 +203,16 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
     List<Voucher> findBestVoucher(@Param("amount") BigDecimal amount);
 
     @Query("""
+        SELECT v FROM Voucher v
+        WHERE CAST(v.minAmount AS bigdecimal) < :amount
+        AND v.quantity > 0
+        AND v.deleted = FALSE
+        AND v.status = 'Active'
+        ORDER BY v.maxPercent asc
+        """)
+    List<Voucher> findListAbleToUseVoucher(@Param("amount") BigDecimal amount);
+
+    @Query("""
     SELECT v FROM Voucher v
     WHERE v.quantity > 0
     AND v.deleted = FALSE

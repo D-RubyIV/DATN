@@ -48,5 +48,7 @@ public interface VoucherService {
 
     List<Voucher> findBetterVoucher(BigDecimal amount);
 
+    List<Voucher> findListAbleToUseVoucher(BigDecimal amount);
+
     List<Voucher> getSortedVouchers(Sort sort);
 }
