@@ -11,6 +11,8 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 
 type AddressInfo = {
+    recipientName: string;
+    phone: string;
     provinceId: string;
     provinceName?: string;
     districtId: string;
@@ -33,6 +35,8 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
     const { sleep, setIsLoadingComponent } = useLoadingContext()
 
     const validationSchema = Yup.object({
+        recipientName: Yup.string().required('Vui lòng nhập tên người nhận'),
+        phone: Yup.string().required('Vui lòng nhập số điện thoại'),
         provinceId: Yup.string().required('Vui lòng chọn tỉnh'),
         districtId: Yup.string().required('Vui lòng chọn thành phố'),
         wardId: Yup.string().required('Vui lòng chọn xã/phường')
@@ -66,7 +70,8 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
         setWards(modifiedWards)
     }
 
-    const handleSubmitForm = async () => {
+    const handleSubmitForm = async (values: AddressInfo) => {
+        console.log(values)
         setIsLoadingComponent(true)
         const data: AddressInfo = {
             provinceId: IAddress.iprovince?.ProvinceID || '',
@@ -75,7 +80,9 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
             districtName: IAddress.idistrict?.DistrictName || '',
             wardId: IAddress.iward?.WardCode || '',
             wardName: IAddress.iward?.WardName || '',
-            address: IAddress?.address || ''
+            address: IAddress?.address || '',
+            recipientName: values?.recipientName || '',
+            phone: values?.phone || '',
         }
         await instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
             console.log(response)
@@ -104,6 +111,8 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
 
                 <Formik
                     initialValues={{
+                        recipientName: '',
+                        phone: '',
                         provinceId: '',
                         districtId: '',
                         wardId: '',
@@ -114,6 +123,32 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
                 >
                     {({ setFieldValue }) => (
                         <Form className="flex flex-col gap-3">
+                            <div>
+                                <label className="font-semibold text-gray-600">Tên người nhận:</label>
+                                <Field
+                                    name="recipientName"
+                                    as={Input}
+                                    placeholder="Vui lòng nhập tên người nhận"
+                                    size="sm"
+                                    onChange={(el: any) => {
+                                        setFieldValue('recipientName', el.target.value)  // Cập nhật giá trị của Formik
+                                    }}
+                                />
+                                <ErrorMessage name="recipientName" component="p" className="text-red-500 text-[12.5px]" />
+                            </div>
+                            <div>
+                                <label className="font-semibold text-gray-600">Số điện thoại nhận:</label>
+                                <Field
+                                    name="phone"
+                                    as={Input}
+                                    placeholder="Vui lòng nhập số điện thoại"
+                                    size="sm"
+                                    onChange={(el: any) => {
+                                        setFieldValue('phone', el.target.value)  // Cập nhật giá trị của Formik
+                                    }}
+                                />
+                                <ErrorMessage name="phone" component="p" className="text-red-500 text-[12.5px]" />
+                            </div>
                             <div>
                                 <label className="font-semibold text-gray-600">Tỉnh:</label>
                                 <Select
