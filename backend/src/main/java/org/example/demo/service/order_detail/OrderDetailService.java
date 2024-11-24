@@ -145,6 +145,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             // ngược lại xóa vĩnh viễn trưc tiếp
             else {
                 orderDetailRepository.delete(orderDetail);
+                entityManager.flush();
             }
             // cập nhật lại giá trị
             orderService.reloadSubTotalOrder(orderDetail.getOrder());

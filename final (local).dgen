@@ -2820,22 +2820,20 @@
         <Column Name="max_percent">
           <Checked>true</Checked>
           <DataType>int</DataType>
-          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:int">1</Increment>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>65</SeedValue>
-            <MinValue>0</MinValue>
-            <MaxValue>30</MaxValue>
-            <UseDefault>false</UseDefault>
-            <DefaultValue />
+            <SeedValue>85</SeedValue>
+            <Unique>true</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>5|10|15|20|30</Expression>
           </GeneratorOptions>
-          <GeneratorType>SqlIntegerGenerator</GeneratorType>
-          <GeneratorName>int</GeneratorName>
-          <GeneratorDescription>fill with 32-bit signed integer values</GeneratorDescription>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>

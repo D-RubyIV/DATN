@@ -628,10 +628,10 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                 <p>Họa tiết</p>
                                 <Select
                                     isClearable
-                                    onChange={handleTextureChange}
                                     size={'sm'}
                                     placeholder="Please Select"
                                     options={listTexture}
+                                    onChange={handleTextureChange}
                                 ></Select>
                             </div>
 
@@ -640,10 +640,10 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                 <p>Xuất xứ</p>
                                 <Select
                                     isClearable
-                                    onChange={handleOriginChange}
                                     size={'sm'}
                                     placeholder="Please Select"
                                     options={listOrigin}
+                                    onChange={handleOriginChange}
                                 ></Select>
                             </div>
 

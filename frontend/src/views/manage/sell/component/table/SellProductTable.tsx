@@ -304,6 +304,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                             const response = await instance.delete(`/order-details/${idOrderDetail}`)
                             if (response.status === 200) {
                                 console.log('response', response)
+                                await fetchData()
                                 await getAllOrderDetailWithIdOrder(selectedOrder.id)
                             }
                         }}

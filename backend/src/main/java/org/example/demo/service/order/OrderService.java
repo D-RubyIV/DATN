@@ -45,6 +45,7 @@ import org.example.demo.util.auth.AuthUtil;
 import org.example.demo.util.event.EventUtil;
 import org.example.demo.util.number.NumberUtil;
 import org.example.demo.util.phah04.PageableObject;
+import org.example.demo.util.voucher.VoucherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -102,6 +103,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Autowired
     private CartRepository cartRepository;
+
+    @Autowired
+    private VoucherUtil voucherUtil;
 
     public Page<OrderOverviewResponseDTO> findAllOverviewByPage(
             String status,
@@ -450,6 +454,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         double fee_ship = get_fee_ship_of_order(order);
         double total_paid = NumberUtil.roundDouble(order.getTotalPaid());
         double total = NumberUtil.roundDouble(subtotal - discount + fee_ship - total_paid);
+
         log.info("SUBTOTAL: " + subtotal);
         log.info("DISCOUNT: " + discount);
         log.info("FEE: " + fee_ship);
@@ -458,6 +463,20 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setDiscount(discount);
         order.setDeliveryFee(fee_ship);
         order.setTotal(total);
+
+        if(order.getType() == Type.INSTORE){
+            Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
+            order.setVoucher(bestVoucher);
+            if(bestVoucher == null){
+                log.info("BEST VOUCHER NULL");
+                order.setDiscountVoucherPercent(0.0);
+            }
+            else {
+                log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
+                order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
+            }
+        }
+
         orderRepository.save(order);
     }
 

@@ -9,7 +9,7 @@ const hasSaleEvent = (item: ProductDetailOverviewPhah04) => {
 const getFinalPrice = (item: ProductDetailOverviewPhah04) => {
     const { price } = item
     const discountPercent = item.eventResponseDTOS.length > 0
-        ? item.averageDiscountPercentEvent
+        ? item.nowAverageDiscountPercentEvent
         : 0
 
     return Math.round(price * (1 - discountPercent / 100))
@@ -35,10 +35,10 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
                                     <Avatar className={'relative'} size={90} src={seletedProductDetail.images[0].url}
                                             shape={'round'} />
                                     {
-                                        seletedProductDetail.eventResponseDTOS.length > 0 && (
+                                        seletedProductDetail.nowAverageDiscountPercentEvent > 0 && (
                                             <div
                                                 className={'absolute top-0 right-0  bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                                <p>-{seletedProductDetail.averageDiscountPercentEvent} %</p>
+                                                <p>-{seletedProductDetail.nowAverageDiscountPercentEvent} %</p>
                                             </div>
                                         )
                                     }
@@ -47,10 +47,10 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
                                 <div className={'relative'}>
                                     <Avatar size={90} icon={<FiPackage />} />
                                     {
-                                        seletedProductDetail.eventResponseDTOS.length > 0 && (
+                                        seletedProductDetail.nowAverageDiscountPercentEvent> 0 && (
                                             <div
                                                 className={'absolute top-0 right-0 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                                <p>-{seletedProductDetail.averageDiscountPercentEvent} %</p>
+                                                <p>-{seletedProductDetail.nowAverageDiscountPercentEvent} %</p>
                                             </div>
                                         )
                                     }

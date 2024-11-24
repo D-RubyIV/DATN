@@ -4,6 +4,7 @@ package org.example.demo.service.voucher;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.voucher.core.Voucher;
+import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
@@ -38,7 +39,7 @@ public interface VoucherService {
 
     Voucher addVoucher(VoucherRequest request);
 
-    Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent,Double minAmount,String status, Pageable pageable);
+    Page<Voucher> searchVoucher(String keyword, String name, String code, String typeTicket, Integer quantity, Double maxPercent, Double minAmount, String status, Pageable pageable);
 
     Voucher updateVoucher(Integer id, VoucherRequest request);
 
@@ -51,4 +52,7 @@ public interface VoucherService {
     List<Voucher> findListAbleToUseVoucher(BigDecimal amount);
 
     List<Voucher> getSortedVouchers(Sort sort);
+
+    Page<Voucher> selectPageActiveAndAbleToUseVoucher(String query, String type, Integer customerId, Pageable pageable);
+
 }

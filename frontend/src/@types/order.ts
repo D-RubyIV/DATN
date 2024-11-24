@@ -46,6 +46,7 @@ export type EOrderType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 export type EOrderPayment = 'CASH' | 'TRANSFER'; // Add more types if needed
 
 export type OrderCustomerResponseDTO = {
+    id: number;
     code: string;
     name: string;
     email: string;
