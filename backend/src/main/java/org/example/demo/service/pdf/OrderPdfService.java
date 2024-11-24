@@ -17,6 +17,7 @@ import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.util.CurrencyFormat;
+import org.example.demo.util.StringUtils;
 import org.example.demo.util.caculate.CalculateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,9 +100,9 @@ public class OrderPdfService {
 
 
             MyTableClass myTable = new MyTableClass(document, contentStream);
-            int[] cellWidths = {50, 180, 50, 60, 50, 90, 90};
+            int[] cellWidths = {30, 180, 60, 60, 40, 80, 110};
             myTable.setTable(cellWidths, 30, 25, pageHeight - 350);
-            myTable.setTableFont(font, 10, Color.BLACK);
+            myTable.setTableFont(font, 12, Color.BLACK);
 
             Color tableHeadColor = new Color(122, 122, 122);
             Color tableBodyColor = new Color(219, 218, 198);
@@ -126,35 +127,35 @@ public class OrderPdfService {
                 String size = s.getProductDetail().getSize().getName();
 
                 myTable.addCell(String.valueOf(i), tableBodyColor);
-                myTable.addCell(productName.replaceAll("[^\\p{ASCII}]", "?"), tableBodyColor);
-                myTable.addCell(color.replaceAll("[^\\p{ASCII}]", "?"), tableBodyColor);
-                myTable.addCell(size.replaceAll("[^\\p{ASCII}]", "?"), tableBodyColor);
+                myTable.addCell(StringUtils.removeDiacriticsAndSpecialChars(productName), tableBodyColor);
+                myTable.addCell(StringUtils.removeDiacriticsAndSpecialChars(color), tableBodyColor);
+                myTable.addCell(size, tableBodyColor);
                 myTable.addCell(quantity, tableBodyColor);
                 myTable.addCell(price, tableBodyColor);
                 myTable.addCell(subTotal, tableBodyColor);
             }
             log.info("PAGE HEIGHT: " + pageHeight);
             log.info("PAGE WIDTH: " + pageWidth);
-            myTextClass.addSingleLineText("Tong tien: ", 25, pageHeight - 650, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 650, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Tong tien: ", 25, pageHeight - 650, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 650, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Phi van chuyen: ", 25, pageHeight - 670, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDeliveryFee()), (int) (pageWidth - 25 - textWidth), pageHeight - 670, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Phi van chuyen: ", 25, pageHeight - 670, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDeliveryFee()), (int) (pageWidth - 25 - textWidth), pageHeight - 670, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Giam gia: ", 25, pageHeight - 690, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDiscount()), (int) (pageWidth - 25 - textWidth), pageHeight - 690, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Giam gia: ", 25, pageHeight - 690, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDiscount()), (int) (pageWidth - 25 - textWidth), pageHeight - 690, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Da thanh toan: ", 25, pageHeight - 710, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()), (int) (pageWidth - 25 - textWidth), pageHeight - 710, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Da thanh toan: ", 25, pageHeight - 710, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()), (int) (pageWidth - 25 - textWidth), pageHeight - 710, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 730, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 730, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 730, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 730, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Phu phi: ", 25, pageHeight - 750, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 750, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Phu phi: ", 25, pageHeight - 750, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 750, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Hoan tra: ", 25, pageHeight - 770, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 770, font, 16, Color.BLACK);
+            myTextClass.addSingleLineText("Hoan tra: ", 25, pageHeight - 770, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 770, font, 14, Color.BLACK);
 
 
 //            String[] paymentMethod = {"Methods of payment we accept:", "Cash, PhoneGe, GPay, RuPay", "Visa, Mastercard and American Express"};
@@ -291,13 +292,14 @@ public class OrderPdfService {
                 contentStream.fillAndStroke();
             }
             contentStream.beginText();
+            contentStream.setFont(font, this.fontSize );
             contentStream.setNonStrokingColor(fontColor);
 
             if (colPosition == 4 || colPosition == 2) {
                 float fontWidth = font.getStringWidth(text) / 1000 * fontSize;
-                contentStream.newLineAtOffset(xPosition + colWidths[colPosition] - 20 - fontWidth, yPosition + 10);
+                contentStream.newLineAtOffset(xPosition + colWidths[colPosition] - 5 - fontWidth, yPosition + 10);
             } else {
-                contentStream.newLineAtOffset(xPosition + 20, yPosition + 10);
+                contentStream.newLineAtOffset(xPosition + 5, yPosition + 10);
             }
             contentStream.showText(text);
             contentStream.endText();
