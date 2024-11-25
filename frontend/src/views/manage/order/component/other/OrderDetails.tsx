@@ -28,7 +28,8 @@ const OrderDetails = () => {
         total: 1000,
         surcharge: 0,
         refund: 0,
-        totalPaid: 0
+        totalPaid: 0,
+        totalAfterDiscountAndFee: 0
     })
     const [selectObject, setSelectObject] = useState<OrderResponseDTO>()
     const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
@@ -49,7 +50,8 @@ const OrderDetails = () => {
                 total: response.data.total || 0,
                 surcharge: response.data.surcharge || 0,
                 refund: response.data.refund || 0,
-                totalPaid: response.data.totalPaid || 0
+                totalPaid: response.data.totalPaid || 0,
+                totalAfterDiscountAndFee: response.data.totalAfterDiscountAndFee || 0
             })
         })
     }
@@ -76,7 +78,8 @@ const OrderDetails = () => {
                         {selectObject !== undefined && <OrderInfo data={selectObject}></OrderInfo>}
                         {selectObject !== undefined &&
                             <CustomerInfo data={selectObject} fetchData={fetchData}></CustomerInfo>}
-                        <PaymentSummary data={paymentSummaryProp} />
+                        {selectObject !== undefined &&
+                            <PaymentSummary data={paymentSummaryProp} selectObject={selectObject}  fetchData={fetchData}/>}
                     </div>
                 </div>
             </div>
@@ -141,7 +144,7 @@ const CustomerInfo = ({ data, fetchData }: { data: OrderResponseDTO, fetchData: 
                         value={data.address + ", " + data.wardName + ", " + data.districtName + ", " + data.provinceName}
                         suffix={
                             <Tooltip title="Field info">
-                                <HiPencilAlt className="text-lg cursor-pointer ml-1"
+                                <HiPencilAlt className={`text-lg cursor-pointer ml-1 ${data.status === 'PENDING' ? "" : "hidden"}`}
                                              onClick={() => setIsOpenEditAddress(true)} />
                             </Tooltip>
                         }

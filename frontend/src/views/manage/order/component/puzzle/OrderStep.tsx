@@ -2,12 +2,20 @@ import { Fragment, useEffect, useState, useRef } from 'react'
 import Steps from '@/components/ui/Steps'
 import { Button, Dialog, Input, Radio } from '@/components/ui'
 import { OrderResponseDTO, EOrderStatus } from '@/@types/order'
-import { HiPlusCircle } from 'react-icons/hi'
+import {
+    HiOutlineArrowLeft,
+    HiOutlineCash,
+    HiOutlineHand,
+    HiOutlineMap,
+    HiOutlineTruck,
+    HiPlusCircle
+} from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useLoadingContext } from '@/context/LoadingContext'
 
 
 type ExampleAnswers = {
@@ -24,31 +32,32 @@ type HistoryDTO = {
 const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO, fetchData: () => Promise<void> }) => {
 
     const { openNotification } = useToastContext()
+    const { sleep, setIsLoadingComponent } = useLoadingContext()
 
     const validationSchema = Yup.object({
-        note: Yup.string().required('Vui lòng nhập nội dung').min(5, 'Nội dung phải có ít nhất 5 ký tự'),
+        note: Yup.string().required('Vui lòng nhập nội dung').min(5, 'Nội dung phải có ít nhất 5 ký tự')
     })
     const {
         register,
         handleSubmit,
         formState: { errors },
         getValues,
-        setValue: setNoteValue,
+        setValue: setNoteValue
     } = useForm<HistoryDTO>({
         resolver: yupResolver(validationSchema),
         mode: 'onChange'
     })
     useEffect(() => {
-        setNoteValue('note',"")
+        setNoteValue('note', '')
     }, [])
 
-    const textareaRef = useRef<HTMLTextAreaElement>(null); // Khai báo ref độc lập
+    const textareaRef = useRef<HTMLTextAreaElement>(null) // Khai báo ref độc lập
 
     const focusTextarea = () => {
         if (textareaRef.current) {
-            textareaRef.current.focus(); // Gọi focus trên DOM node
+            textareaRef.current.focus() // Gọi focus trên DOM node
         }
-    };
+    }
 
     const [currentStatus, setCurrentStatus] = useState<EOrderStatus>(selectObject.status)
 
@@ -83,7 +92,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         setIsOpenCancelOnlineOrder(false)
     }
 
-
     useEffect(() => {
         setCurrentStatus(selectObject.status)
         console.log('Current status: ', selectObject.status)
@@ -98,38 +106,49 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
     const onChangeNote = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNoteValue('note', e.target.value) // Cập nhật giá trị trong form
     }
-    const submitChangeStatus = (status: EOrderStatus) => {
+    const submitChangeStatus = async (status: EOrderStatus) => {
         const data = {
             'status': status,
             'note': getValues('note')
         }
-        instance.put(`/orders/status/change/${selectObject.id}`, data).then(function() {
-            fetchData()
-            setNoteValue('note','')
-        }).catch(function(error) {
-            console.log('-----')
-            console.log(error.response)
-            if (error?.response?.data?.error) {
-                openNotification(error?.response?.data?.error, "Thông báo", "warning", 5000)
-            }
+        setIsLoadingComponent(true)
+        await sleep(500).then(async () => {
+            instance.put(`/orders/status/change/${selectObject.id}`, data).then(function() {
+                fetchData()
+                setNoteValue('note', '')
+            }).catch(function(error) {
+                console.log('-----')
+                console.log(error.response)
+                if (error?.response?.data?.error) {
+                    openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                }
+            })
         })
+        setIsLoadingComponent(false)
     }
 
     const ActionButton = () => {
         if (currentStatus === 'PENDING') {
             return (
                 <div className="flex gap-2">
-                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiPlusCircle />}
-                            onClick={handleSubmit(() => submitChangeStatus('TOSHIP'))}>Xác nhận vận chuyển</Button>
+                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineTruck />}
+                            onClick={handleSubmit(async () => submitChangeStatus('TOSHIP'))}>
+                        Chuyển trạng thái chờ vận chuyển
+                    </Button>
                     {
-                        selectObject.payment === "TRANSFER" && selectObject.type === "ONLINE" ?
+                        selectObject.payment === 'TRANSFER' && selectObject.type === 'ONLINE' ?
                             (
-                                <Button block variant="default" size="sm" className="bg-indigo-500" icon={<HiPlusCircle />}
-                                        onClick={handleSubmit(() => setIsOpenCancelOnlineOrder(true))}>Hủy đơn đã thanh toán</Button>
+                                <Button block variant="default" size="sm" className="bg-indigo-500"
+                                        icon={<HiOutlineHand />}
+                                        onClick={handleSubmit(async () => setIsOpenCancelOnlineOrder(true))}>Hủy đơn đã
+                                    thanh
+                                    toán</Button>
                             )
-                            :(
-                                <Button block variant="default" size="sm" className="bg-indigo-500 !w-32" icon={<HiPlusCircle />}
-                                        onClick={handleSubmit(() => submitChangeStatus('CANCELED'))}>Hủy đơn hàng</Button>
+                            : (
+                                <Button block variant="default" size="sm" className="bg-indigo-500 !w-32"
+                                        icon={<HiOutlineHand />}
+                                        onClick={handleSubmit(async () => submitChangeStatus('CANCELED'))}>Hủy đơn
+                                    hàng</Button>
                             )
                     }
 
@@ -138,17 +157,19 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         } else if (currentStatus === 'TOSHIP') {
             return (
                 <div className="flex gap-2">
-                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiPlusCircle />}
-                            onClick={handleSubmit(() => submitChangeStatus('TORECEIVE'))}>Xác nhận </Button>
-                    <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto" icon={<HiPlusCircle />}
-                            onClick={handleSubmit(() => submitChangeStatus('PENDING'))}>Quay lại chờ xác nhận</Button>
+                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineMap />}
+                            onClick={handleSubmit(async() => submitChangeStatus('TORECEIVE'))}>Xác nhận đang vận
+                        chuyển </Button>
+                    <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
+                            icon={<HiOutlineArrowLeft />}
+                            onClick={handleSubmit(async() => submitChangeStatus('PENDING'))}>Quay lại chờ xác nhận</Button>
                 </div>
             )
         } else if (currentStatus === 'TORECEIVE') {
             return (
                 <div className="flex gap-2">
-                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiPlusCircle />}
-                            onClick={handleSubmit(() => submitChangeStatus('DELIVERED'))}>Xác nhận hoàn thành</Button>
+                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineCash />}
+                            onClick={handleSubmit(async() => submitChangeStatus('DELIVERED'))}>Xác nhận hoàn thành</Button>
                 </div>
             )
         } else if (currentStatus === 'DELIVERED') {
@@ -228,23 +249,23 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
     return (
         <div className="bg-white p-5 card card-border min-h-[320px] h-auto">
-           <div className={'max-w-full py-5 overflow-auto'}>
-               {
-                   selectObject.historyResponseDTOS.length > 0 ? (
-                       <Steps current={selectObject.historyResponseDTOS.length}>
-                           {
-                               selectObject.historyResponseDTOS.map((item, index) => (
-                                   <Steps.Item key={index} title={item.status} className={'pr-10'}/>
-                               ))
-                           }
-                       </Steps>
-                   ) : (
-                       <Steps current={0}>
-                           <Steps.Item title={currentStatus} />
-                       </Steps>
-                   )
-               }
-           </div>
+            <div className={'max-w-full py-5 overflow-auto'}>
+                {
+                    selectObject.historyResponseDTOS.length > 0 ? (
+                        <Steps current={selectObject.historyResponseDTOS.length}>
+                            {
+                                selectObject.historyResponseDTOS.map((item, index) => (
+                                    <Steps.Item key={index} title={item.status} className={'pr-20'} />
+                                ))
+                            }
+                        </Steps>
+                    ) : (
+                        <Steps current={0}>
+                            <Steps.Item title={currentStatus} />
+                        </Steps>
+                    )
+                }
+            </div>
             <div className="dark:bg-gray-700 rounded">
                 <ChangeForPending />
             </div>
@@ -261,7 +282,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                     <Button
                         className="ltr:mr-2 rtl:ml-2"
                         variant="plain"
-                        onClick={ onDialogClose}
+                        onClick={onDialogClose}
                     >
                         Hủy
                     </Button>

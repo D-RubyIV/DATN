@@ -1,31 +1,22 @@
 package org.example.demo.controller.cart;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.Valid;
 import org.example.demo.dto.cart.request.CartRequestDTO;
 import org.example.demo.dto.cart.request.CartRequestDTOV2;
 import org.example.demo.dto.cart.request.UseCartVoucherDTO;
 import org.example.demo.dto.cart.response.CartResponseDTO;
-import org.example.demo.dto.ghn.FeeDTO;
-import org.example.demo.dto.ghn.ItemDTO;
-import org.example.demo.dto.order.core.request.OrderRequestDTO;
-import org.example.demo.dto.order.core.response.OrderResponseDTO;
-import org.example.demo.dto.order.other.UseOrderVoucherDTO;
 import org.example.demo.entity.cart.enums.Status;
 import org.example.demo.entity.cart.properties.Cart;
-import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
-import org.example.demo.mapper.cart.response.CartDetailResponseMapper;
 import org.example.demo.mapper.cart.response.CartResponseMapper;
 import org.example.demo.repository.cart.CartRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.cart.CartService;
 import org.example.demo.service.cart.CartServiceV2;
 import org.example.demo.service.fee.FeeService;
-import org.example.demo.util.DataUtils;
 import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.validate.group.GroupUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author PHAH04

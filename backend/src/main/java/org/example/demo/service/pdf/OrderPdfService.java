@@ -116,7 +116,7 @@ public class OrderPdfService {
             myTable.addCell("Tong", tableHeadColor);
 
 
-            List<OrderDetail> orderDetailList = order.getOrderDetails();
+            List<OrderDetail> orderDetailList = order.getOrderDetails().stream().filter(s -> !s.getDeleted()).toList();
             for (int i = 0; i < orderDetailList.size(); i++) {
                 OrderDetail s = orderDetailList.get(i);
                 String productName = s.getProductDetail().getProduct().getName();
@@ -145,17 +145,20 @@ public class OrderPdfService {
             myTextClass.addSingleLineText("Giam gia: ", 25, pageHeight - 690, font, 14, Color.BLACK);
             myTextClass.addSingleLineText(CurrencyFormat.format(order.getDiscount()), (int) (pageWidth - 25 - textWidth), pageHeight - 690, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Da thanh toan: ", 25, pageHeight - 710, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()), (int) (pageWidth - 25 - textWidth), pageHeight - 710, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 710, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal() - order.getDiscount() + order.getDeliveryFee()), (int) (pageWidth - 25 - textWidth), pageHeight - 710, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 730, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 730, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Da thanh toan: ", 25, pageHeight - 740, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()), (int) (pageWidth - 25 - textWidth), pageHeight - 740, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Phu phi: ", 25, pageHeight - 750, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 750, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 760, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 760, font, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Hoan tra: ", 25, pageHeight - 770, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 770, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("(Phu phi): ", 25, pageHeight - 780, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 780, font, 14, Color.BLACK);
+
+            myTextClass.addSingleLineText("(Hoan tra): ", 25, pageHeight - 800, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 800, font, 14, Color.BLACK);
 
 
 //            String[] paymentMethod = {"Methods of payment we accept:", "Cash, PhoneGe, GPay, RuPay", "Visa, Mastercard and American Express"};
@@ -292,7 +295,7 @@ public class OrderPdfService {
                 contentStream.fillAndStroke();
             }
             contentStream.beginText();
-            contentStream.setFont(font, this.fontSize );
+            contentStream.setFont(font, this.fontSize);
             contentStream.setNonStrokingColor(fontColor);
 
             if (colPosition == 4 || colPosition == 2) {

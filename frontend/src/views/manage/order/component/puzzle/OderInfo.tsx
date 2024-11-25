@@ -59,7 +59,7 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
 
     return (
         <div className=''>
-            <Card className="mb-5 h-[230px]">
+            <Card className="mb-5 h-[200px]">
                 <div className='flex gap-3 justify-between'>
                     <h5 className="mb-4">Đơn hàng #{data.code}</h5>
                     <div className=''>

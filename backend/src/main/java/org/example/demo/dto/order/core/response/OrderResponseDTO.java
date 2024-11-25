@@ -15,6 +15,8 @@ import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.util.number.NumberUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class OrderResponseDTO {
+    private static final Logger log = LoggerFactory.getLogger(OrderResponseDTO.class);
     private Integer id;
     private String code;
     private String address;
@@ -55,6 +58,10 @@ public class OrderResponseDTO {
     private Double totalPaid;
     private Double surcharge;
     private Double refund;
+    private Double totalAfterDiscountAndFee;
+    private Double discountVoucherPercent;
+    private Double voucherMinimumSubtotalRequired;
+
     private CustomerResponseDTO customerResponseDTO;
     private StaffResponseDTO staffResponseDTO;
     private VoucherResponseDTO voucherResponseDTO;
@@ -63,20 +70,27 @@ public class OrderResponseDTO {
 
     private LocalDateTime createdDate;
 
-    private Double discountVoucherPercent;
-    private Double voucherMinimumSubtotalRequired;
+
 
     public Double getRefund() {
-        if (!getOrderDetailResponseDTOS().isEmpty()){
-            return totalPaid - (subTotal - discount + deliveryFee) >= 0 && isPayment ? NumberUtil.roundDouble(total) : 0.0;
-        }
-        else {
-            return totalPaid;
-        }
+        // tổng tiền sau trừ giảm giá voucher và cộng ship
+        double total_after_discount_and_fee = subTotal - discount + deliveryFee;
+        // tính tiền trả lại
+        double range = totalPaid - total_after_discount_and_fee;
+        log.info("RANGE 1: " + range);
+        return range >= 0 && isPayment ? NumberUtil.roundDouble(range) : 0.0;
     }
 
     public Double getSurcharge() {
-        return (subTotal - discount + deliveryFee) - totalPaid >= 0 && isPayment ? NumberUtil.roundDouble(total) : 0.0;
+        // tổng tiền sau trừ giảm giá voucher và cộng ship
+        double total_after_discount_and_fee = subTotal - discount + deliveryFee;
+        double range = total_after_discount_and_fee - totalPaid;
+        log.info("RANGE 2: " + range);
+        return range >= 0 && isPayment ? NumberUtil.roundDouble(range) : 0.0;
+    }
+
+    public Double getTotalAfterDiscountAndFee() {
+        return subTotal - discount + deliveryFee;
     }
 
     public List<OrderDetailResponseDTO> getOrderDetailResponseDTOS() {

@@ -282,7 +282,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
 
     return (
-        <div className="h-[680px]">
+        <div className="h-[870px]">
             <ConfirmDialog
                 isOpen={openDelete}
                 type={'danger'}

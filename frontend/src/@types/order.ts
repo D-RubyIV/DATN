@@ -115,6 +115,7 @@ export type OrderResponseDTO = {
     districtName: string;  // Tên của quận/huyện
     wardId: string;        // ID của phường/xã
     wardName: string;      // Tên của phường/xã
+    discountVoucherPercent: number;      // Tên của phường/xã
     customerResponseDTO: OrderCustomerResponseDTO;
     staffResponseDTO: OrderStaffResponseDTO;
     voucherResponseDTO: OrderVoucherResponseDTO;

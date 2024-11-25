@@ -76,6 +76,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
         // ==> GHI ĐÈ HOẶC TẠO BẢN GHI MỚI
         if (entityFound.isPresent() && productDetailFound.isPresent()) {
+            entityFound.get().setDeleted(false);
             ProductDetail productDetail = productDetailFound.get();
             // cộng dồn số lượng cũ và mới
             int newCount = entityFound.get().getQuantity() + requestDTO.getQuantity();
@@ -141,6 +142,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             // nếu đơn này đã thanh toán và là đơn online => thì chỉ xóa mềm
             if (order.getIsPayment() && order.getType() == Type.ONLINE) {
                 orderDetail.setDeleted(true);
+                orderDetail.setQuantity(0);
             }
             // ngược lại xóa vĩnh viễn trưc tiếp
             else {
@@ -153,6 +155,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
         // nếu đủ số lượng đáp ứng
         else {
+            orderDetail.setDeleted(false);
             orderDetail.setQuantity(newQuantity);
             orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return orderDetailRepository.save(orderDetail);

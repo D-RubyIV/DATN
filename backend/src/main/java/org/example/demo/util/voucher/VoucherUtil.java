@@ -20,7 +20,7 @@ public class VoucherUtil {
     public Voucher getBestVoucherCanUse(Order order) {
         double subTotal = order.getSubTotal();
         Customer customer = order.getCustomer();
-        Pageable pageable = PageRequest.of(0, 1);
+//        Pageable pageable = PageRequest.of(0, 1);
         List<Voucher> voucherList = voucherService.selectPageActiveAndAbleToUseVoucher(null, null, customer != null ? customer.getId() : null, null).getContent();
         voucherList.forEach(s -> {
             System.out.println(s.getCode() + " " + s.getMaxPercent() + " " + s.getMinAmount());

@@ -14,4 +14,5 @@ export type PaymentSummaryProps = {
     refund: number | undefined
     surcharge: number | undefined
     totalPaid: number | undefined
+    totalAfterDiscountAndFee: number | undefined
 }

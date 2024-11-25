@@ -9,12 +9,11 @@ import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
-import org.example.demo.dto.order.other.UseOrderVoucherDTO;
+import org.example.demo.dto.order.other.UseOrderVoucherDTOByCode;
+import org.example.demo.dto.order.other.UseOrderVoucherDTOById;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.entity.cart.core.CartDetail;
 import org.example.demo.entity.cart.properties.Cart;
-import org.example.demo.entity.event.Event;
-import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
@@ -56,7 +55,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author PHAH04
@@ -290,9 +288,22 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Transactional
-    public Order addVoucher(UseOrderVoucherDTO request) {
+    public Order addVoucherById(UseOrderVoucherDTOById request) {
         Order orderFound = findById(request.getIdOrder());
-        Voucher voucherFound = voucherRepository.findById(request.getIdVoucher()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Voucher not found"));
+        Voucher voucherFound = voucherRepository.findById(request.getIdVoucher()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Phiếu giảm giá không hợp lệ"));
+        useVoucher(voucherFound, orderFound);
+        return orderRepository.save(orderFound);
+    }
+
+    @Transactional
+    public Order addVoucherCode(UseOrderVoucherDTOByCode request) {
+        Order orderFound = findById(request.getIdOrder());
+        Voucher voucherFound = voucherRepository.findByCode(request.getCodeVoucher()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Phiếu giảm giá không hợp lệ"));
+        useVoucher(voucherFound, orderFound);
+        return orderRepository.save(orderFound);
+    }
+
+    private void useVoucher(Voucher voucherFound, Order orderFound){
         System.out.println(orderFound.getCode());
         System.out.println(voucherFound.getCode());
 
@@ -316,7 +327,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             throw new CustomExceptions.CustomBadRequest("Voucher này đã được sử dụng hết số lượng");
         }
         reloadSubTotalOrder(orderFound);
-        return orderRepository.save(orderFound);
     }
 
     public CountStatusOrder getCountStatusAnyOrder() {
@@ -396,17 +406,25 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setWardName(cart.getWardName());
         order.setPhone(cart.getPhone());
         order.setDeleted(Boolean.FALSE);
-        order.setTotal(cart.getTotal());
-        order.setDeliveryFee(cart.getDeliveryFee());
-        order.setDiscount(cart.getDiscount());
-        order.setSubTotal(cart.getSubTotal());
+        order.setTotal(NumberUtil.roundDouble(cart.getTotal()));
+        order.setDeliveryFee(NumberUtil.roundDouble(cart.getDeliveryFee()));
+        order.setDiscount(NumberUtil.roundDouble(cart.getDiscount()));
+        order.setSubTotal(NumberUtil.roundDouble(cart.getSubTotal()));
         order.setType(Type.ONLINE);
         order.setStatus(Status.PENDING);
         order.setPayment(cart.getPayment());
         order.setCustomer(cart.getCustomer());
-        order.setVoucherMinimumSubtotalRequired(0.0);
+        order.setVoucher(cart.getVoucher());
 
-        order.setDiscountVoucherPercent(0.0);
+        if(cart.getVoucher() != null){
+            order.setDiscountVoucherPercent(Double.valueOf(cart.getVoucher().getMaxPercent()));
+            order.setVoucherMinimumSubtotalRequired(Double.valueOf(cart.getVoucher().getMinAmount()));
+        }
+        else {
+            order.setVoucherMinimumSubtotalRequired(0.0);
+            order.setDiscountVoucherPercent(0.0);
+        }
+
         if (order.getPayment() == Payment.TRANSFER) {
             isPayment = true;
             order.setTotalPaid(NumberUtil.roundDouble(cart.getTotal()));
@@ -417,7 +435,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setIsPayment(isPayment);
         //
         Account account = AuthUtil.getAccount();
-        order.setVoucher(cart.getVoucher());
+
+
         List<OrderDetail> list = new ArrayList<>();
         List<CartDetail> listCardDetail = cart.getCartDetails();
         Order orderSaved = orderRepository.save(order);
@@ -438,6 +457,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setOrderDetails(orderDetailListSaved);
 
         Order result = orderRepository.save(order);
+        reloadSubTotalOrder(order);
         cart.setDeleted(Boolean.TRUE);
         cartRepository.save(cart);
         return result;
@@ -449,33 +469,70 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     public void reloadSubTotalOrder(Order order){
+
+        // tổng tiền các sản phẩm(tính cả event)
         double subtotal = get_subtotal_of_order(order);
-        double discount = get_discount_of_order_that_time(order);
-        double fee_ship = get_fee_ship_of_order(order);
-        double total_paid = NumberUtil.roundDouble(order.getTotalPaid());
-        double total = NumberUtil.roundDouble(subtotal - discount + fee_ship - total_paid);
-
         log.info("SUBTOTAL: " + subtotal);
-        log.info("DISCOUNT: " + discount);
-        log.info("FEE: " + fee_ship);
-        log.info("TOTAL: " + total);
         order.setSubTotal(subtotal);
-        order.setDiscount(discount);
-        order.setDeliveryFee(fee_ship);
-        order.setTotal(total);
 
+        // sau khi cập nhật subtotal thì cũng tự động chọn voucher phù hợp
         if(order.getType() == Type.INSTORE){
             Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
             order.setVoucher(bestVoucher);
             if(bestVoucher == null){
                 log.info("BEST VOUCHER NULL");
                 order.setDiscountVoucherPercent(0.0);
+                order.setVoucherMinimumSubtotalRequired(0.0);
             }
             else {
                 log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
                 order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
+                order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
             }
         }
+
+        // tính tiền giảm của voucher cho hóa đơn
+        double discount = get_discount_of_order_that_time(order);
+        log.info("DISCOUNT: " + discount);
+        order.setDiscount(discount);
+
+        // tính ship
+        double fee_ship = get_fee_ship_of_order(order);
+        // tiền khách đã trả
+        double total_paid = NumberUtil.roundDouble(order.getTotalPaid());
+        // tổng tiền sau trừ giảm giá voucher và cộng ship
+        double total_after_discount_and_fee = subtotal - discount + fee_ship;
+        // tổng tiền cần thanh toán
+        double total = NumberUtil.roundDouble(total_after_discount_and_fee - total_paid);
+
+        log.info("FEE: " + fee_ship);
+        log.info("TOTAL: " + total);
+        // hóa đơn có sản phẩm
+        if (subtotal != 0){
+            order.setDeliveryFee(fee_ship);
+        }
+        // hóa đơn ko còn sản phẩm nào
+        else{
+            order.setDeliveryFee(0.0);
+        }
+
+        if(order.getType() == Type.ONLINE){
+            if(order.getIsPayment()){
+                if(total >= 0){
+                    order.setTotal(total);
+                }
+                else {
+                    order.setTotal(0.0);
+                }
+            }
+            else {
+                order.setTotal(0.0);
+            }
+        } else if (order.getType() == Type.INSTORE) {
+            order.setTotal(total);
+        }
+
+
 
         orderRepository.save(order);
     }
@@ -491,8 +548,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         double subtotal_of_order = get_subtotal_of_order(order);
         // nếu đáp ứng giá trị đơn hàng tối thiểu với voucher
         if (subtotal_of_order > voucherMinimumSubtotalRequired) {
+            log.info("CÓ THỂ SỬ DỤNG VOUCHER");
             return NumberUtil.roundDouble(subtotal_of_order / 100 * discount_percent_at_that_time);
         } else {
+            log.info("KHÔNG THỂ SỬ DỤNG VOUCHER");
             return 0.0;
         }
     }

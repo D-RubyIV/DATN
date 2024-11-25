@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UseOrderVoucherDTO {
+public class UseOrderVoucherDTOById {
     @NotNull(message = "NotNull")
     private Integer idOrder;
     @NotNull(message = "NotNull")

@@ -132,7 +132,7 @@ const SellVoucherModal = ({
 
     const handleUseVoucher = async (idVoucher: number) => {
         try {
-            await instance.post(`/orders/use-voucher`, {
+            await instance.post(`/orders/use-voucher-by-id`, {
                 idOrder: selectOrder.id,
                 idVoucher
             }).then(function(response) {

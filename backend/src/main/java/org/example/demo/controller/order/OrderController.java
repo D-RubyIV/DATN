@@ -7,7 +7,8 @@ import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
-import org.example.demo.dto.order.other.UseOrderVoucherDTO;
+import org.example.demo.dto.order.other.UseOrderVoucherDTOByCode;
+import org.example.demo.dto.order.other.UseOrderVoucherDTOById;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.example.demo.service.order.OrderService;
@@ -96,9 +97,14 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeStatus(id, requestDTO)));
     }
 
-    @PostMapping(value = "use-voucher")
-    public ResponseEntity<OrderResponseDTO> addVoucher(@Valid @RequestBody UseOrderVoucherDTO requestDTO) {
-        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.addVoucher(requestDTO)));
+    @PostMapping(value = "use-voucher-by-id")
+    public ResponseEntity<OrderResponseDTO> addVoucherById(@Valid @RequestBody UseOrderVoucherDTOById requestDTO) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.addVoucherById(requestDTO)));
+    }
+
+    @PostMapping(value = "use-voucher-by-code")
+    public ResponseEntity<OrderResponseDTO> addVoucherByCode(@Valid @RequestBody UseOrderVoucherDTOByCode requestDTO) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.addVoucherCode(requestDTO)));
     }
 
     @GetMapping(value = "calculate-fee/{id}")
