@@ -33,6 +33,7 @@ import org.example.demo.repository.history.HistoryRepository;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.order_detail.OrderDetailRepository;
+import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
@@ -68,6 +69,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Autowired
     private HistoryRepository historyRepository;
+
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -278,8 +282,32 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             }
         }
 
-        // LƯU LỊCH SỬ
+
+
+        // B1: CHECK TRU SO LUONG(TRƯỢC KHI CẬP NHẬT TRẠNG THÁI MỚI)
+        Status oldStatus = entityFound.getStatus();
+        Status newStatus = requestDTO.getStatus();
+
+        log.info("OLD STATUS: "+ oldStatus);
+        log.info("NEW STATUS: "+ newStatus);
+        log.info("-----------------1");
+        if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP){
+            // B1: CHECK ĐỦ SỐ LƯỢNG CÓ THỂ CUNG CẤP (CHỈ CẦN CHECK KHI CHUYỂN TỪ PENDING SANG TOSHIP)
+            boolean availableQuantity = check_valid_quantity_in_storage(entityFound);
+            if(!availableQuantity){
+                throw new CustomExceptions.CustomBadRequest("Có sản phẩm nào đó không đủ cung ứng");
+            }
+            log.info("1");
+            minusProductDetailsQuantity(entityFound);
+        } else if (oldStatus == Status.TOSHIP && newStatus == Status.PENDING) {
+            log.info("2");
+            restoreProductDetailsQuantity(entityFound);
+        }
+        log.info("-----------------2");
+
+        //B2: CẬP NHẬT TRẠNG THÁI MỚI
         entityFound.setStatus(requestDTO.getStatus());
+        //B3: LƯU LỊCH SỬ
         History history = new History();
         history.setOrder(entityFound);
         history.setNote(requestDTO.getNote());
@@ -287,12 +315,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         history.setAccount(AuthUtil.getAccount());
         historyRepository.save(history);
 
-        // nếu đã nhận hàng
-        if(requestDTO.getStatus() == Status.DELIVERED){
-            entityFound.setIsPayment(true);
-            entityFound.setTotalPaid(entityFound.getTotalPaid() + entityFound.getTotal());
-            entityFound.setTotal(0.0);
-        }
+
 
         reloadSubTotalOrder(entityFound);
         return orderRepository.save(entityFound);
@@ -314,7 +337,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.save(orderFound);
     }
 
-    private void useVoucher(Voucher voucherFound, Order orderFound){
+    private void useVoucher(Voucher voucherFound, Order orderFound) {
         System.out.println(orderFound.getCode());
         System.out.println(voucherFound.getCode());
 
@@ -427,11 +450,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setCustomer(cart.getCustomer());
         order.setVoucher(cart.getVoucher());
 
-        if(cart.getVoucher() != null){
+        if (cart.getVoucher() != null) {
             order.setDiscountVoucherPercent(Double.valueOf(cart.getVoucher().getMaxPercent()));
             order.setVoucherMinimumSubtotalRequired(Double.valueOf(cart.getVoucher().getMinAmount()));
-        }
-        else {
+        } else {
             order.setVoucherMinimumSubtotalRequired(0.0);
             order.setDiscountVoucherPercent(0.0);
         }
@@ -439,8 +461,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         if (order.getPayment() == Payment.TRANSFER) {
             isPayment = true;
             order.setTotalPaid(NumberUtil.roundDouble(cart.getTotal()));
-        }
-        else{
+        } else {
             order.setTotalPaid(0.0);
         }
         order.setIsPayment(isPayment);
@@ -479,7 +500,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return get_discount_of_order_that_time(order) - get_discount_of_order_that_time(order);
     }
 
-    public void reloadSubTotalOrder(Order order){
+    public void reloadSubTotalOrder(Order order) {
 
         // tổng tiền các sản phẩm(tính cả event)
         double subtotal = get_subtotal_of_order(order);
@@ -487,15 +508,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setSubTotal(subtotal);
 
         // sau khi cập nhật subtotal thì cũng tự động chọn voucher phù hợp
-        if(order.getType() == Type.INSTORE){
+        if (order.getType() == Type.INSTORE) {
             Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
             order.setVoucher(bestVoucher);
-            if(bestVoucher == null){
+            if (bestVoucher == null) {
                 log.info("BEST VOUCHER NULL");
                 order.setDiscountVoucherPercent(0.0);
                 order.setVoucherMinimumSubtotalRequired(0.0);
-            }
-            else {
+            } else {
                 log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
                 order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
                 order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
@@ -518,34 +538,47 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         log.info("FEE TOTAL: " + fee_ship);
         log.info("TOTAL: " + total);
+
+
+        // ------------------ FIX FEE -----------------
         // hóa đơn có sản phẩm
-        if (subtotal != 0){
+        if (subtotal != 0) {
             order.setDeliveryFee(fee_ship);
         }
         // hóa đơn ko còn sản phẩm nào
-        else{
+        else {
             order.setDeliveryFee(0.0);
         }
+        // ------------------ FIX FEE -----------------
 
-        // nếu khách chưa nhận hàng
-        if(order.getType() == Type.ONLINE){
-            if(order.getIsPayment()){
-                if(total >= 0){
+        // NẾU ĐÃ NHẬN HÀNG (THANH TOÁN HÊT TIỀN)
+        if(order.getStatus() == Status.DELIVERED){
+            order.setTotalPaid(total + total_paid);
+            order.setTotal(0.0);
+        }
+        // NẾU CHƯA NHẬN
+        else{
+            // ĐƠN ONLINE
+            if (order.getType() == Type.ONLINE) {
+                // nếu có thanh toán r
+                if (order.getIsPayment()) {
+                    // NẾU TỔNG CẦN THANH TOÁN > 0 (TỨC CÓ ĐƠN PHÁT SINH)
+                    if (total > 0) {
+                        order.setTotal(total);
+                    }
+                    // NẾU KO CÓ ĐƠN PHÁT SINH
+                    else {
+                        order.setTotal(0.0);
+                    }
+                } else {
                     order.setTotal(total);
                 }
-                else {
-                    order.setTotal(0.0);
-                }
             }
-            else {
-                order.setTotal(0.0);
+            // ĐƠN Ở CỦA HÀNG
+            else if (order.getType() == Type.INSTORE) {
+                order.setTotal(total);
             }
-        } else if (order.getType() == Type.INSTORE) {
-            order.setTotal(total);
         }
-
-
-
         orderRepository.save(order);
     }
 
@@ -611,6 +644,47 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             log.error(e.getMessage());
             throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
         }
+    }
+
+    public Order callReCalculate(Integer id){
+        Order order = findById(id);
+        reloadSubTotalOrder(order);
+        return order;
+    }
+
+    public void minusProductDetailsQuantity(Order order){
+        List<OrderDetail> orderDetails = order.getOrderDetails();
+        for (OrderDetail orderDetail : orderDetails) {
+            ProductDetail productDetail = orderDetail.getProductDetail();
+            int new_quantity = productDetail.getQuantity() - orderDetail.getQuantity();
+            log.info("OLD QUANTITY: " + productDetail.getQuantity());
+            log.info("NEW QUANTITY: " + new_quantity);
+            productDetail.setQuantity(new_quantity);
+            productDetailRepository.save(productDetail);
+        }
+    }
+
+    public void restoreProductDetailsQuantity(Order order){
+        List<OrderDetail> orderDetails = order.getOrderDetails();
+        for (OrderDetail orderDetail : orderDetails) {
+            ProductDetail productDetail = orderDetail.getProductDetail();
+            int new_quantity = productDetail.getQuantity() + orderDetail.getQuantity();
+            productDetail.setQuantity(new_quantity);
+            productDetailRepository.save(productDetail);
+        }
+    }
+    public boolean check_valid_quantity_in_storage(Order order){
+        boolean available = true;
+        List<OrderDetail> orderDetails = order.getOrderDetails();
+        for (OrderDetail orderDetail : orderDetails) {
+            ProductDetail productDetail = orderDetail.getProductDetail();
+            int order_detail_quantity  = orderDetail.getQuantity();
+            int product_detail_quantity  = productDetail.getQuantity();
+            if (order_detail_quantity > product_detail_quantity){
+                available = false;
+            }
+        }
+        return available;
     }
 
 }

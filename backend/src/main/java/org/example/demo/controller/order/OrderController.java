@@ -107,6 +107,11 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.addVoucherCode(requestDTO)));
     }
 
+    @GetMapping(value = "re-calculate/{id}")
+    public ResponseEntity<?> calculateAgain(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.callReCalculate(id)));
+    }
+
     @GetMapping(value = "calculate-fee/{id}")
     public ResponseEntity<?> calculateFee(@PathVariable Integer id) {
         return ResponseEntity.ok(orderService.calculateFee(id));

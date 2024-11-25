@@ -40,28 +40,24 @@ public class CalculateUtil {
         double fee_ship = order.getDeliveryFee();
         double total_paid = order.getTotalPaid();
         boolean isPayment = order.getIsPayment();
-        double total_un_paid = NumberUtil.roundDouble(subtotal - discount + fee_ship - total_paid);
 
-        List<OrderDetail> orderDetailsUnDeleted = order.getOrderDetails().stream().filter(s -> !s.getDeleted()).toList();
 
-        if (!orderDetailsUnDeleted.isEmpty()){
-            return total_paid - (subtotal - discount + fee_ship) >= 0 && isPayment ? NumberUtil.roundDouble(total_un_paid) : 0.0;
-        }
-        else {
-            return total_un_paid;
-        }
+        double total_after_discount_and_fee = subtotal - discount + fee_ship;
+        // tính tiền trả lại
+        double range = total_paid - total_after_discount_and_fee;
+        return range >= 0 && isPayment ? NumberUtil.roundDouble(range) : 0.0;
     }
 
-    public static double getSurcharge(Order order){
+    public static double getSurcharge(Order order) {
         double subtotal = order.getSubTotal();
         double discount = order.getDiscount();
         double fee_ship = order.getDeliveryFee();
         double total_paid = order.getTotalPaid();
         boolean isPayment = order.getIsPayment();
-        double total_un_paid = NumberUtil.roundDouble(subtotal - discount + fee_ship - total_paid);
 
-        return (subtotal - discount + fee_ship) - total_paid >= 0 && isPayment ? NumberUtil.roundDouble(total_un_paid) : 0.0;
+        double total_after_discount_and_fee = subtotal - discount + fee_ship;
+        double range = total_after_discount_and_fee - total_paid;
+        return range >= 0 && isPayment ? NumberUtil.roundDouble(range) : 0.0;
     }
-
 
 }

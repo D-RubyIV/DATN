@@ -77,6 +77,12 @@ const publicRoute: Routes = [
         ),
         authority: [],
     },
+    {
+        key: 'profile',
+        path: 'profile',
+        component: lazy(() => import('@/views/client/Profile/MyProfile')),
+        authority: []
+    },
 ]
 
 export default publicRoute

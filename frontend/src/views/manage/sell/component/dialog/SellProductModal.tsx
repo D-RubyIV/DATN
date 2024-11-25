@@ -497,12 +497,19 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             setIsOpenPlacement(false)
             setIsOpenProductModal(false)
         } else {
-            await instance.post('/order-details', orderDetailRequest)
+            await instance.post('/order-details', orderDetailRequest).then(function(response){
+                if(response.status === 200){
+                    openNotification("Thêm thành công")
+                }
+            }).catch(function(error){
+                if (error?.response?.data?.error) {
+                    openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                }
+            })
             await fetchData()
             setIsOpenPlacement(false)
             setIsOpenProductModal(false)
             await sleep(500)
-            openNotification('Thêm thành công!')
             document.body.style.overflow = 'auto'
         }
 

@@ -42,6 +42,13 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         return item.product.eventDTOList.length > 0
 
     }
+
+    const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
+        const order_detail_quantity = item.quantity
+        const product_detail_quantity = item.productDetailResponseDTO.quantity
+        return product_detail_quantity > order_detail_quantity
+    }
+
     const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
         const nowPercent = item.averageDiscountEventPercent
         const partPercent = item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent
@@ -105,6 +112,9 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 </div>
                 <div className={'text-orange-700'}>
                     {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+                </div>
+                <div className={'text-orange-700'}>
+                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng`}
                 </div>
             </div>
 
@@ -178,7 +188,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         return (
             <NumericFormat
                 displayType="text"
-                value={(Math.round(amount * 100) / 100).toFixed(2)}
+                value={(Math.round(amount * 100) / 100).toFixed(0)}
                 suffix={'₫'}
                 thousandSeparator={true}
             />
@@ -211,6 +221,17 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                             }}><HiMinusCircle /></button>)
                         }
 
+                    </div>
+                )
+            }
+        }),
+        columnHelper.accessor('productDetailResponseDTO.quantity', {
+            header: 'Kho',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <div className={`${row.productDetailResponseDTO.quantity > props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
+                        <p>{row.productDetailResponseDTO.quantity}</p>
                     </div>
                 )
             }
@@ -343,7 +364,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                     }
 
                 </div>
-                <div className="max-h-[450px] overflow-y-auto">
+                <div className="max-h-[500px] overflow-y-auto">
                     <Table>
                         <THead>
                             {table.getHeaderGroups().map((headerGroup) => (

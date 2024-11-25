@@ -246,7 +246,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
 
     return (
-        <div className="bg-white p-5 card card-border min-h-[320px] h-auto">
+        <div className="bg-white p-5 card card-border min-h-[345px] h-auto">
             <div className={'max-w-full py-5 overflow-auto'}>
                 {
                     selectObject.historyResponseDTOS.length > 0 ? (
