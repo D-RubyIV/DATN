@@ -1057,7 +1057,6 @@ const UpdateCustomer = () => {
                                                         </div>
                                                     </Dialog>
                                                 </div>
-
                                             ))}
                                         </div>
                                     )}
