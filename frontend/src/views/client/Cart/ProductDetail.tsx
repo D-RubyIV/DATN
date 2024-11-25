@@ -252,10 +252,10 @@ const ProductDetail = () => {
                                             className="w-6 h-6 lazyloaded"
                                             data-src="//theme.hstatic.net/200000690725/1001078549/14/product_info2_desc3_img.png?v=550"
                                             src="//theme.hstatic.net/200000690725/1001078549/14/product_info2_desc3_img.png?v=550"
-                                            alt="Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store TORANO"
+                                            alt="Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store CANTH"
                                         />
                                         <div className="text-gray-800 text-sm flex-1 max-w-full">
-                                            Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store TORANO
+                                            Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store CANTH
                                         </div>
                                     </div>
                                 </div>

@@ -97,4 +97,11 @@ public class CartDetailController {
         cartServiceV2.reloadSubTotalOrder(cart);
         return ResponseEntity.ok(cartDetailResponseMapper.toDTO(cartDetailResult));
     }
+
+    @DeleteMapping("/remove/{id}")
+    public ResponseEntity<?> removeCartDetail(@PathVariable Integer id) {
+        CartDetail cartDetail = cartDetailRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Cart not found"));
+        cartDetailRepository.delete(cartDetail);
+        return ResponseEntity.ok("Xoá sản phẩm " + cartDetail.getProductDetail().getProduct().getName() + " khỏi giỏ hàng");
+    }
 }
