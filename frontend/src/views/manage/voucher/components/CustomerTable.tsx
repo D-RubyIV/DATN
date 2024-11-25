@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Button } from "@/components/ui";
+
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { IoIosSearch } from 'react-icons/io';
 import { Input } from 'antd';
 import instance from "@/axios/CustomAxios";
 
-
 type ICustomer = {
     id: number;
-    name: string;
-    email: string;
-    phone: string;
+    name: string | null;
+    email: string | null;
+    phone: string | null;
 };
 
 type CustomerTableProps = {
@@ -23,7 +22,9 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
     const [selectedCustomerIdsState, setSelectedCustomerIdsState] = useState<number[]>(selectedCustomerIds);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const customersPerPage = 10;
+    const [totalPages, setTotalPages] = useState(0);
+
+    const customersPerPage = 5;
 
     // Fetch customers from API
     useEffect(() => {
@@ -31,16 +32,25 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
             setLoading(true);
             try {
                 const res = await instance.get(`/customer?page=${currentPage}&size=${customersPerPage}`);
-                setCustomers(res.data.content);
+                const { content, totalPages } = res.data;
+                setCustomers(
+                    content.map((customer: any) => ({
+                        id: customer.id,
+                        name: customer.name,
+                        email: customer.email,
+                        phone: customer.phone,
+                    }))
+                );
+                setTotalPages(totalPages);
             } catch (error) {
-                console.error("Error fetching customers:", error);
+                console.error('Error fetching customers:', error);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchCustomers();
-    }, [currentPage]); // Dependency array includes currentPage to refetch when the page changes
+    }, [currentPage]);
 
     const handleSelectCustomer = useCallback((customerId: number) => {
         setSelectedCustomerIdsState((prevSelected) =>
@@ -56,7 +66,7 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
 
     useEffect(() => {
         if (selectedCustomerIdsState.length === selectedCustomerIds.length) return; // Prevent unnecessary updates
-        const selectedCustomers = customers.filter(customer =>
+        const selectedCustomers = customers.filter((customer) =>
             selectedCustomerIdsState.includes(customer.id)
         );
         onSelectedCustomersChange(selectedCustomers);
@@ -67,19 +77,18 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
         setCurrentPage(1); // Reset to the first page when searching
     };
 
-    // Filtered customers
     const filteredCustomers = useMemo(() => {
         return customers.filter((customer) =>
-            customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+            (customer.name ?? '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (customer.email ?? '').toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [customers, searchTerm]);
 
-    // Pagination logic
-    const indexOfLastCustomer = currentPage * customersPerPage;
-    const indexOfFirstCustomer = indexOfLastCustomer - customersPerPage;
-    const currentCustomers = filteredCustomers.slice(indexOfFirstCustomer, indexOfLastCustomer);
-    const totalPages = Math.ceil(filteredCustomers.length / customersPerPage);
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
+    };
 
     return (
         <div className="overflow-x-auto">
@@ -94,7 +103,7 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
                             top: '50%',
                             transform: 'translateY(-50%)',
                             fontSize: '20px',
-                            pointerEvents: 'none'
+                            pointerEvents: 'none',
                         }}
                     />
                     <Input
@@ -124,7 +133,7 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {currentCustomers.map((customer) => (
+                        {filteredCustomers.map((customer) => (
                             <tr key={customer.id} className="hover:bg-gray-100 transition duration-200">
                                 <td className="border-b border-gray-300 px-4 py-2 text-center">
                                     <input
@@ -134,9 +143,9 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
                                         className="form-checkbox h-5 w-5 text-blue-600"
                                     />
                                 </td>
-                                <td className="border-b border-gray-300 px-4 py-2">{customer.name}</td>
-                                <td className="border-b border-gray-300 px-4 py-2">{customer.email}</td>
-                                <td className="border-b border-gray-300 px-4 py-2">{customer.phone}</td>
+                                <td className="border-b border-gray-300 px-4 py-2">{customer.name || 'N/A'}</td>
+                                <td className="border-b border-gray-300 px-4 py-2">{customer.email || 'N/A'}</td>
+                                <td className="border-b border-gray-300 px-4 py-2">{customer.phone || 'N/A'}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -145,22 +154,20 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
 
             {/* Pagination */}
             <div className="flex justify-between items-center mt-4">
-                {/* Previous Page */}
                 <div
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    onClick={() => handlePageChange(currentPage - 1)}
                     className={`cursor-pointer ${currentPage === 1 ? 'text-gray-400' : 'text-blue-600'}`}
                 >
-                    &lt; {/* This represents the Previous arrow */}
+                    PREV
                 </div>
 
                 <span>{`Page ${currentPage} of ${totalPages}`}</span>
 
-                {/* Next Page */}
                 <div
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    onClick={() => handlePageChange(currentPage + 1)}
                     className={`cursor-pointer ${currentPage === totalPages ? 'text-gray-400' : 'text-blue-600'}`}
                 >
-                    &gt; {/* This represents the Next arrow */}
+                    NEXT
                 </div>
             </div>
         </div>

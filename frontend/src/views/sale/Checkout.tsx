@@ -287,6 +287,8 @@ const Checkout = () => {
         })
     }
 
+// DUNG CLOSE CO MAY CAI LAM DO TAT DI QUEN K BIET CAI NAO
+
     const handleConfirmCart = async () => {
         if (paymentMethod === 'CASH') {
             try {
@@ -344,7 +346,7 @@ const Checkout = () => {
                     instance.get(`/orders/convert/${id}`).then(function (response) {
                         if (response.status === 200 && response.data) {
                             const idOrder = response.data.id
-                            const amount = Math.round(selectedCart.subTotal)
+                            const amount = Math.round((selectedCart as CartResponseDTO).subTotal)
                             instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function (response) {
                                 if (response.status === 200 && response.data) {
                                     const url = response?.data?.data?.paymentUrl
@@ -478,7 +480,7 @@ const Checkout = () => {
                             <div className={'flex flex-col gap-5'}>
                                 <div className={'grid grid-cols-6 gap-4'}>
                                     <div className={'col-span-3'}>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Họ và tên</p>
+                                        <p className={' text-black text-[18px] font-semibold'}>Họ và tên</p>
                                         <Input
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             placeholder={'Họ và tên'}
@@ -492,7 +494,7 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div className={'col-span-3'}>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Số điện thoại</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Số điện thoại</p>
                                         <Input
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             placeholder="Số điện thoại"
@@ -508,7 +510,7 @@ const Checkout = () => {
                                 </div>
                                 <div className={'grid grid-cols-3 gap-4'}>
                                     <div>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Tỉnh thành</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Tỉnh thành</p>
                                         <Select
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             options={provinces}
@@ -525,7 +527,7 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Quận/huyện</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Quận/huyện</p>
                                         <Select
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             options={districts}
@@ -542,7 +544,7 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Xã/phường</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Xã/phường</p>
                                         <Select
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             options={wards}
@@ -560,7 +562,7 @@ const Checkout = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <p className={'font-hm text-black text-[18px] font-semibold'}>Địa chỉ</p>
+                                    <p className={'  text-black text-[18px] font-semibold'}>Địa chỉ</p>
                                     <Input
                                         className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                         placeholder={'Địa chỉ'}
@@ -774,7 +776,7 @@ const Checkout = () => {
                                         className="bg-black w-full py-2 font-thin rounded-none text-white"
                                         onClick={handleSubmitFormRecipient(handleConfirmCart)}
                                     >
-                                        <p className="font-hm">Xác nhận đơn hàng</p>
+                                        <p className=" ">Xác nhận đơn hàng</p>
                                     </button>
                                 </div>
 

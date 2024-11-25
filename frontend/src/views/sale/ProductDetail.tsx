@@ -5,8 +5,8 @@ import { HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
 import { useSaleContext } from '@/views/sale/SaleContext'
 import { Color, Product, ProductDetailResponseDTO, Size } from '@/views/sale/index'
 import { useToastContext } from '@/context/ToastContext'
-import { Swiper, SwiperSlide } from 'swiper/react'
 import ProductInfo from '../client/Cart/ProductInfo'
+import RecommendProduct from './RecommendProduct'
 
 
 const ProductDetail = () => {
@@ -42,8 +42,8 @@ const ProductDetail = () => {
     useEffect(() => {
         {
             product && Array.isArray(product.eventDTOList)
-            && product.eventDTOList.length > 0
-            && setSalePercent(product.eventDTOList[0].discountPercent)
+                && product.eventDTOList.length > 0
+                && setSalePercent(product.eventDTOList[0].discountPercent)
         }
     }, [product])
 
@@ -67,31 +67,6 @@ const ProductDetail = () => {
     }, [id])
     useEffect(() => {
     }, [listProductDetail])
-
-    // Cập nhật danh sách màu và kích thước từ dữ liệu chi tiết sản phẩm
-    // useEffect(() => {
-    //     if (listProductDetail.length > 0) {
-    //         // Lọc bỏ các `color` trùng dựa trên `color.code`
-    //         const uniqueColors = listProductDetail.reduce((acc, item) => {
-    //             if (!acc.some((color) => color.code === item.color.code)) {
-    //                 acc.push(item.color);
-    //             }
-    //             return acc;
-    //         }, [] as typeof listProductDetail[0]["color"][]);
-
-    //         // Lọc bỏ các `size` trùng dựa trên `size.id`
-    //         const uniqueSizes = listProductDetail.reduce((acc, item) => {
-    //             if (!acc.some((size) => size.id === item.size.id)) {
-    //                 acc.push(item.size);
-    //             }
-    //             return acc;
-    //         }, [] as typeof listProductDetail[0]["size"][]);
-
-    //         // Cập nhật state
-    //         setListColor(uniqueColors);
-    //         setListSize(uniqueSizes);
-    //     }
-    // }, [listProductDetail]);
 
 
     useEffect(() => {
@@ -160,39 +135,6 @@ const ProductDetail = () => {
         }).format(price)
     }
 
-    // giá
-
-    // Hàm xử lý khi chọn màu
-    // const handleColorSelect = (color: Color) => {
-    //     setSelectedColor(color);
-    //     setSelectedSize(null); // Reset size khi chọn màu mới
-
-    //     // Lọc lại danh sách kích thước dựa trên màu đã chọn
-    //     const filteredSizes = listProductDetail
-    //         .filter((item) => item.color.id === color.id)
-    //         .map((item) => item.size.code);
-    //     setListSizeValid([...new Set(filteredSizes)]);
-    // };
-
-    // // Hàm xử lý khi chọn kích thước
-    // const handleSizeSelect = (size: Size) => {
-    //     setSelectedSize(size);
-
-    //     // Lọc lại danh sách màu sắc dựa trên kích thước đã chọn
-    //     if (selectedColor) {
-    //         const productDetail = listProductDetail.find(
-    //             (item) => item.color.id === selectedColor.id && item.size.id === size.id
-    //         );
-    //         setSelectedProductDetail(productDetail ?? null);
-    //         console.log(productDetail)
-    //     } else {
-    //         const filteredColors = listProductDetail
-    //             .filter((item) => item.size.id === size.id)
-    //             .map((item) => item.color.code);
-    //         setListColorValid([...new Set(filteredColors)]);
-    //     }
-    // };
-
 
     const handleSizeSelect = (size: Size) => {
         setSelectedSize(size)
@@ -232,7 +174,7 @@ const ProductDetail = () => {
             'productDetailId': selectedProductDetail?.id,
             'quantity': quantity
         }
-        instance.post('/cart-details/create', dataRequest).then(function(response) {
+        instance.post('/cart-details/create', dataRequest).then(function (response) {
             console.log(response)
             if (response.status === 200) {
                 openNotification('Thêm vào giỏ hàng thành công')
@@ -478,10 +420,10 @@ const ProductDetail = () => {
                                     className="w-6 h-6 lazyloaded"
                                     data-src="//theme.hstatic.net/200000690725/1001078549/14/product_info2_desc3_img.png?v=550"
                                     src="//theme.hstatic.net/200000690725/1001078549/14/product_info2_desc3_img.png?v=550"
-                                    alt="Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store TORANO"
+                                    alt="Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store CANTH"
                                 />
                                 <div className="text-gray-800 text-sm flex-1 max-w-full">
-                                    Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store TORANO
+                                    Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store CANTH
                                 </div>
                             </div>
                         </div>
@@ -491,9 +433,17 @@ const ProductDetail = () => {
                 </div>
             </div>
 
-            <div className="flex items-center ">
+            <div className="flex ml-12 items-center ">
                 <ProductInfo />
             </div>
+
+            <div className="flex flex-col justify-center items-center mt-4 mb-4">
+                <h1 className="text-2xl font-bold mb-4">Có thể bạn sẽ thích</h1>
+                <div className="w-full">
+                    <RecommendProduct />
+                </div>
+            </div>
+
         </div>
     )
 }

@@ -1,3 +1,4 @@
+
 import { Discount } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 
@@ -14,6 +15,12 @@ interface Voucher {
   typeTicket: string;
 }
 
+interface VoucherWithDiscount extends Voucher {
+  discountAmount: number;
+}
+// LUC CHỌN B CHO CALL USE BÊN NÀY NỮA LÀ ĐC MÀ U THOI BAT AN SU DUNG CUNG DC =
+// COM CAOI GI NUA K B NHI
+////  B XEM CHỖ NÀO BÊN CLINET BUG THÌ FIX THÔI GIỪO T CX KO NGHXI ĐC GI o man check out b fix het may cai do do 
 const VoucherModal = ({
   onVoucherSelect,
   amount,
@@ -25,7 +32,7 @@ const VoucherModal = ({
   isVoucherModalOpen: boolean;
   toggleVoucherModal: () => void;
 }) => {
-  const [voucherList, setVoucherList] = useState<Voucher[]>([]);
+  const [voucherList, setVoucherList] = useState<VoucherWithDiscount[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,8 +45,14 @@ const VoucherModal = ({
         throw new Error("Lỗi khi tải danh sách phiếu giảm giá");
       }
       const data: Voucher[] = await response.json();
-      const sortedVouchers = data.sort((a, b) => b.maxPercent - a.maxPercent);
-      setVoucherList(sortedVouchers);
+
+      // Tính số tiền giảm giá
+      const vouchersWithDiscount: VoucherWithDiscount[] = data.map((voucher) => {
+        const discountAmount = Math.min((voucher.maxPercent / 100) * amount, voucher.minAmount);
+        return { ...voucher, discountAmount };
+      });
+
+      setVoucherList(vouchersWithDiscount);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -80,7 +93,7 @@ const VoucherModal = ({
               ) : voucherList.length === 0 ? (
                 <p className="text-center text-gray-500">Không có phiếu giảm giá nào</p>
               ) : (
-                voucherList.map((voucher: Voucher) => (
+                voucherList.map((voucher: VoucherWithDiscount) => (
                   <div
                     key={voucher.id}
                     className="flex justify-between items-center py-4 border-b hover:bg-gray-50 transition-colors"
@@ -94,6 +107,9 @@ const VoucherModal = ({
                         <p className="text-sm text-gray-600">
                           Giảm: {voucher.maxPercent}% - Tối thiểu:{" "}
                           {voucher.minAmount.toLocaleString("vi-VN")}₫
+                        </p>
+                        <p className="text-sm text-green-600 font-semibold">
+                          Số tiền giảm: {voucher.discountAmount.toLocaleString("vi-VN")}₫
                         </p>
                       </div>
                     </div>

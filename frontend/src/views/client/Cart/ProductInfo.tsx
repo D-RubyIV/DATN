@@ -57,7 +57,7 @@ export default function ProductInfo() {
       </TabPanel>
       <TabPanel value={tabIndex} index={3}>
         {/* Nội dung Chính sách bảo hành */}
-        Sản phẩm được bảo hành tại tất cả các cửa hàng TORANO.
+        Sản phẩm được bảo hành tại tất cả các cửa hàng CANTH.
       </TabPanel>
     </div>
   );
