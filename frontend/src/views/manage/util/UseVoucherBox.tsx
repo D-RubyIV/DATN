@@ -14,7 +14,7 @@ const UseVoucherBox = ({ selectedOrder, fetchSelectedOrder }: {
 }) => {
     const [isOpenVoucherModal, setIsOpenVoucherModal] = useState<boolean>(false)
 
-    const {openNotification} = useToastContext();
+    const { openNotification } = useToastContext()
     const onUseVoucherByCode = async (codeVoucher: string) => {
         const data = {
             idOrder: selectedOrder.id,
@@ -23,13 +23,13 @@ const UseVoucherBox = ({ selectedOrder, fetchSelectedOrder }: {
         await instance.post(`/orders/use-voucher-by-code`, data).then(function(response) {
             console.log(response)
             fetchSelectedOrder()
-            if(response.status === 200){
-                openNotification("Áp phiếu giảm giá thành công", "Sử dụng phiếu giảm giá", "success", 2000);
+            if (response.status === 200) {
+                openNotification('Áp phiếu giảm giá thành công', 'Sử dụng phiếu giảm giá', 'success', 2000)
             }
-        }).catch(function(error){
-            if(error?.response?.data?.error){
+        }).catch(function(error) {
+            if (error?.response?.data?.error) {
                 console.log(error.response.data)
-                openNotification(error?.response?.data?.error, "Sử dụng phiếu giảm giá", "danger", 2000);
+                openNotification(error?.response?.data?.error, 'Sử dụng phiếu giảm giá', 'danger', 2000)
             }
         })
     }
@@ -41,53 +41,57 @@ const UseVoucherBox = ({ selectedOrder, fetchSelectedOrder }: {
 
     return (
         <Fragment>
-            <Formik
-                initialValues={{ codeVoucher: selectedOrder?.voucherResponseDTO?.code || "" }}
-                validationSchema={validationSchema}
-                onSubmit={async (values, { resetForm }) => {
-                    await onUseVoucherByCode(values.codeVoucher)
-                    resetForm()
-                }}
-            >
-                {({ isSubmitting, setFieldValue }) => (
-                   <Fragment>
-                       <Form className="flex gap-2">
-                           <div className="flex flex-col w-full">
-                               <div className="relative">
-                                   <Field name="codeVoucher">
-                                       {({ field }) => (
-                                           <Input
-                                               {...field}
-                                               placeholder="Nhập mã giảm giá nếu khách cung cấp"
-                                               suffix={(
-                                                   <Button
-                                                       type="submit"
-                                                       className="cursor-pointer"
-                                                       variant="plain"
-                                                       icon={<HiPaperAirplane />}
-                                                       disabled={isSubmitting}
-                                                   />
-                                               )}
-                                           />
-                                       )}
-                                   </Field>
-                               </div>
+            <div className={`${selectedOrder.status !== 'PENDING' ? 'hidden' : ''}`}>
+                <Formik
+                    initialValues={{ codeVoucher: selectedOrder?.voucherResponseDTO?.code || '' }}
+                    validationSchema={validationSchema}
+                    onSubmit={async (values, { resetForm }) => {
+                        await onUseVoucherByCode(values.codeVoucher)
+                        resetForm()
+                    }}
+                >
+                    {({ isSubmitting, setFieldValue }) => (
+                        <Fragment>
+                            <Form className="flex gap-2">
+                                <div className="flex flex-col w-full">
+                                    <div className="relative">
+                                        <Field name="codeVoucher">
+                                            {({ field }) => (
+                                                <Input
+                                                    disabled={selectedOrder.status !== 'PENDING'}
+                                                    {...field}
+                                                    placeholder="Nhập mã giảm giá nếu khách cung cấp"
+                                                    suffix={(
+                                                        <Button
+                                                            type="submit"
+                                                            className="cursor-pointer"
+                                                            variant="plain"
+                                                            icon={<HiPaperAirplane />}
+                                                            disabled={isSubmitting || selectedOrder.status !== 'PENDING'}
+                                                        />
+                                                    )}
+                                                />
+                                            )}
+                                        </Field>
+                                    </div>
 
-                           </div>
-                           <Button
-                               className="!px-2  "
-                               icon={<HiTicket size={18} />}
-                               onClick={() => setIsOpenVoucherModal(true)}
-                           />
-                       </Form>
-                       <ErrorMessage
-                           name="codeVoucher"
-                           component="div"
-                           className="text-red-500 text-sm"
-                       />
-                   </Fragment>
-                )}
-            </Formik>
+                                </div>
+                                <Button
+                                    className="!px-2  "
+                                    icon={<HiTicket size={18} />}
+                                    disabled={selectedOrder.status !== 'PENDING'}
+                                    onClick={() => setIsOpenVoucherModal(true)}
+                                />
+                            </Form>
+                            <ErrorMessage
+                                name="codeVoucher"
+                                component="div"
+                                className="text-red-500 text-sm"
+                            />
+                        </Fragment>
+                    )}
+                </Formik>
+            </div>
 
             {
                 (isOpenVoucherModal && selectedOrder) && (

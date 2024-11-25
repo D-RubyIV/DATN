@@ -23,6 +23,7 @@ import { useToastContext } from '@/context/ToastContext'
 import { FiPackage } from 'react-icons/fi'
 import SellProductModal from '@/views/manage/sell/component/dialog/SellProductModal'
 import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
+import { useLoadingContext } from '@/context/LoadingContext'
 
 
 const OrderProducts = ({ data, selectObject, fetchData }: {
@@ -113,6 +114,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
 
     const [openDelete, setOpenDelete] = useState(false)
     const [selectedOrderDetailId, setSelectedOrderDetailId] = useState<number>()
+    const { sleepLoading } = useLoadingContext()
 
     const handleCloseDelete = () => {
         console.log('Close')
@@ -122,6 +124,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const handleConfirmDelete = async () => {
         console.log('Confirm')
         setOpenDelete(false)
+        await sleepLoading(300)
         await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function() {
             fetchData()
         })
@@ -130,6 +133,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
             .then(function() {
+                sleepLoading(300)
                 fetchData()
             })
             .catch(function(err) {
@@ -282,7 +286,8 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
 
     return (
-        <div className="h-[870px]">
+        <div
+            className={`h-full`}>
             <ConfirmDialog
                 isOpen={openDelete}
                 type={'danger'}

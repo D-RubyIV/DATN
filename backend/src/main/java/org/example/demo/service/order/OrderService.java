@@ -271,11 +271,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Transactional
     public Order changeStatus(Integer id, HistoryRequestDTO requestDTO) {
         Order entityFound = findById(id);
+
         if (requestDTO.getStatus() == Status.CANCELED && entityFound.getIsPayment() && entityFound.getPayment() == Payment.TRANSFER) {
             if (DataUtils.isNullOrEmpty(requestDTO.getNote())) {
                 throw new CustomExceptions.CustomBadRequest("Vui lòng nhập nội dung và mã giao dịch trước khi hủy");
             }
         }
+
+        // LƯU LỊCH SỬ
         entityFound.setStatus(requestDTO.getStatus());
         History history = new History();
         history.setOrder(entityFound);
@@ -283,6 +286,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         history.setStatus(requestDTO.getStatus());
         history.setAccount(AuthUtil.getAccount());
         historyRepository.save(history);
+
+        // nếu đã nhận hàng
+        if(requestDTO.getStatus() == Status.DELIVERED){
+            entityFound.setIsPayment(true);
+            entityFound.setTotalPaid(entityFound.getTotalPaid() + entityFound.getTotal());
+            entityFound.setTotal(0.0);
+        }
+
         reloadSubTotalOrder(entityFound);
         return orderRepository.save(entityFound);
     }
@@ -505,7 +516,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // tổng tiền cần thanh toán
         double total = NumberUtil.roundDouble(total_after_discount_and_fee - total_paid);
 
-        log.info("FEE: " + fee_ship);
+        log.info("FEE TOTAL: " + fee_ship);
         log.info("TOTAL: " + total);
         // hóa đơn có sản phẩm
         if (subtotal != 0){
@@ -516,6 +527,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             order.setDeliveryFee(0.0);
         }
 
+        // nếu khách chưa nhận hàng
         if(order.getType() == Type.ONLINE){
             if(order.getIsPayment()){
                 if(total >= 0){

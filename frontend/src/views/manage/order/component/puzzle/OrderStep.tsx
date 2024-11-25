@@ -32,7 +32,7 @@ type HistoryDTO = {
 const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO, fetchData: () => Promise<void> }) => {
 
     const { openNotification } = useToastContext()
-    const { sleep, setIsLoadingComponent } = useLoadingContext()
+    const { sleepLoading } = useLoadingContext()
 
     const validationSchema = Yup.object({
         note: Yup.string().required('Vui lòng nhập nội dung').min(5, 'Nội dung phải có ít nhất 5 ký tự')
@@ -111,8 +111,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             'status': status,
             'note': getValues('note')
         }
-        setIsLoadingComponent(true)
-        await sleep(500).then(async () => {
+        await sleepLoading(500).then(async () => {
             instance.put(`/orders/status/change/${selectObject.id}`, data).then(function() {
                 fetchData()
                 setNoteValue('note', '')
@@ -124,7 +123,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 }
             })
         })
-        setIsLoadingComponent(false)
     }
 
     const ActionButton = () => {
