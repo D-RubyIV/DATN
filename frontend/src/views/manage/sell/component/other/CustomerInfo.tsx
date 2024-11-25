@@ -136,7 +136,7 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                             <Input
                                 disabled
                                 value={
-                                    (data?.address + ', ' + data?.wardName + ', ' + data?.districtName + ', ' + data?.provinceName)
+                                    (data?.address + ', ' + (data?.wardName || "" )+ ', ' + (data?.districtName || "") + ', ' + (data?.provinceName || ""))
                                 }
                                 suffix={
                                     <Tooltip title="Chỉnh sửa" className={'text-black'}>
