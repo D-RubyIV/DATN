@@ -150,7 +150,7 @@ const adminRoute: Routes = [
     {
         key: 'productManage',
         path: 'manage/product/brand-list',
-        component: lazy(() => import('@/views/manage/product/brandLisst')),
+        component: lazy(() => import('@/views/manage/properties/BrandProperty')),
         authority: [],
     },
     {

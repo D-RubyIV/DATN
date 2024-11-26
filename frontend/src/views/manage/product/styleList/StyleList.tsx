@@ -1,6 +1,6 @@
-import AttributeForm, {
-} from '@/views/manage/product/AttributeForm'
+
 import { apiGetSalesStyleOverview, apiDeleteSalesProducts, apiCreateSalesStyle } from '@/services/ProductSalesService';
+import AttributeForm from '@/views/manage/product/attributeForm'
 
 const StyleList = () => {
     return (

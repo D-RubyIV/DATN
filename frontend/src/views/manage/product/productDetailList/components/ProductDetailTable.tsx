@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, ReactNode, ChangeEvent } from 'react'
+import { useEffect, useMemo, useRef, ReactNode } from 'react'
 import DataTable from '@/components/shared/DataTable'
 import { useParams } from 'react-router-dom';
 import Switcher from '@/components/ui/Switcher'
@@ -76,10 +76,15 @@ const withIcon = (component: ReactNode) => {
 }
 const ActionColumn = ({ row }: { row: ProductDetail }) => {
     const { textTheme } = useThemeClass()
+    const handleRowClick = (row: any) => {
+        console.log('Row clicked:', row);
+        window.location.href = `/manage/product/ProductDetails/${row.id}`;
+    };
     return (
         <div className="flex justify-end text-lg">
             <span
                 className={`cursor-pointer p-2 hover:${textTheme}`}
+                onClick={() => handleRowClick(row)}
             >
                 <FaPen />
             </span>
@@ -278,7 +283,7 @@ const ProductDetailTable = () => {
     };
     const handleRowClick = (row: any) => {
         console.log('Row clicked:', row);
-        // window.location.href = `/manage/product/ProductDetails/${row.id}`;
+        window.location.href = `/manage/product/ProductDetails/${row.id}`;
     };
 
     return (

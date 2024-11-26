@@ -91,7 +91,6 @@ const attributeListSlice = createSlice({
         setTableData: (state, action) => {
             state.tableData = action.payload
         },
-     
         toggleDeleteConfirmation: (state, action) => {
             state.deleteConfirmation = action.payload
         },
