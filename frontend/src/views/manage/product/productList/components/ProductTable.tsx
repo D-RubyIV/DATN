@@ -227,6 +227,7 @@ const ProductTable = () => {
 
     const handleRowClick = (row: any) => {
         const id = row.id
+        console.log("id" , id)
         navigate(`/admin/manage/product/ProductDetail-list/${id}`);
     };
 

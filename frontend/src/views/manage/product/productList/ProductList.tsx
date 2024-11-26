@@ -1,6 +1,5 @@
 import reducer from './store'
 import {injectReducer} from '@/store'
-import AdaptableCard from '@/components/shared/AdaptableCard'
 import ProductTable from './components/ProductTable'
 import ProductTableTools from './components/ProductTableTools'
 import {Link} from "react-router-dom";

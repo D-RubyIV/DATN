@@ -150,19 +150,20 @@ const ProductDetailTable = () => {
     )
 
     useEffect(() => {
-        fetchData()
-        dispatch(setProductId(productId)); 
+        dispatch(setProductId(productId));
     }, [pageIndex, pageSize, sort, id])
+
+    useEffect(() => {
+        fetchData()
+    }, [])
 
     const tableData = useMemo(
         () => ({ pageIndex, pageSize, sort, query, total }),
         [pageIndex, pageSize, sort, query, total]
     )
 
-
     const fetchData = () => {
         dispatch(getProductDetails({ pageIndex, pageSize, sort, query }))
-
     }
 
     const columns: ColumnDef<ProductDetail>[] = useMemo(

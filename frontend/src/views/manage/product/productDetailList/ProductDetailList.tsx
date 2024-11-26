@@ -14,7 +14,6 @@ const ProductDetailList = () => {
                 <h3 className="mb-4 lg:mb-0">SẢN PHẨM CHI TIẾT</h3>
             <div className='mb-5 mt-5'>
                 <ProductTableTools />
-
             </div>
             {/* </div> */}
             <ProductDetailTable />
