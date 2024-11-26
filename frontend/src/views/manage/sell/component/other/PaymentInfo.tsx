@@ -95,7 +95,9 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
                 <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
                 <PaymentRow label="Giảm giá" value={data?.discount} prefix={' - '} />
                 <div className={'pb-4'}>
-                    <UseVoucherBox fetchSelectedOrder={fetchSelectedOrder} selectedOrder={selectedOrder} />
+                    <div>
+                        <UseVoucherBox fetchSelectedOrder={fetchSelectedOrder} selectedOrder={selectedOrder} />
+                    </div>
                     <SuggestVoucher selectedOrder={selectedOrder}
                                     fetchSelectedOrder={fetchSelectedOrder}></SuggestVoucher>
 

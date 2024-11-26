@@ -88,11 +88,11 @@ export type OrderVoucherResponseDTO = {
 
 export type OrderHistoryResponseDTO = {
     id?: number;
-    status: EOrderStatus;
-    note: string;
+    status?: EOrderStatus;
+    note?: string;
     createdBy?: string;
-    createdDate: string;
-    account: any;
+    createdDate?: string;
+    account?: any;
 }
 
 export type OrderResponseDTO = {

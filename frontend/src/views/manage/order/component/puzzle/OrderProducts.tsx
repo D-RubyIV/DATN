@@ -46,7 +46,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
         const order_detail_quantity = item.quantity
         const product_detail_quantity = item.productDetailResponseDTO.quantity
-        return product_detail_quantity > order_detail_quantity
+        return product_detail_quantity >= order_detail_quantity
     }
 
     const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
@@ -230,7 +230,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             cell: (props) => {
                 const row = props.row.original
                 return (
-                    <div className={`${row.productDetailResponseDTO.quantity > props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
+                    <div className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
                         <p>{row.productDetailResponseDTO.quantity}</p>
                     </div>
                 )

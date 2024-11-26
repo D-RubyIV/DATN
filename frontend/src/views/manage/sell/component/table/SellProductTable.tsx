@@ -111,6 +111,18 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 }
             },
             {
+                accessorKey: 'quantity',
+                header: 'Kho',
+                cell: (props) => {
+                    const row = props.row.original
+                    return (
+                        <div className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
+                            <p>{row.productDetailResponseDTO.quantity}</p>
+                        </div>
+                    )
+                }
+            },
+            {
                 accessorKey: 'price',
                 header: 'Giá Gốc',
                 cell: (props) => {
@@ -223,6 +235,12 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         return Math.round(item.productDetailResponseDTO.price * (1 - discountPercent / 100))
     }
 
+    const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
+        const order_detail_quantity = item.quantity
+        const product_detail_quantity = item.productDetailResponseDTO.quantity
+        return product_detail_quantity >= order_detail_quantity
+    }
+
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
             <div>
@@ -248,7 +266,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                                         <p>-{row.averageDiscountEventPercent}%</p>
                                     }
                                 </div>
-                            ):(<div></div>)
+                            ) : (<div></div>)
                         }
 
                     </div>
@@ -272,6 +290,9 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 </div>
                 <div className={'text-orange-700'}>
                     {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+                </div>
+                <div className={'text-orange-700'}>
+                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng`}
                 </div>
             </div>
 

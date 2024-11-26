@@ -272,6 +272,21 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.save(order);
     }
 
+    private void checkValidateQuantity(Order order){
+        // B1: CHECK ĐỦ SỐ LƯỢNG PRODUCT DETAIL CÓ THỂ CUNG CẤP (CHỈ CẦN CHECK KHI CHUYỂN TỪ PENDING SANG TOSHIP)
+        boolean availableProductDetailQuantity = check_valid_product_detail_quantity_in_storage(order);
+        log.info("VALIDATE PRODUCT DETAIL QUANTITY: " + availableProductDetailQuantity);
+        if(!availableProductDetailQuantity){
+            throw new CustomExceptions.CustomBadRequest("Có sản phẩm nào đó không đủ cung ứng");
+        }
+        // B2: CHECK ĐỦ SỐ LƯỢNG VOUCHER CÓ THỂ CUNG CẤP (CHỈ CẦN CHECK KHI CHUYỂN TỪ PENDING SANG TOSHIP)
+        boolean availableVoucherQuantity = check_valid_voucher_quantity_in_storage(order);
+        log.info("VALIDATE VOCUHER USED: " + availableVoucherQuantity);
+        if(!availableVoucherQuantity){
+            throw new CustomExceptions.CustomBadRequest("Khuyến mãi này không đủ cung ứng");
+        }
+    }
+
     @Transactional
     public Order changeStatus(Integer id, HistoryRequestDTO requestDTO) {
         Order entityFound = findById(id);
@@ -282,8 +297,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             }
         }
 
-
-
         // B1: CHECK TRU SO LUONG(TRƯỢC KHI CẬP NHẬT TRẠNG THÁI MỚI)
         Status oldStatus = entityFound.getStatus();
         Status newStatus = requestDTO.getStatus();
@@ -292,16 +305,21 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         log.info("NEW STATUS: "+ newStatus);
         log.info("-----------------1");
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP){
-            // B1: CHECK ĐỦ SỐ LƯỢNG CÓ THỂ CUNG CẤP (CHỈ CẦN CHECK KHI CHUYỂN TỪ PENDING SANG TOSHIP)
-            boolean availableQuantity = check_valid_quantity_in_storage(entityFound);
-            if(!availableQuantity){
-                throw new CustomExceptions.CustomBadRequest("Có sản phẩm nào đó không đủ cung ứng");
-            }
+            checkValidateQuantity(entityFound);
             log.info("1");
             minusProductDetailsQuantity(entityFound);
         } else if (oldStatus == Status.TOSHIP && newStatus == Status.PENDING) {
             log.info("2");
             restoreProductDetailsQuantity(entityFound);
+        }
+        else if (oldStatus == Status.PENDING && newStatus == Status.DELIVERED) {
+            checkValidateQuantity(entityFound);
+            log.info("3");
+            entityFound.setIsPayment(true);
+        }
+        else if (oldStatus == Status.TORECEIVE && newStatus == Status.DELIVERED) {
+            log.info("4");
+            entityFound.setIsPayment(true);
         }
         log.info("-----------------2");
 
@@ -673,7 +691,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             productDetailRepository.save(productDetail);
         }
     }
-    public boolean check_valid_quantity_in_storage(Order order){
+    public boolean check_valid_product_detail_quantity_in_storage(Order order){
         boolean available = true;
         List<OrderDetail> orderDetails = order.getOrderDetails();
         for (OrderDetail orderDetail : orderDetails) {
@@ -685,6 +703,16 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             }
         }
         return available;
+    }
+
+    public boolean check_valid_voucher_quantity_in_storage(Order order){
+        Voucher voucher = order.getVoucher();
+        if (voucher == null){
+            return true;
+        }
+        else {
+            return voucher.getQuantity() > 0;
+        }
     }
 
 }

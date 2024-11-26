@@ -77,6 +77,7 @@ const UseVoucherBox = ({ selectedOrder, fetchSelectedOrder }: {
 
                                 </div>
                                 <Button
+                                    type={'button'}
                                     className="!px-2  "
                                     icon={<HiTicket size={18} />}
                                     disabled={selectedOrder.status !== 'PENDING'}

@@ -64,9 +64,9 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                 discount: response.data.discount || 0,
                 total: response.data.total || 0
             })
-        }).catch(function (error){
-            console.log(error.response.data.error === "Order not found")
-            localStorage.removeItem("orderIds")
+        }).catch(function(error) {
+            console.log(error.response.data.error === 'Order not found')
+            localStorage.removeItem('orderIds')
             window.location.reload()
         })
         await sleep(200)
@@ -104,12 +104,18 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     status: EOrderStatusEnums.DELIVERED,
                     note: 'Đã nhận hàng'
                 }
-                const response = await changeOrderStatus(selectedOrder.id, data)
-                if (response.status === 200) {
-                    await sleep(200)
-                    openNotification('Xác nhận thành công')
-                    removeTab(selectedOrder.id)
-                }
+                await changeOrderStatus(selectedOrder.id, data).then(function(response) {
+                    if (response.status === 200) {
+                        sleep(200)
+                        openNotification('Xác nhận thành công')
+                        removeTab(selectedOrder.id)
+                    }
+                }).catch(function(error){
+                    if (error?.response?.data?.error) {
+                        openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                    }
+                })
+
                 console.log('Confirm payment')
             } catch (error) {
                 console.log(error)

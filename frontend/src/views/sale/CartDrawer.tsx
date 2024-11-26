@@ -39,7 +39,7 @@ const CartDrawer = () => {
     const getFinalPrice = (item: CartDetailResponseDTO) => {
         const { price, product } = item.productDetailResponseDTO;
         const discountPercent = product.eventDTOList.length > 0
-            ? product.averageDiscountPercentEvent
+            ? product.nowAverageDiscountPercentEvent
             : 0;
 
         return Math.round(price * (1 - discountPercent / 100));
@@ -51,7 +51,7 @@ const CartDrawer = () => {
         const getFinalPrice = (item: CartDetailResponseDTO) => {
             const { price, product } = item.productDetailResponseDTO;
             const discountPercent = product.eventDTOList.length > 0
-                ? product.averageDiscountPercentEvent
+                ? product.nowAverageDiscountPercentEvent
                 : 0;
 
             return Math.round(price * (1 - discountPercent / 100));
@@ -119,9 +119,9 @@ const CartDrawer = () => {
                                                                 alt="Product"
                                                             />
                                                         )}
-                                                        {Number(item.productDetailResponseDTO.product.averageDiscountPercentEvent) > 0 && (
+                                                        {Number(item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent) > 0 && (
                                                             <div className="absolute top-0 right-0 px-[4px] py-[2px] bg-red-600 text-white text-xs rounded">
-                                                                -{item.productDetailResponseDTO.product.averageDiscountPercentEvent}%
+                                                                -{item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%
                                                             </div>
                                                         )}
                                                     </div>
