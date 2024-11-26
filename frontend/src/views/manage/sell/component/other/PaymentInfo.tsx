@@ -75,7 +75,7 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
         <Card className="mb-4 h-auto">
             <div className="flex justify-between">
                 <div>
-                    <h5 className="mb-4">Thông tin thanh toán</h5>
+                    <h5 className="mb-4">Hình thức thanh toán</h5>
                 </div>
                 <div className="flex gap-3 justify-between">
                     <div>

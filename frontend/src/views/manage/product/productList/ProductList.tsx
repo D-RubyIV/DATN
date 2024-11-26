@@ -9,8 +9,7 @@ injectReducer('salesProductList', reducer)
 
 const ProductList = () => {
     return (
-        <div className="bg-white">
-
+        <div className="bg-white h-full">
             <div className="rounded-md card h-full card-border  p-5">
                 <div className="lg:flex items-center justify-between mb-4">
                     <nav className="flex" aria-label="Breadcrumb">
