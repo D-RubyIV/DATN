@@ -4,6 +4,7 @@ const BrandProperty = () => {
     return (
         <View
             endpoint={"brand"}
+            nameProperty={"Thương hiệu"}
         />
     )
 }

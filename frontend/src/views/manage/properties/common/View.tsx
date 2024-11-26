@@ -4,9 +4,15 @@ import DataTable, { type OnSortParam, ColumnDef } from '../../../../components/s
 import * as Yup from 'yup'
 import { Attribute } from '@/views/manage/product/attributeForm/store'
 import { Button, Dialog, Input, Select } from '@/components/ui'
-import { HiEye, HiOutlineFolderRemove, HiPlusCircle } from 'react-icons/hi'
+import { HiEye, HiPlusCircle } from 'react-icons/hi'
 import debounce from 'lodash/debounce'
 import { ErrorMessage, Field, Form, Formik } from 'formik'
+import { DeleteForever } from '@mui/icons-material'
+import { useToastContext } from '@/context/ToastContext'
+import Badge from '@/components/ui/Badge'
+import { Link } from 'react-router-dom'
+import { format } from 'date-fns'
+import { FaFileDownload } from 'react-icons/fa'
 
 type PaginationRequest = {
     pageIndex: number;
@@ -35,7 +41,23 @@ const options = [
     { value: 'false', label: 'Ngừng hoạt động' }
 ]
 
-const View = ({ endpoint }: { endpoint: string }) => {
+const getDeletedStatus = (deleted: boolean) => {
+    if (deleted) {
+        return {
+            label: 'Dừng hoạt động',
+            dotClass: 'bg-red-500',
+            textClass: 'text-red-500'
+        }
+    } else {
+        return {
+            label: 'Đang hoạt động',
+            dotClass: 'bg-emerald-500',
+            textClass: 'text-emerald-500'
+        }
+    }
+}
+
+const View = ({ endpoint, nameProperty }: { endpoint: string, nameProperty: string }) => {
     const validationSchema = Yup.object({
         name: Yup.string()
             .required('Tên là bắt buộc')
@@ -50,6 +72,27 @@ const View = ({ endpoint }: { endpoint: string }) => {
     const [listProperty, setListProperty] = useState<Property[]>([])
     const [totalElements, setTotalElements] = useState<number>(0)
     const [dialogIsOpen, setIsOpen] = useState(false)
+    const [selectedPropertyId, setSelectedPropertyId] = useState<number>()
+
+    const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState<boolean>(false)
+    const onDialogConfirmClose = () => {
+        setIsOpenConfirmDialog(false)
+    }
+    const { openNotification } = useToastContext()
+    const onDialogConfirmOk = async () => {
+        instance.delete(
+            `${endpoint}/delete/${selectedPropertyId}`
+        ).then(function(response) {
+            console.log(response)
+            if (response.status === 204) {
+                fetchData()
+                openNotification('Xóa thành công')
+            }
+        }).catch(function(error) {
+            console.log(error)
+        })
+        setIsOpenConfirmDialog(false)
+    }
 
     const [initValueForm, setInitValueForm] = useState({
         name: '',
@@ -59,7 +102,6 @@ const View = ({ endpoint }: { endpoint: string }) => {
     const onClickCreateAction = () => {
         setSelectedMode('CREATE')
         setIsOpen(true)
-        console.log('=========')
     }
 
     const [defaultPagination, setDefaultPagination] = useState<PaginationRequest>({
@@ -73,7 +115,8 @@ const View = ({ endpoint }: { endpoint: string }) => {
         deleted: undefined
     })
 
-    const onSubmit = async (values: { name: string }) => {
+
+    const onSubmit = async (values: { name: string, code: string }) => {
         console.log('Form Submitted', values)
         if (selectedMode === 'CREATE') {
             await handleAddProperty(values)
@@ -91,10 +134,16 @@ const View = ({ endpoint }: { endpoint: string }) => {
         setIsOpen(false)
     }
 
-    const handleAddProperty = async (values: { name: string }) => {
+    const handleDelete = async (row: Attribute) => {
+        setSelectedPropertyId(row.id)
+        setIsOpenConfirmDialog(true)
+    }
+
+    const handleAddProperty = async (values: { name: string, code: string }) => {
         console.log(values)
         const data = {
-            name: values.name
+            name: values.name,
+            code: values.code
         }
         instance.post(
             `${endpoint}/save`,
@@ -157,8 +206,8 @@ const View = ({ endpoint }: { endpoint: string }) => {
     }
 
     const handleSelect = (row: Attribute) => {
-        const name = row.name;
-        const code = row.code;
+        const name = row.name
+        const code = row.code
         setInitValueForm({
             name: name,
             code: code
@@ -196,14 +245,25 @@ const View = ({ endpoint }: { endpoint: string }) => {
             },
             {
                 header: 'Ngày tạo',
-                accessorKey: 'createdDate'
+                accessorKey: 'createdDate',
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{format(row.createdDate, 'HH:mm dd-MM-yyyy')}</span>
+                }
             },
             {
                 header: 'Trạng thái',
                 accessorKey: 'deleted',
                 cell: (props) => {
                     const row = props.row.original
-                    return <span className="capitalize">{row.deleted ? 'Ngừng hoạt động' : 'Đang hoạt động'}</span>
+                    const status = getDeletedStatus(row.deleted)
+                    return (
+                        <div className="flex items-center gap-2">
+                            <Badge className={status.dotClass} />
+                            <span
+                                className={`capitalize font-semibold ${status.textClass}`}>{row.deleted ? 'Ngừng hoạt động' : 'Đang hoạt động'}</span>
+                        </div>
+                    )
                 }
             },
             {
@@ -211,15 +271,17 @@ const View = ({ endpoint }: { endpoint: string }) => {
                 cell: (props) => {
                     const row = props.row.original
                     return (
-                        <div>
+                        <div className={'flex gap-2'}>
                             <Button
                                 icon={<HiEye />}
                                 variant={'plain'}
                                 onClick={() => handleSelect(row)}
                             />
                             <Button
-                                icon={<HiOutlineFolderRemove />}
-                                variant={'plain'} />
+                                variant={'plain'}
+                                icon={<DeleteForever />}
+                                onClick={() => handleDelete(row)}
+                            />
                         </div>
                     )
                 }
@@ -234,7 +296,38 @@ const View = ({ endpoint }: { endpoint: string }) => {
 
     return (
         <Fragment>
-            <div>
+            <div className={'p-5 rounded-md card h-full card-border'}>
+                <div className="lg:flex items-center justify-between mb-4">
+                    <nav className="flex" aria-label="Breadcrumb">
+                        <ol className="inline-flex items-center space-x-1 md:space-x-3">
+                            <li>
+                                <div className="flex items-center">
+                                    <Link to="/" className="text-gray-700 hover:text-blue-600">
+                                        Trang Chủ
+                                    </Link>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="flex items-center">
+                                    <span className="mx-2">/</span>
+                                    <Link to="/manage" className="text-gray-700 hover:text-blue-600">
+                                        Quản Lý
+                                    </Link>
+                                </div>
+                            </li>
+                            <li aria-current="page">
+                                <div className="flex items-center">
+                                    <span className="mx-2">/</span>
+                                    <span className="text-gray-500">{nameProperty}</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <h1 className="font-semibold text-xl text-black mb-4 text-transform: uppercase">Quản
+                        lý {nameProperty}</h1>
+                </div>
                 <div className={'grid grid-cols-12 pb-4'}>
                     <div className={'col-span-6 grid grid-cols-3 gap-2'}>
                         <Input
@@ -249,12 +342,16 @@ const View = ({ endpoint }: { endpoint: string }) => {
                     </div>
                     <div className={'flex justify-end gap-2 col-span-6'}>
                         <div>
-                            <Button>
+                            <Button icon={<FaFileDownload/>}>
                                 Xuất excel
                             </Button>
                         </div>
                         <div>
-                            <Button icon={<HiPlusCircle />} onClick={onClickCreateAction}>
+                            <Button
+                                className={'!bg-indigo-600 text-white'}
+                                icon={<HiPlusCircle />}
+                                onClick={onClickCreateAction}
+                            >
                                 Thêm mới
                             </Button>
                         </div>
@@ -341,8 +438,34 @@ const View = ({ endpoint }: { endpoint: string }) => {
 
                 </Dialog>
             </div>
+            {/*    COFIRM DIALOG*/}
+            <Dialog
+                isOpen={isOpenConfirmDialog}
+                onClose={() => onDialogConfirmClose()}
+                onRequestClose={() => onDialogConfirmClose()}
+            >
+                <h5 className="mb-4">Xóa</h5>
+                <p>
+                    Xác nhận xóa thuộc tính này
+                </p>
+                <div className="text-right mt-6">
+                    <Button
+                        className="ltr:mr-2 rtl:ml-2"
+                        variant="plain"
+                        onClick={() => onDialogConfirmClose()}
+                    >
+                        Hủy
+                    </Button>
+                    <Button variant="solid" className={'bg-red-500'}
+                            onClick={() => onDialogConfirmOk()}>
+                        Xác nhận
+                    </Button>
+                </div>
+            </Dialog>
 
         </Fragment>
     )
 }
+
+
 export default View
