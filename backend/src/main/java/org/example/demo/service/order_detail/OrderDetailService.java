@@ -69,19 +69,24 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Override
     @Transactional
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
+        int requiredQuantity = requestDTO.getQuantity();
         // tìm kiếm hóa đơn chi tiết
         Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), requestDTO.getAverageDiscountEventPercent());
         // tìm kiếm sản phẩm chi tiết
-        Optional<ProductDetail> productDetailFound = productDetailRepository.findById(requestDTO.getProductDetailId());
+        ProductDetail productDetail = productDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found"));
         // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
+
+        if (!idAvailableQuantityProductDetail(productDetail, requiredQuantity)) {
+            throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+        }
+
         // ==> GHI ĐÈ HOẶC TẠO BẢN GHI MỚI
-        if (entityFound.isPresent() && productDetailFound.isPresent()) {
+        if (entityFound.isPresent()) {
             entityFound.get().setDeleted(false);
-            ProductDetail productDetail = productDetailFound.get();
             // cộng dồn số lượng cũ và mới
-            int newCount = entityFound.get().getQuantity() + requestDTO.getQuantity();
+            int newCount = entityFound.get().getQuantity() + requiredQuantity;
             // nếu không đủ số lượng đáp ứng
-            if (newCount > productDetailFound.get().getQuantity()) {
+            if (newCount > productDetail.getQuantity()) {
                 throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
             }
             // ngược lại nếu đủ số lượng
@@ -95,13 +100,12 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         // ==> TẠO BẢN GHI MỚI
         // nếu không tìm thấy hóa đơn chi tiết và sản phẩm chi tiết
         else {
-            ProductDetail productDetail = productDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found"));
             // tạo hóa đơn chi tiết mới
             OrderDetail orderDetail = new OrderDetail();
             // set trạng thái xóa cho hóa đơn
             orderDetail.setDeleted(false);
             // set số lượng
-            orderDetail.setQuantity(requestDTO.getQuantity());
+            orderDetail.setQuantity(requiredQuantity);
             // set gia trị event trung bình
             orderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
             // set hóa đơn vào hóa đơn chi tiết
@@ -162,6 +166,26 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
     }
 
+    private void updateQuantityIfInStore(int old_quantity, int new_quantity, ProductDetail productDetail, Order order){
+        if(order.getType() == Type.INSTORE){
+            int rangeABS = Math.abs(new_quantity - old_quantity);
+            int currentQuantityOfProductDetail = productDetail.getQuantity();
+            if(new_quantity > old_quantity){
+                productDetail.setQuantity(currentQuantityOfProductDetail - rangeABS);
+            }
+            // nếu khách giảm bớt đi
+            else{
+                if(currentQuantityOfProductDetail - rangeABS < 0){
+                    throw new CustomExceptions.CustomBadRequest("Vui lòng kiểm tra lại kho");
+                }
+                else{
+                    productDetail.setQuantity(currentQuantityOfProductDetail + rangeABS);
+                }
+            }
+            productDetailRepository.save(productDetail);
+        }
+    }
+
     public Map<String, Boolean> checkAllowOverride(OrderDetailRequestDTO orderDetailRequestDTO) {
         // lấy product detail
         Optional<ProductDetail> productDetail = productDetailRepository.findById(orderDetailRequestDTO.getProductDetailId());
@@ -193,6 +217,12 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         log.info("NEW : " + newAverageDiscountEventPercent);
         return !percentList.contains(newAverageDiscountEventPercent);
     }
+
+    private boolean idAvailableQuantityProductDetail(ProductDetail productDetail, int requiredQuantity){
+        return productDetail.getQuantity() >= requiredQuantity;
+
+    }
+
 
     public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable) {
         return orderDetailRepository.getPageOrderDetailWithPage(id, pageable);

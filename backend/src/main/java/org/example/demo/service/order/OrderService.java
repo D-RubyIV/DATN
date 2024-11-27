@@ -526,19 +526,19 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setSubTotal(subtotal);
 
         // sau khi cập nhật subtotal thì cũng tự động chọn voucher phù hợp
-        if (order.getType() == Type.INSTORE) {
-            Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
-            order.setVoucher(bestVoucher);
-            if (bestVoucher == null) {
-                log.info("BEST VOUCHER NULL");
-                order.setDiscountVoucherPercent(0.0);
-                order.setVoucherMinimumSubtotalRequired(0.0);
-            } else {
-                log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
-                order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
-                order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
-            }
-        }
+//        if (order.getType() == Type.INSTORE) {
+//            Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
+//            order.setVoucher(bestVoucher);
+//            if (bestVoucher == null) {
+//                log.info("BEST VOUCHER NULL");
+//                order.setDiscountVoucherPercent(0.0);
+//                order.setVoucherMinimumSubtotalRequired(0.0);
+//            } else {
+//                log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
+//                order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
+//                order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
+//            }
+//        }
 
         // tính tiền giảm của voucher cho hóa đơn
         double discount = get_discount_of_order_that_time(order);

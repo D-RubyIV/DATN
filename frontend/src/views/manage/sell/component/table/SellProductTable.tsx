@@ -50,6 +50,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 } else {
                     console.log('Error message:', err.message) // Nếu không có phản hồi từ máy chủ
                 }
+                fetchData()
             })
     }
 
@@ -111,7 +112,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 }
             },
             {
-                accessorKey: 'quantity',
                 header: 'Kho',
                 cell: (props) => {
                     const row = props.row.original

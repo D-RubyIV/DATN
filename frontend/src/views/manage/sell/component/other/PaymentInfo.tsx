@@ -34,7 +34,7 @@ const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
             className={`flex items-center justify-between${!isLast ? ' mb-3' : ''
             }`}
         >
-            <span>{label}</span>
+            <span className={'text-black'}>{label}</span>
             <span className="font-semibold text-red-600">
                 <NumericFormat
                     displayType="text"
@@ -93,14 +93,16 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
             <ul>
                 <PaymentRow label="Tổng tiền" value={data?.subTotal} />
                 <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
-                <PaymentRow label="Giảm giá" value={data?.discount} prefix={' - '} />
+                <PaymentRow label={`Giảm giá (${selectedOrder?.discountVoucherPercent}%)`} value={data?.discount}
+                            prefix={' - '} />
                 <div className={'pb-4'}>
                     <div>
                         <UseVoucherBox fetchSelectedOrder={fetchSelectedOrder} selectedOrder={selectedOrder} />
                     </div>
-                    <SuggestVoucher selectedOrder={selectedOrder}
-                                    fetchSelectedOrder={fetchSelectedOrder}></SuggestVoucher>
-
+                    <SuggestVoucher
+                        selectedOrder={selectedOrder}
+                        fetchSelectedOrder={fetchSelectedOrder}
+                    />
                 </div>
                 <PaymentRow isLast label="Tổng thanh toán" value={data?.total} />
             </ul>

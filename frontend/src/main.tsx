@@ -10,6 +10,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppProvider } from '../src/views/client/contexts/app.context'
 import OrderProvider from '@/views/manage/order/component/context/OrderContext'
+import WebSocketNotification from '@/views/ws/WebSocketNotification'
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         <QueryClientProvider client={queryClient}>
                             <AppProvider>
                                 <App />
+                                <WebSocketNotification></WebSocketNotification>
                                 <ReactQueryDevtools initialIsOpen={false} />
                             </AppProvider>
                         </QueryClientProvider>

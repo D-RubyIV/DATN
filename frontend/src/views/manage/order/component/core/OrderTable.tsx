@@ -419,10 +419,10 @@ export const OrderTable = () => {
                         <Input
                             ref={inputRef}
                             placeholder="Tìm kiếm theo mã, tên nhân viên, tên khách hàng ..."
-                            size="sm"
                             className="lg:w-full"
-                            onChange={handleChange}
+                            style={{ height: '44px' }}
                             prefix={<HiOutlineSearch className="text-lg" />}
+                            onChange={handleChange}
                         />
                     </div>
                 </div>

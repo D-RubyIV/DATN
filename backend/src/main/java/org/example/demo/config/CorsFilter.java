@@ -12,21 +12,25 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-//định nghĩa một bean và đồng thời chỉ định một tên cụ thể cho bean đó
-@Component("customCorsFilter")
-@Order(Ordered.HIGHEST_PRECEDENCE)
-public class CorsFilter extends OncePerRequestFilter {
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type, xsrf-token");
-        response.addHeader("Access-Control-Expose-Headers", "xsrf-token");
-        if ("OPTIONS".equals(request.getMethod())) {
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else {
-            filterChain.doFilter(request, response);
-        }
-    }
-}
+//@Component("customCorsFilter")
+//@Order(Ordered.HIGHEST_PRECEDENCE)
+//public class CorsFilter extends OncePerRequestFilter {
+//
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+//        // Thiết lập các header CORS
+//        response.setHeader("Access-Control-Allow-Origin", "*"); // Cho phép mọi domain
+//        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS"); // Các phương thức HTTP được phép
+//        response.setHeader("Access-Control-Max-Age", "3600"); // Thời gian cache preflight request (3600 giây)
+//        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, XSRF-TOKEN"); // Các header cho phép
+//        response.setHeader("Access-Control-Allow-Credentials", "false"); // Không cho phép cookie
+//
+//        // Nếu là preflight request (OPTIONS), trả về status 200 mà không cần tiếp tục với các bộ lọc khác
+//        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+//            response.setStatus(HttpServletResponse.SC_OK);
+//        } else {
+//            // Tiến hành gọi tiếp các filter còn lại
+//            filterChain.doFilter(request, response);
+//        }
+//    }
+//}

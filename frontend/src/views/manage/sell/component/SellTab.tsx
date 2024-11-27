@@ -8,7 +8,7 @@ import TabCard from './card/TabCard'
 import { useToastContext } from '@/context/ToastContext'
 import CloseButton from '@/components/ui/CloseButton'
 import instance from '@/axios/CustomAxios'
-import { OrderResponseDTO } from '../../../../@types/order'
+import { OrderResponseDTO } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 import { useSellContext } from '../context/SellContext'
 
@@ -134,8 +134,8 @@ const SellTab = () => {
                                 </div>
                             </TabList>
                             <div className="py-1">
-                                {tabs.map((tab) => (
-                                    <TabContent key={tab.value} value={tab.value}>
+                                {tabs.map((tab, index) => (
+                                    <TabContent key={index} value={tab.value}>
                                         {tab.content}
                                     </TabContent>
                                 ))}

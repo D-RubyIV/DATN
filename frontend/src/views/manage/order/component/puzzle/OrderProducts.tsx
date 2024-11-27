@@ -156,6 +156,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 } else {
                     console.log('Error message:', err.message) // Nếu không có phản hồi từ máy chủ
                 }
+                fetchData()
             })
     }
 
@@ -282,8 +283,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         setIsOpen(true)
     }
 
-    const onDrawerClose = (e: MouseEvent) => {
-        console.log('onDrawerClose', e)
+    const onDrawerClose = () => {
         setIsOpen(false)
     }
 
@@ -341,9 +341,9 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 <Drawer
                     title="Lịch sử"
                     isOpen={isOpen}
-                    onClose={(e) => onDrawerClose(e)}
                     width={600}
-                    onRequestClose={(e) => onDrawerClose(e)}
+                    onClose={() => onDrawerClose()}
+                    onRequestClose={() => onDrawerClose()}
                 >
                     <History selectObject={selectObject}></History>
                 </Drawer>
