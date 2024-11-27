@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Snackbar } from '@mui/material';
-import { Formik, Field, Form, FormikHelpers, FieldProps, useFormikContext, FormikProps } from 'formik';
+import { Formik, Field, Form, FormikHelpers, FieldProps, FormikErrors } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 import { SingleValue } from 'react-select';
 import { RxReset } from "react-icons/rx";
 import { GrUpdate } from "react-icons/gr";
-import instance from "@/axios/CustomAxios";
+
 interface Staff {
     id: string;
     code: string;
@@ -72,41 +72,46 @@ const initialStaffState: Staff = {
     deleted: false,
 };
 
-const validationSchema = Yup.object({
-    name: Yup.string()
-        .matches(/^[\p{L}]+(?: [\p{L}]+)*$/u, "Họ tên không hợp lệ") // Chấp nhận chữ cái và khoảng trắng
-        .min(2, "Họ tên phải có ít nhất 2 ký tự") // Tối thiểu 2 ký tự
-        .max(50, "Họ tên không được vượt quá 50 ký tự") // Tối đa 50 ký tự
-        .required("Họ tên nhân viên là bắt buộc"), // Bắt buộc nhập
-    citizenId: Yup.string()
-        .matches(/^[0-9]+$/, "Căn cước công dân chỉ được chứa số") // Chỉ chứa số
-        .required("Căn cước công dân là bắt buộc"),
-    email: Yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
+// const validationSchema = Yup.object().shape({
+//   name: Yup.string()
+//     .required('Họ tên khách hàng là bắt buộc')
+//     .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+//     .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+//     .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => value?.trim() === value && !value.includes('  '))
+//     .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', value =>
+//       value ? /^[\p{L}\s]+$/u.test(value) : false),
+//   citizenId: Yup.string()
+//     .matches(/^[0-9]{12}$/, "Căn cước công dân phải có đúng 12 chữ số")
+//     .required("Căn cước công dân là bắt buộc"),
+//   email: Yup.string()
+//     .email("Email không hợp lệ")
+//     .required("Email là bắt buộc")
+//     .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => value?.trim() === value)
 
-    birthDay: Yup.date()
-        .required("Ngày sinh là bắt buộc")
-        .max(new Date(), "Ngày sinh không được là tương lai")
-        .test(
-            "age-range",
-            "Nhân viên phải trong độ tuổi từ 16 đến 40",
-            function (value) {
-                const age = dayjs().diff(dayjs(value), 'year'); // Tính tuổi
-                return age >= 16 && age <= 40; // Kiểm tra độ tuổi
-            }
-        ),
-    address: Yup.string().required("Số nhà là bắt buộc"),
-    phone: Yup.string()
-        .required("Số điện thoại là bắt buộc")
-        .matches(/^(0[3|5|7|8|9]|01[2|6|8|9])\d{8}$/, "Số điện thoại không hợp lệ") // Đảm bảo định dạng số điện thoại
-        .matches(/^[0-9]+$/, "Số điện thoại không được chứa chữ"), // Kiểm tra chỉ chứa số
+//     .test('email-unique', 'Email đã tồn tại', async (email) => {
+//       if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
-
-    province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
-    district: Yup.string().required("Quận/Huyện là bắt buộc"),
-    ward: Yup.string().required("Phường/Xã là bắt buộc"),
-    note: Yup.string(),
-    gender: Yup.boolean().required("Giới tính là bắt buộc"),
-});
+//       // Gọi API kiểm tra email có trùng không
+//       const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
+//       return !response.data.exists; // Nếu email đã tồn tại, trả về false
+//     }),
+//   birthDay: Yup.date()
+//     .required("Ngày sinh là bắt buộc")
+//     .max(new Date(), "Ngày sinh không được là tương lai")
+//     .test("age-range", "Nhân viên phải trong độ tuổi từ 16 đến 40", value => {
+//       const age = dayjs().diff(dayjs(value), 'year');
+//       return age >= 16 && age <= 40;
+//     }),
+//   address: Yup.string().required("Số nhà là bắt buộc"),
+//   phone: Yup.string()
+//     .required("Số điện thoại là bắt buộc")
+//     .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ"),
+//   province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
+//   district: Yup.string().required("Quận/Huyện là bắt buộc"),
+//   ward: Yup.string().required("Phường/Xã là bắt buộc"),
+//   note: Yup.string(),
+//   gender: Yup.boolean().required("Giới tính là bắt buộc"),
+// });
 
 const UpdateStaffPage = () => {
     const [staff, setStaff] = useState<Staff>(initialStaffState);
@@ -116,11 +121,62 @@ const UpdateStaffPage = () => {
     const [loadingProvinces, setLoadingProvinces] = useState(false);
     const [loadingDistricts, setLoadingDistricts] = useState(false);
     const [loadingWards, setLoadingWards] = useState(false);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
+    const [initialContact, setInitialContact] = useState({
+        currentEmail: '',
+        currentPhone: '',
+        email: '', // Khởi tạo email
+        phone: '', // Khởi tạo phone
+    });
+
+    const validationSchema = Yup.object().shape({
+        name: Yup.string()
+            .required('Họ tên khách hàng là bắt buộc')
+            .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
+            .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+            .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => value?.trim() === value && !value.includes('  '))
+            .test('no-special-characters', 'Họ và tên không được chứa ký tự đặc biệt hoặc số', value =>
+                value ? /^[\p{L}\s]+$/u.test(value) : false),
+        citizenId: Yup.string()
+            .matches(/^[0-9]{12}$/, "Căn cước công dân phải có đúng 12 chữ số")
+            .required("Căn cước công dân là bắt buộc"),
+        email: Yup.string()
+            .email("Email không hợp lệ")
+            .required("Email là bắt buộc")
+            .test('no-whitespace', 'Email không được chứa khoảng trắng đầu và cuối', value => value?.trim() === value)
+
+            .test('email-unique', 'Email đã tồn tại', async (email) => {
+                if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
+
+                // Gọi API kiểm tra email có trùng không
+                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-email`, { params: { email } });
+                return !response.data.exists; // Nếu email đã tồn tại, trả về false
+            }),
+        birthDay: Yup.date()
+            .required("Ngày sinh là bắt buộc")
+            .max(new Date(), "Ngày sinh không được là tương lai")
+            .test("age-range", "Nhân viên phải trong độ tuổi từ 16 đến 40", value => {
+                const age = dayjs().diff(dayjs(value), 'year');
+                return age >= 16 && age <= 40;
+            }),
+        address: Yup.string().required("Số nhà là bắt buộc"),
+        phone: Yup.string()
+            .required("Số điện thoại là bắt buộc")
+            .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
+            .test('phone-unique', 'Số điện thoại đã tồn tại', async (phone) => {
+                if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
+
+                // Gọi API kiểm tra số điện thoại có trùng không
+                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-phone`, { params: { phone } });
+                return !response.data.exists; // Nếu phone đã tồn tại, trả về false
+            }),
+        province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
+        district: Yup.string().required("Quận/Huyện là bắt buộc"),
+        ward: Yup.string().required("Phường/Xã là bắt buộc"),
+        note: Yup.string(),
+        gender: Yup.boolean().required("Giới tính là bắt buộc"),
+    });
 
     useEffect(() => {
         if (id) {
@@ -177,7 +233,6 @@ const UpdateStaffPage = () => {
                 setDistricts([]);
             }
         } catch (error) {
-            // console.error('Error fetching districts:', error);
             setDistricts([]);
         } finally {
             setLoadingDistricts(false);
@@ -194,32 +249,38 @@ const UpdateStaffPage = () => {
                 setWards([]);
             }
         } catch (error) {
-            // console.error('Error fetching wards:', error);
             setWards([]);
         } finally {
             setLoadingWards(false);
         }
     };
 
-    const fetchStaff = async (id: string) => {
+    const fetchStaff = async (id: string): Promise<Staff | undefined> => {
         try {
-            const response = await instance.get(`/staffs/${id}`);
+            const response = await axios.get(`http://localhost:8080/api/v1/staffs/${id}`);
+            console.log('Data: ', response)
             const fetchedStaff = response.data;
-            setStaff({
+            const formattedStaff = {
                 ...fetchedStaff,
                 birthDay: dayjs(fetchedStaff.birthDay, 'DD-MM-YYYY').format('YYYY-MM-DD')
+            };
+            setStaff(formattedStaff);
+            setInitialContact({
+                currentEmail: fetchedStaff.email,
+                currentPhone: fetchedStaff.phone,
+                email: fetchedStaff.email, // Cập nhật email từ fetchedStaff
+                phone: fetchedStaff.phone,   // Cập nhật phone từ fetchedStaff
             });
+            return formattedStaff; // Return the formatted data
         } catch (error) {
-            // console.error('Error fetching staff:', error);
+            console.error('Error fetching staff:', error);
         }
     };
-
-
 
     const handleLocationChange = (
         type: 'province' | 'district' | 'ward',
         newValue: Province | District | Ward | null,
-        form: FormikProps<Staff>
+        form: FormikHelpers<Staff>
     ) => {
         if (newValue) {
             if (type === 'province') {
@@ -247,10 +308,10 @@ const UpdateStaffPage = () => {
                 birthDay: values.birthDay ? dayjs(values.birthDay).format('YYYY-MM-DD') : '',
             };
 
-            await instance.put(`/staffs/${id}`, formattedValues);
+            await axios.put(`http://localhost:8080/api/v1/staffs/${id}`, formattedValues);
             resetForm();
             toast.success('Nhân viên đã được cập nhật thành công.');
-            navigate('admin/manage/staff');
+            navigate("/admin/manage/staff");
         } catch (error) {
             const errorMessage = axios.isAxiosError(error)
                 ? error.response?.data?.message || error.message
@@ -261,45 +322,31 @@ const UpdateStaffPage = () => {
         }
     };
 
-
-
-    const handleReset = (resetForm: () => void) => {
-        resetForm();
-        setStaff(initialStaffState);
-    };
-
-    const handleSnackbarClose = () => {
-        setSnackbarOpen(false);
-    };
-
-    const SyncFormikWithStaff = () => {
-        const formik = useFormikContext<Staff>();
-
-        useEffect(() => {
-            formik.setValues(staff);
-        }, [staff]);
-
-        return null;
+    const handleReset = async (setValues: (values: Staff, shouldValidate?: boolean) => Promise<void | FormikErrors<Staff>>) => {
+        if (id) {
+            try {
+                const fetchedStaff = await fetchStaff(id);
+                if (fetchedStaff) {
+                    setValues(fetchedStaff); // Repopulate the form with fetched data
+                }
+            } catch (error) {
+                console.error('Failed to reset form:', error);
+            }
+        }
     };
 
     return (
         <div>
-
-            {/* <h1 className="text-center font-semibold text-2xl mb-4 text-uppercase">Cập nhật nhân viên</h1> */}
             <div className="bg-white p-6 shadow-md rounded-lg mb-6 w-full">
                 <p className="text-left text-xl font-bold mx-auto mb-2">CẬP NHẬT NHÂN VIÊN</p>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                </div>
                 <Formik
                     initialValues={staff}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmit}
                     enableReinitialize={true}
                 >
-                    {({ errors, touched, resetForm, setFieldValue, values,isSubmitting }) => (
+                    {({ errors, touched, resetForm, setFieldValue, values, setValues, isSubmitting }) => (
                         <Form>
-                            <SyncFormikWithStaff />
                             <FormContainer>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
                                     <div style={{ flex: '1 1 300px', minWidth: '200px' }}>
@@ -321,6 +368,7 @@ const UpdateStaffPage = () => {
                                                 </div>
                                             )}
                                         </FormItem>
+
                                         <FormItem asterisk label="Căn cước công dân">
                                             <Field
                                                 type="text"
@@ -329,9 +377,16 @@ const UpdateStaffPage = () => {
                                                 placeholder="Nhập căn cước công dân..."
                                                 component={Input}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setFieldValue('citizenId', e.target.value);
-                                                    setStaff((prev) => ({ ...prev, citizenId: e.target.value }));
+                                                    const value = e.target.value.replace(/[^0-9]/g, '');
+                                                    setFieldValue('citizenId', value);
+                                                    setStaff((prev) => ({ ...prev, citizenId: value }));
                                                 }}
+                                                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                                    if (!/[0-9]/.test(e.key)) {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                                value={staff.citizenId || ''}
                                             />
                                             {touched.citizenId && errors.citizenId && (
                                                 <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.25rem', minHeight: '20px' }}>
@@ -339,30 +394,25 @@ const UpdateStaffPage = () => {
                                                 </div>
                                             )}
                                         </FormItem>
+
                                         <FormItem
                                             asterisk
                                             label="Ngày sinh"
-                                            invalid={errors.birthDay && touched.birthDay}
+                                            invalid={!!errors.birthDay && touched.birthDay}
                                             errorMessage={errors.birthDay}
                                         >
                                             <DatePicker
                                                 inputtable
                                                 inputtableBlurClose={false}
                                                 placeholder="Chọn ngày sinh..."
-                                                // Chuyển đổi giá trị birthDay từ Formik sang đối tượng Date cho DatePicker
                                                 value={values.birthDay ? dayjs(values.birthDay, 'YYYY-MM-DD').toDate() : null}
                                                 onChange={(date) => {
                                                     const formattedDate = date ? dayjs(date).format('YYYY-MM-DD') : '';
-                                                    setFieldValue('birthDay', formattedDate); // Cập nhật giá trị vào Formik
+                                                    setFieldValue('birthDay', formattedDate);
                                                 }}
-                                                // Ngăn người dùng chọn ngày tương lai
                                                 disableDate={(current) => dayjs(current).isAfter(dayjs().endOf('day'))}
                                             />
                                         </FormItem>
-
-
-
-
 
                                         <FormItem
                                             asterisk
@@ -416,6 +466,7 @@ const UpdateStaffPage = () => {
                                                 )}
                                             </Field>
                                         </FormItem>
+
                                         <FormItem asterisk label="Quận/huyện">
                                             <Field name="district">
                                                 {({ field, form }: FieldProps<string>) => (
@@ -423,7 +474,7 @@ const UpdateStaffPage = () => {
                                                         isDisabled={loadingDistricts || !staff.province}
                                                         value={districts.find((dist) => dist.full_name === field.value) || null}
                                                         placeholder="Chọn quận/huyện..."
-                                                        getOptionLabel={(option) => option.full_name || option.name}
+                                                        getOptionLabel={(option) => option.full_name}
                                                         getOptionValue={(option) => option.id}
                                                         options={districts}
                                                         onChange={(newValue: SingleValue<District> | null) => {
@@ -434,9 +485,11 @@ const UpdateStaffPage = () => {
                                                 )}
                                             </Field>
                                         </FormItem>
+
                                         <FormItem asterisk label="Xã/phường/thị trấn">
                                             <Field name="ward">
-                                                {({ field, form }: FieldProps<string>) => (
+                                                {({ field, form }: FieldProps<string>// Continuing from where you left off
+                                                ) => (
                                                     <Select
                                                         isDisabled={loadingWards || !staff.district}
                                                         value={wards.find((ward) => ward.full_name === field.value) || null}
@@ -452,10 +505,12 @@ const UpdateStaffPage = () => {
                                                 )}
                                             </Field>
                                         </FormItem>
+
                                         <FormItem
                                             asterisk
                                             label="Địa chỉ"
                                             invalid={!!errors.address && touched.address}
+                                            errorMessage={errors.address}
                                         >
                                             <Field
                                                 type="text"
@@ -468,11 +523,6 @@ const UpdateStaffPage = () => {
                                                     setStaff((prev) => ({ ...prev, address: e.target.value }));
                                                 }}
                                             />
-                                            {touched.address && errors.address && (
-                                                <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.25rem', minHeight: '20px' }}>
-                                                    {errors.address}
-                                                </div>
-                                            )}
                                         </FormItem>
                                     </div>
                                     <div style={{ flex: '1 1 300px', minWidth: '200px' }}>
@@ -484,9 +534,16 @@ const UpdateStaffPage = () => {
                                                 placeholder="Nhập số điện thoại..."
                                                 component={Input}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                    setFieldValue('phone', e.target.value);
-                                                    setStaff((prev) => ({ ...prev, phone: e.target.value }));
+                                                    const value = e.target.value.replace(/[^0-9]/g, '');
+                                                    setFieldValue('phone', value);
+                                                    setStaff((prev) => ({ ...prev, phone: value }));
                                                 }}
+                                                onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                                    if (!/[0-9]/.test(e.key)) {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                                value={staff.phone || ''}
                                             />
                                             {touched.phone && errors.phone && (
                                                 <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.25rem', minHeight: '20px' }}>
@@ -494,6 +551,7 @@ const UpdateStaffPage = () => {
                                                 </div>
                                             )}
                                         </FormItem>
+
                                         <FormItem asterisk label="Email">
                                             <Field
                                                 type="text"
@@ -512,6 +570,7 @@ const UpdateStaffPage = () => {
                                                 </div>
                                             )}
                                         </FormItem>
+
                                         <FormItem label="Ghi chú">
                                             <Field
                                                 as={Input}
@@ -522,8 +581,7 @@ const UpdateStaffPage = () => {
                                                     setFieldValue('note', e.target.value);
                                                     setStaff((prev) => ({ ...prev, note: e.target.value }));
                                                 }}
-                                                style={{ height: '150px' }} // Điều chỉnh chiều cao
-
+                                                style={{ height: '150px' }}
                                             />
                                         </FormItem>
                                     </div>
@@ -538,9 +596,9 @@ const UpdateStaffPage = () => {
                                         style={{
                                             height: '40px',
                                             width: '200px',
-                                            marginRight: '15px', // Khoảng cách giữa hai nút
-                                            lineHeight: '40px', // Căn chỉnh văn bản theo chiều dọc
-                                            padding: '0', // Đảm bảo không có padding dư thừa
+                                            marginRight: '15px',
+                                            lineHeight: '40px',
+                                            padding: '0',
                                         }}
                                     >
                                         <GrUpdate className="mr-2" style={{ fontSize: '20px' }} />
@@ -549,17 +607,17 @@ const UpdateStaffPage = () => {
 
                                     <Button
                                         type="button"
-                                        onClick={() => handleReset(resetForm)}
+                                        onClick={() => handleReset(setValues)}
                                         className="flex items-center justify-center"
                                         style={{
-                                            height: '40px', // Chiều cao đồng nhất
+                                            height: '40px',
                                             width: '110px',
-                                            lineHeight: '40px', // Căn chỉnh văn bản theo chiều dọc
-                                            padding: '0', // Đảm bảo không có padding dư thừa
+                                            lineHeight: '40px',
+                                            padding: '0',
                                             fontSize: '15px'
                                         }}
                                     >
-                                        <RxReset className="mr-2" style={{ fontSize: '18px' }} /> {/* Tăng kích thước biểu tượng nếu cần */}
+                                        <RxReset className="mr-2" style={{ fontSize: '18px' }} />
                                         Đặt lại
                                     </Button>
                                 </div>
@@ -567,12 +625,6 @@ const UpdateStaffPage = () => {
                         </Form>
                     )}
                 </Formik>
-                <Snackbar
-                    open={snackbarOpen}
-                    autoHideDuration={3000}
-                    onClose={handleSnackbarClose}
-                    message={snackbarMessage}
-                />
             </div>
         </div>
     );
