@@ -28,7 +28,18 @@ public class Image extends BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted;
 
-    @JsonBackReference // Tránh vòng lặp vô tận khi trả về JSON từ ProductDetail
+    // @JsonBackReference giúp tránh vòng lặp vô tận khi trả về JSON từ ProductDetail
+    @JsonBackReference
     @ManyToMany(mappedBy = "images")
     private List<ProductDetail> productDetails;
+
+    // Cập nhật phương thức toString() để tránh vòng lặp đệ quy
+    @Override
+    public String toString() {
+        return "Image{" +
+                "code='" + code + '\'' +
+                ", url='" + url + '\'' +
+                ", deleted=" + deleted +
+                '}';
+    }
 }

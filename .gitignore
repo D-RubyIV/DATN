@@ -2,3 +2,5 @@ backend/target
 ./backend/target
 /backend/target
 /backend/idea
+/frontend/.vite
+/frontend/node_modules

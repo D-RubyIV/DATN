@@ -58,7 +58,7 @@ public class ColorService implements IService<Color, Integer, ColorRequestDTO> {
     @Override
     public Color delete(Integer id) throws BadRequestException { // Đổi từ Collar sang Color
         Color entityFound = findById(id); // Đổi từ Collar sang Color
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return colorRepository.save(entityFound); // Đổi từ collarRepository sang colorRepository
     }
 

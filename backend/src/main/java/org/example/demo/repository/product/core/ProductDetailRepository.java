@@ -4,15 +4,13 @@ import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
 import org.example.demo.dto.product.phah04.response.ProductClientResponse;
 import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
 import org.example.demo.entity.product.core.ProductDetail;
-import org.example.demo.entity.product.properties.Color;
-import org.example.demo.entity.product.properties.Size;
+import org.example.demo.entity.product.properties.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
@@ -20,11 +18,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Integer> {
-    boolean existsByCodeAndName(String code, String name);
 
-    ProductDetail findByCodeAndName(String code, String name);
-    @Query("SELECT p FROM ProductDetail p WHERE p.name = ?1 AND p.size = ?2 AND p.color = ?3")
-    ProductDetail findByName(String name, Size size, Color color);
+    @Query("SELECT p FROM ProductDetail p WHERE  p.size = ?1 AND p.color = ?2 AND p.texture = ?3 " +
+            "AND p.origin = ?4 AND p.brand = ?5 AND p.collar = ?6 AND p.sleeve = ?7 " +
+            "AND p.style = ?8 AND p.material = ?9 AND p.thickness = ?10 AND p.elasticity = ?11")
+    ProductDetail findByAttributes( Size size, Color color, Texture texture,
+                                   Origin origin, Brand brand, Collar collar, Sleeve sleeve,
+                                   Style style, Material material, Thickness thickness, Elasticity elasticity);
 
     List<ProductDetail> findByProductId(Integer productId);
 
@@ -32,6 +32,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     @Query(value = """
             SELECT DISTINCT pd FROM ProductDetail pd
+            LEFT JOIN FETCH pd.product
             LEFT JOIN FETCH pd.size
             LEFT JOIN FETCH pd.color
             LEFT JOIN FETCH pd.texture
@@ -51,7 +52,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             AND 
             (
                 (:query IS NULL OR LOWER(pd.code) LIKE LOWER(CONCAT('%', :query, '%')))
-                OR (:query IS NULL OR LOWER(pd.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(pd.brand.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(pd.collar.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(pd.color.name) LIKE LOWER(CONCAT('%', :query, '%')))
@@ -79,6 +79,30 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
 
 
+
+    @Query(value = """
+     SELECT pd FROM ProductDetail pd
+     LEFT JOIN FETCH pd.product
+     LEFT JOIN FETCH pd.size
+     LEFT JOIN FETCH pd.color
+     LEFT JOIN FETCH pd.texture
+     LEFT JOIN FETCH pd.origin
+     LEFT JOIN FETCH pd.brand
+     LEFT JOIN FETCH pd.collar
+     LEFT JOIN FETCH pd.sleeve
+     LEFT JOIN FETCH pd.style
+     LEFT JOIN FETCH pd.material
+     LEFT JOIN FETCH pd.thickness
+     LEFT JOIN FETCH pd.elasticity
+     LEFT JOIN FETCH pd.images
+     WHERE pd.id = :id
+     """)
+    Optional<ProductDetail> findIdWithQuery(@Param("id") Integer id);
+
+
+
+
+
     // BY PHAH04
     @Query(value = """
             SELECT DISTINCT pd FROM ProductDetail pd
@@ -96,8 +120,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             WHERE
             (
                 (:query IS NULL OR LOWER(pd.code) LIKE LOWER(CONCAT('%', :query, '%')))
-                OR
-                (:query IS NULL OR LOWER(pd.name) LIKE LOWER(CONCAT('%', :query, '%')))
             )
             AND (:size IS NULL OR pd.size.id = :size)
             AND (:color IS NULL OR pd.color.id = :color)

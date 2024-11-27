@@ -57,7 +57,7 @@ public class OriginService implements IService<Origin, Integer, OriginRequestDTO
     @Override
     public Origin delete(Integer id ) throws BadRequestException { // Đổi từ Material sang Origin
         Origin entityFound = findById(id); // Đổi từ Material sang Origin
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return originRepository.save(entityFound); // Đổi từ materialRepository sang originRepository
     }
 

@@ -42,9 +42,10 @@ type Options = {
     modifiedDate: string;
 };
 
+
+
 type InitialData = {
     id?: number;
-    name?: string;
     code?: string;
     product?: Product | null;
     size: Options[];
@@ -206,7 +207,6 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
         return colors.flatMap(color =>
             sizes.map(size => ({
                 id: newId(),
-                name: `${initialData.product?.name || ''} màu ${color.name}`,
                 code: newCode(),
                 product: initialData.product || null,
                 color,
@@ -238,7 +238,6 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
             innerRef={ref}
             initialValues={{
                 ...initialData,
-                name: initialData.name || '',
                 code: initialData.code || '',
                 price: initialData.price || 0,
                 mass: initialData.mass || 0,
@@ -278,13 +277,14 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                         values.thickness &&
                         values.elasticity
                     ) {
-                        const combinations = generateCombinations(values.color, values.size, values);
+                        const combinations =  generateCombinations(values.color, values.size, values);
                         dispatch(setCombinations(combinations)); // Ghi vào Redux
                     }
-                    //  else {
+                    //  else
+                    //  {
                     //     dispatch(setCombinations([])); // Xóa nếu không có thuộc tính nào
                     // }
-                }, [values]);
+                }, [values,]);
 
                 const productCombinations = useAppSelector((state) => state.dataDetailedProduct.detailedProduct.data) || [];
 

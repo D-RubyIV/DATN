@@ -135,9 +135,9 @@ const ProductAddConfirmation = ({ setFieldValue, updateOptions }: ProductAddConf
                     modifiedDate: newlyAddedProduct.modifiedDate || new Date().toISOString(),
                 };
 
-                setFieldValue('product', newProductOption);
-                updateOptions('product', newProductOption);
-                setFieldValue('description', newProductOption.description);
+                 setFieldValue('product', newProductOption);
+                 updateOptions('product', newProductOption);
+                 setFieldValue('description', newProductOption.description);
 
                 toast.push(
                     <Notification title={`Thêm nhanh sản phẩm`} type="success" duration={2500}>

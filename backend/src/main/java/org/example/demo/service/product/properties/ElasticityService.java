@@ -2,9 +2,11 @@ package org.example.demo.service.product.properties;
 
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
+import org.example.demo.dto.product.requests.properties.BrandRequestDTO;
 import org.example.demo.dto.product.requests.properties.ElasticityRequestDTO;
 import org.example.demo.dto.product.response.properties.ColorResponseDTO;
 import org.example.demo.dto.product.response.properties.ElasticityResponseDTO;
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Elasticity; // Đổi từ Color sang Elasticity
 import org.example.demo.mapper.product.request.properties.ElasticityRequestMapper; // Đổi từ ColorRequestMapper sang ElasticityRequestMapper
 import org.example.demo.mapper.product.response.properties.ElasticityResponseMapper;
@@ -58,20 +60,21 @@ public class ElasticityService implements IService<Elasticity, Integer, Elastici
     @Override
     public Elasticity delete(Integer id) throws BadRequestException { // Đổi từ Color sang Elasticity
         Elasticity entityFound = findById(id); // Đổi từ Color sang Elasticity
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return elasticityRepository.save(entityFound); // Đổi từ colorRepository sang elasticityRepository
     }
 
+
     @Override
-    public Elasticity save(ElasticityRequestDTO requestDTO) throws BadRequestException { // Đổi từ Color sang Elasticity
-        boolean exists = elasticityRepository.existsByCodeAndName(requestDTO.getCode(), requestDTO.getName()); // Đổi từ colorRepository sang elasticityRepository
+    public Elasticity save(ElasticityRequestDTO requestDTO) throws BadRequestException { // Đổi từ Product sang Brand
+        boolean exists = elasticityRepository.existsByCodeAndName(requestDTO.getCode(), requestDTO.getName()); // Đổi từ productRepository sang brandRepository
         if (exists) {
-            throw new BadRequestException("Elasticity with code " + requestDTO.getCode() + " and name " + requestDTO.getName() + " already exists."); // Đổi từ Color sang Elasticity
+            throw new BadRequestException("Elasticity with code " + requestDTO.getCode() + " and name " + requestDTO.getName() + " already exists."); // Đổi từ Product sang Brand
         }
 
-        Elasticity entityMapped = elasticityRequestMapper.toEntity(requestDTO); // Đổi từ Color sang Elasticity
+        Elasticity entityMapped = elasticityRequestMapper.toEntity(requestDTO); // Đổi từ Product sang Brand
         entityMapped.setDeleted(false);
-        return elasticityRepository.save(entityMapped); // Đổi từ colorRepository sang elasticityRepository
+        return elasticityRepository.save(entityMapped); // Đổi từ productRepository sang brandRepository
     }
 
     @Override

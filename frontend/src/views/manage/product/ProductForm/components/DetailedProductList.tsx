@@ -78,7 +78,6 @@ const DetailedProductList: React.FC<DetailedProductListProps> = ({ productCombin
     const dispatch = useAppDispatch();
 
     const columns = useMemo(() => [
-        { header: 'Tên', accessorKey: 'name' },
         { header: 'Kích thước', accessorKey: 'size.name' },
         { header: 'Giá', accessorKey: 'price', cell: EditableCell },
         { header: 'Số lượng', accessorKey: 'quantity', cell: EditableCell },

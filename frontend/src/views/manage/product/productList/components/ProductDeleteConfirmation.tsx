@@ -17,6 +17,7 @@ const ProductDeleteConfirmation = () => {
     const selectedProduct = useAppSelector(
         (state) => state.salesProductList.data.selectedProduct
     )
+
     const tableData = useAppSelector(
         (state) => state.salesProductList.data.tableData
     )

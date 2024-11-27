@@ -58,7 +58,7 @@ public class StyleService implements IService<Style, Integer, StyleRequestDTO> {
     @Override
     public Style delete(Integer id) throws BadRequestException { // Đổi từ Sleeve sang Style
         Style entityFound = findById(id); // Đổi từ Sleeve sang Style
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return styleRepository.save(entityFound); // Đổi từ sleeveRepository sang styleRepository
     }
 

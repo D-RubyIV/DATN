@@ -11,4 +11,7 @@ public class ImageRequestDTO {
     private String code;
     private String url; // Dùng MultipartFile để nhận ảnh từ frontend
     private Boolean deleted;
+
+
+
 }

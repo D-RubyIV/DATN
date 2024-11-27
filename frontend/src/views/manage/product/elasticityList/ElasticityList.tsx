@@ -1,13 +1,13 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesElasticityOverview, apiDeleteSalesProducts, apiCreateSalesElasticity } from '@/services/ProductSalesService';
+import { apiGetSalesElasticityOverview, apiDeleteSalesElasticity, apiCreateSalesElasticity } from '@/services/ProductSalesService';
 
 const ElasticityList = () => {
     return (
         <>
             <AttributeForm
                 apiFunc={apiGetSalesElasticityOverview}
-                apiDelete={apiDeleteSalesProducts}
+                apiDelete={apiDeleteSalesElasticity}
                 apiAdd={apiCreateSalesElasticity}
                 lablel='độ co giãn'
             />

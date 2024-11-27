@@ -3,7 +3,7 @@ import Notification from '@/components/ui/Notification';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import {
     toggleDeleteConfirmation,
-    deleteProduct,
+    deleteAttribute,
     getAttributes,
     useAppDispatch,
     useAppSelector,
@@ -12,7 +12,7 @@ import {
 type ProductDeleteConfirmationProps = {
     lablel:string;
     apiFunc: any;
-    apiDelete: (id: string | string[]) => Promise<{ status: number }>;
+    apiDelete: (param: { id: string; }) => Promise<{ status: number; }>
 };
 
 const ProductDeleteConfirmation = ({ apiFunc, apiDelete, lablel }: ProductDeleteConfirmationProps) => {
@@ -36,7 +36,7 @@ const ProductDeleteConfirmation = ({ apiFunc, apiDelete, lablel }: ProductDelete
 
     const onDelete = async () => {
         dispatch(toggleDeleteConfirmation(false));
-        const success = await deleteProduct({ id: selectedProduct }, apiDelete);
+        const success = await deleteAttribute(apiDelete, { id: selectedProduct });
         if (success) {
             const requestData = { pageIndex, pageSize, sort, query };
             dispatch(getAttributes({ apiFunc, requestData }));

@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class ProductRequestDTO {
     private String code;
     private String name;
-    private Boolean deleted;}
+    private String description;
+    private Boolean deleted;
+}

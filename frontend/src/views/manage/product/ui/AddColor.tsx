@@ -1,7 +1,6 @@
 import React, { SetStateAction, useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import axios from "axios";
-import instance from "@/axios/CustomAxios";
 
 interface IProps {
     selectedColors: any[]
@@ -21,7 +20,7 @@ const AlpineModal: React.FC<IProps> = ({ selectedColors, setSelectedColors }) =>
     const fetchColors= async () => {
 
         try {
-            const response = await instance.get(
+            const response = await axios.get(
                 'http://localhost:8080/api/color/'
             );
             setColors(response.data);

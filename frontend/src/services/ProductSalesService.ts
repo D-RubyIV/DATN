@@ -140,6 +140,20 @@ export async function apiGetSalesProductDetails<T, U extends Record<string, unkn
 }
 
 
+
+export async function apiGetSalesProductDetail<T, U extends Record<string, unknown>>(
+    params: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/productDetails/findById`,
+        method: 'post',
+        params,
+    })
+}
+
+
+
+
 export async function apiGetSalesProductList<T>() {
     return ApiService.fetchData<T>({
         url: 'http://localhost:8080/api/v1/product/product-list',
@@ -353,5 +367,134 @@ export async function apiDeleteSalesProducts<T>(id: string | string[]) {
         method: 'delete',
     });
 }
+
+export async function apiDeleteSalesProductDetail<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/productDetails/${param.id}`, // Thêm phần tham số id vào URL
+        method: 'delete',
+        param
+    });
+}
+
+
+export async function apiDeleteSalesBrand<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/brand/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+
+export async function apiDeleteSalesCollar<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/collar/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+
+export async function apiDeleteSalesColor<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/color/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesElasticity<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/elasticity/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesMaterial<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/material/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesOrigin<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/origin/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesSize<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/size/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesSleeve<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/sleeve/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesStyle<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/style/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesTexture<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/texture/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+export async function apiDeleteSalesThickness<T, U extends Record<string, unknown>>(
+    param: U
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/thickness/${param.id}`,
+        method: 'delete',
+        param
+    });
+}
+
+
+//update data
+
+export async function apiPutSalesProductDetail<T, U extends Record<string, unknown>>(
+    data: U,
+    param: number
+
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/productDetails/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
 
 

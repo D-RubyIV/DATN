@@ -20,8 +20,12 @@ public class ProductResponseDTO {
     private String code;
     private String name;
     private Boolean deleted;
+    private String description;
     private double nowAverageDiscountPercentEvent;
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    private LocalDateTime updatedDate;
+    @JsonFormat( shape = JsonFormat.Shape.STRING)
+    private  LocalDateTime updatedDate;
     private List<EventDTO> eventDTOList = new ArrayList<>();
+
 }
