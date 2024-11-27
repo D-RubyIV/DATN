@@ -21,6 +21,7 @@ public class ProductOverviewResponse {
     private boolean deleted;
     private Integer quantity;
     private Double price;
+    private Integer mass;
     private String sizeName;
     private String colorName;
     private String productName;

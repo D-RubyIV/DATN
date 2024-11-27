@@ -55,7 +55,7 @@ public class ThicknessService implements IService<Thickness, Integer, ThicknessR
     @Override
     public Thickness delete(Integer id) throws BadRequestException { // Đổi từ Texture sang Thickness
         Thickness entityFound = findById(id); // Đổi từ Texture sang Thickness
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return thicknessRepository.save(entityFound); // Đổi từ textureRepository sang thicknessRepository
     }
 

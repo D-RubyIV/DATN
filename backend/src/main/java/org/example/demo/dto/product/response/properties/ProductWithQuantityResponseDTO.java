@@ -1,9 +1,6 @@
 package org.example.demo.dto.product.response.properties;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.example.demo.entity.product.properties.Product;
 import org.springframework.data.rest.core.config.Projection;
 

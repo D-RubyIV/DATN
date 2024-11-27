@@ -1,13 +1,13 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesSizeOverview, apiDeleteSalesProducts, apiCreateSalesSize } from '@/services/ProductSalesService';
+import { apiGetSalesSizeOverview, apiDeleteSalesSize, apiCreateSalesSize } from '@/services/ProductSalesService';
 
 const SizeList = () => {
     return (
         <>
             <AttributeForm
                 apiFunc={apiGetSalesSizeOverview}
-                apiDelete={apiDeleteSalesProducts}
+                apiDelete={apiDeleteSalesSize}
                 apiAdd={apiCreateSalesSize}
                 lablel='kích thước'
             />

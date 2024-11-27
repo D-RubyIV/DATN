@@ -1,13 +1,13 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesStyleOverview, apiDeleteSalesProducts, apiCreateSalesStyle } from '@/services/ProductSalesService';
+import { apiGetSalesStyleOverview, apiDeleteSalesStyle, apiCreateSalesStyle } from '@/services/ProductSalesService';
 
 const StyleList = () => {
     return (
         <>
             <AttributeForm
                 apiFunc={apiGetSalesStyleOverview}
-                apiDelete={apiDeleteSalesProducts}
+                apiDelete={apiDeleteSalesStyle}
                 apiAdd={apiCreateSalesStyle}
                 lablel='kiểu dáng'
             />

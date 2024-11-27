@@ -1,6 +1,5 @@
 package org.example.demo.repository.product.properties;
 
-import org.example.demo.dto.product.mchien.ProductDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityResponseDTO;
 import org.example.demo.entity.product.properties.Product;
@@ -12,13 +11,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-
-
-
     boolean existsByCodeAndName(String code, String name);
 
     Optional<Product> findByName(String name);
@@ -62,6 +57,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+
+
 
 }
 

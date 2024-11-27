@@ -21,6 +21,7 @@ public class ProductDetailResponseDTO {
     private String name;
     private Double price;
     private Integer quantity;
+    private Integer mass;
     private Boolean deleted;
     private Size size;
     private Color color;
@@ -35,8 +36,9 @@ public class ProductDetailResponseDTO {
     private ThicknessResponseDTO thickness;
     private ElasticityResponseDTO elasticity;
     private List<Image> images;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime modifiedDate;
 }

@@ -15,7 +15,6 @@ import java.util.Set;
 public class ProductDetailRequestDTO {
 
     private String code;
-    private String name;
     private Double price;
     private Integer quantity;
     private Integer mass;

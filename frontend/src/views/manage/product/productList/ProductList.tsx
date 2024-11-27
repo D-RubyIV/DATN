@@ -40,9 +40,9 @@ const ProductList = () => {
                 </div>
                 <h1 className="font-semibold text-xl mb-4 text-transform: uppercase">Quản lý sản phẩm</h1>
                 <div className='mb-5 mt-6'>
-                    <ProductTableTools/>
+                    <ProductTableTools />
                 </div>
-                <ProductTable/>
+                <ProductTable />
             </div>
         </div>
 

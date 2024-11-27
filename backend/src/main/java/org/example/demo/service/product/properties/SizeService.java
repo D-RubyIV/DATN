@@ -58,7 +58,7 @@ public class SizeService implements IService<Size, Integer, SizeRequestDTO> { //
     @Override
     public Size delete(Integer id) throws BadRequestException { // Đổi từ Origin sang Size
         Size entityFound = findById(id); // Đổi từ Origin sang Size
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return sizeRepository.save(entityFound); // Đổi từ originRepository sang sizeRepository
     }
 

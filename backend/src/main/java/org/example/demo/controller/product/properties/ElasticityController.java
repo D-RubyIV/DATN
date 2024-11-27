@@ -3,9 +3,7 @@ package org.example.demo.controller.product.properties;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.ElasticityRequestDTO;
-import org.example.demo.dto.product.response.properties.CollarResponseDTO;
 import org.example.demo.dto.product.response.properties.ElasticityResponseDTO;
-import org.example.demo.entity.product.properties.Color;
 import org.example.demo.entity.product.properties.Elasticity; // Đổi từ Color sang Elasticity
 import org.example.demo.mapper.product.request.properties.ElasticityRequestMapper; // Đổi từ ColorRequestMapper sang ElasticityRequestMapper
 import org.example.demo.mapper.product.response.properties.ElasticityResponseMapper;
@@ -112,12 +110,14 @@ public class ElasticityController {
         }
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<ElasticityResponseDTO> saveElasticity(@RequestBody ElasticityRequestDTO requestDTO) { // Đổi từ ColorRequestDTO sang ElasticityRequestDTO
-        try {
-            Elasticity elasticity = elasticityService.save(requestDTO); // Đổi từ colorService sang elasticityService
 
-            ElasticityResponseDTO responseDTO = new ElasticityResponseDTO( // Đổi từ ColorResponseDTO sang ElasticityResponseDTO
+
+    @PostMapping("/save")
+    public ResponseEntity<ElasticityResponseDTO> saveBrand(@RequestBody ElasticityRequestDTO requestDTO) {
+        try {
+            Elasticity elasticity = elasticityService.save(requestDTO);
+
+            ElasticityResponseDTO responseDTO = new ElasticityResponseDTO(
                     elasticity.getId(),
                     elasticity.getCode(),
                     elasticity.getName(),

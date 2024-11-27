@@ -75,9 +75,6 @@ export const detailedProductData = createSlice({
             action: PayloadAction<{ colorName: string; images: Image[] }>
         ) => {
             const { colorName, images } = action.payload;
-            console.log(colorName)
-            console.log(images)
-
             // Chỉ tìm sản phẩm theo màu sắc và cập nhật ảnh
             state.data = state.data.map(product => {
                 if (product.color?.name === colorName) {

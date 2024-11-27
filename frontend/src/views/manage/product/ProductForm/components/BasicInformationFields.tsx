@@ -42,7 +42,7 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
 
     const updateOptions = (field: string, newOption: Product) => {
         if (field === 'product') {
-            setProducts((prev) => [...prev, { label: newOption.name, value: newOption }]);
+              setProducts((prev) => [...prev, { label: newOption.name, value: newOption }]);
         }
     };
 

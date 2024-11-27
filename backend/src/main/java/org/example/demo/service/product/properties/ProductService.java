@@ -54,6 +54,7 @@ public class ProductService implements IService<Product, Integer, ProductRequest
     }
 
 
+
     public Page<ProductWithQuantityResponseDTO> findAllOverviewByPageV3(
             LocalDateTime createdFrom,
             LocalDateTime createdTo,
@@ -64,6 +65,7 @@ public class ProductService implements IService<Product, Integer, ProductRequest
 
         return productRepository.findAllByPageWithQueryV2(query, createdFrom, createdTo, pageable);
     }
+
 
 
     @Override
@@ -94,7 +96,6 @@ public class ProductService implements IService<Product, Integer, ProductRequest
 
         return productRepository.save(entityFound);
     }
-
     @Override
     public Product save(ProductRequestDTO requestDTO) throws BadRequestException {
         boolean exists = productRepository.existsByCodeAndName(requestDTO.getCode(), requestDTO.getName());

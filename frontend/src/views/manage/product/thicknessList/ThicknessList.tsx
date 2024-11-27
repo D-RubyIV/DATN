@@ -1,13 +1,13 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesThicknessOverview, apiDeleteSalesProducts, apiCreateSalesThickness } from '@/services/ProductSalesService';
+import { apiGetSalesThicknessOverview, apiDeleteSalesThickness, apiCreateSalesThickness } from '@/services/ProductSalesService';
 
 const ThicknessList = () => {
     return (
         <>
             <AttributeForm
                 apiFunc={apiGetSalesThicknessOverview}
-                apiDelete={apiDeleteSalesProducts}
+                apiDelete={apiDeleteSalesThickness}
                 apiAdd={apiCreateSalesThickness}
                 lablel='độ dày'
             />

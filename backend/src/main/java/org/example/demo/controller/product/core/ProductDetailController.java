@@ -77,11 +77,6 @@ public class ProductDetailController {
             throw new BindException(bindingResult);
         }
 
-        System.out.println("productId: " + productId);
-        System.out.println("createdFrom: " + createdFrom);
-        System.out.println("createdTo: " + createdTo);
-        System.out.println("pageableObject: " + pageableObject);
-
         // Gọi dịch vụ để lấy dữ liệu sản phẩm
         Page<ProductDetailResponseDTO> productDetails = productDetailService.findAllProductDetailsOverviewByPage(
                 productId,
@@ -93,6 +88,59 @@ public class ProductDetailController {
         return ResponseEntity.ok(productDetails);
     }
 
+    @PostMapping("findById")
+    public ResponseEntity<ProductDetail> getProductDetailById(
+            @RequestParam(required = false) Integer id
+    ) {
+        if (id == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            ProductDetail productDetail = productDetailService.findById(id);
+            return new ResponseEntity<>(productDetail, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/save-all")
+    public ResponseEntity<List<ProductDetail>> saveAllProducts(@RequestBody List<ProductDetailRequestDTO> requestDTOs) {
+        try {
+            List<ProductDetail> savedProducts = productDetailService.saveAll(requestDTOs);
+            return ResponseEntity.ok(savedProducts);
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDetail> updateProductDetail(
+            @PathVariable Integer id,
+            @RequestBody @Valid ProductDetailRequestDTO productDetailRequestDTO
+    ) {
+        try {
+            // Cập nhật ProductDetail thông qua service
+            ProductDetail updatedProductDetail = productDetailService.update(id, productDetailRequestDTO);
+
+            // Trả về ResponseEntity với mã trạng thái HTTP 200 và đối tượng đã cập nhật
+            return ResponseEntity.ok(updatedProductDetail);
+        } catch (BadRequestException e) {
+            // Nếu có lỗi, trả về mã trạng thái 400 và thông điệp lỗi
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ProductDetail> deleteProductDetail(@PathVariable Integer id) {
+        try {
+            ProductDetail deletedProduct = productDetailService.delete(id);
+            return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            // Handle the BadRequestException if needed, e.g., return a custom message or status code
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
     @GetMapping("/{id}")
     public ResponseEntity<ProductDetail> findById(@PathVariable Integer id) {
         try {

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import axios from 'axios';
 import type { TableQueries } from '@/@types/common'
 
 export type Attribute = {
@@ -47,17 +48,14 @@ export const getAttributes = createAsyncThunk<GetSalesAttributesResponse, GetAtt
     }
 );
 
-export const deleteProduct = async (
-    params: { id: string | string[] },
-    apiCall: (id: string | string[]) => Promise<{ status: number }>
-) => {
-    try {
-        const response = await apiCall(params.id);
-        return response.status === 204;
-    } catch (error) {
-        throw error;
-    }
+export const deleteAttribute = async <T, U extends Record<string, unknown>>(
+    apiFunction: (param: U) => Promise<T>,
+    param: U
+): Promise<T> => {
+    const response = await apiFunction(param);
+    return response;
 };
+
 
 
 
