@@ -65,8 +65,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
             "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END), " + // Đếm số đơn hàng 'CANCELED'
             "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END))" + // Đếm số đơn hàng 'RETURNED'
-            "FROM Order o")
-    CountStatusOrder getCountStatus();
+            "FROM Order o WHERE o.deleted = false " +
+            "AND (:type IS NULL OR LOWER(o.type) LIKE LOWER(CONCAT('%', :type, '%')))"
+    )
+    CountStatusOrder getCountStatus(@Param("type") String type);
 
 
     @Query(value = "select count(od.id) as quantity, o.code as code, o.id as id from Order o left join OrderDetail od on od.order.id = o.id where o.id in :ids group by o.id, o.code")

@@ -11,6 +11,7 @@ import instance from '@/axios/CustomAxios'
 import { OrderResponseDTO } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 import { useSellContext } from '../context/SellContext'
+import { useWSContext } from '@/context/WsContext'
 
 const { TabNav, TabList, TabContent } = Tabs
 
@@ -26,8 +27,9 @@ const SellTab = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const { openNotification } = useToastContext()
     const [quantityInOrder, setQuantityInOrder] = useState<QuantityInOrder[]>([])
-
     const { isLoadingComponent } = useLoadingContext()
+
+
 
     useEffect(() => {
         if (tabs.length > 0) {

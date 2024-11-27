@@ -119,8 +119,8 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     // OTHER
     @GetMapping(value = "count-any-status")
-    public ResponseEntity<CountStatusOrder> getCountAnyStatus() {
-        return ResponseEntity.ok(orderService.getCountStatusAnyOrder());
+    public ResponseEntity<CountStatusOrder> getCountAnyStatus(@RequestParam(value = "type", required = false) String type) {
+        return ResponseEntity.ok(orderService.getCountStatusAnyOrder(type));
     }
 
     @GetMapping(value = "count-order-detail")

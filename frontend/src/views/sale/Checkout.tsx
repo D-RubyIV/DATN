@@ -11,6 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useSaleContext } from '@/views/sale/SaleContext'
 import VoucherModal from './VoucherModal'
+import { useWSContext } from '@/context/WsContext'
 
 
 export interface Image {
@@ -183,6 +184,8 @@ const Checkout = () => {
     const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
     const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
     const [amount, setAmount] = useState<number>(100000);
+
+    const { callHaveNewOrder } = useWSContext();
 
 
     const toggleVoucherModal = () => {
@@ -744,7 +747,8 @@ const Checkout = () => {
                                     </form>
 
                                     {/* Dòng "Xem thêm mã giảm giá" */}
-                                    <div className="text-sm text-blue-600 cursor-pointer mt-2" onClick={toggleVoucherModal}>
+                                    <div className="text-sm text-blue-600 cursor-pointer mt-2"
+                                         onClick={toggleVoucherModal}>
                                         Xem thêm mã giảm giá
                                     </div>
 
@@ -764,25 +768,30 @@ const Checkout = () => {
                                             <p>Tên: {selectedVoucher.name}</p>
                                             <p>Mã: {selectedVoucher.code}</p>
                                             <p>Phần trăm giảm: {selectedVoucher.maxPercent}%</p>
-                                            <p>Số tiền tối thiểu: {selectedVoucher.minAmount.toLocaleString('vi-VN')}₫</p>
+                                            <p>Số tiền tối
+                                                thiểu: {selectedVoucher.minAmount.toLocaleString('vi-VN')}₫</p>
                                         </div>
                                     )}
 
                                     <div className="py-2 flex justify-between">
                                         <span>Tạm tính:</span>
-                                        <span className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? 'n/a'}₫</span>
+                                        <span
+                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? 'n/a'}₫</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Phí vận chuyển:</span>
-                                        <span className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') ?? '0'}₫</span>
+                                        <span
+                                            className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Giảm giá:</span>
-                                        <span className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') ?? '0'}₫</span>
+                                        <span
+                                            className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Tổng tiền:</span>
-                                        <span className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') ?? '0'}₫</span>
+                                        <span
+                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>
                                     <button
                                         className="bg-black w-full py-2 font-thin rounded-none text-white"
@@ -790,17 +799,23 @@ const Checkout = () => {
                                     >
                                         <p className=" ">Xác nhận đơn hàng</p>
                                     </button>
+
+                                    <button
+                                        className="bg-black w-full py-2 font-thin rounded-none text-white mt-5"
+                                        type={'button'}
+                                        onClick={callHaveNewOrder}
+                                    >
+                                        <p className="">Call New</p>
+                                    </button>
                                 </div>
-
-
 
 
                             </div>
                         </div>
-                    </div >
-                </form >
-            </Card >
-        </div >
+                    </div>
+                </form>
+            </Card>
+        </div>
     )
 }
 export default Checkout

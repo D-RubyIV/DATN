@@ -225,7 +225,7 @@ export const OrderTable = () => {
             header: 'Thời gian tạo',
             accessorKey: 'createdDate',
             cell: (props) => (
-                calculateDistanceTime(props.row.original.createdDate, props.row.original.code)
+                calculateDistanceTime(props.row.original.createdDate)
             )
         },
         {
@@ -400,7 +400,7 @@ export const OrderTable = () => {
     ]
 
     const fetchCountAnyStatus = async () => {
-        instance.get('orders/count-any-status').then(function (response) {
+        instance.get(`orders/count-any-status?type=${queryParam.type}`).then(function (response) {
             if (response.data) {
                 setCountAnyStatus(response.data as ICountStatus)
             }

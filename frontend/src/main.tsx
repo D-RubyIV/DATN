@@ -8,9 +8,11 @@ import ToastProvider from './context/ToastContext'
 import LoadingProvider from '@/context/LoadingContext'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AppProvider } from '../src/views/client/contexts/app.context'
+import { AppProvider } from '@/views/client/contexts/app.context'
 import OrderProvider from '@/views/manage/order/component/context/OrderContext'
 import WebSocketNotification from '@/views/ws/WebSocketNotification'
+import WsProvider from '@/context/WsContext'
+
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -20,9 +22,10 @@ export const queryClient = new QueryClient({
 })
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     // <React.StrictMode>
-        <OrderProvider>
-            <AuthProvider>
-                <ToastProvider>
+    <OrderProvider>
+        <AuthProvider>
+            <ToastProvider>
+                <WsProvider>
                     <LoadingProvider>
                         <QueryClientProvider client={queryClient}>
                             <AppProvider>
@@ -32,8 +35,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                             </AppProvider>
                         </QueryClientProvider>
                     </LoadingProvider>
-                </ToastProvider>
-            </AuthProvider>
-        </OrderProvider>
+                </WsProvider>
+            </ToastProvider>
+        </AuthProvider>
+    </OrderProvider>
     // </React.StrictMode>
 )
