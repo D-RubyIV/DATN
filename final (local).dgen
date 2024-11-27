@@ -1687,37 +1687,21 @@
         </Column>
         <Column Name="description">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
-          <GeneratorOptions xsi:type="SqlLoremIpsumGeneratorOptions">
+          <DataType>nvarchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
-            <EmptyStringProportion>0</EmptyStringProportion>
+            <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>43</SeedValue>
-            <MinLength>1</MinLength>
-            <MaxLength>199</MaxLength>
-            <MaxAllowedLength>255</MaxAllowedLength>
-            <MinWordsInSentence>3</MinWordsInSentence>
-            <MaxWordsInSentence>7</MaxWordsInSentence>
-            <MinSentences>1</MinSentences>
-            <MaxSentences>10</MaxSentences>
-            <MinParagraphs>1</MinParagraphs>
-            <MaxParagraphs>1</MaxParagraphs>
-            <Unique>false</Unique>
+            <ValueDistributionMode>Random</ValueDistributionMode>
+            <SeedValue>48</SeedValue>
+            <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <PunctuationSigns>,.!?...;</PunctuationSigns>
-            <StartParagraphWithIndent>false</StartParagraphWithIndent>
-            <AddParagraphTags>false</AddParagraphTags>
-            <AddItalicTags>false</AddItalicTags>
-            <AddBoldTags>false</AddBoldTags>
-            <AddSingleLineBreakTags>false</AddSingleLineBreakTags>
-            <AddNewLines>false</AddNewLines>
+            <Expression>Áo phông cổ tròn nam - Thiết kế đơn giản, phù hợp mọi phong cách|Áo phông cổ tim nữ - Kiểu dáng nữ tính, chất liệu mềm mại|Áo phông in hình họa tiết - Nổi bật với hình in độc đáo, trẻ trung|Áo phông basic trơn - Mẫu áo cơ bản, dễ phối đồ|Áo phông oversize - Phong cách năng động, thoải mái khi mặc|Áo phông thể thao nam - Chất liệu thoáng mát, phù hợp tập luyện|Áo phông cổ bẻ nữ - Kiểu dáng thanh lịch, phù hợp môi trường công sở|Áo phông unisex - Thiết kế phù hợp cho cả nam và nữ|Áo phông tay lỡ nam - Phong cách đường phố, phù hợp giới trẻ|Áo phông dáng croptop nữ - Thời trang hiện đại, khoe vòng eo thon gọn</Expression>
           </GeneratorOptions>
-          <GeneratorType>SqlLoremIpsumGenerator</GeneratorType>
-          <GeneratorName>Product Description</GeneratorName>
-          <GeneratorDescription>Sunt id voluptatem eveniet ipsum minus hic. Repellenadus at facilis. Aut facilis esse qui, eligendi et quae! Et qui ullam., ...</GeneratorDescription>
-          <GeneratorCategory>Product</GeneratorCategory>
+          <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
         </Column>
         <Column Name="name">
@@ -1729,10 +1713,10 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>47</SeedValue>
+            <SeedValue>1</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Adidas Aeroready T-Shirt|3-Stripes T-Shirt|Adidas x Yeezy|Adidas National Team Jerseys|Adidas Essentials T-Shirt|Adidas Performance Polo Tee</Expression>
+            <Expression>Áo phông cổ tròn nam|Áo phông cổ tim nữ|Áo phông in hình họa tiết|Áo phông basic trơn|Áo phông oversize|Áo phông thể thao nam|Áo phông cổ bẻ nữ|Áo phông unisex|Áo phông tay lỡ nam|Áo phông dáng croptop nữ</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Product Name</GeneratorName>
@@ -1876,14 +1860,14 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>56</SeedValue>
+            <SeedValue>64</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
@@ -2575,14 +2559,14 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>78</SeedValue>
+            <SeedValue>77</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Mịn màng|Nhám|Lì|Mềm mại|Sọc|Hạt|Mịn</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
-          <GeneratorName>NickName</GeneratorName>
-          <GeneratorDescription>Jodi1982, Nancey777, Terrance28, Erich95, Cindi1, Salena92, Pasquale2015, ...</GeneratorDescription>
+          <GeneratorName>Phone Number (domestic)</GeneratorName>
+          <GeneratorDescription>(102) 136-0584, (462) 681-9028, (252) 889-1273, ...</GeneratorDescription>
           <GeneratorCategory>Personal</GeneratorCategory>
           <Length>255</Length>
         </Column>
@@ -3056,17 +3040,17 @@
         </Column>
         <Column Name="name">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>65</SeedValue>
-            <Unique>false</Unique>
+            <SeedValue>85</SeedValue>
+            <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+            <Expression>Giảm giá 30% tối đa 100k|Giảm giá 20% tối đa 50k|Giảm giá 15% tối đa 30k|Giảm giá 10% tối đa 20k</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -4163,9 +4147,9 @@
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>18</SeedValue>
-            <Unique>false</Unique>
+            <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+            <Expression>Nguyễn Anh Thư|Trần Bảo Ngọc|Lê Thảo Vy|Phạm Khánh Linh|Vũ Ngọc Lan|Đỗ Minh Châu|Hoàng Thanh Hà|Bùi Thuỳ Dung|Võ Diệu Anh|Phan Hoàng Yến|Nguyễn Anh Dũng|Trần Quốc Huy|Lê Thành Đạt|Phạm Minh Quân|Vũ Hải Đăng|Đỗ Tuấn Kiệt|Hoàng Đức Thắng|Bùi Bảo Long|Võ Văn Khánh|Phan Nhật Minh</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -4428,7 +4412,7 @@
             <SeedValue>69</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>(([1-9]\d{1,2})|([1-3]\d{3})) (((New|Old|Hidden|West|South|East|North|White|Red|E|(S)?W|NW|S(E)?|N(E)?) )?((((Ski|Chapel|Hunting|Fox|Rose|Riddle|Rock|Prospect|Sharp) Hill)|Front|Hope|Mount|Church|Social|Riverside|Highland|(Wood(land|bridge|hurst|side|row|fort|cock))|((Deep|Iron|Rush|Edge|Park|Hazel|Bur|Glen|Rock|Quail|Stone|Flint|Button|Beach|Ash|Brent)wood)|Lake|(Cedar|Pine) Tree|Oak|((Water|Meadow|Farm|River|Bay)view)|Town|Market|Mountain|Monument))|((1st|2nd|3rd|[4-9]\d?th))) (St(reet)?|Ave(nue)?|Dr(ive)?|R(oa)?d|Ct|C(our)?t|Ln|Lane|Blvd|Cir(cle)?|Hwy|Highway|Loop|Way|Pkwy|Parkway), ((((1st|2nd|3rd|[4-9]\d?th) (Floor|FL))|((Appartment|APT) [1-9]\d{0,2})|((Suite|STE) [1-9]\d{0,3})|(((Nipper|Victor Executive|Diamond|Standard|Keith|Superior|Macy's|Enquirer|Duke Energy|Bartlett|Plaza|Equitable|MidAmerican|Penobscot|Guardian|Fisher|Buhl|Comcast|Calyon|First Security|257 Towers|Kearns|Judge) (Building|Bldg)))), )?($"USStateCodes.csv[2]"), (($"USStateCodes.csv[0]")|($"USStateCodes.csv[1]")), \d{5}</Expression>
+            <Expression>123 Nguyễn Trãi, Thanh Xuân, Hà Nội|456 Lê Lợi, Quận 1, TP. Hồ Chí Minh|789 Trần Phú, Hà Đông, Hà Nội|10 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh|15 Lý Thái Tổ, Hoàn Kiếm, Hà Nội|22 Phan Chu Trinh, Hải Châu, Đà Nẵng|35 Nguyễn Văn Linh, Hải Châu, Đà Nẵng|50 Trường Chinh, Tân Bình, TP. Hồ Chí Minh|60 Hoàng Hoa Thám, Ba Đình, Hà Nội|75 Điện Biên Phủ, Bình Thạnh, TP. Hồ Chí Minh</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>US Address Full</GeneratorName>
@@ -4525,9 +4509,9 @@
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>69</SeedValue>
-            <Unique>false</Unique>
+            <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+            <Expression>Nguyễn Anh Dũng|Trần Quốc Huy|Lê Thành Đạt|Phạm Minh Quân|Vũ Hải Đăng|Đỗ Tuấn Kiệt|Hoàng Đức Thắng|Bùi Bảo Long|Võ Văn Khánh|Phan Nhật Minh|Nguyễn Anh Thư|Trần Bảo Ngọc|Lê Thảo Vy|Phạm Khánh Linh|Vũ Ngọc Lan|Đỗ Minh Châu|Hoàng Thanh Hà|Bùi Thuỳ Dung|Võ Diệu Anh|Phan Hoàng Yến</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -5984,7 +5968,7 @@
             <SeedValue>3</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
+            <Expression>123 Nguyễn Trãi, Thanh Xuân, Hà Nội|456 Lê Lợi, Quận 1, TP. Hồ Chí Minh|789 Trần Phú, Hà Đông, Hà Nội|10 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh|15 Lý Thái Tổ, Hoàn Kiếm, Hà Nội|22 Phan Chu Trinh, Hải Châu, Đà Nẵng|35 Nguyễn Văn Linh, Hải Châu, Đà Nẵng|50 Trường Chinh, Tân Bình, TP. Hồ Chí Minh|60 Hoàng Hoa Thám, Ba Đình, Hà Nội|75 Điện Biên Phủ, Bình Thạnh, TP. Hồ Chí Minh</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -6003,7 +5987,7 @@
             <SeedValue>3</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>($"USStateCodes.csv[0]")-(\C{2})</Expression>
+            <Expression>|</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>US Region</GeneratorName>
@@ -6083,7 +6067,7 @@
             <SeedValue>4</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[A-Z][A-Z][A-Z][A-Z]</Expression>
+            <Expression>|</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -6122,7 +6106,7 @@
             <SeedValue>5</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[A-Z][A-Z][A-Z][A-Z]</Expression>
+            <Expression>|</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -7444,7 +7428,7 @@
             <SeedValue>73</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[0-9A-Z]+</Expression>
+            <Expression>[A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -7463,7 +7447,7 @@
             <SeedValue>74</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[0-9A-Z]+</Expression>
+            <Expression>[A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -7482,7 +7466,7 @@
             <SeedValue>75</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[0-9A-Z]+</Expression>
+            <Expression>[A-Z][A-Z][A-Z][A-Z]</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>

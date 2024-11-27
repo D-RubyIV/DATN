@@ -22,7 +22,7 @@ public class Role extends BaseEntity {
     private String code;
 
     // Hung : Add Column name to Entity 14/10/2024
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
     public static String ADMIN = "ADMIN";
