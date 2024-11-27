@@ -242,7 +242,7 @@ const EventTable = () => {
     ]
 
     return (
-        <div className="bg-white rounded-lg mb-6 w-full">
+        <div className="bg-white rounded-lg mb-6 w-full h-full">
             <div className="p-5 rounded-md card h-full card-border">
                 <div className="lg:flex items-center justify-between mb-4">
                     <nav className="flex" aria-label="Breadcrumb">

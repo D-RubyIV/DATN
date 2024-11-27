@@ -14,7 +14,7 @@ type AttributeFormProps = {
 const AttributeForm = ({ apiFunc, lablel, apiDelete, apiAdd }: AttributeFormProps) => {
     return ( 
 
-        <div className="bg-white">
+        <div className="bg-white h-full">
             <div className="p-8 shadow-md rounded-md card h-full card-border">
                 <h1 className="font-semibold text-xl mb-4 text-transform: uppercase">Quản lý {lablel}</h1>
                 <div className='mb-5 mt-6'>
