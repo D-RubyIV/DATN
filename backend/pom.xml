@@ -95,7 +95,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>com.cloudinary</groupId>
             <artifactId>cloudinary-http45</artifactId>

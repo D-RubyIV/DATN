@@ -63,6 +63,7 @@ const AttributeAddConfirmation = ({ apiFunc, apiAdd, label }: AttributeAddConfir
         const resultAction = await dispatch(addAttribute({ AttributeData: addedAttribute, apiAdd }));
         if (resultAction) {
             const requestData = { pageIndex, pageSize, sort, query };
+            
             dispatch(getAttributes({ apiFunc, requestData }));
             toast.push(
                 <Notification

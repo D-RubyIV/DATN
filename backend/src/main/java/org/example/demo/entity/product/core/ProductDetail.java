@@ -22,8 +22,6 @@ public class ProductDetail extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "name")
-    private String name;
 
     @Column(name = "price")
     private Double price;
@@ -106,4 +104,15 @@ public class ProductDetail extends BaseEntity {
     )
     @JsonManagedReference // Giúp tránh vòng lặp vô tận khi trả về JSON
     private List<Image> images;
+
+    // Cập nhật phương thức toString() để tránh vòng lặp đệ quy
+    @Override
+    public String toString() {
+        return "ProductDetail{" +
+                "code='" + code + '\'' +
+                ", price=" + price +
+                ", quantity=" + quantity +
+                ", images=" + (images != null ? images.size() : 0) + " images" +
+                '}';
+    }
 }

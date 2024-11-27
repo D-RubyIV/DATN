@@ -21,9 +21,8 @@ import type {
 import Input from '@/components/ui/Input'
 import { HiCheck } from 'react-icons/hi';
 
-const { MultiValueLabel } = components;
+const { MultiValueLabel, Control } = components;
 
-// Component tùy chỉnh cho mỗi option của color
 const CustomSelectOption = ({
     innerProps,
     label,
@@ -52,7 +51,7 @@ const CustomControlMulti = ({
     children,
     ...props
 }: MultiValueGenericProps<{ label: string; value: Option }, true>) => {
-    const { data } = props; // Ensure data is properly destructured
+    const { data } = props;
     return (
         <MultiValueLabel {...props}>
             <div className="inline-flex items-center">
@@ -62,6 +61,22 @@ const CustomControlMulti = ({
         </MultiValueLabel>
     );
 };
+
+const CustomControl = ({ 
+    children,
+    ...props
+}: ControlProps<{ label: string; value: Option }, true>) => {
+    const data  = props.getValue()[0]; 
+    return (
+        <Control {...props}>
+            {data && (
+                <div className="w-4 h-4 rounded-full" style={{ backgroundColor: data.value.name }} />
+            )}
+            {children}
+        </Control>
+    )
+}
+
 type FormFieldsName = {
     brand: Option | null;
     origin: Option | null;
@@ -72,8 +87,8 @@ type FormFieldsName = {
     texture: Option | null;
     thickness: Option | null;
     elasticity: Option | null;
-    size: Option[] | null;
-    color: Option[] | null;
+    size: Option| null; 
+    color: Option| null;
     mass: number;
 };
 
@@ -100,7 +115,7 @@ type OrganizationFieldsProps = {
 
 const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: OrganizationFieldsProps) => {
     const dispatch = useAppDispatch();
-    const openDialog = useAppSelector((state) => state.addAttribute.attributeAdd.addAttribute);
+    const openDialog = useAppSelector((state) => state.newAttribute.newAttribute.addAttribute);
 
     const [brands, setBrands] = useState(data?.brands || []);
     const [origins, setOrigins] = useState(data?.origins || []);
@@ -158,62 +173,64 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
         options: { label: string; value: Option }[],
         isMulti: boolean = false,
         closeMenuOnSelect?: boolean
-    ) => (
-        <FormItem
-            label={label}
-            invalid={Boolean(errors[name] && touched[name])}
-            errorMessage={errors[name] as string}
-        >
-            <Field name={name}>
-                {({ field, form }: FieldProps) => {
-                    const selectedValue = values[name];
+    ) => {
+        const isColorField = name === 'color';  
+        return (
+            <FormItem
+                label={label}
+                invalid={Boolean(errors[name] && touched[name])}
+                errorMessage={errors[name] as string}
+            >
+                <Field name={name}>
+                    {({ field, form }: FieldProps) => {
+                        const selectedValue = values[name];
 
-                    // Lấy các option đã chọn
-                    const selectedOptions = isMulti && Array.isArray(selectedValue)
-                        ? options.filter(option => selectedValue.some(val => val.id === option.value.id))
-                        : selectedValue && 'id' in selectedValue
-                            ? [options.find(option => option.value.id === selectedValue.id) || null]
-                            : [];
+                        const selectedOptions = isMulti && Array.isArray(selectedValue)
+                            ? options.filter(option => selectedValue.some(val => val.id === option.value.id))
+                            : selectedValue && 'id' in selectedValue
+                                ? [options.find(option => option.value.id === selectedValue.id) || null]
+                                : [];
 
-                    // Lọc các giá trị không phải là null
-                    const filteredSelectedOptions = isMulti
-                        ? selectedOptions.filter((option): option is { label: string; value: Option } => option !== null)
-                        : selectedOptions.length > 0 ? selectedOptions[0] : null;
+                        const filteredSelectedOptions = isMulti
+                            ? selectedOptions.filter((option): option is { label: string; value: Option } => option !== null)
+                            : selectedOptions.length > 0 ? selectedOptions[0] : null;
 
-                    return (
-                        <Select
-                            isClearable
-                            componentAs={CreatableSelect}
-                            isMulti={isMulti}
-                            components={{
-                                Option: CustomSelectOption,
-                                MultiValueLabel: CustomControlMulti,
-                            }}
-                            onCreateOption={(inputValue) => handleCreate(inputValue, name)}
-                            field={field}
-                            form={form}
-                            options={options}
-                            value={filteredSelectedOptions}
-                            onChange={(newOptions) => {
-                                if (isMulti) {
-                                    const newValue = (newOptions as { label: string; value: Option }[]).map(option => option.value);
-                                    form.setFieldValue(field.name, newValue);
-                                } else {
-                                    form.setFieldValue(field.name, newOptions ? (newOptions as { label: string; value: Option }).value : null);
-                                    console.log(form.values)
-                                }
-                            }}
-                            placeholder={`Chọn ${label.toLowerCase()}...`}
-                            formatCreateLabel={(inputValue) => `Thêm nhanh "${inputValue}"`}
-                            closeMenuOnSelect={closeMenuOnSelect}
-                        />
-                    );
-                }}
-            </Field>
-        </FormItem>
-    );
+                        return (
+                            <Select
+                                isClearable
+                                componentAs={CreatableSelect}
+                                isMulti={isMulti}
+                                components={{
+                                    Option: CustomSelectOption,
+                                    MultiValueLabel: CustomControlMulti,
+                                    Control: isColorField ? CustomControl : Control,  
+                                }}
+                                onCreateOption={(inputValue) => handleCreate(inputValue, name)}
+                                field={field}
+                                form={form}
+                                options={options}
+                                value={filteredSelectedOptions}
+                                onChange={(newOptions) => {
+                                    if (isMulti) {
+                                        const newValue = (newOptions as { label: string; value: Option }[]).map(option => option.value);
+                                        form.setFieldValue(field.name, newValue);
+                                    } else {
+                                        form.setFieldValue(field.name, newOptions ? (newOptions as { label: string; value: Option }).value : null);
+                                    }
+                                }}
+                                placeholder={`Chọn ${label.toLowerCase()}...`}
+                                formatCreateLabel={(inputValue) => `Thêm nhanh "${inputValue}"`}
+                                closeMenuOnSelect={closeMenuOnSelect}
+                            />
+                        );
+                    }}
+                </Field>
+            </FormItem>
+        );
+    };
 
- 
+
+
 
     return (
         <AdaptableCard divider isLastChild className="mb-4">
@@ -261,21 +278,21 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
                         errorMessage={errors.mass as string}
                     >
                         <Field
-                            type="text" 
+                            type="text"
                             autoComplete="off"
                             name="mass"
                             placeholder="Hãy điền khối lượng..."
                             component={Input}
                             suffix="gm"
-                            
+
                         />
                     </FormItem>
                 </div>
                 <div className="col-span-1">
-                    {renderSelectField('color', 'Màu sắc', colors, true, false)} {/* Chọn nhiều màu sắc với closeMenuOnSelect=false */}
+                    {renderSelectField('color', 'Màu sắc', colors)} {/* Chọn nhiều màu sắc với closeMenuOnSelect=false */}
                 </div>
                 <div className="col-span-1">
-                    {renderSelectField('size', 'Kích thước', sizes, true, false)} {/* Chọn nhiều kích thước với closeMenuOnSelect=false */}
+                    {renderSelectField('size', 'Kích thước', sizes)} {/* Chọn nhiều kích thước với closeMenuOnSelect=false */}
                 </div>
             </div>
             <AttributeAddConfirmation
@@ -307,7 +324,7 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
                 }}
                 touched={touched}
                 errors={errors}
-                values={values} 
+                values={values}
             />
 
         </AdaptableCard>

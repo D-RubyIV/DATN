@@ -56,7 +56,7 @@ public class MaterialService implements IService<Material, Integer, MaterialRequ
     @Override
     public Material delete(Integer id) throws BadRequestException { // Đổi từ Image sang Material
         Material entityFound = findById(id); // Đổi từ Image sang Material
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return materialRepository.save(entityFound); // Đổi từ imageRepository sang materialRepository
     }
 

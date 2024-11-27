@@ -76,14 +76,16 @@ const ImageList = ({ imgList, onImageDelete }: { imgList: Image[]; onImageDelete
             <ConfirmDialog
                 isOpen={deleteConfirmationOpen}
                 type="danger"
-                title="Remove image"
+                title="Xóa ảnh"
+                cancelText='HỦY'
+                confirmText='XÁC NHẬN'
                 confirmButtonColor="red-600"
                 onClose={onDeleteConfirmationClose}
                 onRequestClose={onDeleteConfirmationClose}
                 onCancel={onDeleteConfirmationClose}
                 onConfirm={onDelete}
             >
-                <p>Are you sure you want to remove this image?</p>
+                <p>Bạn có chắc chắn muốn xóa hình ảnh này không? </p>
             </ConfirmDialog>
         </>
     );

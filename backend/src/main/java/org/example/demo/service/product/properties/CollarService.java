@@ -58,7 +58,7 @@ public class CollarService implements IService<Collar, Integer, CollarRequestDTO
     @Override
     public Collar delete(Integer id) throws BadRequestException { // Đổi từ Brand sang Collar
         Collar entityFound = findById(id); // Đổi từ Brand sang Collar
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return collarRepository.save(entityFound); // Đổi từ brandRepository sang collarRepository
     }
 

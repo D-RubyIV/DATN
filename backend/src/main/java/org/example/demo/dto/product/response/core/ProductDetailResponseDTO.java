@@ -16,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 public class ProductDetailResponseDTO {
+    private Integer id;
     private String code;
     private String name;
     private Double price;

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,8 +47,13 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
 
     @Override
     public ProductDetail findById(Integer id) throws BadRequestException {
-        return productDetailRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("ProductDetail not found with id: " + id));
+        Optional<ProductDetail> optionalProductDetail = productDetailRepository.findIdWithQuery(id);
+
+        if (optionalProductDetail.isPresent()) {
+            return optionalProductDetail.get(); // Return the found ProductDetail
+        } else {
+            throw new BadRequestException("ProductDetail with id " + id + " not found");
+        }
     }
 
     public Page<ProductDetail> findAll(Pageable pageable) {
@@ -78,9 +84,11 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     @Override
     public ProductDetail delete(Integer id) throws BadRequestException {
         ProductDetail entityFound = findById(id);
-        entityFound.setDeleted(true);
+
+        entityFound.setDeleted(!entityFound.getDeleted());
         return productDetailRepository.save(entityFound);
     }
+
 
 
     @Override
@@ -88,17 +96,69 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         return null;
     }
 
+
     @Override
-    public ProductDetail update(Integer integer, ProductDetailRequestDTO requestDTO) throws BadRequestException {
-        return null;
+    public ProductDetail update(Integer id, ProductDetailRequestDTO requestDTO) throws BadRequestException {
+        // Tìm kiếm ProductDetail theo id
+        ProductDetail existingProductDetail = productDetailRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("ProductDetail with id " + id + " not found"));
+
+        // Cập nhật các trường khác trong ProductDetail
+        existingProductDetail.setPrice(requestDTO.getPrice());
+        existingProductDetail.setSize(requestDTO.getSize());
+        existingProductDetail.setColor(requestDTO.getColor());
+        existingProductDetail.setTexture(requestDTO.getTexture());
+        existingProductDetail.setOrigin(requestDTO.getOrigin());
+        existingProductDetail.setCollar(requestDTO.getCollar());
+        existingProductDetail.setSleeve(requestDTO.getSleeve());
+        existingProductDetail.setStyle(requestDTO.getStyle());
+        existingProductDetail.setMaterial(requestDTO.getMaterial());
+        existingProductDetail.setThickness(requestDTO.getThickness());
+        existingProductDetail.setElasticity(requestDTO.getElasticity());
+        existingProductDetail.setQuantity(requestDTO.getQuantity());
+        existingProductDetail.setMass(requestDTO.getMass());
+
+        // Cập nhật thương hiệu (brand)
+        Brand brand = brandRepository.findById(requestDTO.getBrand().getId())
+                .orElseThrow(() -> new BadRequestException("Brand not found"));
+        existingProductDetail.setBrand(brand);
+
+        // Kiểm tra và cập nhật ảnh
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            List<Image> imagesFromDTO = createImagesFromDTO(requestDTO.getImages());
+
+            // Tạo danh sách các ID ảnh từ request
+            List<String> imageIdsFromDTO = imagesFromDTO.stream()
+                    .map(image -> image.getId().toString()) // Chuyển Integer (nếu có) thành String
+                    .collect(Collectors.toList());
+
+            // Tạo danh sách ảnh hiện tại từ ProductDetail
+            List<Image> imagesToDelete = existingProductDetail.getImages().stream()
+                    .filter(image -> !imageIdsFromDTO.contains(image.getId().toString()))  // So sánh id dưới dạng String
+                    .collect(Collectors.toList());
+
+            // Xóa các ảnh không còn trong danh sách
+            existingProductDetail.getImages().removeAll(imagesToDelete);
+
+            // Cập nhật lại danh sách ảnh
+            existingProductDetail.setImages(imagesFromDTO);
+        } else {
+            // Nếu không có ảnh mới, xóa toàn bộ ảnh
+            existingProductDetail.setImages(new ArrayList<>());
+        }
+
+        // Lưu và trả về ProductDetail đã được cập nhật
+        return productDetailRepository.save(existingProductDetail);
     }
+
+
+
+
     @Transactional
     public List<ProductDetail> saveAll(List<ProductDetailRequestDTO> requestDTOs) throws BadRequestException {
         List<ProductDetail> savedProductDetails = new ArrayList<>();
 
-        // Duyệt qua từng sản phẩm trong danh sách và xử lý từng sản phẩm
         for (ProductDetailRequestDTO requestDTO : requestDTOs) {
-            // Kiểm tra và xử lý từng sản phẩm chi tiết
             ProductDetail savedProductDetail = handleProductDetailSave(requestDTO);
             savedProductDetails.add(savedProductDetail);
         }
@@ -107,61 +167,77 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     }
 
     private ProductDetail handleProductDetailSave(ProductDetailRequestDTO requestDTO) throws BadRequestException {
-        // Kiểm tra xem sản phẩm chi tiết đã tồn tại với mã và tên không
-        ProductDetail existingProductDetail = productDetailRepository.findByName(requestDTO.getCode(), requestDTO.getSize(),requestDTO.getColor());
+        ProductDetail existingProductDetail = productDetailRepository.findByAttributes(
+                requestDTO.getSize(),
+                requestDTO.getColor(),
+                requestDTO.getTexture(),
+                requestDTO.getOrigin(),
+                requestDTO.getBrand(),
+                requestDTO.getCollar(),
+                requestDTO.getSleeve(),
+                requestDTO.getStyle(),
+                requestDTO.getMaterial(),
+                requestDTO.getThickness(),
+                requestDTO.getElasticity()
+        );
 
-        // Nếu sản phẩm đã tồn tại và không phải là trùng lặp, cộng thêm số lượng
-        if (existingProductDetail != null && isProductDetailDuplicate(existingProductDetail, requestDTO)) {
-            existingProductDetail.setQuantity(existingProductDetail.getQuantity() + requestDTO.getQuantity());
-            return productDetailRepository.save(existingProductDetail);
+        if (existingProductDetail != null) {
+                existingProductDetail.setQuantity(existingProductDetail.getQuantity() + requestDTO.getQuantity());
+                System.out.println("Updating product detail: " + existingProductDetail);
+                return productDetailRepository.save(existingProductDetail);
+
         }
-
-        // Nếu không tồn tại, tạo mới sản phẩm chi tiết
         ProductDetail entityMapped = productDetailRequestMapper.toEntity(requestDTO);
-
-        // Kiểm tra và gán thương hiệu cho sản phẩm
         Brand brand = brandRepository.findById(requestDTO.getBrand().getId())
                 .orElseThrow(() -> new BadRequestException("Brand not found"));
         entityMapped.setBrand(brand);
-        entityMapped.setDeleted(false); // Mặc định là chưa xóa
-
-        // Lưu ảnh vào cơ sở dữ liệu nếu có
+        entityMapped.setDeleted(false);
         if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
             List<Image> images = createImagesFromDTO(requestDTO.getImages());
             entityMapped.setImages(images);
         }
 
-        // Lưu sản phẩm chi tiết vào cơ sở dữ liệu
         return productDetailRepository.save(entityMapped);
     }
 
-    private boolean isProductDetailDuplicate(ProductDetail existingProductDetail, ProductDetailRequestDTO requestDTO) {
-        return existingProductDetail != null &&
-                existingProductDetail.getName().equals(requestDTO.getName()) &&
-                existingProductDetail.getSize().equals(requestDTO.getSize()) &&
-                existingProductDetail.getProduct().equals(requestDTO.getProduct()) &&
-                existingProductDetail.getColor().equals(requestDTO.getColor()) &&
-                existingProductDetail.getTexture().equals(requestDTO.getTexture()) &&
-                existingProductDetail.getOrigin().equals(requestDTO.getOrigin()) &&
-                existingProductDetail.getBrand().equals(requestDTO.getBrand()) &&
-                existingProductDetail.getCollar().equals(requestDTO.getCollar()) &&
-                existingProductDetail.getSleeve().equals(requestDTO.getSleeve()) &&
-                existingProductDetail.getStyle().equals(requestDTO.getStyle()) &&
-                existingProductDetail.getMaterial().equals(requestDTO.getMaterial()) &&
-                existingProductDetail.getThickness().equals(requestDTO.getThickness()) &&
-                existingProductDetail.getElasticity().equals(requestDTO.getElasticity());
-    }
 
-private List<Image> createImagesFromDTO(List<ImageRequestDTO> imageRequestDTOs) {
-        return imageRequestDTOs.stream().map(imageRequestDTO -> {
-            System.out.println(imageRequestDTO.toString());
-            Image image = new Image();
-            image.setCode(imageRequestDTO.getCode());
-            image.setUrl(imageRequestDTO.getUrl());
-            image.setDeleted(imageRequestDTO.getDeleted());
-            return imageRepository.save(image);
+
+
+
+    private List<Image> createImagesFromDTO(List<ImageRequestDTO> imageRequestDTOs) {
+        List<ImageRequestDTO> uniqueList = imageRequestDTOs.stream()
+                .collect(Collectors.toMap(
+                        ImageRequestDTO::getCode,
+                        a -> a,    // Giá trị là chính đối tượng A
+                        (existing, replacement) -> existing // Giữ lại đối tượng đầu tiên nếu trùng
+                ))
+                .values()
+                .stream()
+                .collect(Collectors.toList());
+
+        System.out.println("Unique images: " + uniqueList.size());
+
+        return uniqueList.stream().map(imageRequestDTO -> {
+            System.out.println("==================");
+
+            // Kiểm tra xem ảnh đã tồn tại chưa
+            Optional<Image> existingImage = imageRepository.findByCode(imageRequestDTO.getCode());
+
+            if (existingImage.isEmpty()) {
+                // Nếu ảnh chưa tồn tại, lưu ảnh mới
+                System.out.println("Saving new image: " + imageRequestDTO.toString());
+                Image image = new Image();
+                image.setCode(imageRequestDTO.getCode());
+                image.setUrl(imageRequestDTO.getUrl());
+                image.setDeleted(imageRequestDTO.getDeleted());
+                return imageRepository.save(image);
+            }
+
+            // Nếu ảnh đã tồn tại, trả về ảnh đã tồn tại
+            return existingImage.get();
         }).collect(Collectors.toList());
     }
+
 
 
 }

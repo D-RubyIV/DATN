@@ -57,7 +57,7 @@ public class SleeveService implements IService<Sleeve, Integer, SleeveRequestDTO
     @Override
     public Sleeve delete(Integer id) throws BadRequestException { // Đổi từ Size sang Sleeve
         Sleeve entityFound = findById(id); // Đổi từ Size sang Sleeve
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return sleeveRepository.save(entityFound); // Đổi từ sizeRepository sang sleeveRepository
     }
 

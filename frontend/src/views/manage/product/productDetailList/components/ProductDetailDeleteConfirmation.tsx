@@ -2,24 +2,24 @@ import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import {
+    deleteProductDetail,
     toggleDeleteConfirmation,
-    deleteProduct,
-    getProducts,
-    useAppDispatch,
+    getProductDetails,
+    useAppDispatch, 
     useAppSelector,
 } from '../store'
 
-const ProductDeleteConfirmation = () => {
+const ProductDetailDeleteConfirmation = () => {
     const dispatch = useAppDispatch()
     const dialogOpen = useAppSelector(
-        (state) => state.salesProductList.data.deleteConfirmation
+        (state) => state.salesProductDetailList.data.deleteConfirmation
     )
     const selectedProduct = useAppSelector(
-        (state) => state.salesProductList.data.selectedProduct
-    ) 
-    
+        (state) => state.salesProductDetailList.data.selectedProductDetail
+    )
+   
     const tableData = useAppSelector(
-        (state) => state.salesProductList.data.tableData
+        (state) => state.salesProductDetailList.data.tableData
     )
 
     const onDialogClose = () => {
@@ -28,11 +28,10 @@ const ProductDeleteConfirmation = () => {
 
     const onDelete = async () => {
         dispatch(toggleDeleteConfirmation(false))
-        const success = await deleteProduct({ id: selectedProduct })
-        console.log(success)
+        const success = await deleteProductDetail({ id: selectedProduct })
         if (success) {
-            dispatch(getProducts(tableData))
-            toast.push(
+        dispatch(getProductDetails(tableData))
+            toast.push( 
                 <Notification
                     title={'Successfuly Deleted'}
                     type="success"
@@ -59,11 +58,11 @@ const ProductDeleteConfirmation = () => {
             onConfirm={onDelete}
         >
             <p>
-                Bạn có chắc chắn muốn ngừng bán sản phẩm này không? Tất sản phẩm chi tiết liên quan
-                đến sản phẩm này cũng sẽ bị xóa. 
+                Bạn có chắc chắn muốn ngừng bán sản phẩm này không? Tất thông tin sản phẩm liên quan
+                đến sản phẩm này cũng sẽ bị xóa.
             </p>
         </ConfirmDialog>
     )
 }
 
-export default ProductDeleteConfirmation
+export default ProductDetailDeleteConfirmation

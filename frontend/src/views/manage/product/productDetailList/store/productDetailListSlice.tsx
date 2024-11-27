@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import {
+    apiDeleteSalesProductDetail,
     apiGetSalesProductDetails,
-    // apiDeleteSalesProducts,
 } from '@/services/ProductSalesService'
 import type { TableQueries } from '@/@types/common'
 type ChildObject = {
@@ -9,8 +9,17 @@ type ChildObject = {
     createdDate: string;
     deleted: boolean;
     id: number;
-    name: string;
+    name: string; 
 };
+type Image = {
+    id: number;
+    code: string;
+    url: string;
+    deleted: boolean;
+    createdDate: string;
+    modifiedDate: string;
+};
+
 
 type ProductDetail = {
     id: number;
@@ -24,14 +33,15 @@ type ProductDetail = {
     elasticity?: ChildObject;
     material?: ChildObject;
     origin?: ChildObject;
-    sleeve?: ChildObject;
+    sleeve?: ChildObject; 
     style?: ChildObject;
     texture?: ChildObject;
     thickness?: ChildObject;
     price?: number;
     quantity?: number;
     mass?:number
-    images?:any
+    images?: Image[]
+    deleted: boolean;
 }
 
 type ProductDetails = ProductDetail[]
@@ -48,8 +58,6 @@ export type SalesProductDetailListState = {
     selectedProductDetail: string
     tableData: TableQueries
     productDetailList: ProductDetail[]
-    // createdFrom: string,
-    // createdTo: string,
      productId: number,
 }
 
@@ -75,8 +83,17 @@ export const getProductDetails = createAsyncThunk(
         >(data, params);
 
         return response.data;
-    }
+    } 
 );
+
+
+export const deleteProductDetail = async (param: { id: string }) => {
+    const response = await apiDeleteSalesProductDetail<
+        boolean,
+        { id: string  }
+        >(param)
+    return response.data
+}
 
 
 export const initialTableData: TableQueries = {
@@ -120,12 +137,10 @@ const productDetailListSlice = createSlice({
             state.selectedProductDetail = action.payload
         },
     },
-    extraReducers: (builder) => {
+    extraReducers: (builder) => { 
         builder
             .addCase(getProductDetails.fulfilled, (state, action) => {
                 state.productDetailList = action.payload.content
-                console.log(state.productDetailList)
-
                 state.tableData.total = action.payload.totalElements
                 state.loading = false
             })

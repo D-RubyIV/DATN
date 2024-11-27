@@ -104,7 +104,7 @@ public class BrandController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBrand(@PathVariable Integer id) throws BadRequestException { // Đổi từ Product sang Brand
         try {
             brandService.delete(id); // Đổi từ productService sang brandService

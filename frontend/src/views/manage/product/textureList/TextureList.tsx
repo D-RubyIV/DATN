@@ -1,13 +1,13 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesTextureOverview, apiDeleteSalesProducts, apiCreateSalesTexture } from '@/services/ProductSalesService';
+import { apiGetSalesTextureOverview, apiDeleteSalesTexture, apiCreateSalesTexture } from '@/services/ProductSalesService';
 
 const TextureList = () => {
     return (
         <>
             <AttributeForm
                 apiFunc={apiGetSalesTextureOverview}
-                apiDelete={apiDeleteSalesProducts}
+                apiDelete={apiDeleteSalesTexture}
                 apiAdd={apiCreateSalesTexture}
                 lablel='kết cấu'
             />

@@ -4,12 +4,19 @@ import { useParams } from 'react-router-dom';
 import Switcher from '@/components/ui/Switcher'
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri'
 import Badge from '@/components/ui/Badge'
+import Avatar from '@/components/ui/Avatar'
 import { FaPen, FaEye } from 'react-icons/fa'
-import useThemeClass from '@/utils/hooks/useThemeClass'
+import ProducttDetailUpdateConfirmation from './ProducttDetailUpdateConfirmation'
+import ProductDetailDeleteConfirmation from './ProductDetailDeleteConfirmation'
+import { FiPackage } from 'react-icons/fi'
 import {
+    getProductDetailId,
     getProductDetails,
     setTableData,
     setProductId,
+    toggleUpdateConfirmation,
+    toggleDeleteConfirmation,
+    setSelectedProductDetail,
     useAppDispatch,
     useAppSelector,
 } from '../store'
@@ -25,6 +32,14 @@ type ChildObject = {
     deleted: boolean;
     id: number;
     name: string;
+};
+ type Image = {
+    id: number;
+    code: string;
+    url: string;
+    deleted: boolean;
+    createdDate: string;
+    modifiedDate: string;
 };
 
 type ProductDetail = {
@@ -45,59 +60,14 @@ type ProductDetail = {
     thickness?: ChildObject;
     price?: number;
     quantity: number;
+    images?: Image[]
+    deleted: boolean;
 }
 
-// const inventoryStatusColor: Record<
-//     number,
-//     {
-//         label: string
-//         dotClass: string
-//         textClass: string
-//     }
-// > = {
-//     0: {
-//         label: 'In Stock',
-//         dotClass: 'bg-emerald-500',
-//         textClass: 'text-emerald-500',
-//     },
-//     1: {
-//         label: 'Limited',
-//         dotClass: 'bg-amber-500',
-//         textClass: 'text-amber-500',
-//     },
-//     2: {
-//         label: 'Out of Stock',
-//         dotClass: 'bg-red-500',
-//         textClass: 'text-red-500',
-//     },
-// }
 const withIcon = (component: ReactNode) => {
-    return <div className="text-lg">{component}</div>
+    return <div className="text-lg">{component}</div> 
 }
-const ActionColumn = ({ row }: { row: ProductDetail }) => {
-    const { textTheme } = useThemeClass()
-    return (
-        <div className="flex justify-end text-lg">
-            <span
-                className={`cursor-pointer p-2 hover:${textTheme}`}
-            >
-                <FaPen />
-            </span>
-            <span
-                className={`cursor-pointer p-2 hover:${textTheme}`}
-            >
-                <FaEye />
-            </span>
-            <Switcher
-                unCheckedContent={withIcon(<RiMoonClearLine />)}
-                checkedContent={withIcon(<RiSunLine />)}
-                color="green-500"
-              
-            ></Switcher>  
-            
-        </div>
-    )
-}
+
 const getInventoryStatus = (quantity: number) => {
     if (quantity > 10) {
         return {
@@ -121,11 +91,15 @@ const getInventoryStatus = (quantity: number) => {
 };
 
 const ProductDetailColumn = ({ row }: { row: ProductDetail }) => {
-
+    const avatar = row.images ? (
+        <Avatar src={row.images && row.images[0]?.url} />
+    ) : (
+        <Avatar icon={<FiPackage />} />
+    )
 
     return (
         <div className="flex items-center">
-            {/* {avatar} */}
+            {avatar}
             <span className={`ml-2 rtl:mr-2 font-semibold`}>{row.name}</span>
         </div>
     )
@@ -164,6 +138,40 @@ const ProductDetailTable = () => {
         dispatch(getProductDetails({ pageIndex, pageSize, sort, query }))
 
     }
+    const ActionColumn = ({ row }: { row: ProductDetail }) => {
+        const dispatch = useAppDispatch()
+        const onUpdate = () => {
+            dispatch(toggleUpdateConfirmation(true))
+            dispatch(getProductDetailId({ id: row.id }));
+        }
+        const onDelete = () => {
+            dispatch(toggleDeleteConfirmation(true))
+            dispatch(setSelectedProductDetail(row.id))
+        }
+
+        const onSwitcherToggle = (val: boolean, e: ChangeEvent) => {
+            onDelete()
+        }
+        return (
+            <div className="flex justify-end text-lg">
+                <FaEye
+                    onClick={onUpdate} 
+                    size={20}
+                    className="mr-3 text-2xl"
+                    style={{ cursor: 'pointer' }}
+                />
+                <Switcher
+                    className='text-sm'
+                    unCheckedContent={withIcon(<RiMoonClearLine />)}
+                    checkedContent={withIcon(<RiSunLine />)}
+                    color="green-500"
+                    checked={!row.deleted}
+                    onChange={onSwitcherToggle} 
+                ></Switcher>
+
+            </div>
+        )
+    }
 
     const columns: ColumnDef<ProductDetail>[] = useMemo(
         () => [
@@ -176,14 +184,7 @@ const ProductDetailTable = () => {
                     return <span>{index}</span>; // Hiển thị số thứ tự
                 },
             },
-            {
-                header: 'Mã',
-                accessorKey: 'code',
-                cell: (props: any) => {
-                    const row = props.row.original
-                    return <span className="capitalize">{row.code}</span>
-                },
-            },
+         
             {
                 header: 'Tên',
                 accessorKey: 'name',
@@ -197,8 +198,7 @@ const ProductDetailTable = () => {
                 accessorKey: 'color.name',
                 cell: (props: any) => {
                     const row = props.row.original
-                    // Màu nền dựa trên tên màu
-                    return <span className=" block w-20 h-4"
+                    return <span className=" block w-16 h-5 rounded-xl" 
                         style={{
                             backgroundColor: row.color.name
                         }} >
@@ -272,16 +272,11 @@ const ProductDetailTable = () => {
 
     const onSort = (sort: OnSortParam) => {
         const newTableData = cloneDeep(tableData);
-        newTableData.sort = sort;
+        newTableData.sort = sort; 
         dispatch(setTableData(newTableData));
     };
-    const handleRowClick = (row: any) => {
-        console.log('Row clicked:', row);
-        // window.location.href = `/manage/product/ProductDetails/${row.id}`;
-    };
-
     return (
-        <>
+        <> 
             <DataTable
                 ref={tableRef}
                 columns={columns}
@@ -298,7 +293,8 @@ const ProductDetailTable = () => {
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
-            {/* <ProductDeleteConfirmation /> */}
+            <ProducttDetailUpdateConfirmation />
+            <ProductDetailDeleteConfirmation/>
         </>
     )
 }

@@ -95,7 +95,7 @@ const ProductTable = () => {
         fetchData()
     }, [pageIndex, pageSize, sort])
 
-
+ 
     useEffect(() => {
         if (tableRef) {
             tableRef.current?.resetSorting()

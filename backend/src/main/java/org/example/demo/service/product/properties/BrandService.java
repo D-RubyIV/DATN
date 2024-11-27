@@ -60,7 +60,7 @@ public class BrandService implements IService<Brand, Integer, BrandRequestDTO> {
     @Override
     public Brand delete(Integer id) throws BadRequestException {
         Brand entityFound = findById(id);
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return brandRepository.save(entityFound);
     }
 

@@ -64,13 +64,19 @@ public class ProductDetailController {
         return ResponseEntity.ok(productDetails);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDetail> findById(@PathVariable Integer id) {
+    @PostMapping("findById")
+    public ResponseEntity<ProductDetail> getProductDetailById(
+            @RequestParam(required = false) Integer id
+    ) {
+        if (id == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
         try {
             ProductDetail productDetail = productDetailService.findById(id);
-            return ResponseEntity.ok(productDetail);
+            return new ResponseEntity<>(productDetail, HttpStatus.OK);
         } catch (BadRequestException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -84,26 +90,36 @@ public class ProductDetailController {
         }
     }
 
-//    @PutMapping("update/{id}")
-//    public ResponseEntity<ProductDetail> update(@PathVariable Integer id, @Valid @RequestBody ProductDetailRequestDTO requestDTO) {
-//        try {
-//            // Việc cập nhật có thể xử lý lại tương tự như `save` nếu cần, vì không có thông tin về update method trong service
-//            ProductDetail updatedProductDetail = productDetailService.save(requestDTO);
-//            return ResponseEntity.ok(updatedProductDetail);
-//        } catch (BadRequestException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-//        }
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductDetail> updateProductDetail(
+            @PathVariable Integer id,
+            @RequestBody @Valid ProductDetailRequestDTO productDetailRequestDTO
+    ) {
+        try {
+            // Cập nhật ProductDetail thông qua service
+            ProductDetail updatedProductDetail = productDetailService.update(id, productDetailRequestDTO);
 
-//    @DeleteMapping("delete/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-//        try {
-//            productDetailService.delete(id);
-//            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//        } catch (BadRequestException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
+            // Trả về ResponseEntity với mã trạng thái HTTP 200 và đối tượng đã cập nhật
+            return ResponseEntity.ok(updatedProductDetail);
+        } catch (BadRequestException e) {
+            // Nếu có lỗi, trả về mã trạng thái 400 và thông điệp lỗi
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ProductDetail> deleteProductDetail(@PathVariable Integer id) {
+        try {
+            ProductDetail deletedProduct = productDetailService.delete(id);
+            return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            // Handle the BadRequestException if needed, e.g., return a custom message or status code
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
 
 
 

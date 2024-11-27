@@ -22,13 +22,13 @@ type GetSalesProductsResponse = {
     content: Products
     totalElements: number
 }
-
+ 
 type FilterQueries = {
     name: string
     category: string[]
     status: number[]
     productStatus: number
-}
+} 
 
 export type SalesProductListState = {
     loading: boolean

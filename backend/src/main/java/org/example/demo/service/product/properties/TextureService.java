@@ -56,7 +56,7 @@ public class TextureService implements IService<Texture, Integer, TextureRequest
     @Override
     public Texture delete(Integer id) throws BadRequestException { // Đổi từ Style sang Texture
         Texture entityFound = findById(id); // Đổi từ Style sang Texture
-        entityFound.setDeleted(true);
+        entityFound.setDeleted(!entityFound.getDeleted());
         return textureRepository.save(entityFound); // Đổi từ styleRepository sang textureRepository
     }
 
