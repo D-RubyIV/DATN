@@ -707,7 +707,7 @@
             <SeedValue>20</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Độ dàn hồi 1|Độ dàn hồi 2</Expression>
+            <Expression>Co giãn cao|Co giãn vừa|Co giãn thấp|Không co giãn|Co giãn cực cao|Co giãn siêu thấp</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -1351,7 +1351,7 @@
             <SeedValue>32</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Cotton|Linen|Polyester|Silk|Wool|Denim|Rayon|Leather|Nylon|Velvet</Expression>
+            <Expression>Cotton|Linen|Polyester|Vải Satin|Wool|Rayon|Leather|Nylon|Velvet|Lụa|Vải Canvas|Vải Denim</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -1524,7 +1524,7 @@
             <SeedValue>44</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Trung|Ấn độ|Mỹ|Bangladesh</Expression>
+            <Expression>Trung|Ấn độ|Mỹ|Bangladesh|Hàn Quốc|Việt Nam|Anh|Đức|Mỹ|Ý|Pháp</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2059,7 +2059,7 @@
             <SeedValue>65</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>S|M|L|XL|2XL|3XL</Expression>
+            <Expression>S|M|L|XL|2XL|3XL|4XL|5XL</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2405,7 +2405,7 @@
             <SeedValue>76</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Oversized|Cotton|Đen|In logo|Streetwear</Expression>
+            <Expression>Kiểu dáng cổ điển|Kiểu dáng hiện đại|Kiểu dáng thể thao|Kiểu dáng Vintage|Kiểu dáng tối giản|Kiểu dáng sang trọng|Kiểu dáng dạo phố</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2578,7 +2578,7 @@
             <SeedValue>78</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Sọc|Chấm bi|Carô|Họa tiết hoa|Họa tiết hình học|Camouflage|Zebra|Họa tiết chéo|Chấm|Màu sắc ombre</Expression>
+            <Expression>Mịn màng|Nhám|Lì|Mềm mại|Sọc|Hạt|Mịn</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2751,7 +2751,7 @@
             <SeedValue>80</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>2mm|5mm</Expression>
+            <Expression>Rất mỏng|Mỏng|Vừa phải|Dày|Rất dày|Trung bình|Siêu mỏng|Siêu dày</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
