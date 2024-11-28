@@ -67,7 +67,7 @@ const WsProvider = ({ children }: { children: ReactNode }) => {
             client.subscribe('/new-order/messages', (message: Message) => {
                 const result = JSON.parse(message.body)
                 console.log(result)
-                setCountOrder((prevCountOrder) => prevCountOrder + 1);
+                setCountOrder((prevCountOrder) => prevCountOrder + 1)
             })
 
             client.publish({ destination: '/app/receive', body: 'MY MESSAGE' })

@@ -37,6 +37,7 @@ import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.staff.StaffRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.IService;
+import org.example.demo.service.email.MailSenderService;
 import org.example.demo.service.fee.FeeService;
 import org.example.demo.service.history.HistoryService;
 import org.example.demo.util.DataUtils;
@@ -56,6 +57,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author PHAH04
@@ -64,6 +67,9 @@ import java.util.*;
 @Slf4j
 @Service
 public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+
     @Autowired
     private OrderRepository orderRepository;
 
@@ -96,6 +102,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private MailSenderService mailSenderService;
 
     @Autowired
     private FeeService feeService;
@@ -319,6 +328,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             log.info("4");
             entityFound.setIsPayment(true);
         }
+        if(oldStatus != newStatus){
+            sendEmail(entityFound);
+        }
         log.info("-----------------2");
 
         //B2: CẬP NHẬT TRẠNG THÁI MỚI
@@ -425,7 +437,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 return fee;
             } catch (Exception ex) {
                 log.error(ex.getMessage());
-                throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
+                throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển. Vui lòng xem xét lại địa chỉ hợp lệ");
             }
         } else {
             return null;
@@ -710,6 +722,21 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         } else {
             return voucher.getQuantity() > 0;
         }
+    }
+
+
+    private void sendEmail(Order order) {
+        executorService.submit(() -> { // Gửi email trong một luồng riêng biệt
+            try {
+                log.info("ĐƠN HÀNG NÀY KHÔNG CUNG CẤP EMAIL");
+                if (order.getEmail() != null) {
+                    mailSenderService.sendNewMail(order.getEmail(), "Subject right here", order);
+                    log.info("ĐÃ GỬI EMAIL");
+                }
+            } catch (Exception e) {
+                log.error("Gửi mail thất bại", e);
+            }
+        });
     }
 
 }

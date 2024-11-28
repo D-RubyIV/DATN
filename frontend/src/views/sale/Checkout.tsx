@@ -317,10 +317,12 @@ const Checkout = () => {
                             if (response.status === 200 && response.data) {
                                 getDetailAboutCart()
                                 navigate('/thank')
+                                callHaveNewOrder()
                                 localStorage.removeItem('myCartId')
                             }
                         })
                         getDetailAboutCart()
+
                     }
                 })
 
@@ -352,6 +354,7 @@ const Checkout = () => {
                             const amount = Math.round((selectedCart as CartResponseDTO).subTotal)
                             instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function (response) {
                                 if (response.status === 200 && response.data) {
+                                    callHaveNewOrder()
                                     const url = response?.data?.data?.paymentUrl
                                     if (url) {
                                         window.location.href = url // Mở đường dẫn mới
@@ -800,13 +803,7 @@ const Checkout = () => {
                                         <p className=" ">Xác nhận đơn hàng</p>
                                     </button>
 
-                                    <button
-                                        className="bg-black w-full py-2 font-thin rounded-none text-white mt-5"
-                                        type={'button'}
-                                        onClick={callHaveNewOrder}
-                                    >
-                                        <p className="">Call New</p>
-                                    </button>
+
                                 </div>
 
 

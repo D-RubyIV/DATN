@@ -20,37 +20,72 @@ import Dropdown from '../ui/Dropdown'
 import Avatar from '../ui/Avatar'
 import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
+import { formatDistanceToNow, parse, subHours } from 'date-fns'
+import { vi } from 'date-fns/locale'
+
+type OrderDTO = {
+    id: number;
+    code: string;
+    address: string;
+    phone: string;
+    recipientName: string | null;
+    deleted: boolean;
+    createdDate: string;
+    status: string;
+    type: 'ONLINE' | 'INSTORE';
+    payment: 'CASH' | 'TRANSFER';
+    total: number;
+    deliveryFee: number;
+    subTotal: number;
+    discount: number;
+    customerName: string | null;
+    staffName: string | null;
+    provinceId: number | null;
+    provinceName: string | null;
+    districtId: number | null;
+    districtName: string | null;
+    wardId: number | null;
+    wardName: string | null;
+    isPayment: boolean;
+    discountVoucherPercent: number;
+    voucherMinimumSubtotalRequired: number;
+};
+
 
 const Bell = () => {
-    type DropdownList = {
-        label: string
-        path: string
-        icon: JSX.Element
-    }
-
-
-    const getCurrentOrder = () => {
+    const [listOrderCurrent, setListOrderCurrent] = useState<OrderDTO[]>([])
+    const getCurrentOrder = (total: number) => {
         console.log('0000000000000')
         const data = {
             'pageIndex': 1,
-            'pageSize': 10,
+            'pageSize': total,
             'query': '',
             'sort': {
                 'order': 'desc',
                 'key': 'createdDate'
             }
         }
-        instance.post('http://localhost:8080/api/v1/orders/overview?status=PENDING&type=ONLINE', data).then(function(response) {
-            console.log(response)
-        })
+        if (total > 0) {
+            instance.post('http://localhost:8080/api/v1/orders/overview?status=PENDING&type=ONLINE', data).then(function(response) {
+                console.log(response)
+                if (response.status === 200 && response?.data?.content) {
+                    setListOrderCurrent(response.data.content)
+                }
+            })
+        } else {
+            setListOrderCurrent([])
+        }
     }
 
-    const dropdownItemList: DropdownList[] = []
     const { countOrder } = useWSContext()
     const { openNotification } = useToastContext()
+    const [prevCountOrder, setPrevCountOrder] = useState<number>(countOrder)
 
     useEffect(() => {
-        openNotification('Bạn có 1 đơn hàng mới', 'Thông báo mới', 'info', 2000)
+        if (countOrder > 0 && countOrder > prevCountOrder) {
+            openNotification('Bạn có 1 đơn hàng mới', 'Thông báo mới', 'info', 2000)
+            setPrevCountOrder(countOrder)
+        }
     }, [countOrder])
 
     const UserAvatar = (
@@ -65,6 +100,11 @@ const Bell = () => {
         </div>
     )
 
+    const calculateDistanceTime = (formattedDate: string) => {
+        const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
+        return formatDistanceToNow(date, { addSuffix: true, locale: vi })
+    }
+
     return (
         <div className={''}>
             <div>
@@ -72,49 +112,72 @@ const Bell = () => {
                     menuStyle={{ minWidth: 600 }}
                     renderTitle={UserAvatar}
                     placement="bottom-end"
-                    onOpen={getCurrentOrder}
+                    onOpen={() => getCurrentOrder(countOrder)}
                 >
                     <Dropdown.Item variant="header">
-                        <div className="py-2 px-3 flex items-center gap-2">
-                            <Avatar shape="circle" icon={<HiOutlineUser />} />
-                            <div>
-                                <div className="font-bold text-gray-900 dark:text-gray-100">
-                                    User01
-                                </div>
-                                <div className="text-xs">user01@mail.com</div>
-                            </div>
+                        <div className="px-3 text-black text-[16px] !hover:bg-gray-600 font-semibold flex items-center gap-2">
+                            Danh sách đơn hàng chờ xác nhận
                         </div>
                     </Dropdown.Item>
                     <Dropdown.Item variant="divider" />
-                    {dropdownItemList.map((item) => (
+                    {listOrderCurrent.map((item, index) => (
                         <Dropdown.Item
-                            key={item.label}
-                            eventKey={item.label}
-                            className="mb-1 px-0"
+                            key={index}
+                            className="mb-4 text-sm font-normal px-0 flex flex-col justify-start !h-auto py-2"
                         >
-                            <Link
-                                className="flex h-full w-full px-2"
-                                to={item.path}
+                            <div
+                                className="flex justify-between gap-3 h-full w-full px-4"
                             >
-                            <span className="flex gap-2 items-center w-full">
-                                <span className="text-xl opacity-50">
-                                    {item.icon}
-                                </span>
-                                <span>{item.label}</span>
-                            </span>
-                            </Link>
+                                <div>
+                                    <span className="flex gap-1 items-center w-full">
+                                        <span className="">Mã:</span>
+                                        <span>{item.code}</span>
+                                    </span>
+                                </div>
+
+
+                                <div>
+                                    <Link className={'text-green-60 underline-offset-2 underline '}
+                                          to={`/admin/manage/order/order-details/${item.id}`}>
+                                        Xem ngay
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className={'flex justify-start gap-1 w-full px-4'}>
+                                    <span className="">
+                                        <span className="">Phương thức: </span>
+                                        <span
+                                            className={item.payment === 'CASH' ? 'text-green-600' : 'text-yellow-600'}>
+                                            {item.payment === 'CASH' ? 'Thanh toán khi nhận hàng' : 'Đã thanh toán ngân hàng'}
+                                        </span>
+                                    </span>
+                            </div>
+                            <div className={'flex justify-start gap-1 w-full px-4'}>
+                                  <span className="">
+                                        <span className="">Trạng thái: </span>
+                                        <span
+                                            className={item.status === 'PENDING' ? 'text-yellow-600' : 'text-red-600'}>
+                                            {item.payment === 'CASH' ? 'Chờ xác nhận' : 'Không xác định'}
+                                        </span>
+                                  </span>
+                            </div>
+                            <div className={'flex justify-start gap-1 w-full px-4'}>
+                                  <span className="">
+                                        <span className="">Thời gian: </span>
+                                        <span>
+                                                {calculateDistanceTime(item.createdDate)}
+                                        </span>
+                                  </span>
+                            </div>
                         </Dropdown.Item>
                     ))}
-                    {/* <Dropdown.Item variant="divider" /> */}
-                    <Dropdown.Item
-                        eventKey="Sign Out"
-                        className="gap-2"
-                    >
-                    <span className="text-xl opacity-50">
-                        <HiOutlineLogout />
-                    </span>
-                        <span>Sign Out</span>
-                    </Dropdown.Item>
+                    {
+                        listOrderCurrent.length === 0 && (
+                            <div className={'px-4 py-5'}>
+                                Danh sách đang trống
+                            </div>
+                        )
+                    }
                 </Dropdown>
             </div>
         </div>

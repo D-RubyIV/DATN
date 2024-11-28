@@ -5122,6 +5122,26 @@
           <GeneratorCategory>Location</GeneratorCategory>
           <Length>255</Length>
         </Column>
+        <Column Name="email">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>8</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>(((((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt"))[_.]?)?($"LastNames.txt"))|(($"LastNames.txt")\C?)|(((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt"))[_.]?(\C[_.]?)?)?($"LastNames.txt")))(\D{,3})?|\c{4,8}(\d{1,4}|[_.]\c{4,10}))@(example$"7"|nowhere$"3").com</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Email</GeneratorName>
+          <GeneratorDescription>Danica.Foley@example.com, fstu@nowhere.com, CurtK_Burton@example.com, LaroseM696@nowhere.com, ...</GeneratorDescription>
+          <GeneratorCategory>Personal</GeneratorCategory>
+          <Length>255</Length>
+        </Column>
         <Column Name="payment">
           <Checked>true</Checked>
           <DataType>varchar</DataType>
@@ -5432,23 +5452,20 @@
         <Column Name="district_id">
           <Checked>true</Checked>
           <DataType>int</DataType>
-          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>37</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:int">1</Increment>
-            <ValueDistributionMode>Sequential</ValueDistributionMode>
-            <SeedValue>29</SeedValue>
-            <MinValue>1</MinValue>
-            <MaxValue>2147483647</MaxValue>
-            <UseDefault>false</UseDefault>
-            <DefaultValue />
+            <Expression>2046</Expression>
           </GeneratorOptions>
-          <GeneratorType>SqlIntegerGenerator</GeneratorType>
-          <GeneratorName>ID (sequential)</GeneratorName>
-          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
-          <GeneratorCategory>Business</GeneratorCategory>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
@@ -5474,23 +5491,20 @@
         <Column Name="province_id">
           <Checked>true</Checked>
           <DataType>int</DataType>
-          <GeneratorOptions xsi:type="IntegerGeneratorOptions">
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>38</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:int">1</Increment>
-            <ValueDistributionMode>Sequential</ValueDistributionMode>
-            <SeedValue>30</SeedValue>
-            <MinValue>1</MinValue>
-            <MaxValue>2147483647</MaxValue>
-            <UseDefault>false</UseDefault>
-            <DefaultValue />
+            <Expression>268</Expression>
           </GeneratorOptions>
-          <GeneratorType>SqlIntegerGenerator</GeneratorType>
-          <GeneratorName>ID (sequential)</GeneratorName>
-          <GeneratorDescription>1, 2, 3, 4, ..., 9, 10, 11, 12, ...</GeneratorDescription>
-          <GeneratorCategory>Business</GeneratorCategory>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
@@ -5724,7 +5738,7 @@
             <SeedValue>26</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>(([1-9]\d{1,2})|([1-3]\d{3})) (((New|Old|Hidden|West|South|East|North|White|Red|E|(S)?W|NW|S(E)?|N(E)?) )?((((Ski|Chapel|Hunting|Fox|Rose|Riddle|Rock|Prospect|Sharp) Hill)|Front|Hope|Mount|Church|Social|Riverside|Highland|(Wood(land|bridge|hurst|side|row|fort|cock))|((Deep|Iron|Rush|Edge|Park|Hazel|Bur|Glen|Rock|Quail|Stone|Flint|Button|Beach|Ash|Brent)wood)|Lake|(Cedar|Pine) Tree|Oak|((Water|Meadow|Farm|River|Bay)view)|Town|Market|Mountain|Monument))|((1st|2nd|3rd|[4-9]\d?th))) (St(reet)?|Ave(nue)?|Dr(ive)?|R(oa)?d|Ct|C(our)?t|Ln|Lane|Blvd|Cir(cle)?|Hwy|Highway|Loop|Way|Pkwy|Parkway), ((((1st|2nd|3rd|[4-9]\d?th) (Floor|FL))|((Appartment|APT) [1-9]\d{0,2})|((Suite|STE) [1-9]\d{0,3})|(((Nipper|Victor Executive|Diamond|Standard|Keith|Superior|Macy's|Enquirer|Duke Energy|Bartlett|Plaza|Equitable|MidAmerican|Penobscot|Guardian|Fisher|Buhl|Comcast|Calyon|First Security|257 Towers|Kearns|Judge) (Building|Bldg)))), )?($"USStateCodes.csv[2]"), (($"USStateCodes.csv[0]")|($"USStateCodes.csv[1]")), \d{5}</Expression>
+            <Expression>Thôn 5</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>US Address Full</GeneratorName>
@@ -5769,6 +5783,26 @@
           <GeneratorName>US Region</GeneratorName>
           <GeneratorDescription>NY-IX, IN-FA, OH-BQ, AK-NV, TX-CC, VA-US, KS-EL, ...</GeneratorDescription>
           <GeneratorCategory>Location</GeneratorCategory>
+          <Length>255</Length>
+        </Column>
+        <Column Name="email">
+          <Checked>true</Checked>
+          <DataType>varchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>36</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>haanhhy01f@gmail.com</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Email</GeneratorName>
+          <GeneratorDescription>Danica.Foley@example.com, fstu@nowhere.com, CurtK_Burton@example.com, LaroseM696@nowhere.com, ...</GeneratorDescription>
+          <GeneratorCategory>Personal</GeneratorCategory>
           <Length>255</Length>
         </Column>
         <Column Name="payment">
@@ -5821,7 +5855,7 @@
             <SeedValue>36</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+            <Expression>Hưng Yên</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -5841,7 +5875,7 @@
             <SeedValue>37</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+            <Expression>Aretha165</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -5897,7 +5931,7 @@
             <SeedValue>28</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>\d{5}</Expression>
+            <Expression>220909</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>ID (random)</GeneratorName>
@@ -5917,7 +5951,7 @@
             <SeedValue>38</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+            <Expression>Xã Tân Quang</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>

@@ -25,8 +25,8 @@ public class HistoryResponseDTO {
     private Status status;
     private String note;
     private AccountResponseDTO account;
-    @JsonFormat(pattern = "hh:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "HH:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
-    @JsonFormat(pattern = "hh:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "HH:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime updatedDate;
 }

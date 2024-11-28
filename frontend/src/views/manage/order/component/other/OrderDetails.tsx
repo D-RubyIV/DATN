@@ -35,7 +35,7 @@ const OrderDetails = () => {
     const [listOrderDetail, setListOrderDetail] = useState<OrderDetailResponseDTO[]>([])
     useEffect(() => {
         fetchData()
-    }, [])
+    }, [id])
 
     const fetchData = async () => {
         await instance.get(`/orders/${id}`).then(function(response) {

@@ -56,6 +56,9 @@ public class Order extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "deleted")
     private Boolean deleted;
 

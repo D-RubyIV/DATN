@@ -3,7 +3,7 @@ import Avatar from '@/components/ui/Avatar'
 import Card from '@/components/ui/Card'
 import type { AvatarProps } from '@/components/ui/Avatar'
 import { OrderResponseDTO } from '@/@types/order'
-import { formatDistanceToNow, parse, subHours } from 'date-fns'
+import { formatDistanceToNow, parse } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import StatusOrderFormat from '@/views/util/StatusOrderFormat'
 
@@ -20,9 +20,7 @@ const TimelineAvatar = ({ children, ...rest }: TimelineAvatarProps) => {
 const History = ({ selectObject }: { selectObject: OrderResponseDTO }) => {
     const calculateDistanceTime = (formattedDate: string) => {
         const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
-        const dateMinus12Hours = subHours(date, -12)
-        const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi })
-        return distance
+        return formatDistanceToNow(date, { addSuffix: true, locale: vi })
     }
     return (
         <div className="max-w-[700px]">

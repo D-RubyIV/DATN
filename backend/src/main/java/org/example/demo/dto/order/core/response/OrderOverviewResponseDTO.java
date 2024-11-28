@@ -26,6 +26,7 @@ public class OrderOverviewResponseDTO {
     private String code;
     private String address;
     private String phone;
+    private String email;
     private String recipientName;
     private Boolean deleted;
     @JsonFormat(pattern = "HH:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)

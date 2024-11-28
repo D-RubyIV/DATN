@@ -34,6 +34,7 @@ public class OrderResponseDTO {
     private String code;
     private String address;
     private String phone;
+    private String email;
     private String recipientName;
     private Boolean isPayment;
     //
