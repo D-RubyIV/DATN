@@ -157,7 +157,7 @@ const Bell = () => {
                                         <span className="">Trạng thái: </span>
                                         <span
                                             className={item.status === 'PENDING' ? 'text-yellow-600' : 'text-red-600'}>
-                                            {item.payment === 'CASH' ? 'Chờ xác nhận' : 'Không xác định'}
+                                            {item.status === "PENDING" ? 'Chờ xác nhận' : 'Không xác định'}
                                         </span>
                                   </span>
                             </div>

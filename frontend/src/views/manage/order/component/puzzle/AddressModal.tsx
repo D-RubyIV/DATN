@@ -1,4 +1,4 @@
-import { IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
+import { IDistrict, IProvince, IWard } from '@/@types/address'
 import { Button, Input, Select } from '@/components/ui'
 import CloseButton from '@/components/ui/CloseButton'
 import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
@@ -27,12 +27,26 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
     onCloseModal: React.Dispatch<SetStateAction<boolean>>,
     fetchData?: () => Promise<void>
 }) => {
-    const [IAddress, setIAddress] = useState<IAddress>({})
     const [provinces, setProvinces] = useState<IProvince[]>([])
     const [districts, setDistricts] = useState<IDistrict[]>([])
     const [wards, setWards] = useState<IWard[]>([])
     const { openNotification } = useToastContext()
     const { sleep, setIsLoadingComponent } = useLoadingContext()
+
+    const [selectedProvinceId, setSelectedProvinceId] = useState<string>('')
+    const [selectedDistrictId, setSelectedDistrictId] = useState<string>('')
+    const [selectedWardId, setSelectedWardId] = useState<string>('')
+
+    const handleChangeProvince = (provinceId: string) => {
+        setSelectedProvinceId(provinceId)
+        setSelectedDistrictId('')
+        setSelectedWardId('')
+    }
+
+    const handleChangeDistrict = (district: string) => {
+        setSelectedDistrictId(district)
+        setSelectedWardId('')
+    }
 
     const validationSchema = Yup.object({
         recipientName: Yup.string().required('Vui lòng nhập tên người nhận'),
@@ -43,17 +57,23 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
     })
 
     useEffect(() => {
+        setSelectedProvinceId(selectedOrder.provinceId || '')
+        setSelectedDistrictId(selectedOrder.districtId || '')
+        setSelectedWardId(selectedOrder.wardId || '')
+    }, [selectedOrder])
+
+    useEffect(() => {
         handleFindAllProvinces()
     }, [])
 
     useEffect(() => {
-        if (IAddress.iprovince) {
-            handleFindAllDistricts(IAddress.iprovince.ProvinceID)
-            if (IAddress.idistrict) {
-                handleFindAllWards(IAddress.idistrict.DistrictID)
-            }
-        }
-    }, [IAddress])
+        handleFindAllDistricts(selectedOrder.provinceId)
+    }, [selectedProvinceId])
+
+    useEffect(() => {
+        handleFindAllWards(selectedOrder.districtId)
+    }, [selectedDistrictId])
+
 
     const handleFindAllProvinces = async () => {
         const modifiedProvinces: IProvince[] = await fetchFindAllProvinces()
@@ -74,15 +94,15 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
         console.log(values)
         setIsLoadingComponent(true)
         const data: AddressInfo = {
-            provinceId: IAddress.iprovince?.ProvinceID || '',
-            provinceName: IAddress.iprovince?.ProvinceName || '',
-            districtId: IAddress.idistrict?.DistrictID || '',
-            districtName: IAddress.idistrict?.DistrictName || '',
-            wardId: IAddress.iward?.WardCode || '',
-            wardName: IAddress.iward?.WardName || '',
-            address: IAddress?.address || '',
+            provinceId: values.provinceId || '',
+            provinceName: values.provinceName || '',
+            districtId: values.districtId || '',
+            districtName: values.districtName || '',
+            wardId: values.wardId || '',
+            wardName: values.wardName || '',
+            address: values?.address || '',
             recipientName: values?.recipientName || '',
-            phone: values?.phone || '',
+            phone: values?.phone || ''
         }
         await instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
             console.log(response)
@@ -111,104 +131,126 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
 
                 <Formik
                     initialValues={{
-                        recipientName: '',
-                        phone: '',
-                        provinceId: '',
-                        districtId: '',
-                        wardId: '',
-                        detail: ''
+                        recipientName: selectedOrder.recipientName,
+                        phone: selectedOrder.phone,
+                        provinceId: selectedOrder.provinceId,
+                        districtId: selectedOrder.districtId,
+                        wardId: selectedOrder.wardId,
+                        detail: selectedOrder.address
                     }}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmitForm}
                 >
-                    {({ setFieldValue }) => (
-                        <Form className="flex flex-col gap-3">
-                            <div>
-                                <label className="font-semibold text-gray-600">Tên người nhận:</label>
-                                <Field
-                                    name="recipientName"
-                                    as={Input}
-                                    placeholder="Vui lòng nhập tên người nhận"
-                                    size="sm"
-                                    onChange={(el: any) => {
-                                        setFieldValue('recipientName', el.target.value)  // Cập nhật giá trị của Formik
-                                    }}
-                                />
-                                <ErrorMessage name="recipientName" component="p" className="text-red-500 text-[12.5px]" />
-                            </div>
-                            <div>
-                                <label className="font-semibold text-gray-600">Số điện thoại nhận:</label>
-                                <Field
-                                    name="phone"
-                                    as={Input}
-                                    placeholder="Vui lòng nhập số điện thoại"
-                                    size="sm"
-                                    onChange={(el: any) => {
-                                        setFieldValue('phone', el.target.value)  // Cập nhật giá trị của Formik
-                                    }}
-                                />
-                                <ErrorMessage name="phone" component="p" className="text-red-500 text-[12.5px]" />
-                            </div>
-                            <div>
-                                <label className="font-semibold text-gray-600">Tỉnh:</label>
-                                <Select
-                                    options={provinces}
-                                    placeholder="Vui lòng chọn tỉnh"
-                                    onChange={(el) => {
-                                        setIAddress((prev) => ({ ...prev, iprovince: (el as IProvince) }))
-                                        setFieldValue('provinceId', (el as IProvince).ProvinceID)
-                                    }}
-                                />
-                                <ErrorMessage name="provinceId" component="p" className="text-red-500 text-[12.5px]" />
-                            </div>
+                    {({ setFieldValue }) => {
+                        return (
+                            <Form className="flex flex-col gap-3">
+                                <div>
+                                    <label className="font-semibold text-gray-600">Tên người nhận:</label>
+                                    <Field
+                                        name="recipientName"
+                                        as={Input}
+                                        placeholder="Vui lòng nhập tên người nhận"
+                                        size="sm"
+                                        onChange={(el: React.ChangeEvent<HTMLInputElement>) => {
+                                            setFieldValue('recipientName', el.target.value)
+                                        }}
+                                    />
+                                    <ErrorMessage name="recipientName" component="p"
+                                                  className="text-red-500 text-[12.5px]" />
+                                </div>
 
-                            <div>
-                                <label className="font-semibold text-gray-600">Thành phố:</label>
-                                <Select
-                                    options={districts}
-                                    placeholder="Vui lòng chọn thành phố"
-                                    onChange={(el) => {
-                                        setIAddress((prev) => ({ ...prev, idistrict: (el as IDistrict) }))
-                                        setFieldValue('districtId', (el as IDistrict).DistrictID)
-                                    }}
-                                />
-                                <ErrorMessage name="districtId" component="p" className="text-red-500 text-[12.5px]" />
-                            </div>
+                                <div>
+                                    <label className="font-semibold text-gray-600">Số điện thoại nhận:</label>
+                                    <Field
+                                        name="phone"
+                                        as={Input}
+                                        placeholder="Vui lòng nhập số điện thoại"
+                                        size="sm"
+                                        onChange={(el: React.ChangeEvent<HTMLInputElement>) => {
+                                            setFieldValue('phone', el.target.value)
+                                        }}
+                                    />
+                                    <ErrorMessage name="phone" component="p" className="text-red-500 text-[12.5px]" />
+                                </div>
 
-                            <div>
-                                <label className="font-semibold text-gray-600">Xã:</label>
-                                <Select
-                                    options={wards}
-                                    placeholder="Vui lòng chọn xã/phường"
-                                    onChange={(el) => {
-                                        setIAddress((prev) => ({ ...prev, iward: (el as IWard) }))
-                                        setFieldValue('wardId', (el as IWard).WardCode)
-                                    }}
-                                />
-                                <ErrorMessage name="wardId" component="p" className="text-red-500 text-[12.5px]" />
-                            </div>
+                                <div>
+                                    <label className="font-semibold text-gray-600">Tỉnh:</label>
+                                    <Select
+                                        options={provinces}
+                                        value={
+                                            provinces.find((s) =>
+                                                selectedProvinceId?.toString() === s.ProvinceID.toString()
+                                            ) ?? null
+                                        }
+                                        placeholder="Vui lòng chọn tỉnh"
+                                        onChange={(el) => {
+                                            setFieldValue('provinceId', (el as IProvince).ProvinceID)
+                                            setFieldValue('districtId', '')
+                                            setFieldValue('wardId', '')
+                                            handleChangeProvince((el as IProvince).ProvinceID)
+                                        }}
+                                    />
+                                    <ErrorMessage name="provinceId" component="p"
+                                                  className="text-red-500 text-[12.5px]" />
+                                </div>
 
-                            <div>
-                                <label className="font-semibold text-gray-600">Số nhà:</label>
-                                <Field
-                                    name="address"
-                                    as={Input}
-                                    placeholder="Vui lòng nhập số nhà"
-                                    size="sm"
-                                    onChange={(el: any) => {
-                                        setIAddress((prev) => ({ ...prev, address: el.target.value }))
-                                        setFieldValue('address', el.target.value)  // Cập nhật giá trị của Formik
-                                    }}
-                                />
-                            </div>
+                                <div>
+                                    <label className="font-semibold text-gray-600">Thành phố:</label>
+                                    <Select
+                                        options={districts}
+                                        value={
+                                            districts.find((s) =>
+                                                selectedDistrictId?.toString() === s.DistrictID.toString()
+                                            ) ?? null
+                                        }
+                                        placeholder="Vui lòng chọn thành phố"
+                                        onChange={(el) => {
+                                            setFieldValue('districtId', (el as IDistrict).DistrictID)
+                                            setFieldValue('wardId', '')
+                                            handleChangeDistrict((el as IDistrict).DistrictID)
+                                        }}
+                                    />
+                                    <ErrorMessage name="districtId" component="p"
+                                                  className="text-red-500 text-[12.5px]" />
+                                </div>
 
-                            <div>
-                                <Button block variant="twoTone" type="submit">
-                                    Xác nhận
+                                <div>
+                                    <label className="font-semibold text-gray-600">Xã:</label>
+                                    <Select
+                                        options={wards}
+                                        value={
+                                            wards.find((s) =>
+                                                selectedWardId?.toString() === s.WardCode.toString()
+                                            ) ?? null
+                                        }
+                                        placeholder="Vui lòng chọn xã/phường"
+                                        onChange={(el) => {
+                                            setFieldValue('wardId', (el as IWard).WardCode)
+                                            setSelectedWardId((el as IWard).WardCode)
+                                        }}
+                                    />
+                                    <ErrorMessage name="wardId" component="p" className="text-red-500 text-[12.5px]" />
+                                </div>
+
+                                <div>
+                                    <label className="font-semibold text-gray-600">Địa chỉ:</label>
+                                    <Field
+                                        name="detail"
+                                        as={Input}
+                                        placeholder="Vui lòng nhập địa chỉ"
+                                        size="sm"
+                                        onChange={(el: React.ChangeEvent<HTMLInputElement>) => {
+                                            setFieldValue('address', el.target.value)
+                                        }}
+                                    />
+                                </div>
+
+                                <Button type="submit" className="mt-4" size="sm">
+                                    Cập nhật
                                 </Button>
-                            </div>
-                        </Form>
-                    )}
+                            </Form>
+                        )
+                    }}
                 </Formik>
             </div>
         </div>
