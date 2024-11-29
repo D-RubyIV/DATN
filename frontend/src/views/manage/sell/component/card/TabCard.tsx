@@ -36,7 +36,11 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
         tax: 10,
         deliveryFee: 10,
         discount: 1000,
-        total: 1000
+        total: 1000,
+        refund: 0,
+        surcharge: 0,
+        totalAfterDiscountAndFee: 0,
+        totalPaid: 0
     })
     // hook
     useEffect(() => {
@@ -62,7 +66,11 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                 tax: response.data.tax || 0,
                 deliveryFee: response.data.deliveryFee || 0,
                 discount: response.data.discount || 0,
-                total: response.data.total || 0
+                total: response.data.total || 0,
+                surcharge: response.data.surcharge || 0,
+                refund: response.data.refund || 0,
+                totalPaid: response.data.totalPaid || 0,
+                totalAfterDiscountAndFee: response.data.totalAfterDiscountAndFee || 0
             })
         }).catch(function(error) {
             console.log(error.response.data.error === 'Order not found')
@@ -72,6 +80,43 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
         await sleep(200)
         setIsLoadingComponent(false)
     }
+    const run = async () => {
+        try {
+            const response = await instance.get(`orders/exportPdf/${selectedOrder.id}`, {
+                responseType: 'blob' // Đảm bảo nhận phản hồi dưới dạng blob (file)
+            })
+
+            // Tạo URL từ Blob
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+
+            // Tạo iframe ẩn để in
+            const iframe = document.createElement('iframe')
+            iframe.style.display = 'none'
+            iframe.src = url
+
+            // Đợi khi iframe tải xong và in
+            iframe.onload = () => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.print()
+
+                }
+            }
+
+            // Thêm iframe vào body
+            document.body.appendChild(iframe)
+
+            // Dọn dẹp tài nguyên sau khi in xong
+            iframe.addEventListener('load', () => {
+                setTimeout(() => {
+                    document.body.removeChild(iframe)
+                    window.URL.revokeObjectURL(url)
+                }, 600000) // Để đảm bảo quá trình in hoàn tất trước khi xóa iframe
+            })
+        } catch (error) {
+            console.error('Failed to print PDF', error)
+        }
+    }
+
     // 
     useEffect(() => {
         fetchSelectedOrder().then(() => {
@@ -81,22 +126,6 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
     const handleSubmitForm = async () => {
         console.log('PAYMENT')
-        // if (selectedOrder) {
-        //     setIsLoadingComponent(true)
-        //     try {
-        //         const response = await getUrlPayment(selectedOrder.id)
-        //         console.log('Confirm payment')
-        //         console.log(response)
-        //         const url = response?.data?.data?.paymentUrl
-        //         console.log(url)
-        //         if (url) {
-        //             window.location.href = url // Mở đường dẫn mới
-        //         }
-        //     } catch (error) {
-        //         console.log(error)
-        //     }
-        //     setIsLoadingComponent(false)
-        // }
         if (selectedOrder) {
             setIsLoadingComponent(true)
             try {
@@ -108,9 +137,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     if (response.status === 200) {
                         sleep(200)
                         openNotification('Xác nhận thành công')
+                        run()
                         removeTab(selectedOrder.id)
                     }
-                }).catch(function(error){
+                }).catch(function(error) {
                     if (error?.response?.data?.error) {
                         openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
                     }
@@ -278,10 +308,21 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                          fetchData={fetchSelectedOrder}></SellVocherModal>)
                 }
             </div>
-            <QrCodeScanner isScanning={isScanning} setIsScanning={setIsScanning}></QrCodeScanner>
+            <div>
+                {
+                    selectedOrder && (
+                        <QrCodeScanner
+                            isScanning={isScanning}
+                            setIsScanning={setIsScanning}
+                            selectOrder={selectedOrder}
+                            fetchData={fetchSelectedOrder}
+                        />)
+                }
+            </div>
+
 
             <div className={'h-full'}>
-                <Dialog isOpen={dialogIsOpenConfirmOrder} closable={true}>
+                <Dialog isOpen={dialogIsOpenConfirmOrder} closable={true} onClose={() => setIsOpenConfirmOrder(false)}>
                     <h5 className="mb-4">Xác nhận đơn hàng</h5>
 
                     {

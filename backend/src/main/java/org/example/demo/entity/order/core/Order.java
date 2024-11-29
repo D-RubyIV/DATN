@@ -29,10 +29,10 @@ public class Order extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "NVARCHAR(255)")
     private String address;
 
-    @Column(name = "province_id")
+    @Column(name = "province_id", columnDefinition = "NVARCHAR(255)")
     private Integer provinceId;
 
     @Column(name = "province_name", columnDefinition = "NVARCHAR(255)")
@@ -82,6 +82,9 @@ public class Order extends BaseEntity {
 
     @Column(name = "is_payment")
     private Boolean isPayment;
+
+    @Column(name = "in_store")
+    private Boolean inStore;
 
     @Column(name = "sub_total")
     private Double subTotal;

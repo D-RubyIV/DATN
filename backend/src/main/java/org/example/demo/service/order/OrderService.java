@@ -3,6 +3,7 @@ package org.example.demo.service.order;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.example.demo.dto.customer.CustomerMapper;
 import org.example.demo.dto.ghn.FeeDTO;
 import org.example.demo.dto.ghn.ItemDTO;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
@@ -14,6 +15,7 @@ import org.example.demo.dto.order.other.UseOrderVoucherDTOById;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.entity.cart.core.CartDetail;
 import org.example.demo.entity.cart.properties.Cart;
+import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Status;
@@ -164,7 +166,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
-                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            && !(authentication instanceof AnonymousAuthenticationToken)) {
             Account account = (Account) authentication.getPrincipal();
             entityMapped.setStaff(account.getStaff());
         }
@@ -182,8 +184,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setDiscountVoucherPercent(0.0);
         entityMapped.setIsPayment(false);
         entityMapped.setVoucherMinimumSubtotalRequired(0.0);
+        entityMapped.setInStore(true);
 
         orderHistory.setNote("Tạo Đơn Hàng");
+
 
         Customer customerSelected = requestDTO.getCustomer();
         Voucher voucherSelected = requestDTO.getVoucher();
@@ -200,6 +204,66 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         reloadSubTotalOrder(entityMapped);
         return orderRepository.save(entityMapped);
+    }
+
+    private Address getDefaultAddress(Integer customerId) {
+        return customerRepository.findById(customerId)
+                .map(customer -> customer.getAddresses().stream()
+                        .filter(Address::getDefaultAddress) // Lọc địa chỉ mặc định
+                        .findFirst()
+                        .orElse(null))
+                .orElse(null);
+    }
+
+    @Transactional
+    public Order updateCustomerAndSetDefaultAddress(Integer id, OrderRequestDTO requestDTO) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found with id: " + id));
+
+        History history = new History();
+        history.setOrder(order);
+        history.setNote("Cập nhật thông tin khách hàng");
+        history.setStatus(order.getStatus());
+        historyRepository.save(history);
+
+        if (requestDTO.getCustomer() != null) {
+            if (requestDTO.getCustomer().getId() != null) {
+                Customer selectedCustomer = customerRepository.findById(requestDTO.getCustomer().getId()).orElse(null);
+                if (selectedCustomer != null) {
+                    log.info("THÔNG TIN KHÁCH HÀNG TỒN TẠI");
+                    order.setCustomer(selectedCustomer);
+
+                    Address defaultAddress = getDefaultAddress(selectedCustomer.getId());
+                    if(order.getType() == Type.ONLINE){
+                        log.info("LÀ ĐƠN GIAO HÀNG");
+                        if (defaultAddress != null){
+                            log.info("ĐỊA CHỈ MẶC ĐỊNH KHÁCH HÀNG TỒN TẠI");
+                            log.info("TINH: {}, HUYEN: {}, XA: {}, CHI TIET: {}", defaultAddress.getProvince(), defaultAddress.getDistrict(), defaultAddress.getWard(), defaultAddress.getDetail());
+                            order.setProvinceId(Integer.valueOf(defaultAddress.getProvinceId()));
+                            order.setDistrictId(Integer.valueOf(defaultAddress.getDistrictId()));
+                            order.setWardId(defaultAddress.getWardId());
+
+                            order.setProvinceName(defaultAddress.getProvince());
+                            order.setDistrictName(defaultAddress.getDistrict());
+                            order.setWardName(defaultAddress.getWard());
+                            order.setAddress(defaultAddress.getDetail());
+                            order.setRecipientName(defaultAddress.getName());
+                            order.setPhone(defaultAddress.getPhone());
+                        }
+                        else{
+                            log.info("ĐỊA CHỈ MẶC ĐỊNH KHÁCH HÀNG KHÔNG TỒN TẠI");
+                        }
+                    }
+                    else{
+                        log.info("KHÔNG LÀ ĐƠN GIAO HÀNG");
+                    }
+                }
+                else{
+                    log.info("THÔNG TIN KHÁCH HÀNG KHÔNG TỒN TẠI");
+                }
+            }
+        }
+
+        return orderRepository.save(order);
     }
 
     @Override
@@ -315,20 +379,28 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         log.info("-----------------1");
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP) {
             checkValidateQuantity(entityFound);
+            if (entityFound.getType() == Type.ONLINE) {
+                check_validate_address_for_online_order(entityFound);
+            }
             log.info("1");
             minusProductDetailsQuantity(entityFound);
         } else if (oldStatus == Status.TOSHIP && newStatus == Status.PENDING) {
             log.info("2");
             restoreProductDetailsQuantity(entityFound);
         } else if (oldStatus == Status.PENDING && newStatus == Status.DELIVERED) {
+            if (entityFound.getType() == Type.ONLINE) {
+                check_validate_address_for_online_order(entityFound);
+            }
             checkValidateQuantity(entityFound);
             log.info("3");
             entityFound.setIsPayment(true);
         } else if (oldStatus == Status.TORECEIVE && newStatus == Status.DELIVERED) {
             log.info("4");
             entityFound.setIsPayment(true);
+        } else if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && entityFound.getInStore()) {
+            called_order(entityFound);
         }
-        if(oldStatus != newStatus){
+        if (oldStatus != newStatus) {
             sendEmail(entityFound);
         }
         log.info("-----------------2");
@@ -346,6 +418,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         reloadSubTotalOrder(entityFound);
         return orderRepository.save(entityFound);
+    }
+
+    private boolean check_validate_address_for_online_order(Order order) {
+        if (order.getRecipientName() == null || order.getPhone() == null || order.getProvinceId() == null || order.getDistrictId() == null || order.getWardId() == null) {
+            throw new CustomExceptions.CustomBadRequest("Vui lòng cung cấp tên, số điện thoại và địa chỉ cho đơn hàng này");
+        }
+        return true;
     }
 
     @Transactional
@@ -535,19 +614,19 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setSubTotal(subtotal);
 
         // sau khi cập nhật subtotal thì cũng tự động chọn voucher phù hợp
-//        if (order.getType() == Type.INSTORE) {
-//            Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
-//            order.setVoucher(bestVoucher);
-//            if (bestVoucher == null) {
-//                log.info("BEST VOUCHER NULL");
-//                order.setDiscountVoucherPercent(0.0);
-//                order.setVoucherMinimumSubtotalRequired(0.0);
-//            } else {
-//                log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
-//                order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
-//                order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
-//            }
-//        }
+        if (order.getInStore()) {
+            Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
+            order.setVoucher(bestVoucher);
+            if (bestVoucher == null) {
+                log.info("BEST VOUCHER NULL");
+                order.setDiscountVoucherPercent(0.0);
+                order.setVoucherMinimumSubtotalRequired(0.0);
+            } else {
+                log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
+                order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
+                order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
+            }
+        }
 
         // tính tiền giảm của voucher cho hóa đơn
         double discount = get_discount_of_order_that_time(order);
@@ -739,4 +818,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         });
     }
 
+    private void called_order(Order order){
+        List<OrderDetail> orderDetails = order.getOrderDetails().stream().filter(s -> !s.getDeleted()).toList();
+        for (OrderDetail orderDetail : orderDetails) {
+            int orderQuantity = orderDetail.getQuantity();
+            ProductDetail productDetail = orderDetail.getProductDetail();
+            productDetail.setQuantity(productDetail.getQuantity() + orderQuantity);
+            productDetailRepository.save(productDetail);
+        }
+    }
 }

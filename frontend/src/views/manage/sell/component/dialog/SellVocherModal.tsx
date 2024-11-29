@@ -216,15 +216,25 @@ const SellVoucherModal = ({
                             }}
                         />
                     </div>
-                    <DataTable
-                        columns={columns}
-                        data={data}
-                        loading={loading}
-                        pagingData={tableData}
-                        onPaginationChange={handlePaginationChange}
-                        onSelectChange={handleSelectChange}
-                        onSort={handleSort}
-                    />
+                    {
+                        data.length > 0 ? (
+                            <DataTable
+                                columns={columns}
+                                data={data}
+                                loading={loading}
+                                pagingData={tableData}
+                                onPaginationChange={handlePaginationChange}
+                                onSelectChange={handleSelectChange}
+                                onSort={handleSort}
+                            />
+                        ):(
+                        <div className={'flex justify-center py-10'}>
+                            <p className={'flex justify-between py-28 items-center text-xl font-semibold'}>Không có khuyễn mãi nào phù hợp</p>
+
+                        </div>
+                        )
+                    }
+
                 </div>
             </div>
         </div>

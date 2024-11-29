@@ -1,5 +1,8 @@
 import React, { ReactNode, createContext, useContext, useState, useEffect } from 'react'
 import TabCard from '../component/card/TabCard'
+import instance from '@/axios/CustomAxios'
+import { changeOrderStatus } from '@/services/OrderService'
+import { EOrderStatusEnums, OrderHistoryResponseDTO } from '@/@types/order'
 
 type TabObject = {
     orderId: number,
@@ -54,14 +57,24 @@ const SellProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const removeTab = (orderId: number) => {
+    const removeTab = async (orderId: number) => {
         let savedIds = JSON.parse(localStorage.getItem('orderIds') || '[]')
         if (savedIds.includes(orderId)) {
+            const data: OrderHistoryResponseDTO = {
+                id: orderId,
+                status: EOrderStatusEnums.CANCELED,
+                note: "Hủy tại quầy",
+            }
+            const result = await changeOrderStatus(orderId, data)
+            console.log("=======================")
+            console.log(result)
+
             savedIds = savedIds.filter((s: number) => s !== orderId)
             localStorage.setItem('orderIds', JSON.stringify(savedIds))
             setTabs(getTabsFromLocalStorage())
         }
     }
+
 
     return (
         <SellContext.Provider value={{ tabs, setTabs, createTab, removeTab }}>

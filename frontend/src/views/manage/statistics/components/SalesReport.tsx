@@ -36,12 +36,12 @@ const SalesReport = () => {
 
         if (chartMode === 0) {
             updatedSeries.push({
-                name: 'Session Duration',
+                name: 'Số lượng sản phẩm',
                 data: Array.isArray(listOverViewChart) ?listOverViewChart.map(s => s.quantity) : []
             });
         } else {
             updatedSeries.push({
-                name: 'Page Views',
+                name: 'Doanh số hôm nay',
                 data: Array.isArray(listOverViewChart) ?listOverViewChart.map(s => Number(s.revenue.toFixed(0))) : []
             });
         }

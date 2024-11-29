@@ -82,9 +82,6 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                         <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
                             {customer.name || 'Khách lẻ'}
                         </div>
-                        <span>
-                            <span className="font-semibold">{customer.code ? 1 : 0}</span> đơn hàng trước đó
-                        </span>
                     </div>
                 </div>
                 <HiExternalLink className="text-xl hidden group-hover:block" />

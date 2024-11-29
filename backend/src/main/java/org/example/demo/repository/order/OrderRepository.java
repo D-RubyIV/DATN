@@ -75,11 +75,9 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<ICountOrderDetailInOrder> getCountOrderDetailByIds(@Param("ids") List<Integer> ids);
 
 
-    @Query(value =
-            "SELECT ord.createdDate as createDate, ROUND(sum(ord.totalPaid),0) as totalRevenue, COUNT(ord.code) as quantityOrder " +
-                    "FROM Order ord " +
-                    "WHERE ord.status = :status " +
-                    "AND ord.createdDate BETWEEN :from AND :to GROUP BY ord.createdDate")
+    @Query(value = """
+            SELECT ord.createdDate as createDate, ROUND(sum(ord.totalPaid),0) as totalRevenue, COUNT(ord.code) as quantityOrder FROM Order ord WHERE ord.status = :status AND ord.createdDate BETWEEN :from AND :to GROUP BY ord.createdDate
+            """)
     List<StatisticOverviewResponse> findAllByStatusAndCreatedDateBetweenOrderByCreatedDateDesc(Status status, LocalDateTime from, LocalDateTime to);
 
 

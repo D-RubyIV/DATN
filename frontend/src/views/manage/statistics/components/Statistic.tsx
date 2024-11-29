@@ -53,7 +53,8 @@ const Statistic = () => {
     const salesData = useAppSelector((state) => state.statistic.overviewOneMonthData)
 
     // Tính ngày hôm qua
-    const yesterday = dayjs().subtract(1, 'day').startOf('day').toDate()
+    const start_of_yesterday = dayjs().subtract(1, 'day').startOf('day').toDate()
+    const end_of_yesterday = dayjs().subtract(1, 'day').endOf('day').toDate()
 
     // Tính tuần trước
     const startOfWeekISO = dayjs().startOf('week') // Đầu tuần này
@@ -84,10 +85,13 @@ const Statistic = () => {
         const endOfDay = dayjs().endOf('day').toDate()
         return calculateSummary(salesData, startOfDay, endOfDay)
     }, [salesData])
+    console.log("DOANH SO HOM NAY: ", summaryToday?.totalRevenue)
+    const summaryYesterday = useMemo(() => calculateSummary(salesData, start_of_yesterday, end_of_yesterday), [salesData])
+    console.log("DOANH SO HOM QUA: ", summaryYesterday?.totalRevenue)
+
     const summaryWeek = useMemo(() => calculateSummary(salesData, startOfWeekISO.toDate(), dayjs().endOf('day').toDate()), [salesData])
     const summaryMonth = useMemo(() => calculateSummary(salesData, startOfMonth.toDate(), dayjs().endOf('day').toDate()), [salesData])
 
-    const summaryYesterday = useMemo(() => calculateSummary(salesData, yesterday, dayjs().endOf('day').toDate()), [salesData])
     const summaryLastWeek = useMemo(() => calculateSummary(salesData, startOfLastWeekISO.toDate(), endOfLastWeekISO.toDate()), [salesData])
     const summaryLastMonth = useMemo(() => calculateSummary(salesData, startOfLastMonth.toDate(), endOfLastMonth.toDate()), [salesData])
 
@@ -109,21 +113,21 @@ const Statistic = () => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <StatisticCard
-                value={summaryToday?.totalRevenue?.toFixed(2) ?? '0'}
+                value={summaryToday?.totalRevenue?.toFixed() ?? '0'}
                 growShrink={Math.round(growthToday)}
-                message={'So với ' + dayjs(yesterday).format('DD-MM-YYYY')}
+                message={'So với ' + dayjs(start_of_yesterday).format('DD-MM-YYYY')}
                 label="Doanh số hôm nay"
                 date={startDate}
             />
             <StatisticCard
-                value={summaryWeek?.totalRevenue?.toFixed(2) ?? '0'}
+                value={summaryWeek?.totalRevenue?.toFixed() ?? '0'}
                 growShrink={Math.round(growthWeek)}
                 message={'So với tuần trước'}
                 label="Doanh số tuần này"
                 date={startDate}
             />
             <StatisticCard
-                value={summaryMonth?.totalRevenue?.toFixed(2) ?? '0'}
+                value={summaryMonth?.totalRevenue?.toFixed() ?? '0'}
                 growShrink={Math.round(growthMonth)}
                 message={'So với tháng trước'}
                 label="Doanh số tháng này"

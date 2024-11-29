@@ -4236,31 +4236,20 @@
         <Column Name="gender">
           <Checked>true</Checked>
           <DataType>varchar</DataType>
-          <GeneratorOptions xsi:type="SqlWeightedListGeneratorRegexValuesOptions">
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
-            <MaxSize>255</MaxSize>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>14</SeedValue>
+            <SeedValue>18</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Values>
-              <WeightedListItem>
-                <Value xsi:type="xsd:string">Male</Value>
-                <Weight>100</Weight>
-              </WeightedListItem>
-              <WeightedListItem>
-                <Value xsi:type="xsd:string">Female</Value>
-                <Weight>70</Weight>
-              </WeightedListItem>
-            </Values>
+            <Expression>Nam|Nữ</Expression>
           </GeneratorOptions>
-          <GeneratorType>SqlWeightedListGeneratorRegexValues</GeneratorType>
-          <GeneratorName>Gender</GeneratorName>
-          <GeneratorDescription>Male, Female</GeneratorDescription>
-          <GeneratorCategory>Personal</GeneratorCategory>
+          <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
         </Column>
         <Column Name="name">
@@ -5469,6 +5458,25 @@
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
+        <Column Name="in_store">
+          <Checked>true</Checked>
+          <DataType>bit</DataType>
+          <GeneratorOptions xsi:type="BitGeneratorOptions">
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <UseDefault>false</UseDefault>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>37</SeedValue>
+            <TrueProbability>0.5</TrueProbability>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+          </GeneratorOptions>
+          <GeneratorType>SqlBitGenerator</GeneratorType>
+          <GeneratorName>bit</GeneratorName>
+          <GeneratorDescription>fill with true or false values</GeneratorDescription>
+          <Length>1</Length>
+          <Precision>1</Precision>
+        </Column>
         <Column Name="is_payment">
           <Checked>true</Checked>
           <DataType>bit</DataType>
@@ -5490,23 +5498,23 @@
         </Column>
         <Column Name="province_id">
           <Checked>true</Checked>
-          <DataType>int</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>38</SeedValue>
+            <SeedValue>36</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>268</Expression>
+            <Expression>\d{5}</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
-          <GeneratorName>Reg Exp</GeneratorName>
-          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
-          <Length>4</Length>
-          <Precision>10</Precision>
+          <GeneratorName>ID (random)</GeneratorName>
+          <GeneratorDescription>54470, 16912, 43814, 06728, 36017, 82433, 95664, ...</GeneratorDescription>
+          <GeneratorCategory>Business</GeneratorCategory>
+          <Length>255</Length>
         </Column>
         <Column Name="staff_id">
           <Checked>true</Checked>
@@ -5669,7 +5677,7 @@
             <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
             <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
             <MinDate>2024-09-30T00:00:00</MinDate>
-            <MaxDate>2024-10-06T00:00:00</MaxDate>
+            <MaxDate>2024-11-29T00:00:00+07:00</MaxDate>
             <IsRandomizeDate>true</IsRandomizeDate>
             <IsRandomizeTime>true</IsRandomizeTime>
             <MinFraction>0</MinFraction>
@@ -5728,14 +5736,14 @@
         </Column>
         <Column Name="address">
           <Checked>true</Checked>
-          <DataType>varchar</DataType>
+          <DataType>nvarchar</DataType>
           <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
             <AllowEmptyStrings>false</AllowEmptyStrings>
             <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>26</SeedValue>
+            <SeedValue>36</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Expression>Thôn 5</Expression>
@@ -6147,7 +6155,7 @@
             <SeedValue>3</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>|</Expression>
+            <Expression>Huyện Phù Cừ</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>US Region</GeneratorName>
@@ -6227,7 +6235,7 @@
             <SeedValue>4</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>|</Expression>
+            <Expression>Hưng Yên</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -6266,7 +6274,7 @@
             <SeedValue>5</SeedValue>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>|</Expression>
+            <Expression>Xã Tống Phan</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>

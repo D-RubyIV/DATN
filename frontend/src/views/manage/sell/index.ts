@@ -8,7 +8,8 @@ export type SellCustomerOverview = {
     id: number
     name: string,
     phone: string,
-    email: string
+    email: string,
+    gender: string
 }
 export enum EPaymentMethod {
     TRANSFER = 'TRANSFER',

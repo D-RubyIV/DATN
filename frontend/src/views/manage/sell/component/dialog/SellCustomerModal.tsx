@@ -65,10 +65,6 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
             ),
         },
         {
-            header: 'Mã',
-            accessorKey: 'code',
-        },
-        {
             header: 'Số điện thoại',
             accessorKey: 'phone',
         },
@@ -79,6 +75,10 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
         {
             header: 'Giới tính',
             accessorKey: 'gender',
+            cell: (props) => (
+                <p>{props.row.original.gender === "Male" ? "Nam" : "Nữ"}</p>
+            ),
+
         },
         {
             header: 'Hành động',
@@ -117,7 +117,7 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
                 "id": idCustomer
             }
         }
-        await instance.put(`/orders/${selectOrder.id}`, data).then(function (response) {
+        await instance.put(`/orders/edit-customer/${selectOrder.id}`, data).then(function (response) {
             console.log(response)
         })
         await handleDelayScreen();

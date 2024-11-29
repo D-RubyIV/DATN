@@ -76,17 +76,22 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         ProductDetail productDetail = productDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found"));
         // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
 
-        if (!idAvailableQuantityProductDetail(productDetail, requiredQuantity)) {
-            throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-        }
 
-        // ==> GHI ĐÈ HOẶC TẠO BẢN GHI MỚI
+        // ==> GHI ĐÈ
         if (entityFound.isPresent()) {
+            if (!isAvailableQuantityProductDetail(productDetail, entityFound.get().getQuantity(), requiredQuantity)) {
+                log.error("KHÔNG ĐỦ ĐÁP ỨNG");
+                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+            }
+            // cập nhật số lượng trong kho
+            updateQuantityStorageIfInStore(entityFound.get().getQuantity(), requiredQuantity, entityFound.get().getProductDetail(), entityFound.get().getOrder());
+
             entityFound.get().setDeleted(false);
             // cộng dồn số lượng cũ và mới
             int newCount = entityFound.get().getQuantity() + requiredQuantity;
             // nếu không đủ số lượng đáp ứng
-            if (newCount > productDetail.getQuantity()) {
+            if (!(productDetail.getQuantity() - newCount >= 0)) {
+                log.error("KHÔNG ĐỦ ĐÁP ỨNG SAU CỘNG DỒN");
                 throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
             }
             // ngược lại nếu đủ số lượng
@@ -100,12 +105,17 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         // ==> TẠO BẢN GHI MỚI
         // nếu không tìm thấy hóa đơn chi tiết và sản phẩm chi tiết
         else {
+            if (!isAvailableQuantityProductDetail(productDetail, 0, requiredQuantity)) {
+                log.error("KHÔNG ĐỦ ĐÁP ỨNG");
+                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+            }
             // tạo hóa đơn chi tiết mới
             OrderDetail orderDetail = new OrderDetail();
             // set trạng thái xóa cho hóa đơn
             orderDetail.setDeleted(false);
             // set số lượng
             orderDetail.setQuantity(requiredQuantity);
+
             // set gia trị event trung bình
             orderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
             // set hóa đơn vào hóa đơn chi tiết
@@ -114,6 +124,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             orderDetail.setProductDetail(productDetail);
             // lưu lại hóa đơn chi tết
             OrderDetail response = orderDetailRepository.save(orderDetail);
+            // cập nhật số lượng trong kho
+            updateQuantityStorageIfInStore(0, requiredQuantity, productDetail, orderDetail.getOrder());
+
             orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return response;
         }
@@ -137,12 +150,13 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         // số lượng trong hóa đơn chi tiết
         int quantityInOrder = orderDetail.getQuantity();
 
-        // nếu số lượng mới lớn hơn trong kho
-        if (newQuantity > quantityInStorage) {
+        // nếu số lượng mới lớn hơn trong kho và là mua thêm
+        if (!isAvailableQuantityProductDetail(orderDetail.getProductDetail(), quantityInOrder, newQuantity)) {
             throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
         }
         //nếu số luọng về 0
         else if (newQuantity == 0) {
+            updateQuantityStorageIfInStore(quantityInOrder, newQuantity, orderDetail.getProductDetail(), order);
             // nếu đơn này đã thanh toán và là đơn online => thì chỉ xóa mềm
             if (order.getIsPayment() && order.getType() == Type.ONLINE) {
                 orderDetail.setDeleted(true);
@@ -159,6 +173,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
         // nếu đủ số lượng đáp ứng
         else {
+            updateQuantityStorageIfInStore(quantityInOrder, newQuantity, orderDetail.getProductDetail(), order);
             orderDetail.setDeleted(false);
             orderDetail.setQuantity(newQuantity);
             orderService.reloadSubTotalOrder(orderDetail.getOrder());
@@ -166,21 +181,20 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
     }
 
-    private void updateQuantityIfInStore(int old_quantity, int new_quantity, ProductDetail productDetail, Order order){
-        if(order.getType() == Type.INSTORE){
+    private void updateQuantityStorageIfInStore(int old_quantity, int new_quantity, ProductDetail productDetail, Order order) {
+        if (order.getInStore()) {
+            log.info("OLD QUA: {}", old_quantity);
+            log.info("NEW QUA: {}", new_quantity);
             int rangeABS = Math.abs(new_quantity - old_quantity);
             int currentQuantityOfProductDetail = productDetail.getQuantity();
-            if(new_quantity > old_quantity){
+            if (new_quantity > old_quantity) {
+                log.info("KHÁCH MUA THEM SP MÃ {}", productDetail.getCode());
                 productDetail.setQuantity(currentQuantityOfProductDetail - rangeABS);
             }
             // nếu khách giảm bớt đi
-            else{
-                if(currentQuantityOfProductDetail - rangeABS < 0){
-                    throw new CustomExceptions.CustomBadRequest("Vui lòng kiểm tra lại kho");
-                }
-                else{
-                    productDetail.setQuantity(currentQuantityOfProductDetail + rangeABS);
-                }
+            else {
+                log.info("KHÁCH TRẢ LẠI SP MÃ {}", productDetail.getCode());
+                productDetail.setQuantity(currentQuantityOfProductDetail + rangeABS);
             }
             productDetailRepository.save(productDetail);
         }
@@ -218,11 +232,20 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         return !percentList.contains(newAverageDiscountEventPercent);
     }
 
-    private boolean idAvailableQuantityProductDetail(ProductDetail productDetail, int requiredQuantity){
-        return productDetail.getQuantity() >= requiredQuantity;
-
+    private boolean isAvailableQuantityProductDetail(ProductDetail productDetail, int currentQuantity, int requiredQuantity) {
+        log.info("KHO : " + productDetail.getQuantity());
+        log.info("Y/C : " + requiredQuantity);
+        int range = Math.abs(requiredQuantity - currentQuantity);
+        // khi tổng số lượng yêu cầu lớn hơn hoặc = trong đơn hiện tại
+        if (requiredQuantity >= currentQuantity) {
+            // kiểm tra xem số lượng trong kho có đủ cho số lượng cần hay không
+            return productDetail.getQuantity() - range >= 0;
+        }
+        // nếu tổng số lượng yêu cầu nhỏ hơn trong đơn hiện tại
+        else {
+            return true;
+        }
     }
-
 
     public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable) {
         return orderDetailRepository.getPageOrderDetailWithPage(id, pageable);

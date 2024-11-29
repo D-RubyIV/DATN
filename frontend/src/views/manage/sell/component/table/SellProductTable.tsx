@@ -45,7 +45,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 if (err.response) {
                     console.log('Status code:', err.response.status) // Trạng thái HTTP từ phản hồi
                     if (err.response.status === 400) {
-                        openNotification(err.response.data.error)
+                        openNotification(err.response.data.error, "Thông báo", "warning", 1500)
                     }
                 } else {
                     console.log('Error message:', err.message) // Nếu không có phản hồi từ máy chủ
@@ -236,9 +236,8 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
     }
 
     const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
-        const order_detail_quantity = item.quantity
         const product_detail_quantity = item.productDetailResponseDTO.quantity
-        return product_detail_quantity >= order_detail_quantity
+        return product_detail_quantity > 0;
     }
 
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
@@ -292,7 +291,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
                 </div>
                 <div className={'text-orange-700'}>
-                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng`}
+                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng thêm`}
                 </div>
             </div>
 

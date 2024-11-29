@@ -19,7 +19,7 @@ const TypeOrderFormat = ({status}: {status: string}) => {
                                 {status === 'INSTORE'
                                     ? 'Tại của hàng'
                                     : status === 'ONLINE'
-                                        ? 'Trực tuyến'
+                                        ? 'Giao hàng'
                                         : 'Không xác định'}
                             </p>
                         </span>

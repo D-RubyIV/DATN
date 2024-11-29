@@ -46,7 +46,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
         const order_detail_quantity = item.quantity
         const product_detail_quantity = item.productDetailResponseDTO.quantity
-        return product_detail_quantity >= order_detail_quantity
+        return product_detail_quantity > 0;
     }
 
     const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
@@ -114,10 +114,9 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                     {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
                 </div>
                 <div className={'text-orange-700'}>
-                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng`}
+                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng thêm`}
                 </div>
             </div>
-
         )
     }
 

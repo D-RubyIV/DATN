@@ -72,7 +72,11 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     @PutMapping(value = {"{id}"})
     public ResponseEntity<OrderResponseDTO> update(@PathVariable Integer id, @Validated(GroupUpdate.class) @RequestBody OrderRequestDTO orderRequestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.update(id, orderRequestDTO)));
+    }
 
+    @PutMapping(value = {"edit-customer/{id}"})
+    public ResponseEntity<OrderResponseDTO> edit_customer(@PathVariable Integer id, @Validated(GroupUpdate.class) @RequestBody OrderRequestDTO orderRequestDTO) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.updateCustomerAndSetDefaultAddress(id, orderRequestDTO)));
     }
 
     @Override

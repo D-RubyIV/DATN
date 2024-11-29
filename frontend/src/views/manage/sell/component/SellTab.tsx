@@ -2,16 +2,14 @@ import Tabs from '@/components/ui/Tabs'
 import { HiOutlineUser, HiPlusCircle } from 'react-icons/hi'
 
 import React, { useEffect, useState } from 'react'
-import { Badge, Button } from '@/components/ui'
+import { Badge, Button, Notification, toast } from '@/components/ui'
 import { DoubleSidedImage, Loading } from '@/components/shared'
-import TabCard from './card/TabCard'
 import { useToastContext } from '@/context/ToastContext'
 import CloseButton from '@/components/ui/CloseButton'
 import instance from '@/axios/CustomAxios'
 import { OrderResponseDTO } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
 import { useSellContext } from '../context/SellContext'
-import { useWSContext } from '@/context/WsContext'
 
 const { TabNav, TabList, TabContent } = Tabs
 
@@ -29,7 +27,47 @@ const SellTab = () => {
     const [quantityInOrder, setQuantityInOrder] = useState<QuantityInOrder[]>([])
     const { isLoadingComponent } = useLoadingContext()
 
+    const closeNotification = (key: string | Promise<string>) => {
+        if (typeof key !== 'string') {
+            key.then((resolvedValue) => {
+                toast.remove(resolvedValue)
+            })
+        } else {
+            toast.remove(key)
+        }
+    }
 
+    const openDeleteConfirm = async (orderId: number) => {
+        const notificationKey = toast.push(
+            <Notification title="Thông báo" duration={8000}>
+                <div>
+                    Số lượng trong kho sẽ được hoàn lại
+                    Vui lòng xác nhận hủy hóa đơn này?
+                </div>
+                <div className="text-right mt-3">
+                    <Button
+                        size="sm"
+                        variant="solid"
+                        className="mr-2 bg-red-600"
+                        onClick={async () => {
+                            closeNotification(notificationKey as string | Promise<string>)
+                            removeTab(orderId)
+                        }}
+                    >
+                        Xác nhận
+                    </Button>
+                    <Button
+                        size="sm"
+                        onClick={() =>
+                            closeNotification(notificationKey as string | Promise<string>)
+                        }
+                    >
+                        Hủy
+                    </Button>
+                </div>
+            </Notification>
+        )
+    }
 
     useEffect(() => {
         if (tabs.length > 0) {
@@ -122,7 +160,7 @@ const SellTab = () => {
                                             </Badge>
                                             <CloseButton
                                                 className="text-gray-800 text-[18px] hover:text-red-500 transition-all duration-500"
-                                                onClick={() => removeTab(tab.orderId)}
+                                                onClick={() => openDeleteConfirm(tab.orderId)}
                                             />
                                             <div>
                                                 <p>

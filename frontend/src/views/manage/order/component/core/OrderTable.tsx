@@ -308,9 +308,9 @@ export const OrderTable = () => {
                         <span>
                             <p>
                                 {props.row.original.type === 'INSTORE'
-                                    ? 'Tại của hàng'
+                                    ? 'Tại quầy'
                                     : props.row.original.type === 'ONLINE'
-                                        ? 'Trực tuyến'
+                                        ? 'Giao hàng'
                                         : 'Không xác định'}
                             </p>
                         </span>
@@ -395,8 +395,8 @@ export const OrderTable = () => {
 
     const listTypeBillOptions: OrderTypeBill[] = [
         { label: 'Tất cả', value: '' },
-        { label: 'Tại cửa hàng', value: 'INSTORE' },
-        { label: 'Trực tuyến', value: 'ONLINE' }
+        { label: 'Tại quầy', value: 'INSTORE' },
+        { label: 'Giao hàng', value: 'ONLINE' }
     ]
 
     const fetchCountAnyStatus = async () => {
