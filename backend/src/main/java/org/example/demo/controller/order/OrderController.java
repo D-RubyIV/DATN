@@ -130,7 +130,7 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     @GetMapping("/exportPdf/{idOrder}")
     public ResponseEntity<byte[]> downloadPdf(@PathVariable Integer idOrder) {
-        ByteArrayOutputStream pdfStream = orderPdfService.exportPdf(idOrder);
+        ByteArrayOutputStream pdfStream = orderPdfService.export(idOrder);
         if (pdfStream == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

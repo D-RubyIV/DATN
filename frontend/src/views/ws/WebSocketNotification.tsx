@@ -1,14 +1,4 @@
-import React, { Fragment, Suspense, useEffect, useRef, useState } from 'react'
-import { Client, Message } from '@stomp/stompjs'
-import SockJS from 'sockjs-client'
-import { format, parseISO } from 'date-fns'
-import { useToastContext } from '@/context/ToastContext'
-
-type MessageEntity = {
-    id: number,
-    message: string,
-    createAt: string
-}
+import React, { Fragment, Suspense} from 'react'
 
 const WebSocketNotification: React.FC = () => {
     // const [messages, setMessages] = useState<MessageEntity[]>([])
@@ -76,14 +66,9 @@ const WebSocketNotification: React.FC = () => {
     //         console.log('---')
     //     }
     // }
-
     return (
         <Fragment>
             <Suspense>
-                <div className={'fixed top-5 bg-white left-5 z-[100]'}>
-                    <button>Send</button>
-
-                </div>
             </Suspense>
         </Fragment>
     )

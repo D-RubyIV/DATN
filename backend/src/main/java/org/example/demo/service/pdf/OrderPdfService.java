@@ -9,26 +9,32 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.example.demo.entity.order.core.Order;
+import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.util.CurrencyFormat;
-import org.example.demo.util.StringUtils;
 import org.example.demo.util.caculate.CalculateUtil;
+import org.example.demo.util.qr.QRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -36,10 +42,31 @@ public class OrderPdfService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public ByteArrayOutputStream exportPdf(Integer idOrder) {
+
+    public ByteArrayOutputStream export(Integer idOrder){
+        Order order = orderRepository.findById(idOrder).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy hóa đơn này"));
+
+        if(order.getType() == Type.INSTORE){
+            return exportPdfOffline(idOrder);
+        }
+        else{
+            return exportPdfOnline(idOrder);
+        }
+    }
+
+    private String getNameOfCustomer(Order order){
+        if (order.getRecipientName() != null){
+            return order.getRecipientName();
+        }
+        else {
+            return "Khách lẻ";
+        }
+    }
+
+    public ByteArrayOutputStream exportPdfOffline(Integer idOrder) {
         try {
             Order order = orderRepository.findById(idOrder).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy hóa đơn này"));
-            String recipientName = order.getRecipientName();
+            String recipientName = getNameOfCustomer(order);
             String phone = order.getPhone();
             String orderCode = order.getCode();
 
@@ -61,8 +88,12 @@ public class OrderPdfService {
             PDPageContentStream contentStream = new PDPageContentStream(document, firstPage);
             MyTextClass myTextClass = new MyTextClass(document, contentStream);
 
-            PDFont font = PDType1Font.HELVETICA;
+//            PDFont font = PDType1Font.HELVETICA;
             PDFont italicFont = PDType1Font.HELVETICA_OBLIQUE;
+            PDFont helveticaBold = PDType1Font.HELVETICA_BOLD;
+            PDFont font = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans.ttf"));
+            PDFont timeBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-Bold.ttf"));
+            PDFont condensedBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-BoldOblique.ttf"));
 
 //            PDImageXObject headImage = PDImageXObject.createFromFile("src/main/resources/image/header.png", document);
 //            contentStream.drawImage(headImage, 0, pageHeight - 235, pageWidth, 239);
@@ -77,43 +108,70 @@ public class OrderPdfService {
 //                    15,
 //                    Color.BLACK
 //            );
-            myTextClass.addSingleLineText("CADTH", 25, pageHeight - 150, font, 40, Color.BLACK);
 
-            myTextClass.addSingleLineText("Khách hàng: " + recipientName, 25, pageHeight - 250, font, 16, Color.BLACK);
-            myTextClass.addSingleLineText("No: " + idOrder, 25, pageHeight - 274, font, 16, Color.BLACK);
+            BufferedImage bufferedImageQR = QRUtil.generateQRCodeWithoutBorder(orderCode, 100, 100);
+            PDImageXObject qrCodeImage = LosslessFactory.createFromImage(document, bufferedImageQR);
 
+
+            myTextClass.addSingleLineText("CADTH", 25, pageHeight - 70, font, 40, Color.BLACK);
+            contentStream.drawImage(qrCodeImage, pageWidth - 100, pageHeight - 130, 100, 100);
+            //
+            myTextClass.addSingleLineText("Email: canth@gmail.com", 25, pageHeight - 95, font, 11, Color.BLACK);
+            myTextClass.addSingleLineText("So dien thoại: 0123456789", 25, pageHeight - 110, font, 11, Color.BLACK);
+            myTextClass.addSingleLineText("Địa chỉ: FPT POLYTECHNIC, Kieu mai", 25, pageHeight - 125, font, 11, Color.BLACK);
+            //
+
+            //
+            String textHeader = "HÓA ĐƠN BÁN HÀNG";
+            float textHeaderWidth = myTextClass.getTextWidth(textHeader, condensedBold, 20);
+            myTextClass.addSingleLineText(textHeader, (int) ((pageWidth / 2) - (textHeaderWidth / 2)) + 12, pageHeight - 165, font, 20, Color.BLACK);
+            //
+
+
+            //
+            myTextClass.addSingleLineText("Khách hàng: " + recipientName, 25, pageHeight - 205, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("No: " + idOrder, 25, pageHeight - 220, font, 14, Color.BLACK);
+            //
+            //
             String invoiceNo = "#" + orderCode;
-            float textWidth = myTextClass.getTextWidth(invoiceNo, font, 16);
-            myTextClass.addSingleLineText(invoiceNo, (int) (pageWidth - 25 - textWidth), pageHeight - 250, font, 16, Color.BLACK);
+            float textWidth = myTextClass.getTextWidth(invoiceNo, font, 14);
+            myTextClass.addSingleLineText(invoiceNo, (int) (pageWidth - 25 - textWidth), pageHeight - 205, font, 14, Color.BLACK);
 
             float dateTextWidth = myTextClass.getTextWidth(
                     "Date: " + d_format.format(new Date()),
                     font,
-                    16
+                    14
             );
-            myTextClass.addSingleLineText("Ngày: " + d_format.format(new Date()), (int) (pageWidth - 25 - dateTextWidth), pageHeight - 274, font, 16, Color.BLACK);
-
+            myTextClass.addSingleLineText("Ngày: " + d_format.format(new Date()), (int) (pageWidth - 25 - dateTextWidth), pageHeight - 220, font, 14, Color.BLACK);
+            //
             String time = t_format.format(new Date());
             String timeText = "Lúc: " + time;
-            float timeTextWidth = myTextClass.getTextWidth(timeText, font, 16);
-            myTextClass.addSingleLineText(timeText, (int) (pageWidth - 25 - timeTextWidth), pageHeight - 298, font, 16, Color.BLACK);
+            float timeTextWidth = myTextClass.getTextWidth(timeText, font, 14);
+            myTextClass.addSingleLineText(timeText, (int) (pageWidth - 25 - timeTextWidth), pageHeight - 235, font, 14, Color.BLACK);
+
+
+            //
+            String textHeaderTable = "DANH SÁCH SẢN PHẨM";
+            float textHeaderTableWidth = myTextClass.getTextWidth(textHeaderTable, condensedBold, 16);
+            myTextClass.addSingleLineText(textHeaderTable, (int) ((pageWidth / 2) - (textHeaderTableWidth / 2)) + 12, pageHeight - 255, font, 16, Color.BLACK);
+            //
 
 
             MyTableClass myTable = new MyTableClass(document, contentStream);
-            int[] cellWidths = {30, 180, 60, 60, 40, 80, 110};
-            myTable.setTable(cellWidths, 30, 25, pageHeight - 350);
+            int[] cellWidths = {30, 180, 60, 40, 40, 100, 110};
+            myTable.setTable(cellWidths, 30, 25, pageHeight - 320);
             myTable.setTableFont(font, 12, Color.BLACK);
 
             Color tableHeadColor = new Color(122, 122, 122);
             Color tableBodyColor = new Color(219, 218, 198);
 
             myTable.addCell("#", tableHeadColor);
-            myTable.addCell("San pham", tableHeadColor);
-            myTable.addCell("Mau", tableHeadColor);
+            myTable.addCell("Sản phẩm", tableHeadColor);
+            myTable.addCell("Màu", tableHeadColor);
             myTable.addCell("Size", tableHeadColor);
             myTable.addCell("SL", tableHeadColor);
-            myTable.addCell("Gia", tableHeadColor);
-            myTable.addCell("Tong", tableHeadColor);
+            myTable.addCell("Giá", tableHeadColor);
+            myTable.addCell("Thành tiền", tableHeadColor);
 
 
             List<OrderDetail> orderDetailList = order.getOrderDetails().stream().filter(s -> !s.getDeleted()).toList();
@@ -121,14 +179,14 @@ public class OrderPdfService {
                 OrderDetail s = orderDetailList.get(i);
                 String productName = s.getProductDetail().getProduct().getName();
                 String quantity = s.getQuantity().toString();
-                String price = CurrencyFormat.format(Math.round(s.getProductDetail().getPrice()));
-                String subTotal = CurrencyFormat.format(Math.round(s.getProductDetail().getPrice() * s.getQuantity()));
+                String price = CurrencyFormat.format(Math.round(s.getProductDetail().getPrice())) + " VND";
+                String subTotal = CurrencyFormat.format(Math.round(s.getProductDetail().getPrice() * s.getQuantity())) + " VND";
                 String color = s.getProductDetail().getColor().getName();
                 String size = s.getProductDetail().getSize().getName();
 
                 myTable.addCell(String.valueOf(i), tableBodyColor);
-                myTable.addCell(StringUtils.removeDiacriticsAndSpecialChars(productName), tableBodyColor);
-                myTable.addCell(StringUtils.removeDiacriticsAndSpecialChars(color), tableBodyColor);
+                myTable.addCell(productName, tableBodyColor);
+                myTable.addCell(color, tableBodyColor);
                 myTable.addCell(size, tableBodyColor);
                 myTable.addCell(quantity, tableBodyColor);
                 myTable.addCell(price, tableBodyColor);
@@ -136,44 +194,29 @@ public class OrderPdfService {
             }
             log.info("PAGE HEIGHT: " + pageHeight);
             log.info("PAGE WIDTH: " + pageWidth);
-            myTextClass.addSingleLineText("Tong tien: ", 25, pageHeight - 650, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 650, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Tổng tiền: ", 25, pageHeight - 650, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 650, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Phi van chuyen: ", 25, pageHeight - 670, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDeliveryFee()), (int) (pageWidth - 25 - textWidth), pageHeight - 670, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Phí vận chuyển: ", 25, pageHeight - 670, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDeliveryFee()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 670, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Giam gia: ", 25, pageHeight - 690, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDiscount()), (int) (pageWidth - 25 - textWidth), pageHeight - 690, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Giảm giá: ", 25, pageHeight - 690, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getDiscount()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 690, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 710, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal() - order.getDiscount() + order.getDeliveryFee()), (int) (pageWidth - 25 - textWidth), pageHeight - 710, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Tổng thanh toán: ", 25, pageHeight - 710, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getSubTotal() - order.getDiscount() + order.getDeliveryFee()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 710, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Da thanh toan: ", 25, pageHeight - 740, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()), (int) (pageWidth - 25 - textWidth), pageHeight - 740, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Đã thanh toán: ", 25, pageHeight - 740, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 740, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Tong thanh toan: ", 25, pageHeight - 760, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()), (int) (pageWidth - 25 - textWidth), pageHeight - 760, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("Tổng thanh toán: ", 25, pageHeight - 760, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 760, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("(Phu phi): ", 25, pageHeight - 780, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 780, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText("(Phụ phí): ", 25, pageHeight - 780, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 780, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("(Hoan tra): ", 25, pageHeight - 800, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)), (int) (pageWidth - 25 - textWidth), pageHeight - 800, font, 14, Color.BLACK);
-
-
-//            String[] paymentMethod = {"Methods of payment we accept:", "Cash, PhoneGe, GPay, RuPay", "Visa, Mastercard and American Express"};
-//            myTextClass.addMultiLineText(paymentMethod, 15, 25, 180, italicFont, 10, new Color(122, 122, 122));
-
-//            String authorSign = "Cam on quy khach";
-//            float authorSignWidth = myTextClass.getTextWidth(authorSign, italicFont, 16);
-//            int xpos = pageWidth - 250 + pageWidth - 25;
-//            myTextClass.addSingleLineText(authorSign, (int) (xpos - authorSignWidth) / 2, 125, italicFont, 16, Color.BLACK);
-
-
-//            String bottomLine = "Rain or shine, time to dinner";
-//            float bottomLineWidth = myTextClass.getTextWidth(bottomLine, font, 20);
-//            myTextClass.addSingleLineText(bottomLine, (int) (pageWidth - bottomLineWidth) / 2, 50, italicFont, 20, Color.DARK_GRAY);
-
+            myTextClass.addSingleLineText("(Hoàn trả): ", 25, pageHeight - 800, font, 14, Color.BLACK);
+            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 800, helveticaBold, 14, Color.BLACK);
 
             Color bottomRectColor = new Color(122, 122, 122);
             contentStream.setNonStrokingColor(bottomRectColor);
@@ -183,7 +226,126 @@ public class OrderPdfService {
 
             contentStream.close();
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//            document.save("C:\\PDF\\myPDF.pdf");
+            document.save(outputStream);
+            document.close();
+            System.out.println("PDF CREATED");
+            return outputStream;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return null;
+        }
+
+    }
+
+    public ByteArrayOutputStream exportPdfOnline(Integer idOrder) {
+        try {
+            Order order = orderRepository.findById(idOrder).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy hóa đơn này"));
+            String recipientName = order.getRecipientName();
+            String phone = order.getPhone();
+            String orderCode = order.getCode();
+
+            PDDocument document = new PDDocument();
+            PDPage firstPage = new PDPage(PDRectangle.A4);
+            document.addPage(firstPage);
+
+            Format d_format = new SimpleDateFormat("dd/MM/yyyy");
+            Format t_format = new SimpleDateFormat("HH:mm");
+
+            int pageWidth = (int) firstPage.getTrimBox().getWidth();
+            int pageHeight = (int) firstPage.getTrimBox().getHeight();
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, firstPage);
+            MyTextClass myTextClass = new MyTextClass(document, contentStream);
+
+            PDFont italicFont = PDType1Font.HELVETICA_OBLIQUE;
+            PDFont helveticaBold = PDType1Font.HELVETICA_BOLD;
+            PDFont font = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans.ttf"));
+            PDFont timeBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-Bold.ttf"));
+            PDFont condensedBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-BoldOblique.ttf"));
+
+            Color bottomRectColor = new Color(122, 122, 122);
+            BufferedImage bufferedImageQR = QRUtil.generateQRCodeWithoutBorder(orderCode, 100, 100);
+            PDImageXObject headImage = PDImageXObject.createFromFile("src/main/resources/image/ghn.png", document);
+            PDImageXObject qrCodeImage = LosslessFactory.createFromImage(document, bufferedImageQR);
+
+
+            myTextClass.addSingleLineText("CADTH", 25, pageHeight - 70, font, 40, Color.BLACK);
+            contentStream.drawImage(headImage, 25, pageHeight - 125, 140, 45);
+
+            contentStream.drawImage(qrCodeImage, pageWidth - 100, pageHeight - 130, 100, 100);
+
+            String fromAddress = "FPT POLYTECHNIC Kieu Mai, Phúc Diễn, Từ Liêm, Hà Nội";
+            myTextClass.addSingleLineText("Từ: " + fromAddress, 25, pageHeight - 205, font, 12, Color.BLACK);
+
+            String fromPhone = "0833486527";
+            myTextClass.addSingleLineText("Sdt: " + fromPhone, 25, pageHeight - 220, font, 12, Color.BLACK);
+
+            contentStream.setNonStrokingColor(bottomRectColor);
+            contentStream.addRect(25, pageHeight - 240, pageWidth, 2);
+            contentStream.fill();
+
+
+            String toAddress = "FPT POLYTECHNIC Kieu Mai, Phúc Diễn, Từ Liêm, Hà Nội";
+            myTextClass.addSingleLineText("Đến: " + toAddress, 25, pageHeight - 260, font, 12, Color.BLACK);
+
+            String receiveName = order.getRecipientName();
+            myTextClass.addSingleLineText("Tên: " + receiveName, 25, pageHeight - 275, font, 12, Color.BLACK);
+
+            String receivePhone = order.getPhone();
+            myTextClass.addSingleLineText("Sdt: " + receivePhone, 25, pageHeight - 290, font, 12, Color.BLACK);
+
+            contentStream.setNonStrokingColor(bottomRectColor);
+            contentStream.addRect(25, pageHeight - 310, pageWidth, 2);
+            contentStream.fill();
+
+            myTextClass.addSingleLineText("Nội dung hàng (Tổng SL sản phẩm: %s): ".formatted(order.getOrderDetails().size()) + receiveName, 25, pageHeight - 330, font, 12, Color.BLACK);
+
+
+            AtomicInteger availableHeight = new AtomicInteger(pageHeight - 330 - 20);
+
+            order.getOrderDetails().forEach(s -> {
+                try {
+                    ProductDetail productDetail = s.getProductDetail();
+                    String nameProduct = productDetail.getProduct().getName();
+                    String colorProduct = productDetail.getColor().getName();
+                    String sizeProduct = productDetail.getSize().getName();
+                    String quantity = s.getQuantity().toString();
+                    String text = "+ " + nameProduct + " " + colorProduct + " [" + sizeProduct + "]" + "      SL: " + quantity;
+
+                    availableHeight.addAndGet(-15); // Increment the height by 15
+                    myTextClass.addSingleLineText(text, 25, availableHeight.get(), font, 12, Color.BLACK);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            contentStream.setNonStrokingColor(bottomRectColor);
+            contentStream.addRect(25, availableHeight.addAndGet(-15), pageWidth, 2);
+            contentStream.fill();
+
+
+            int yConfirm = availableHeight.addAndGet(-20);
+            myTextClass.addSingleLineText("Tông thu người nhận: " , 25, yConfirm, font, 12, Color.BLACK);
+            int yConfirmNote = availableHeight.addAndGet(-15);
+
+            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()) + " VND" , 25,  yConfirmNote, helveticaBold, 12, Color.BLACK);
+
+
+            String confirmText = "Chữ ký người nhận";
+            float confirmTextWidth = myTextClass.getTextWidth(confirmText, font, 12);
+            myTextClass.addSingleLineText(confirmText , (int)(pageWidth - 25 - confirmTextWidth), yConfirm, font, 12, Color.BLACK);
+
+
+            String confirmTextNote = "(Xác nhận hàng nguyên vẹn)";
+            float confirmTextNoteWidth = myTextClass.getTextWidth(confirmTextNote, font, 12);
+            myTextClass.addSingleLineText(confirmTextNote , (int)(pageWidth - 25 - confirmTextNoteWidth), yConfirmNote, font, 12, Color.BLACK);
+
+
+            contentStream.close();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             document.save(outputStream);
             document.close();
             System.out.println("PDF CREATED");
@@ -284,7 +446,6 @@ public class OrderPdfService {
         }
 
         void addCell(String text, Color fillColor) throws IOException {
-            contentStream.setStrokingColor(1f);
             if (fillColor != null) {
                 contentStream.setNonStrokingColor(fillColor);
             }

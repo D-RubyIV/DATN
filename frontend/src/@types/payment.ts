@@ -1,5 +1,7 @@
+import { ReactNode } from 'react'
+
 export type PaymentInfoProps = {
-    label?: string
+    label?: string | ReactNode
     value?: number
     isLast?: boolean
     prefix?: string

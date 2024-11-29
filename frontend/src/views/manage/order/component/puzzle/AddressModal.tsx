@@ -33,9 +33,9 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
     const { openNotification } = useToastContext()
     const { sleep, setIsLoadingComponent } = useLoadingContext()
 
-    const [selectedProvinceId, setSelectedProvinceId] = useState<string>('')
-    const [selectedDistrictId, setSelectedDistrictId] = useState<string>('')
-    const [selectedWardId, setSelectedWardId] = useState<string>('')
+    const [selectedProvinceId, setSelectedProvinceId] = useState<string>(selectedOrder.provinceId || '')
+    const [selectedDistrictId, setSelectedDistrictId] = useState<string>(selectedOrder.districtId ||'')
+    const [selectedWardId, setSelectedWardId] = useState<string>(selectedOrder.wardId || '')
 
     const handleChangeProvince = (provinceId: string) => {
         setSelectedProvinceId(provinceId)
@@ -57,21 +57,15 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
     })
 
     useEffect(() => {
-        setSelectedProvinceId(selectedOrder.provinceId || '')
-        setSelectedDistrictId(selectedOrder.districtId || '')
-        setSelectedWardId(selectedOrder.wardId || '')
-    }, [selectedOrder])
-
-    useEffect(() => {
         handleFindAllProvinces()
     }, [])
 
     useEffect(() => {
-        handleFindAllDistricts(selectedOrder.provinceId)
+        handleFindAllDistricts(selectedProvinceId)
     }, [selectedProvinceId])
 
     useEffect(() => {
-        handleFindAllWards(selectedOrder.districtId)
+        handleFindAllWards(selectedDistrictId)
     }, [selectedDistrictId])
 
 
@@ -136,7 +130,7 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
                         provinceId: selectedOrder.provinceId,
                         districtId: selectedOrder.districtId,
                         wardId: selectedOrder.wardId,
-                        detail: selectedOrder.address
+                        address: selectedOrder.address
                     }}
                     validationSchema={validationSchema}
                     onSubmit={handleSubmitForm}
@@ -185,8 +179,11 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
                                         placeholder="Vui lòng chọn tỉnh"
                                         onChange={(el) => {
                                             setFieldValue('provinceId', (el as IProvince).ProvinceID)
+                                            setFieldValue('provinceName', (el as IProvince).ProvinceName)
                                             setFieldValue('districtId', '')
+                                            setFieldValue('districtName', '')
                                             setFieldValue('wardId', '')
+                                            setFieldValue('wardName', '')
                                             handleChangeProvince((el as IProvince).ProvinceID)
                                         }}
                                     />
@@ -206,7 +203,9 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
                                         placeholder="Vui lòng chọn thành phố"
                                         onChange={(el) => {
                                             setFieldValue('districtId', (el as IDistrict).DistrictID)
+                                            setFieldValue('districtName', (el as IDistrict).DistrictName)
                                             setFieldValue('wardId', '')
+                                            setFieldValue('wardName', '')
                                             handleChangeDistrict((el as IDistrict).DistrictID)
                                         }}
                                     />
@@ -226,6 +225,7 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
                                         placeholder="Vui lòng chọn xã/phường"
                                         onChange={(el) => {
                                             setFieldValue('wardId', (el as IWard).WardCode)
+                                            setFieldValue('wardName', (el as IWard).WardName)
                                             setSelectedWardId((el as IWard).WardCode)
                                         }}
                                     />
@@ -235,7 +235,7 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
                                 <div>
                                     <label className="font-semibold text-gray-600">Địa chỉ:</label>
                                     <Field
-                                        name="detail"
+                                        name="address"
                                         as={Input}
                                         placeholder="Vui lòng nhập địa chỉ"
                                         size="sm"

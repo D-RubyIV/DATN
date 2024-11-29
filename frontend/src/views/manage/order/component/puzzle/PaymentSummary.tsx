@@ -32,7 +32,15 @@ const PaymentSummary = ({selectObject, fetchData,  data }: {selectObject: OrderR
         <Card className="h-[552px]">
             <h5 className="mb-4">Thông tin thanh toán</h5>
             <PaymentRow label="Tổng tiền các sản phẩm" value={data?.subTotal} />
-            <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
+            <PaymentRow label={
+                (
+                    <div className={'flex gap-2'}>
+                        <p>Phí vận chuyển</p>
+                        <img src={'https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Blue-Orange-350x88.png'}
+                             width={'60px'} />
+                    </div>
+                )
+            } value={data?.deliveryFee} prefix={' + '} />
             <PaymentRow label={`Khuyến mãi phiếu giảm giá (${selectObject.discountVoucherPercent}%)`} value={data?.discount} prefix={' - '} />
             <PaymentRow label="Tổng thanh toán" value={data?.totalAfterDiscountAndFee} />
 
