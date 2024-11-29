@@ -52,6 +52,7 @@ const UpdateEvent = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/v1/event/detail/${id}`);
                 setUpdateEvent(response.data);
+                console.log('Dữ liệu tải lên: ', response.data)
             } catch (error) {
                 console.error("Error fetching event details:", error);
             }
@@ -88,8 +89,8 @@ const UpdateEvent = () => {
             // Lấy giá trị startDate và endDate ban đầu từ API
             const initialStartDate = updateEvent?.startDate || "";
             const initialEndDate = updateEvent?.endDate || "";
-            console.log("Initial startDate from API:", initialStartDate);
-            console.log("Initial endDate from API:", initialEndDate);
+            console.log("startDate ban đầu từ API:", initialStartDate);
+            console.log("endDate ban đầu từ API:", initialEndDate);
 
             // Kiểm tra xem startDate và endDate có thay đổi hay không
             const isStartDateChanged = values.startDate !== initialStartDate;
@@ -97,13 +98,14 @@ const UpdateEvent = () => {
             console.log("Is startDate changed:", isStartDateChanged);
             console.log("Is endDate changed:", isEndDateChanged);
 
-            // Chuyển đổi giá trị ngày trong form
+            // Chuyển đổi giá trị ngày trong form với định dạng chính xác
             const startDate = isStartDateChanged
-                ? dayjs(values.startDate, "DD-MM-YYYY'T'HH:mm", true)
-                : dayjs(initialStartDate, "DD-MM-YYYYTHH:mm", true);
+                ? dayjs(values.startDate, "DD-MM-YYYYTHH:mm", true)  // Sử dụng đúng định dạng với 'T'
+                : dayjs(initialStartDate, "DD-MM-YYYYTHH:mm", true); // Sử dụng định dạng 'T' ở đây
+
             const endDate = isEndDateChanged
-                ? dayjs(values.endDate, "DD-MM-YYYY'T'HH:mm", true)
-                : dayjs(initialEndDate, "DD-MM-YYYYTHH:mm", true);
+                ? dayjs(values.endDate, "DD-MM-YYYYTHH:mm", true)  // Sử dụng đúng định dạng với 'T'
+                : dayjs(initialEndDate, "DD-MM-YYYYTHH:mm", true); // Sử dụng định dạng 'T' ở đây
 
             console.log("Parsed startDate:", startDate.toString());
             console.log("Parsed endDate:", endDate.toString());
@@ -121,7 +123,7 @@ const UpdateEvent = () => {
                 ...values,
                 startDate: startDate.format("DD-MM-YYYYTHH:mm"), // Sử dụng giá trị mới hoặc cũ
                 endDate: endDate.format("DD-MM-YYYYTHH:mm"), // Sử dụng giá trị mới hoặc cũ
-                productDTOS: selectedProducts.map((id) => ({ id })),
+                productDTOS: selectedProducts.map((id) => ({ id })), // Danh sách sản phẩm
             };
 
             console.log("Formatted payload:", formattedPayload);
@@ -143,15 +145,31 @@ const UpdateEvent = () => {
         }
     };
 
-
-    const handleProductSelect = (selectedRowKeys: string[]) => {
-        setSelectedProducts(selectedRowKeys);
+    // Thay đổi handleSelectProduct để chỉ lưu ID
+    const handleSelectProduct = (product: ProductDTO, isSelected: boolean) => {
+        setSelectedProducts((prev) =>
+            isSelected
+                ? [...prev, product.id] // Chỉ lưu id
+                : prev.filter((id) => id !== product.id) // Loại bỏ id nếu không được chọn
+        );
     };
 
-    const rowSelection = {
-        selectedRowKeys: selectedProducts,
-        onChange: handleProductSelect,
+
+    // Kiểm tra sản phẩm đã được chọn chưa:
+    const isSelected = (id: string) => selectedProducts.includes(id);
+
+    const handlePreviousPage = () => {
+        if (pageIndex > 1) {
+            setPageIndex((prev) => prev - 1);
+        }
     };
+
+    const handleNextPage = () => {
+        if (pageIndex < Math.ceil(total / pageSize)) {
+            setPageIndex((prev) => prev + 1);
+        }
+    };
+
 
     return (
         <Formik
@@ -185,32 +203,46 @@ const UpdateEvent = () => {
                                     </FormItem>
                                     <FormItem asterisk label="Ngày bắt đầu" invalid={!!errors.startDate && touched.startDate} errorMessage={errors.startDate}>
                                         <Field name="startDate">
-                                            {({ field, form }: any) => (
-                                                <DateTimepicker
-                                                    {...field}
-                                                    value={field.value ? dayjs(field.value, "DD-MM-YYYY'T'HH:mm").toDate() : null}
-                                                    onChange={(date: Date | null) => {
-                                                        const formattedDate = date ? dayjs(date).format("DD-MM-YYYY'T'HH:mm") : "";
-                                                        form.setFieldValue("startDate", formattedDate);
-                                                    }}
-                                                />
-                                            )}
+                                            {({ field, form }: any) => {
+                                                // Kiểm tra và chuyển đổi ngày từ chuỗi với dayjs
+                                                const parsedStartDate = field.value ? dayjs(field.value, "DD-MM-YYYYTHH:mm", true) : null;
+
+                                                return (
+                                                    <DateTimepicker
+                                                        {...field}
+                                                        value={parsedStartDate && parsedStartDate.isValid() ? parsedStartDate.toDate() : null}  // Chuyển đổi từ dayjs thành Date nếu hợp lệ
+                                                        onChange={(date: Date | null) => {
+                                                            const formattedDate = date ? dayjs(date).format("DD-MM-YYYYTHH:mm") : "";
+                                                            form.setFieldValue("startDate", formattedDate); // Lưu giá trị định dạng lại
+                                                        }}
+                                                    />
+                                                );
+                                            }}
                                         </Field>
                                     </FormItem>
+
                                     <FormItem asterisk label="Ngày kết thúc" invalid={!!errors.endDate && touched.endDate} errorMessage={errors.endDate}>
                                         <Field name="endDate">
-                                            {({ field, form }: any) => (
-                                                <DateTimepicker
-                                                    {...field}
-                                                    value={field.value ? dayjs(field.value, "DD-MM-YYYY'T'HH:mm").toDate() : null}
-                                                    onChange={(date: Date | null) => {
-                                                        const formattedDate = date ? dayjs(date).format("DD-MM-YYYY'T'HH:mm") : "";
-                                                        form.setFieldValue("endDate", formattedDate);
-                                                    }}
-                                                />
-                                            )}
+                                            {({ field, form }: any) => {
+                                                // Kiểm tra và chuyển đổi ngày từ chuỗi với dayjs
+                                                const parsedEndDate = field.value ? dayjs(field.value, "DD-MM-YYYYTHH:mm", true) : null;
+
+                                                return (
+                                                    <DateTimepicker
+                                                        {...field}
+                                                        value={parsedEndDate && parsedEndDate.isValid() ? parsedEndDate.toDate() : null}  // Chuyển đổi từ dayjs thành Date nếu hợp lệ
+                                                        onChange={(date: Date | null) => {
+                                                            const formattedDate = date ? dayjs(date).format("DD-MM-YYYYTHH:mm") : "";
+                                                            form.setFieldValue("endDate", formattedDate); // Lưu giá trị định dạng lại
+                                                        }}
+                                                    />
+                                                );
+                                            }}
                                         </Field>
                                     </FormItem>
+
+
+
                                     <FormItem>
                                         <Button variant="solid" type="submit" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} disabled={isSubmitting}>
                                             Cập nhật
@@ -219,17 +251,52 @@ const UpdateEvent = () => {
                                 </FormContainer>
                             </div>
                             <div className="w-full lg:w-2/3 bg-white p-6 shadow-md rounded-lg">
-                                <h4 className="font-medium text-xl">Danh sách sản phẩm</h4>
-                                <AntTable
-                                    rowSelection={rowSelection}
-                                    columns={[
-                                        { title: "Mã sản phẩm", dataIndex: "code", key: "code" },
-                                        { title: "Tên sản phẩm", dataIndex: "name", key: "name" },
-                                    ]}
-                                    dataSource={product}
-                                    rowKey="id"
-                                    pagination={{ total, pageSize, current: pageIndex, onChange: (page) => setPageIndex(page) }}
-                                />
+                                <h4 className="font-medium text-xl mb-4">Danh sách sản phẩm</h4>
+                                <table className="table-auto w-full border border-collapse border-gray-300">
+                                    <thead>
+                                        <tr>
+                                            <th className="border px-4 py-2">Chọn</th>
+                                            <th className="border px-4 py-2">Mã sản phẩm</th>
+                                            <th className="border px-4 py-2">Tên sản phẩm</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {product.map((product) => (
+                                            <tr key={product.id}>
+                                                <td className="border px-4 py-2 text-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected(product.id)}
+                                                        onChange={(e) =>
+                                                            handleSelectProduct(product, e.target.checked)
+                                                        }
+                                                    />
+                                                </td>
+                                                <td className="border px-4 py-2">{product.code}</td>
+                                                <td className="border px-4 py-2">{product.name}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <div className="flex items-center justify-between mt-4">
+                                    <Button
+                                        type="button"
+                                        disabled={pageIndex === 1}
+                                        onClick={handlePreviousPage}
+                                    >
+                                        Trang trước
+                                    </Button>
+                                    <span>
+                                        Trang {pageIndex} / {Math.ceil(total / pageSize)}
+                                    </span>
+                                    <Button
+                                        type="button"
+                                        disabled={pageIndex >= Math.ceil(total / pageSize)}
+                                        onClick={handleNextPage}
+                                    >
+                                        Trang sau
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
