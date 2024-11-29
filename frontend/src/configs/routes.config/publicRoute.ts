@@ -27,6 +27,18 @@ const publicRoute: Routes = [
         authority: []
     },
     {
+        key: 'new-product',
+        path: '/new-product',
+        component: lazy(() => import('@/views/sale/BlackFriday')),
+        authority: []
+    },
+    {
+        key: 'customer-info',
+        path: '/edit-customer',
+        component: lazy(() => import('@/views/sale/CustomerInfor')),
+        authority: []
+    },
+    {
         key: 'collections',
         path: '/collections',
         component: lazy(() => import('@/views/sale/ProductList')),

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
@@ -18,13 +19,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Integer> {
+    boolean existsByCodeAndName(String code, String name);
 
     @Query("SELECT p FROM ProductDetail p WHERE  p.size = ?1 AND p.color = ?2 AND p.texture = ?3 " +
             "AND p.origin = ?4 AND p.brand = ?5 AND p.collar = ?6 AND p.sleeve = ?7 " +
             "AND p.style = ?8 AND p.material = ?9 AND p.thickness = ?10 AND p.elasticity = ?11")
-    ProductDetail findByAttributes( Size size, Color color, Texture texture,
+    ProductDetail findByAttributes(Size size, Color color, Texture texture,
                                    Origin origin, Brand brand, Collar collar, Sleeve sleeve,
                                    Style style, Material material, Thickness thickness, Elasticity elasticity);
+
+
+    ProductDetail findByCodeAndName(String code, String name);
+
+    @Query("SELECT p FROM ProductDetail p WHERE p.name = ?1 AND p.size = ?2 AND p.color = ?3")
+    ProductDetail findByName(String name, Size size, Color color);
 
     List<ProductDetail> findByProductId(Integer productId);
 
@@ -46,7 +54,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             LEFT JOIN FETCH pd.elasticity
             LEFT JOIN FETCH pd.images
             
-         
+            
             WHERE
             (:productId IS NULL OR pd.product.id = :productId)
             AND 
@@ -151,34 +159,34 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
 
     @Query(value = """
-        SELECT
-            pd.id AS id,
-            ROW_NUMBER() OVER(ORDER BY pd.updated_at DESC) AS indexs,
-            (pd.name + ' [' + pdcr.name + ' - ' + pdse.name + ']') AS name,
-            pd.code AS code,
-            pdso.name AS sole,
-            pdcr.name AS color,
-            pdse.name AS size,
-            pd.quantity AS quantity,
-            pd.weight AS weight,
-            pd.price AS price,
-            STRING_AGG(img.name, ',') AS images,
-            pd.deleted AS status
-        FROM
-            product_detail pd
-            LEFT JOIN product pdp ON pd.product_id = pdp.id
-            LEFT JOIN color pdcr ON pd.color_id = pdcr.id
-            LEFT JOIN size pdse ON pd.size_id = pdse.id
-            LEFT JOIN images img ON img.product_detail_id = pd.id
-        WHERE
-            (:#{#req.product} IS NULL OR pd.product_id IN (:#{#req.products}))
-            AND (:#{#req.color} IS NULL OR :#{#req.color} = '' OR pd.color_id IN (:#{#req.colors}))
-            AND (:#{#req.size} IS NULL OR :#{#req.size} = '' OR pd.size_id IN (:#{#req.sizes}))
-            AND (:#{#req.name} IS NULL OR :#{#req.name} = '' OR (pdp.name + ' ' + pdcr.name + ' ' + pdse.name + ' ') LIKE '%' + :#{#req.name} + '%')
-        GROUP BY
-            pd.id, pd.updated_at, pd.name, pdcr.name, pdse.name, pd.code, pdso.name, pd.quantity, pd.weight, pd.price, pd.deleted;
-        """, nativeQuery = true)
-    Page<ProductClientResponse> productClient(@Param("req")FindProductDetailRequest request, Pageable pageable);
+            SELECT
+                pd.id AS id,
+                ROW_NUMBER() OVER(ORDER BY pd.updated_at DESC) AS indexs,
+                (pd.name + ' [' + pdcr.name + ' - ' + pdse.name + ']') AS name,
+                pd.code AS code,
+                pdso.name AS sole,
+                pdcr.name AS color,
+                pdse.name AS size,
+                pd.quantity AS quantity,
+                pd.weight AS weight,
+                pd.price AS price,
+                STRING_AGG(img.name, ',') AS images,
+                pd.deleted AS status
+            FROM
+                product_detail pd
+                LEFT JOIN product pdp ON pd.product_id = pdp.id
+                LEFT JOIN color pdcr ON pd.color_id = pdcr.id
+                LEFT JOIN size pdse ON pd.size_id = pdse.id
+                LEFT JOIN images img ON img.product_detail_id = pd.id
+            WHERE
+                (:#{#req.product} IS NULL OR pd.product_id IN (:#{#req.products}))
+                AND (:#{#req.color} IS NULL OR :#{#req.color} = '' OR pd.color_id IN (:#{#req.colors}))
+                AND (:#{#req.size} IS NULL OR :#{#req.size} = '' OR pd.size_id IN (:#{#req.sizes}))
+                AND (:#{#req.name} IS NULL OR :#{#req.name} = '' OR (pdp.name + ' ' + pdcr.name + ' ' + pdse.name + ' ') LIKE '%' + :#{#req.name} + '%')
+            GROUP BY
+                pd.id, pd.updated_at, pd.name, pdcr.name, pdse.name, pd.code, pdso.name, pd.quantity, pd.weight, pd.price, pd.deleted;
+            """, nativeQuery = true)
+    Page<ProductClientResponse> productClient(@Param("req") FindProductDetailRequest request, Pageable pageable);
 
 
 //    @Query(
@@ -318,5 +326,46 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             SELECT pd from ProductDetail pd  where pd.product.id in :ids
             """)
     List<ProductDetail> findAllByProductIdCustom(List<Integer> ids);
+
+//    @Query("SELECT pd FROM ProductDetail pd WHERE pd.createdDate >= :oneWeekAgo")
+//    List<ProductDetail> findNewProductsInLastWeek(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
+
+
+    @Query("""
+    SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+        p.id,
+        p.code,
+        p.name,
+        COUNT(DISTINCT c.id),
+        COUNT(DISTINCT s.id),
+        MIN(pd.price)
+    )
+    FROM Product p
+    JOIN ProductDetail pd ON p.id = pd.product.id
+    JOIN Color c ON c.id = pd.color.id
+    JOIN Size s ON s.id = pd.size.id
+    JOIN Brand b ON b.id = pd.brand.id
+    WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+    AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+    AND (:brandCodes IS NULL OR b.code IN :brandCodes)
+    AND (:minPrice IS NULL OR pd.price >= :minPrice)
+    AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
+    AND (:createdDate IS NULL OR pd.createdDate >= :createdDate)
+    AND p.deleted = FALSE
+    AND c.deleted = FALSE
+    AND s.deleted = FALSE
+    AND b.deleted = FALSE
+    AND pd.deleted = FALSE
+    GROUP BY p.id, p.code, p.name
+""")
+    Page<ProductResponseOverDTO> findCustomPage2(
+            Pageable pageable,
+            @Param("sizeCodes") List<String> sizeCodes,
+            @Param("colorCodes") List<String> colorCodes,
+            @Param("brandCodes") List<String> brandCodes,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("createdDate") LocalDateTime createdDate
+    );
 
 }

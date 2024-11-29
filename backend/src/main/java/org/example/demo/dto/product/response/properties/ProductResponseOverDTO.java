@@ -25,8 +25,8 @@ public class ProductResponseOverDTO {
     private List<String> image;
     private List<String> mass;
     private Double averageDiscountPercentEvent;
-    private List<Color> listColor = new ArrayList<>();;
-    private List<Size> listSize = new ArrayList<>();;
+    private List<Color> listColor = new ArrayList<>();
+    private List<Size> listSize = new ArrayList<>();
     private List<EventResponseDTO> listEvent = new ArrayList<>();
 
     public ProductResponseOverDTO(Integer productId, String productCode, String productName, Long countColor, Long countSize, Double price) {

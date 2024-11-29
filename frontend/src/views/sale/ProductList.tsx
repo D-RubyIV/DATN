@@ -293,7 +293,7 @@ const ProductList = () => {
 
 
                                     <div
-                                        className={'bg-white p-4 flex justify-center flex-col duration-500 ease-in-out hover:scale-110 relative border-black border'}
+                                        className={'bg-white p-4 flex justify-center flex-col duration-500 ease-in-out hover:scale-110 relative rounded-sm border'}
                                         onMouseEnter={() => setHoveredProductId(product.productId)}
                                         onMouseLeave={() => setHoveredProductId(null)}
                                     >
