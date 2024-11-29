@@ -25,7 +25,6 @@ export enum EOrderStatusEnums {
     DELIVERED = "DELIVERED",
     CANCELED = "CANCELED",
     RETURNED = "RETURNED",
-    UNPAID = "UNPAID",
 }
 
 
@@ -40,13 +39,14 @@ export type StatusBill = {
     badge: string
 }
 
-export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED" | "UNPAID"
+export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
 
 export type EOrderType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 
 export type EOrderPayment = 'CASH' | 'TRANSFER'; // Add more types if needed
 
 export type OrderCustomerResponseDTO = {
+    id: number;
     code: string;
     name: string;
     email: string;
@@ -88,9 +88,11 @@ export type OrderVoucherResponseDTO = {
 
 export type OrderHistoryResponseDTO = {
     id?: number;
-    status: EOrderStatus;
-    note: string;
-    createdBy?: string
+    status?: EOrderStatus;
+    note?: string;
+    createdBy?: string;
+    createdDate?: string;
+    account?: any;
 }
 
 export type OrderResponseDTO = {
@@ -104,6 +106,7 @@ export type OrderResponseDTO = {
     status: EOrderStatus;
     type: EOrderType;
     payment: EOrderPayment;
+    isPayment: boolean;
     total: number;
     subTotal: number;
     provinceId: string;    // ID của tỉnh
@@ -112,6 +115,7 @@ export type OrderResponseDTO = {
     districtName: string;  // Tên của quận/huyện
     wardId: string;        // ID của phường/xã
     wardName: string;      // Tên của phường/xã
+    discountVoucherPercent: number;      // Tên của phường/xã
     customerResponseDTO: OrderCustomerResponseDTO;
     staffResponseDTO: OrderStaffResponseDTO;
     voucherResponseDTO: OrderVoucherResponseDTO;
@@ -137,6 +141,7 @@ export type ProductD = {
     name: string;
     deleted: boolean;
     eventDTOList: EventResponseDTO[]
+    nowAverageDiscountPercentEvent: number,
 };
 
 export type OrderProductDetail = Entity & {
@@ -164,6 +169,7 @@ export type OrderDetailResponseDTO = {
     code: string;
     quantity: number;
     productDetailResponseDTO: OrderProductDetail;
+    averageDiscountEventPercent: number
 };
 
 export type ProductOrderDetail = {
@@ -205,6 +211,7 @@ export type ProductDetailOverviewPhah04 = {
     materialName: string;
     thicknessName: string;
     elasticityName: string;
+    nowAverageDiscountPercentEvent: number,
     images: Image[],
     eventResponseDTOS: EventResponseDTO[]
 

@@ -15,6 +15,7 @@ import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.voucher.core.Voucher;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -34,22 +35,22 @@ public class Order extends BaseEntity {
     @Column(name = "province_id")
     private Integer provinceId;
 
-    @Column(name = "province_name")
+    @Column(name = "province_name", columnDefinition = "NVARCHAR(255)")
     private String provinceName;
 
     @Column(name = "district_id")
     private Integer districtId;
 
-    @Column(name = "district_name")
+    @Column(name = "district_name", columnDefinition = "NVARCHAR(255)")
     private String districtName;
 
     @Column(name = "ward_id")
     private String wardId;
 
-    @Column(name = "ward_name")
+    @Column(name = "ward_name", columnDefinition = "NVARCHAR(255)")
     private String wardName;
 
-    @Column(name = "recipient_name")
+    @Column(name = "recipient_name", columnDefinition = "NVARCHAR(255)")
     private String recipientName;
 
     @Column(name = "phone")
@@ -57,6 +58,15 @@ public class Order extends BaseEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @Column(name = "totalPaid")
+    private Double totalPaid;
+
+    @Column(name = "discount_voucher_percent")
+    private Double discountVoucherPercent;
+
+    @Column(name = "voucher_minimum_subtotal_required")
+    private Double voucherMinimumSubtotalRequired;
 
     @Column(name = "total")
     private Double total;
@@ -66,6 +76,9 @@ public class Order extends BaseEntity {
 
     @Column(name = "discount")
     private Double discount;
+
+    @Column(name = "is_payment")
+    private Boolean isPayment;
 
     @Column(name = "sub_total")
     private Double subTotal;
@@ -95,8 +108,8 @@ public class Order extends BaseEntity {
     private Voucher voucher;
 
     @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderDetails;
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 
     @OneToMany(mappedBy = "order")
-    private List<History> histories;
+    private List<History> histories = new ArrayList<>();
 }

@@ -21,4 +21,8 @@ public class OrderDetailRequestDTO {
     @NotNull(message = "NotNull")
     @PositiveOrZero(message = "PositiveOrZero")
     private Integer orderId;
+
+    @NotNull(message = "NotNull")
+    @PositiveOrZero(message = "PositiveOrZero")
+    private double averageDiscountEventPercent;
 }

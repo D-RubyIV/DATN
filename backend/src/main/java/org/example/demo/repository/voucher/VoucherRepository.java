@@ -4,6 +4,7 @@ import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.voucher.core.Voucher;
+import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
@@ -157,19 +158,19 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 
 
     @Query("""
-    SELECT v FROM Voucher v
-    WHERE v.deleted = false AND
-          (:keyword IS NULL OR 
-           v.name LIKE %:keyword% OR 
-           v.code LIKE %:keyword%) 
-      AND (:name IS NULL OR v.name LIKE %:name%) 
-      AND (:code IS NULL OR v.code LIKE %:code%) 
-      AND (:typeTicket IS NULL OR v.typeTicket = :typeTicket) 
-      AND (:quantity IS NULL OR v.quantity = :quantity) 
-      AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
-      AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
-      AND (:status IS NULL OR v.status = :status)
-""")
+                SELECT v FROM Voucher v
+                WHERE v.deleted = false AND
+                      (:keyword IS NULL OR 
+                       v.name LIKE %:keyword% OR 
+                       v.code LIKE %:keyword%) 
+                  AND (:name IS NULL OR v.name LIKE %:name%) 
+                  AND (:code IS NULL OR v.code LIKE %:code%) 
+                  AND (:typeTicket IS NULL OR v.typeTicket = :typeTicket) 
+                  AND (:quantity IS NULL OR v.quantity = :quantity) 
+                  AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
+                  AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
+                  AND (:status IS NULL OR v.status = :status)
+            """)
     Page<Voucher> searchVoucher(@Param("keyword") String keyword,
                                 @Param("name") String name,
                                 @Param("code") String code,
@@ -180,45 +181,78 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                                 @Param("status") String status,
                                 Pageable pageable);
 
-
-
     @Query("""
-        SELECT v FROM Voucher v
-        WHERE CAST(v.minAmount AS bigdecimal) > :amount
-        AND v.quantity > 0
-        AND v.deleted = FALSE
-        AND v.status = 'Active'
-        ORDER BY v.maxPercent ASC
-        """)
+            SELECT v FROM Voucher v
+            WHERE CAST(v.minAmount AS bigdecimal) > :amount
+            AND v.quantity > 0
+            AND v.deleted = FALSE
+            AND v.status = 'Active'
+            ORDER BY v.maxPercent ASC
+            """)
     List<Voucher> findVoucherWithMinAmountGreaterThan(@Param("amount") BigDecimal amount);
 
     @Query("""
-        SELECT v FROM Voucher v
-        WHERE CAST(v.minAmount AS bigdecimal) < :amount
-        AND v.quantity > 0
-        AND v.deleted = FALSE
-        AND v.status = 'Active'
-        ORDER BY v.maxPercent DESC
-        """)
+            SELECT v FROM Voucher v
+            WHERE CAST(v.minAmount AS bigdecimal) < :amount
+            AND v.quantity > 0
+            AND v.deleted = FALSE
+            AND v.status = 'Active'
+            ORDER BY v.maxPercent DESC
+            """)
     List<Voucher> findBestVoucher(@Param("amount") BigDecimal amount);
 
     @Query("""
-    SELECT v FROM Voucher v
-    WHERE v.quantity > 0
-    AND v.deleted = FALSE
-    AND v.status = 'Active'
-    """)
+            SELECT v FROM Voucher v
+            WHERE CAST(v.minAmount AS bigdecimal) < :amount
+            AND v.quantity > 0
+            AND v.deleted = FALSE
+            AND v.status = 'Active'
+            ORDER BY v.maxPercent asc
+            """)
+    List<Voucher> findListAbleToUseVoucher(@Param("amount") BigDecimal amount);
+
+    @Query("""
+            SELECT v FROM Voucher v
+            WHERE v.quantity > 0
+            AND v.deleted = FALSE
+            AND v.status = 'Active'
+            """)
     List<Voucher> findTopVouchers(Sort sort);
 
 
     @Query("""
-    SELECT v FROM Voucher v
-    WHERE v.quantity > 0
-    AND v.deleted = FALSE
-    AND v.status = 'Active'
-    """)
+            SELECT v FROM Voucher v
+            WHERE v.quantity > 0
+            AND v.deleted = FALSE
+            AND v.status = 'Active'
+            """)
     List<Voucher> findSortAmountVouchers(Sort sort);
 
-
+    @Query(
+            value = """
+            SELECT v FROM Voucher v
+            LEFT JOIN FETCH v.customers c
+            WHERE v.quantity > 0
+            AND v.deleted = false
+            AND (
+                 :query IS NULL OR
+                 LOWER(v.code) LIKE LOWER(CONCAT('%', :query, '%')) OR
+                 LOWER(v.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            )
+            AND (:typeTicket IS NULL OR LOWER(v.typeTicket) LIKE LOWER(CONCAT('%', :typeTicket, '%')))
+            AND (
+                :idCustomer IS NULL AND LOWER(v.typeTicket) like 'everybody' OR
+                :idCustomer IS NOT NULL AND ((LOWER(v.typeTicket) like 'individual' AND c.id = :idCustomer) OR LOWER(v.typeTicket) like 'everybody')
+            )
+           AND v.startDate < CURRENT_DATE
+           AND v.endDate >= CURRENT_DATE
+            """
+    )
+    Page<Voucher> selectPageActiveAndAbleToUseVoucher(
+            String query,
+            String typeTicket,
+            Integer idCustomer,
+            Pageable pageable
+    );
 
 }

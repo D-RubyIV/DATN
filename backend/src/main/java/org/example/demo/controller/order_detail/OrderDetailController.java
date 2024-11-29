@@ -64,4 +64,9 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     public ResponseEntity<?> getAllOrderDetailByOrderId(@PathVariable Integer id, @PageableDefault(page = 0, size = 5) Pageable pageable) {
         return ResponseEntity.ok(orderDetailService.getPageOrderDetailByIdOrder(id, pageable).map(s -> orderDetailResponseMapper.toDTO(s)));
     }
+
+    @PostMapping(value = "allowOverride")
+    public ResponseEntity<?> checkAllowOverride(@Valid @RequestBody OrderDetailRequestDTO orderDetailRequestDTO) {
+        return ResponseEntity.ok(orderDetailService.checkAllowOverride(orderDetailRequestDTO));
+    }
 }

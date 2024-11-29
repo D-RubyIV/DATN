@@ -10,6 +10,8 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useSaleContext } from '@/views/sale/SaleContext'
+import VoucherModal from './VoucherModal'
+
 
 export interface Image {
     id: number;
@@ -152,6 +154,20 @@ type RecipientDTO = {
     wardId: string,
 }
 
+interface Voucher {
+    id: number;
+    name: string;
+    code: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    quantity: number;
+    maxPercent: number;
+    minAmount: number;
+    typeTicket: string;
+}
+
+
 const Checkout = () => {
     const [IAddress, setIAddress] = useState<IAddress>({})
     const [provinces, setProvinces] = useState<IProvince[]>([])
@@ -164,6 +180,22 @@ const Checkout = () => {
     const navigate = useNavigate()
     const { openNotification } = useToastContext()
     const { setIsOpenCartDrawer } = useSaleContext()
+    const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
+    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
+    const [amount, setAmount] = useState<number>(100000);
+
+
+    const toggleVoucherModal = () => {
+        setIsVoucherModalOpen(!isVoucherModalOpen);
+    };
+
+
+    const handleVoucherSelect = (voucher: Voucher) => {
+        setSelectedVoucher(voucher);
+        setValue('voucherCode', voucher.code);
+        toggleVoucherModal();
+        console.log('Phiếu giảm giá đã chọn:', voucher);
+    };
 
 
     // SCHEMA
@@ -243,20 +275,22 @@ const Checkout = () => {
             'idCartId': id,
             'voucherCode': data.voucherCode
         }
-        instance.post(`cart/use-voucher`, payload).then(function(response) {
+        instance.post(`cart/use-voucher`, payload).then(function (response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
 
                 openNotification('Sử dụng thành công')
             }
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error)
             openNotification(error.response.data.error)
         })
     }
 
+// DUNG CLOSE CO MAY CAI LAM DO TAT DI QUEN K BIET CAI NAO
+
     const handleConfirmCart = async () => {
-        if (selectedCart?.payment === 'CASH') {
+        if (paymentMethod === 'CASH') {
             try {
                 const data = {
                     status: 'PENDING',
@@ -274,9 +308,9 @@ const Checkout = () => {
 
                 // Update cart
                 await handleUpdateCart(data)
-                instance.put(`/cart/v2/${id}`, data).then(function(response) {
+                instance.put(`/cart/v2/${id}`, data).then(function (response) {
                     if (response.status === 200 && response.data) {
-                        instance.get(`/orders/convert/${id}`).then(function(response) {
+                        instance.get(`/orders/convert/${id}`).then(function (response) {
                             if (response.status === 200 && response.data) {
                                 getDetailAboutCart()
                                 navigate('/thank')
@@ -293,7 +327,7 @@ const Checkout = () => {
                 console.error('Error processing payment:', error)
                 // Add appropriate error handling (e.g., show a notification to the user)
             }
-        } else if (selectedCart?.payment === 'TRANSFER') {
+        } else if (paymentMethod === 'TRANSFER') {
             const data = {
                 'status': 'PENDING',
                 payment: paymentMethod,
@@ -307,13 +341,13 @@ const Checkout = () => {
                 districtName: IAddress.idistrict?.DistrictName,
                 wardName: IAddress.iward?.WardName
             }
-            instance.put(`/cart/v2/${id}`, data).then(function(response) {
+            instance.put(`/cart/v2/${id}`, data).then(function (response) {
                 if (response.status === 200 && response.data) {
-                    instance.get(`/orders/convert/${id}`).then(function(response) {
+                    instance.get(`/orders/convert/${id}`).then(function (response) {
                         if (response.status === 200 && response.data) {
                             const idOrder = response.data.id
-                            const amount = Math.round(selectedCart.subTotal)
-                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function(response) {
+                            const amount = Math.round((selectedCart as CartResponseDTO).subTotal)
+                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function (response) {
                                 if (response.status === 200 && response.data) {
                                     const url = response?.data?.data?.paymentUrl
                                     if (url) {
@@ -330,7 +364,7 @@ const Checkout = () => {
 
 
     const handleUpdateCart = async (data: any) => {
-        instance.put(`/cart/v2/${id}`, data).then(function(response) {
+        instance.put(`/cart/v2/${id}`, data).then(function (response) {
             if (response.status === 200 && response.data) {
                 getDetailAboutCart()
             }
@@ -339,7 +373,7 @@ const Checkout = () => {
 
 
     const getDetailAboutCart = async () => {
-        instance.get(`cart/detail/${id}`).then(function(response) {
+        instance.get(`cart/detail/${id}`).then(function (response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
                 setPaymentMethod(response.data.payment)
@@ -352,7 +386,7 @@ const Checkout = () => {
     }
 
     useEffect(() => {
-        instance.get(`cart-details/in-cart/${id}`).then(function(response) {
+        instance.get(`cart-details/in-cart/${id}`).then(function (response) {
             if (response?.data) {
                 setListCartDetailResponseDTO(response?.data)
 
@@ -436,19 +470,19 @@ const Checkout = () => {
     return (
         <div className=" bg-white">
             <Card className={'px-40'}>
-                <form className={'grid 2xl:grid-cols-1 grid-cols-1 gap-20 h-full xl:p-20'}>
+                <form className={'h-full xl:p-20 grid grid-cols-12 gap-4'}>
                     {/*BLOCK 1*/}
-                    <div className={'order-2 md:order-1 h-full col-span-2'}>
+                    <div className={'order-2 md:order-1 h-full col-span-5'}>
                         <Fragment>
                             <div className={'py-2 text-black font-semibold text-[18px]'}>
                                 <p>Thông tin giao hàng</p>
                             </div>
                             <div className={'flex flex-col gap-5'}>
-                                <div className={'grid grid-cols-6 gap-2'}>
+                                <div className={'grid grid-cols-6 gap-4'}>
                                     <div className={'col-span-3'}>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Họ và tên</p>
+                                        <p className={' text-black text-[18px] font-semibold'}>Họ và tên</p>
                                         <Input
-                                            className={'border-2 rounded-none border-black'}
+                                            className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             placeholder={'Họ và tên'}
                                             {...registerFormRecipient('recipientName')}
                                             onChange={(el) => {
@@ -460,9 +494,9 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div className={'col-span-3'}>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Số điện thoại</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Số điện thoại</p>
                                         <Input
-                                            className={'border-2 rounded-none border-black'}
+                                            className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             placeholder="Số điện thoại"
                                             {...registerFormRecipient('phone')}
                                             onChange={(el) => {
@@ -474,11 +508,11 @@ const Checkout = () => {
                                         )}
                                     </div>
                                 </div>
-                                <div className={'grid grid-cols-3 gap-2'}>
+                                <div className={'grid grid-cols-3 gap-4'}>
                                     <div>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Tỉnh thành</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Tỉnh thành</p>
                                         <Select
-                                            className={'border-2 rounded-none border-black'}
+                                            className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             options={provinces}
                                             placeholder="Tỉnh/thành"
                                             {...registerFormRecipient('provinceId')}
@@ -487,7 +521,9 @@ const Checkout = () => {
                                                 setValuesFormRecipient('provinceId', (el as IProvince).ProvinceID)
                                             }}
                                             value={
-                                                provinces.find(s => s.ProvinceID.toString() === getValuesFormRecipient('provinceId').toString() ?? null)
+                                                provinces.find((s) =>
+                                                    getValuesFormRecipient('provinceId')?.toString() === s.ProvinceID.toString()
+                                                ) ?? null
                                             }
                                         />
                                         {errorsFormRecipient.provinceId && (
@@ -495,9 +531,9 @@ const Checkout = () => {
                                         )}
                                     </div>
                                     <div>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Quận/huyện</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Quận/huyện</p>
                                         <Select
-                                            className={'border-2 rounded-none border-black'}
+                                            className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             options={districts}
                                             placeholder="Quận/huyện"
                                             {...registerFormRecipient('districtId')}
@@ -505,26 +541,32 @@ const Checkout = () => {
                                                 setIAddress((prev) => ({ ...prev, idistrict: (el as IDistrict) }))
                                                 setValuesFormRecipient('districtId', (el as IDistrict).DistrictID)
                                             }}
-                                            value={districts.find(s => s.DistrictID.toString() === getValuesFormRecipient('districtId')?.toString()) ?? null}
-
+                                            value={
+                                                districts.find((s) =>
+                                                    getValuesFormRecipient('districtId')?.toString() === s.DistrictID.toString()
+                                                ) ?? null
+                                            }
                                         />
                                         {errorsFormRecipient.districtId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.districtId.message}</p>
                                         )}
                                     </div>
                                     <div>
-                                        <p className={'font-hm text-black text-[18px] font-semibold'}>Xã/phường</p>
+                                        <p className={'  text-black text-[18px] font-semibold'}>Xã/phường</p>
                                         <Select
-                                            className={'border-2 rounded-none border-black'}
+                                            className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             options={wards}
                                             placeholder="Xã/phường"
                                             {...registerFormRecipient('wardId')}
-
                                             onChange={(el) => {
                                                 setIAddress((prev) => ({ ...prev, iward: (el as IWard) }))
                                                 setValuesFormRecipient('wardId', (el as IWard).WardCode)
                                             }}
-                                            value={wards.find(s => s.WardCode.toString() === getValuesFormRecipient('wardId')?.toString()) ?? null}
+                                            value={
+                                                wards.find((s) =>
+                                                    getValuesFormRecipient('wardId')?.toString() === s.WardCode.toString()
+                                                ) ?? null
+                                            }
                                         />
                                         {errorsFormRecipient.wardId && (
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.wardId.message}</p>
@@ -532,9 +574,9 @@ const Checkout = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <p className={'font-hm text-black text-[18px] font-semibold'}>Địa chỉ</p>
+                                    <p className={'  text-black text-[18px] font-semibold'}>Địa chỉ</p>
                                     <Input
-                                        className={'border-2 rounded-none border-black'}
+                                        className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                         placeholder={'Địa chỉ'}
                                         {...registerFormRecipient('address')}
                                         onChange={(el) => {
@@ -550,7 +592,7 @@ const Checkout = () => {
                                     <div className={'py-2 text-black font-semibold text-[18px]'}>
                                         <p>Phương thức vận chuyển</p>
                                     </div>
-                                    <Card className={'border-2 rounded-none border-black'}>
+                                    <Card className={'border-2 rounded-lg shadow-sm border-gray-300'}>
                                         <Radio checked>Vận chuyển</Radio>
                                     </Card>
                                 </div>
@@ -558,7 +600,7 @@ const Checkout = () => {
                                     <div className={'py-2 text-black font-semibold text-[18px]'}>
                                         Phương thức thanh toán
                                     </div>
-                                    <Card className={'border-2 rounded-none border-black'}>
+                                    <Card className={'border-2 rounded-lg shadow-sm border-gray-300'}>
                                         <Radio.Group
                                             vertical
                                             className={'gap-1'}
@@ -570,39 +612,39 @@ const Checkout = () => {
                                         </Radio.Group>
                                     </Card>
                                 </div>
-                                {/*<button className="bg-black w-full py-2 font-thin rounded-md text-white">Xác nhận thông tin</button>*/}
                             </div>
                         </Fragment>
                     </div>
+
                     {/*BLOCK 2*/}
-                    <div className="order-1 md:order-2 h-full col-span-2">
-                        <div className={'py-2 text-black font-semibold text-[18px]'}>
+                    {/* BLOCK 2 */}
+                    <div className="order-1 md:order-2 h-full col-span-7">
+                        <div className="py-4 text-black font-semibold text-xl">
                             Danh sách sản phẩm
                         </div>
-                        <div className="grid  border-2 border-black p-5">
-                            <div
-                                className="dark:text-gray-500 bg-white flex flex-col justify-between">
+                        <div className="grid border-2 border-gray-300 p-6">
+                            <div className="dark:text-gray-500 bg-white flex flex-col justify-between">
                                 <div>
                                     {/* CENTER */}
-                                    <div className={`overflow-y-auto`}>
-                                        {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 && listCartDetailResponseDTO.map((item, index) => (
+                                    <div className="overflow-y-auto">
+                                        {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 ? (
+                                            listCartDetailResponseDTO.map((item, index) => (
                                                 <Fragment key={index}>
-                                                    <div
-                                                        className="flex justify-between gap-6 border-b border-gray-300 py-5">
+                                                    <div className="flex justify-between gap-6 border-b border-gray-300 py-6">
                                                         {/* Hình ảnh sản phẩm */}
                                                         <div className="flex-shrink-0">
                                                             <Badge content={item?.quantity} maxCount={9999}>
-                                                                <div className="w-28 h-28">
+                                                                <div className="w-32 h-32">
                                                                     {item.productDetailResponseDTO?.images[0]?.url ? (
                                                                         <img
                                                                             src={item.productDetailResponseDTO.images[0]?.url}
-                                                                            className="w-full h-full object-cover rounded-md"
+                                                                            className="w-full h-full object-cover rounded-lg"
                                                                             alt=""
                                                                         />
                                                                     ) : (
                                                                         <img
                                                                             src="https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"
-                                                                            className="w-full h-full object-cover rounded-md"
+                                                                            className="w-full h-full object-cover rounded-lg"
                                                                             alt=""
                                                                         />
                                                                     )}
@@ -614,98 +656,76 @@ const Checkout = () => {
                                                         <div className="flex flex-col justify-between w-full">
                                                             {/* Tên sản phẩm */}
                                                             <div>
-                                                                <p className="font-semibold text-[15px]">
-                                                                    Sản phẩm: <span
-                                                                    className="text-gray-800">{item.productDetailResponseDTO?.name}</span>
+                                                                <p className="font-semibold text-sm">
+                                                                    Sản phẩm: <span className="text-gray-800">{item.productDetailResponseDTO?.name}</span>
                                                                 </p>
                                                                 {/* Thuộc tính sản phẩm */}
-                                                                <div
-                                                                    className="mt-2 text-[14px] text-gray-600 space-y-1">
+                                                                <div className="mt-2 text-sm text-gray-600 space-y-1">
                                                                     <p>
-                                                                        Màu:{' '}
-                                                                        <span className="text-gray-800">
-                                                                                {item.productDetailResponseDTO?.color?.name}
-                                                                            </span>
+                                                                        Màu: <span className="text-gray-800">{item.productDetailResponseDTO?.color?.name}</span>
                                                                     </p>
                                                                     <p>
-                                                                        Size:{' '}
-                                                                        <span className="text-gray-800">
-                                                                                {item.productDetailResponseDTO?.size?.name}
-                                                                            </span>
+                                                                        Size: <span className="text-gray-800">{item.productDetailResponseDTO?.size?.name}</span>
                                                                     </p>
                                                                     <p>
-                                                                        Thương hiệu:{' '}
-                                                                        <span className="text-gray-800">
-                                                                                {item.productDetailResponseDTO?.brand?.name}
-                                                                            </span>
+                                                                        Thương hiệu: <span className="text-gray-800">{item.productDetailResponseDTO?.brand?.name}</span>
                                                                     </p>
                                                                     <p>
-                                                                        Đơn giá:{' '}
-                                                                        <span
-                                                                            className={`text-red-600 ${hasSale(item.productDetailResponseDTO) ? 'line-through' : ''}`}>
-                                                                                {Math.round(item.productDetailResponseDTO?.price).toLocaleString('vi-VN') + '₫'}
-                                                                            </span>
+                                                                        Đơn giá:{" "}
+                                                                        <span className={`text-red-600 ${hasSale(item.productDetailResponseDTO) ? "line-through" : ""}`}>
+                                                                            {Math.round(item.productDetailResponseDTO?.price).toLocaleString("vi-VN") + "₫"}
+                                                                        </span>
                                                                     </p>
-                                                                    {
-                                                                        item.productDetailResponseDTO.product.eventDTOList.length > 0 &&
-                                                                        (
-                                                                            <p>
-                                                                                Giá khuyễn mãi:{' '}
-                                                                                <span
-                                                                                    className="text-red-600">{getFinalPrice(item.productDetailResponseDTO).toLocaleString('vi-VN') + '₫'} </span>
-                                                                            </p>
-                                                                        )
-                                                                    }
+                                                                    {item.productDetailResponseDTO.product.eventDTOList.length > 0 && (
+                                                                        <p>
+                                                                            Giá khuyến mãi:{" "}
+                                                                            <span className="text-red-600">
+                                                                                {getFinalPrice(item.productDetailResponseDTO).toLocaleString("vi-VN") + "₫"}
+                                                                            </span>
+                                                                        </p>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                             {/* Giá sản phẩm */}
                                                         </div>
-                                                        <div
-                                                            className="flex justify-between items-center mt-4">
+                                                        <div className="flex justify-between items-center mt-4">
                                                             <div></div>
-                                                            <span
-                                                                className="font-semibold text-red-600 text-[16px]">
-                                                                        {Math.round(getFinalPrice(item.productDetailResponseDTO) * item?.quantity).toLocaleString('vi-VN') + '₫'}
-                                                                </span>
+                                                            <span className="font-semibold text-red-600 text-lg">
+                                                                {Math.round(getFinalPrice(item.productDetailResponseDTO) * item?.quantity).toLocaleString("vi-VN") + "₫"}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </Fragment>
-
                                             ))
-                                            ||
-                                            (
-                                                <Fragment>
-                                                    <div
-                                                        className="flex flex-col justify-center items-center h-full">
-                                                        <div>
-                                                            <img className="w-24 h-24 object-cover"
-                                                                 src="/img/OIP-removebg-preview.png"></img>
-                                                        </div>
-                                                        <div>
-                                                                    <span
-                                                                        className="font-thin">No have any product in your cart</span>
-                                                        </div>
+                                        ) : (
+                                            <Fragment>
+                                                <div className="flex flex-col justify-center items-center h-full">
+                                                    <div>
+                                                        <img className="w-28 h-28 object-cover" src="/img/OIP-removebg-preview.png" alt="No product image" />
                                                     </div>
-                                                </Fragment>
-                                            )
-                                        }
+                                                    <div>
+                                                        <span className="font-light text-gray-500">No products in your cart</span>
+                                                    </div>
+                                                </div>
+                                            </Fragment>
+                                        )}
                                     </div>
                                 </div>
                                 {/* BOTTOM */}
                                 <div className="text-sm">
-                                    <div className={'py-2 text-black font-semibold text-[18px]'}>
+                                    <div className="py-2 text-black font-semibold text-[18px]">
                                         Thông tin thanh toán
                                     </div>
-                                    <form className={'grid grid-cols-12 gap-2 w-full py-4'}>
-                                        <div className={'col-span-10'}>
+                                    <form className="grid grid-cols-12 gap-4 w-full py-4">
+                                        <div className="col-span-10">
                                             <Input
                                                 placeholder="Mã giảm giá"
-                                                className={`${errors.voucherCode ? 'border-red-500' : ''} border-2 rounded-none border-black`}
+                                                className={`border-2 rounded-none border-gray-200 w-full ${errors.voucherCode ? 'border-red-500' : ''}`}
                                                 {...register('voucherCode', {
                                                     required: 'Mã giảm giá không hợp lệ',
                                                     minLength: {
                                                         value: 5,
-                                                        message: 'Mã giảm giá phải có ít nhất 3 ký tự'
+                                                        message: 'Mã giảm giá phải có ít nhất 5 ký tự'
                                                     }
                                                 })}
                                             />
@@ -713,46 +733,74 @@ const Checkout = () => {
                                                 <p className="text-red-500 text-sm mt-2">{errors.voucherCode.message}</p>
                                             )}
                                         </div>
-                                        <div className={'col-span-2 w-full'}>
-                                            <Button className="w-full border-2 !rounded-none !border-black"
-                                                    onClick={handleSubmit(customHandleSubmit)}>
+                                        <div className="col-span-2 w-full">
+                                            <Button
+                                                className="w-full border-2 rounded-none border-black text-black"
+                                                onClick={handleSubmit(customHandleSubmit)}
+                                            >
                                                 Sử dụng
                                             </Button>
                                         </div>
                                     </form>
+
+                                    {/* Dòng "Xem thêm mã giảm giá" */}
+                                    <div className="text-sm text-blue-600 cursor-pointer mt-2" onClick={toggleVoucherModal}>
+                                        Xem thêm mã giảm giá
+                                    </div>
+
+                                    {/* Hiển thị voucher đã chọn */}
+                                    <div className="mt-4">
+                                        <VoucherModal
+                                            amount={(selectedCart as CartResponseDTO)?.subTotal}
+                                            isVoucherModalOpen={isVoucherModalOpen}
+                                            toggleVoucherModal={toggleVoucherModal}
+                                            onVoucherSelect={handleVoucherSelect}
+                                        />
+                                    </div>
+
+                                    {selectedVoucher && (
+                                        <div className="mt-4 p-4 border rounded bg-gray-100">
+                                            <h2 className="font-semibold text-lg">Phiếu giảm giá đã chọn</h2>
+                                            <p>Tên: {selectedVoucher.name}</p>
+                                            <p>Mã: {selectedVoucher.code}</p>
+                                            <p>Phần trăm giảm: {selectedVoucher.maxPercent}%</p>
+                                            <p>Số tiền tối thiểu: {selectedVoucher.minAmount.toLocaleString('vi-VN')}₫</p>
+                                        </div>
+                                    )}
+
                                     <div className="py-2 flex justify-between">
                                         <span>Tạm tính:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? 'n/a' + '₫'}</span>
+                                        <span className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? 'n/a'}₫</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Phí vận chuyển:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') + '₫'}</span>
+                                        <span className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
-                                        <span>Gỉảm giá:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') + '₫'}</span>
+                                        <span>Giảm giá:</span>
+                                        <span className="text-red-500 font-semibold">- {(selectedCart as CartResponseDTO)?.discount?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
                                         <span>Tổng tiền:</span>
-                                        <span
-                                            className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') + '₫'}</span>
+                                        <span className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>
                                     <button
                                         className="bg-black w-full py-2 font-thin rounded-none text-white"
                                         onClick={handleSubmitFormRecipient(handleConfirmCart)}
                                     >
-                                        <p className={'font-hm'}>Xác nhận đơn hàng</p>
+                                        <p className=" ">Xác nhận đơn hàng</p>
                                     </button>
                                 </div>
+
+
+
+
                             </div>
                         </div>
-                    </div>
-                </form>
-            </Card>
-        </div>
+                    </div >
+                </form >
+            </Card >
+        </div >
     )
 }
 export default Checkout

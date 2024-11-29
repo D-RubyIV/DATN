@@ -22,10 +22,10 @@ public class Customer extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", columnDefinition = "NVARCHAR(255)")
     private String email;
 
     @Column(name = "phone")

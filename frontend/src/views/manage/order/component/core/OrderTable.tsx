@@ -8,12 +8,12 @@ import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
 import { Badge, DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '../../../../../@types/order'
+import { StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '@/@types/order'
 import { Link } from 'react-router-dom'
 import { HiEye, HiOutlineSearch } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
-import { formatDistanceToNow, parse, format, subHours } from 'date-fns'
-import { vi } from 'date-fns/locale'
+import { parse, formatDistanceToNow, format } from 'date-fns'
+import { vi } from "date-fns/locale";
 
 type BadgeType =
     'countAll'
@@ -23,7 +23,6 @@ type BadgeType =
     | 'countDelivered'
     | 'countCancelled'
     | 'countReturned'
-    | 'countUnPaid'
 
 interface ICountStatus {
     countAll: number;    // Số lượng hóa đơn chờ xác nhận
@@ -33,7 +32,6 @@ interface ICountStatus {
     countDelivered: number;  // Số lượng hóa đơn đang giao hàng
     countCancelled: number;  // Số lượng hóa đơn đã hủy
     countReturned: number;   // Số lượng hóa đơn trả hàng
-    countUnPaid: number;   // Số lượng hóa đơn trả hàng
 }
 
 type IOveriewBill = {
@@ -61,7 +59,6 @@ export const OrderTable = () => {
         countDelivered: 0,
         countReturned: 0,
         countToReceive: 0,
-        countUnPaid: 0
     })
     const [queryParam, setQueryParam] = useState<{
         type: EOrderTypeEnums,
@@ -142,11 +139,21 @@ export const OrderTable = () => {
     }
 
     const calculateDistanceTime = (formattedDate: string) => {
-        const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
-        const dateMinus12Hours = subHours(date, -12)
-        const distance = formatDistanceToNow(dateMinus12Hours, { addSuffix: true, locale: vi })
-        return distance
-    }
+        console.log("Input formattedDate:", formattedDate);
+
+        // Parse date theo định dạng "yyyy-MM-dd HH:mm:ss.SSSSSS"
+        const date = parse(formattedDate, "HH:mm dd-MM-yyyy", new Date());
+        if (isNaN(date.getTime())) {
+            console.error("Invalid date format");
+            return "Invalid date";
+        }
+
+
+        // Tính khoảng cách thời gian so với hiện tại
+        const distance = formatDistanceToNow(date, { addSuffix: true, locale: vi });
+
+        return distance;
+    };
 
 
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
@@ -218,7 +225,7 @@ export const OrderTable = () => {
             header: 'Thời gian tạo',
             accessorKey: 'createdDate',
             cell: (props) => (
-                calculateDistanceTime(props.row.original.createdDate)
+                calculateDistanceTime(props.row.original.createdDate, props.row.original.code)
             )
         },
         {
@@ -241,8 +248,6 @@ export const OrderTable = () => {
                                         ? '!text-red-500'
                                         : props.row.original.status === 'RETURNED'
                                             ? '!text-orange-500'
-                                                : props.row.original.status === 'UNPAID'
-                                                    ? '!text-pink-500'
                                                     : '!text-gray-500'
                         }`}
                 >
@@ -260,8 +265,6 @@ export const OrderTable = () => {
                                                 ? '!bg-red-500'
                                                 : props.row.original.status === 'RETURNED'
                                                     ? '!bg-orange-500'
-                                                        : props.row.original.status === 'UNPAID'
-                                                            ? '!bg-pink-500'
                                                             : '!bg-gray-500'
                                 }`}></span>
                         <span>
@@ -278,8 +281,6 @@ export const OrderTable = () => {
                                                     ? 'Đã hủy đơn'
                                                     : props.row.original.status === 'RETURNED'
                                                         ? 'Đã trả hàng'
-                                                            : props.row.original.status === 'UNPAID'
-                                                                ? 'Chưa thanh toán'
                                                                 : 'Không xác định'}
                             </p>
                         </span>
@@ -333,7 +334,6 @@ export const OrderTable = () => {
     const statusBills: StatusBill[] = [
         { label: 'TẤT CẢ', value: EOrderStatusEnums.EMPTY, badge: 'countAll' },
         { label: 'CHỜ XÁC NHẬN', value: EOrderStatusEnums.PENDING, badge: 'countPending' },
-        { label: 'CHỜ THANH TOÁN', value: EOrderStatusEnums.UNPAID, badge: 'countUnPaid' },
         { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
         { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
         { label: 'ĐÃ HOÀN THÀNH', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },

@@ -3,10 +3,8 @@ package org.example.demo.controller.product.core;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
-import org.example.demo.dto.product.phah04.response.ProductClientResponse;
 import org.example.demo.dto.product.requests.core.ProductDetailRequestDTO;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
-import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.event.Event;
@@ -17,6 +15,7 @@ import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper
 import org.example.demo.repository.event.EventRepository;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.service.product.core.ProductDetailService;
+import org.example.demo.util.event.EventUtil;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,7 +25,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -189,17 +187,17 @@ public class ProductDetailController {
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestParam(value = "colorCodes", required = false) List<String> colorCodes,
             @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes,
-            @RequestParam(value = "brancCodes", required = false) List<String> brancCodes,
+            @RequestParam(value = "brandCodes", required = false) List<String> brandCodes,
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice
     ) {
         colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
         sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
 
-        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes, brancCodes, minPrice, maxPrice);
+        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes, brandCodes, minPrice, maxPrice);
         List<ProductResponseOverDTO> productList = page.getContent();
         List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
-        List<Event> events = eventRepository.findListEvent();
+        List<Event> events = eventRepository.findListEventUseValid();
 
 
         List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
@@ -224,6 +222,8 @@ public class ProductDetailController {
                 }
             });
             s.setListEvent(eventResponseMapper.toListDTO(evv));
+            double avgDiscount = EventUtil.getAveragePercentEvent(evv);
+            s.setDiscountPercent((long) avgDiscount);
 
         });
 

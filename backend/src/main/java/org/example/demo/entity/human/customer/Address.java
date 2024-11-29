@@ -20,28 +20,28 @@ public class Address extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name;
 
     @Column(name = "province_id")
     private String provinceId;
 
-    @Column(name = "province")
+    @Column(name = "province", columnDefinition = "NVARCHAR(255)")
     private String province;
 
     @Column(name = "district_id")
     private String districtId;
 
-    @Column(name = "district")
+    @Column(name = "district", columnDefinition = "NVARCHAR(255)")
     private String district;
 
     @Column(name = "ward_id")
     private String wardId;
 
-    @Column(name = "ward")
+    @Column(name = "ward", columnDefinition = "NVARCHAR(255)")
     private String ward;
 
-    @Column(name = "detail")
+    @Column(name = "detail", columnDefinition = "NVARCHAR(255)")
     private String detail;
 
     @Column(name = "is_default")

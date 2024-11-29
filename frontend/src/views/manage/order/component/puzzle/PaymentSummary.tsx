@@ -1,7 +1,10 @@
 import Card from '@/components/ui/Card'
 import { NumericFormat } from 'react-number-format'
 import { PaymentInfoProps, PaymentSummaryProps } from '@/@types/payment'
-
+import { HiExternalLink } from 'react-icons/hi'
+import { OrderResponseDTO } from '@/@types/order'
+import SuggestVoucher from '@/views/manage/util/SuggestVoucher'
+import UseVoucherBox from '@/views/manage/util/UseVoucherBox'
 
 const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
     return (
@@ -9,7 +12,7 @@ const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
             className={`flex items-center justify-between${!isLast ? ' mb-3' : ''
             }`}
         >
-            <span>{label}</span>
+            <span className={'text-black'}>{label}</span>
             <span className="font-semibold text-red-600">
                 <NumericFormat
                     displayType="text"
@@ -24,14 +27,33 @@ const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
     )
 }
 
-const PaymentSummary = ({ data }: { data: PaymentSummaryProps }) => {
+const PaymentSummary = ({selectObject, fetchData,  data }: {selectObject: OrderResponseDTO, fetchData: () => Promise<void> ,  data: PaymentSummaryProps }) => {
     return (
-        <Card className="mb-4 h-[205px]">
+        <Card className="h-[552px]">
             <h5 className="mb-4">Thông tin thanh toán</h5>
-            <PaymentRow label="Tổng tiền" value={data?.subTotal} />
+            <PaymentRow label="Tổng tiền các sản phẩm" value={data?.subTotal} />
             <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
-            <PaymentRow label="Giảm giá" value={data?.discount} prefix={' - '} />
-            <PaymentRow isLast label="Tổng thanh toán" value={data?.total} />
+            <PaymentRow label={`Khuyến mãi phiếu giảm giá (${selectObject.discountVoucherPercent}%)`} value={data?.discount} prefix={' - '} />
+            <PaymentRow label="Tổng thanh toán" value={data?.totalAfterDiscountAndFee} />
+
+            <UseVoucherBox selectedOrder={selectObject} fetchSelectedOrder={fetchData}></UseVoucherBox>
+
+            <SuggestVoucher fetchSelectedOrder={fetchData} selectedOrder={selectObject}></SuggestVoucher>
+
+
+            <HiExternalLink className="text-xl hidden group-hover:block" />
+            <hr className="my-5" />
+
+            <PaymentRow label="Đã thanh toán" value={data?.totalPaid} />
+            <PaymentRow label="Cần thanh toán" value={data?.total} />
+
+            <HiExternalLink className="text-xl hidden group-hover:block" />
+            <HiExternalLink className="text-xl hidden group-hover:block" />
+            <hr className="my-5" />
+            <PaymentRow label="(Phụ phí)" value={data?.surcharge} prefix={''} />
+            <PaymentRow isLast label="(Hoàn trả)" value={data?.refund} prefix={''} />
+
+
         </Card>
     )
 }

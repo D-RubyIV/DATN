@@ -266,6 +266,11 @@ public class VoucherServiceImpl implements VoucherService {
         return vouchers;
     }
 
+    @Override
+    public List<Voucher> findListAbleToUseVoucher(BigDecimal amount) {
+        return voucherRepository.findListAbleToUseVoucher(amount);
+    }
+
     public void updateStatus(Voucher voucher) {
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime startDate = voucher.getStartDate();
@@ -284,5 +289,10 @@ public class VoucherServiceImpl implements VoucherService {
 
     public List<Voucher> getSortedVouchers(Sort sort) {
         return voucherRepository.findSortAmountVouchers(sort);
+    }
+
+    @Override
+    public Page<Voucher> selectPageActiveAndAbleToUseVoucher(String query, String type, Integer customerId, Pageable pageable) {
+        return voucherRepository.selectPageActiveAndAbleToUseVoucher(query, type, customerId, pageable);
     }
 }

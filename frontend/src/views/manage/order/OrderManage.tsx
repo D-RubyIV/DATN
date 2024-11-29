@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { OrderTable } from "./component/core/OrderTable";
+import { Link } from 'react-router-dom'
+import { OrderTable } from './component/core/OrderTable'
 
 const OrderManage = () => {
     return (
@@ -37,7 +37,7 @@ const OrderManage = () => {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default OrderManage;
+export default OrderManage

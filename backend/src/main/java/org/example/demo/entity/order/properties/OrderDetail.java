@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.util.event.EventUtil;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,4 +31,11 @@ public class OrderDetail extends BaseEntity {
 
     @Column(name = "deleted")
     private Boolean deleted;
+
+    @Column(name = "average_discount_event")
+    private Double averageDiscountEventPercent;
+
+    public Double getAverageDiscountEventPercent() {
+        return EventUtil.roundPercent(averageDiscountEventPercent);
+    }
 }

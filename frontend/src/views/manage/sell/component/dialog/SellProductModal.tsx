@@ -12,16 +12,202 @@ import instance from '@/axios/CustomAxios'
 import ProductInformation from '@/views/manage/order/component/puzzle/ProductInfomation'
 import { OrderResponseDTO, ProductDetailOverviewPhah04 } from '@/@types/order'
 import { useLoadingContext } from '@/context/LoadingContext'
-import { Avatar } from '@/components/ui'
+import { Avatar, Select } from '@/components/ui'
 import { FiPackage } from 'react-icons/fi'
+import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
+
+type Property = {
+    id: number;
+    createdDate: string; // ISO 8601 format: "1980-08-31T21:43:06.41"
+    updatedDate: string; // ISO 8601 format: "1994-02-13T15:50:10.003"
+    code: string;
+    name: string;
+    deleted: boolean;
+    value: string;
+    label: string;
+};
 
 const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     setIsOpenProductModal: Dispatch<SetStateAction<boolean>>,
     selectOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
 }) => {
+    const [listSize, setListSize] = useState<Property[]>([])
+    const [listColor, setListColor] = useState<Property[]>([])
+    const [listProduct, setListProduct] = useState<Property[]>([])
+    const [listTexture, setListTexture] = useState<Property[]>([])
+    const [listOrigin, setListOrigin] = useState<Property[]>([])
+    const [listBrand, setListBrand] = useState<Property[]>([])
+    const [listCollar, setListCollar] = useState<Property[]>([])
+    const [listSleeve, setListSleeve] = useState<Property[]>([])
+    const [listMaterial, setListMaterial] = useState<Property[]>([])
+    const [listThickness, setListThickness] = useState<Property[]>([])
+    const [listElasticity, setListElasticity] = useState<Property[]>([])
+
+
+    // const [selectedColor, setSelectedColor] = useState<Property>()
+    // const [selectedSize, setSelectedSize] = useState<Property>()
+    // const [selectedBrand, setSelectedBrand] = useState<Property>()
+    // const [selecteddMaterial, setSelectedMaterial] = useState<Property>()
+    // const [selectedProduct, setSelectedProduct] = useState<Property>()
+
+    const handleThicknessChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            thickness: newValue?.id ?? undefined
+        }))
+    }
+    const handleElasticityChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            elasticity: newValue?.id ?? undefined
+        }))
+    }
+    const handleCollarChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            collar: newValue?.id ?? undefined
+        }))
+    }
+    const handleSleeveChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            sleeve: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleOriginChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            origin: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleTextureChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            texture: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleColorChange = (newValue, actionMeta) => {
+        console.log(`action: ${actionMeta.action}`)
+        console.log(newValue)
+        setQueryParam(prevState => ({
+            ...prevState,
+            color: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleSizeChange = (newValue, actionMeta) => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            size: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleBrandChange = (newValue, actionMeta) => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            brand: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleMaterialChange = (newValue, actionMeta) => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            material: newValue?.id ?? undefined
+        }))
+    }
+
+    const handleProductChange = (newValue, actionMeta) => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            product: newValue?.id ?? undefined
+        }))
+    }
+
+
+    const transformData = (data: any[]) => {
+        return data.map(item => ({
+            id: item.id,
+            createdDate: item.createdDate,
+            updatedDate: item.updatedDate,
+            code: item.code,
+            name: item.name,
+            deleted: item.deleted,
+            value: item.code, // value là code
+            label: item.name  // label là name
+        }))
+    }
+
+    const initProperties = () => {
+        instance.get('/color/color-list').then(function(response) {
+            console.log(response.data)
+            setListColor(transformData(response.data.data))
+        })
+        instance.get('/size/size-list').then(function(response) {
+            console.log(response.data)
+            setListSize(transformData(response.data.data))
+        })
+        instance.get('/brand/brand-list').then(function(response) {
+            console.log(response.data)
+            setListBrand(transformData(response.data.data))
+        })
+        instance.get('/product/product-list').then(function(response) {
+            console.log(response.data)
+            setListProduct(transformData(response.data.data))
+        })
+        instance.get('/texture/texture-list').then(function(response) {
+            console.log(response.data)
+            setListTexture(transformData(response.data.data))
+        })
+        instance.get('/material/material-list').then(function(response) {
+            console.log(response.data)
+            setListMaterial(transformData(response.data.data))
+        })
+        instance.get('/origin/origin-list').then(function(response) {
+            console.log(response.data)
+            setListOrigin(transformData(response.data.data))
+        })
+        instance.get('/collar/collar-list').then(function(response) {
+            console.log(response.data)
+            setListCollar(transformData(response.data.data))
+        })
+        instance.get('/sleeve/sleeve-list').then(function(response) {
+            console.log(response.data)
+            setListSleeve(transformData(response.data.data))
+        })
+        instance.get('/thickness/thickness-list').then(function(response) {
+            console.log(response.data)
+            setListThickness(transformData(response.data.data))
+        })
+        instance.get('/elasticity/elasticity-list').then(function(response) {
+            console.log(response.data)
+            setListElasticity(transformData(response.data.data))
+        })
+
+    }
+    useEffect(() => {
+        initProperties()
+    }, [])
+
+
     const inputRef = useRef(null)
     const quantityRef = useRef(null)
+    const { setIsOpenOverrideConfirm, checkAllowOverride, setSelectedOrderRequestContext } = useOrderContext()
     const [data, setData] = useState([])
     const { sleep, isLoadingComponent, setIsLoadingComponent } = useLoadingContext()
     const [isOpenPlacement, setIsOpenPlacement] = useState(false)
@@ -44,6 +230,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         thicknessName: '',
         elasticityName: '',
         images: [],
+        nowAverageDiscountPercentEvent: 0,
         eventResponseDTOS: []
     })
 
@@ -102,7 +289,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const getFinalPrice = (item: ProductDetailOverviewPhah04) => {
         const { price } = item
         const discountPercent = item.eventResponseDTOS.length > 0
-            ? item.eventResponseDTOS[0].discountPercent
+            ? item.nowAverageDiscountPercentEvent
             : 0
 
         return Math.round(price * (1 - discountPercent / 100))
@@ -124,8 +311,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         {
                             props.row.original.eventResponseDTOS.length > 0 && (
                                 <div
-                                    className={'absolute top-0 right-0 p-1 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                    <p>-{props.row.original.eventResponseDTOS[0].discountPercent} %</p>
+                                    className={'absolute top-0 -right-4 p-1 bg-red-600 z-50 border-black border text-[10px] text-white mim-w-[45px] text-center font-semibold'}>
+                                    <p>-{props.row.original.nowAverageDiscountPercentEvent} %</p>
                                 </div>
                             )
                         }
@@ -136,8 +323,8 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         {
                             props.row.original.eventResponseDTOS.length > 0 && (
                                 <div
-                                    className={'absolute top-0 right-0 p-1 bg-red-600 z-50 border-black border text-[10px] text-white w-[40px] text-center font-semibold'}>
-                                    <p>-{props.row.original.eventResponseDTOS[0].discountPercent} %</p>
+                                    className={'absolute top-0 -right-4 p-1 bg-red-600 z-50 border-black border text-[10px] text-white mim-w-[45px] text-center font-semibold'}>
+                                    <p>-{props.row.original.nowAverageDiscountPercentEvent} %</p>
                                 </div>
                             )
                         }
@@ -152,6 +339,13 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         {
             header: 'Mã',
             accessorKey: 'code'
+        },
+        {
+            header: 'Sản phẩm',
+            accessorKey: 'product___name',
+            cell: (props) => (
+                props.row.original.productName
+            )
         },
         {
             header: 'Kích thước',
@@ -194,7 +388,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                             </div>
                         ) : (
                             <div>
-                                <p className={'line-through'}>{Math.round(props.row.original.price).toLocaleString('vi') + 'đ'}</p>
+                                <p>{Math.round(props.row.original.price).toLocaleString('vi') + 'đ'}</p>
                             </div>
                         )
                     }
@@ -221,9 +415,28 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     ]
     const [queryParam, setQueryParam] = useState<{
         size: number | undefined,
-
+        color: number | undefined,
+        product: number | undefined,
+        texture: number | undefined,
+        origin: number | undefined,
+        brand: number | undefined,
+        collar: number | undefined,
+        sleeve: number | undefined,
+        material: number | undefined,
+        thickness: number | undefined,
+        elasticity: number | undefined
     }>({
-        size: undefined
+        size: undefined,
+        color: undefined,
+        product: undefined,
+        texture: undefined,
+        origin: undefined,
+        brand: undefined,
+        collar: undefined,
+        sleeve: undefined,
+        material: undefined,
+        thickness: undefined,
+        elasticity: undefined,
     })
 
     // FUCTION
@@ -232,7 +445,14 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     const setSelectProductDetailAndOpenDrawer = (productDetail: ProductDetailOverviewPhah04, isOpen: boolean) => {
         setIsOpenPlacement(true)
         setSelectedProductDetail(productDetail)
-        setOrderDetailRequest((pre) => ({ ...pre, productDetailId: productDetail.id, quantity: 1 }))
+        console.log('------------------')
+        console.log(productDetail)
+        setOrderDetailRequest((pre) => ({
+            ...pre,
+            productDetailId: productDetail.id,
+            quantity: 1,
+            averageDiscountEventPercent: productDetail.nowAverageDiscountPercentEvent
+        }))
     }
 
     const fetchDataProduct = async () => {
@@ -251,8 +471,10 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
         setIsLoadingComponent(false)
     }
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        debounceFn(e.target.value)
+        console.log(e.target.value) // Log the input value
+        debounceFn(e.target.value) // Call the debounced function
     }
+
     const debounceFn = debounce(handleDebounceFn, 500)
 
     function handleDebounceFn(val: string) {
@@ -266,13 +488,31 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     }
 
     const addOrderDetail = async () => {
-        await instance.post('/order-details', orderDetailRequest)
-        await fetchData()
-        setIsOpenPlacement(false)
-        setIsOpenProductModal(false)
-        await sleep(500)
-        openNotification('Thêm thành công!')
-        document.body.style.overflow = 'auto'
+        console.log(orderDetailRequest)
+        const hasChange = await checkAllowOverride(orderDetailRequest)
+        console.log(hasChange)
+        setIsOpenOverrideConfirm(hasChange)
+        if (hasChange) {
+            setSelectedOrderRequestContext(orderDetailRequest)
+            setIsOpenPlacement(false)
+            setIsOpenProductModal(false)
+        } else {
+            await instance.post('/order-details', orderDetailRequest).then(function(response){
+                if(response.status === 200){
+                    openNotification("Thêm thành công")
+                }
+            }).catch(function(error){
+                if (error?.response?.data?.error) {
+                    openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                }
+            })
+            await fetchData()
+            setIsOpenPlacement(false)
+            setIsOpenProductModal(false)
+            await sleep(500)
+            document.body.style.overflow = 'auto'
+        }
+
     }
 
 
@@ -295,7 +535,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 2xl:w-4/5 xl:w-4/5 w-4/5 max-h-4/5 overflow-auto bg-gray-100 z-20 shadow-md rounded-md">
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 3xl:w-4/5 xl:w-5/6 w-4/5 max-h-4/5 overflow-auto bg-gray-100 z-20 shadow-md rounded-md">
                 <div className="flex-wrap inline-flex xl:flex items-center gap-2 !w-[500px]">
                     <div
                         title="Thêm sản phẩm"
@@ -336,7 +576,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                     </div>
                 </div>
 
-                <div className="p-5 bg-white !h-4/5 rounded-md">
+                <div className="p-5 bg-white !h-4/5 rounded-md min-h-[500px]">
                     <div className="flex justify-between pb-3">
                         <div>
                             <p className="font-semibold text-xl">Danh sách sản phẩm chi tiết</p>
@@ -350,28 +590,157 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                         </div>
                     </div>
                     <div>
-                        <div>
-                            <Input
-                                ref={inputRef}
-                                placeholder="Search..."
-                                size="sm"
-                                className="lg:w-full"
-                                onChange={() => handleChange}
-                            />
+                        <div className={'grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-5 py-2'}>
+                            <div>
+                                <p>Tìm kiếm</p>
+                                <Input
+                                    ref={inputRef}
+                                    placeholder="Tìm theo tên sản phẩm chi tiết, mã"
+                                    size="sm"
+                                    className="lg:w-full"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div>
+                                <p>Kích cỡ</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleSizeChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listSize}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Màu sắc</p>
+                                <Select
+                                    onChange={handleColorChange}
+                                    isClearable
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listColor}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Sản phẩm</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleProductChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listProduct}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Họa tiết</p>
+                                <Select
+                                    isClearable
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listTexture}
+                                    onChange={handleTextureChange}
+                                ></Select>
+                            </div>
+
+
+                            <div>
+                                <p>Xuất xứ</p>
+                                <Select
+                                    isClearable
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listOrigin}
+                                    onChange={handleOriginChange}
+                                ></Select>
+                            </div>
+
+                            <div>
+                                <p>Cổ áo</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleCollarChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listCollar}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Tay áo</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleSleeveChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listSleeve}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Độ dày</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleThicknessChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listThickness}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Độ co dãn</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleElasticityChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listElasticity}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Thương hiệu</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleBrandChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listBrand}
+                                ></Select>
+                            </div>
+                            <div>
+                                <p>Chất liệu</p>
+                                <Select
+                                    isClearable
+                                    onChange={handleMaterialChange}
+                                    size={'sm'}
+                                    placeholder="Please Select"
+                                    options={listMaterial}
+                                ></Select>
+                            </div>
+
                         </div>
-                        <DataTable
-                            columns={columns}
-                            data={data}
-                            loading={isLoadingComponent}
-                            pagingData={tableData}
-                            onPaginationChange={handlePaginationChange}
-                            onSelectChange={handleSelectChange}
-                            onSort={handleSort}
-                        />
+                        {
+                            data.length > 0 ? (
+                                <DataTable
+                                    columns={columns}
+                                    data={data}
+                                    loading={isLoadingComponent}
+                                    pagingData={tableData}
+                                    onPaginationChange={handlePaginationChange}
+                                    onSelectChange={handleSelectChange}
+                                    onSort={handleSort}
+                                />
+                            ) : (
+                                <div className={'text-xl font-semibold flex justify-center'}>
+                                    <p className={'py-60'}>
+                                        Không tìm thấy sản phẩm nào phù hợp
+                                    </p>
+                                </div>
+                            )
+                        }
+
                     </div>
                 </div>
 
             </div>
+
         </div>
     )
 }

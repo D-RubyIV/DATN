@@ -1,6 +1,7 @@
 package org.example.demo.controller.voucher;
 
 
+import jakarta.validation.Valid;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.voucher.core.Voucher;
@@ -38,6 +39,7 @@ public class VoucherController {
     public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id, VoucherRequest request) {
         return ResponseEntity.ok().body(voucherService.getCustomerVoucher(id, request));
     }
+
     @GetMapping
     public ResponseEntity<Page<VoucherResponseDTO>> getAllVoucher(
             @RequestParam(name = "limit", defaultValue = "5") int limit,
@@ -46,6 +48,7 @@ public class VoucherController {
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/page")
     public ResponseEntity<Page<VoucherResponseDTO>> searchVoucher(
             @RequestParam(required = false) String keyword,
@@ -71,7 +74,6 @@ public class VoucherController {
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
-
 
 
     @GetMapping("/get-all")
@@ -116,18 +118,24 @@ public class VoucherController {
     }
 
     @GetMapping("/better-voucher")
-    public ResponseEntity<?> findBetterVoucher(@RequestParam("amount") BigDecimal amount){
+    public ResponseEntity<?> findBetterVoucher(@RequestParam("amount") BigDecimal amount) {
         return ResponseEntity.ok(voucherResponseMapper.toListDTO(voucherService.findBetterVoucher(amount)));
     }
 
-    @GetMapping("/sorted")
-    public ResponseEntity<List<VoucherResponseDTO>> getSortedVouchers() {
-        Sort sort = Sort.by(Sort.Order.desc("maxPercent"));
-        List<Voucher> vouchers = voucherService.getSortedVouchers(sort);
-        List<VoucherResponseDTO> voucherResponseDTOs = vouchers.stream()
-                .map(voucherService::getVoucherResponseDTO)
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(voucherResponseDTOs, HttpStatus.OK);
+    @GetMapping("/able-voucher")
+    public ResponseEntity<?> findListAbleToUseVoucher(@RequestParam("amount") BigDecimal amount) {
+        return ResponseEntity.ok(voucherResponseMapper.toListDTO(voucherService.findListAbleToUseVoucher(amount)));
     }
+
+    @GetMapping("/find-valid-voucher")
+    public ResponseEntity<Page<VoucherResponseDTO>> selectPageActiveAndAbleToUseVoucherEverybody(
+            @PageableDefault(size = 5, page = 0, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(name = "query", required = false, defaultValue = "") String query,
+            @RequestParam(name = "typeTicket", required = false, defaultValue = "") String typeTicket,
+            @RequestParam(name = "customerId", required = false, defaultValue = "") Integer customerId
+    ) {
+        return ResponseEntity.ok(voucherService.selectPageActiveAndAbleToUseVoucher(query, typeTicket, customerId,  pageable).map(s -> voucherResponseMapper.toDTO(s)));
+    }
+
 
 }

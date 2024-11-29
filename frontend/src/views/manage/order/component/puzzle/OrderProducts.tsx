@@ -11,13 +11,19 @@ import {
 import { NumericFormat } from 'react-number-format'
 import { Button, Drawer } from '@/components/ui'
 import { HiLockClosed, HiMinus, HiMinusCircle, HiPlusCircle, HiViewList } from 'react-icons/hi'
-import { OrderResponseDTO, OrderDetailResponseDTO } from '../../../../../@types/order'
+import {
+    OrderResponseDTO,
+    OrderDetailResponseDTO,
+    OrderProductDetail
+} from '@/@types/order'
 import History from './History'
-import ProductModal from './ProductModal'
 import { ConfirmDialog } from '@/components/shared'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import { FiPackage } from 'react-icons/fi'
+import SellProductModal from '@/views/manage/sell/component/dialog/SellProductModal'
+import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
+import { useLoadingContext } from '@/context/LoadingContext'
 
 
 const OrderProducts = ({ data, selectObject, fetchData }: {
@@ -32,39 +38,93 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
 
     const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
+    const hasSaleEvent = (item: OrderProductDetail) => {
+        return item.product.eventDTOList.length > 0
+
+    }
+
+    const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
+        const order_detail_quantity = item.quantity
+        const product_detail_quantity = item.productDetailResponseDTO.quantity
+        return product_detail_quantity >= order_detail_quantity
+    }
+
+    const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
+        const nowPercent = item.averageDiscountEventPercent
+        const partPercent = item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent
+        return nowPercent === partPercent
+    }
+
+    const getFinalPriceInThePart = (item: OrderDetailResponseDTO) => {
+        const discountPercent = item.averageDiscountEventPercent > 0
+            ? item.averageDiscountEventPercent
+            : 0
+
+        return Math.round(item.productDetailResponseDTO.price * (1 - discountPercent / 100))
+    }
+
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
-            <div className="flex">
-                {
-                    Array.isArray(row.productDetailResponseDTO.images)
-                    && row.productDetailResponseDTO.images.length > 0 ?
-                        (
-                            <Avatar size={90} src={row.productDetailResponseDTO.images[0]?.url} />
+            <div>
+                <div className="flex gap-3">
+                    <div className={'relative'}>
+                        {
+                            Array.isArray(row.productDetailResponseDTO.images) && row.productDetailResponseDTO.images.length > 0 ?
+                                (
+                                    <Avatar
+                                        size={100}
+                                        src={row.productDetailResponseDTO.images[0].url}
+                                    />
+                                )
+                                : (
+                                    <Avatar size={100} icon={<FiPackage />} />
+                                )
+                        }
+                        {
+                            row?.averageDiscountEventPercent ? (
+                                <div
+                                    className={'absolute -top-2 -right-2 text-white p-[2px] bg-red-600 text-[12px] border border-black'}>
+                                    {
+                                        <p>-{row.averageDiscountEventPercent}%</p>
+                                    }
+                                </div>
+                            ) : (<div></div>)
+                        }
 
-                        ) :
-                        (
-                            <Avatar size={90} icon={<FiPackage />} />
-
-                        )
-                }
-                <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.productDetailResponseDTO.name}</h6>
-                    <div className="mb-1">
-                        <span className="capitalize">Cỡ: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO.size.name}</span>
                     </div>
-                    <div className="mb-1">
-                        <span className="capitalize">Màu: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO.color.name}</span>
+                    <div className="ltr:ml-2 rtl:mr-2">
+                        <h6 className="mb-2">
+                            ({row.productDetailResponseDTO?.product.name})
+                            {row.productDetailResponseDTO?.name}</h6>
+                        <div className="mb-1">
+                            <span className="capitalize">Mã SCPT: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.code}</span>
+                        </div>
+                        <div className="mb-1">
+                            <span className="capitalize">Kích cỡ: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.size.name}</span>
+                        </div>
+                        <div className="mb-1">
+                            <span className="capitalize">Màu sắc: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.color.name}</span>
+                        </div>
                     </div>
                 </div>
+                <div className={'text-orange-700'}>
+                    {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+                </div>
+                <div className={'text-orange-700'}>
+                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng`}
+                </div>
             </div>
+
         )
     }
 
 
     const [openDelete, setOpenDelete] = useState(false)
     const [selectedOrderDetailId, setSelectedOrderDetailId] = useState<number>()
+    const { sleepLoading } = useLoadingContext()
 
     const handleCloseDelete = () => {
         console.log('Close')
@@ -74,14 +134,16 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const handleConfirmDelete = async () => {
         console.log('Confirm')
         setOpenDelete(false)
-        await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function(response) {
+        await sleepLoading(300)
+        await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function() {
             fetchData()
         })
     }
 
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
-            .then(function(response) {
+            .then(function() {
+                sleepLoading(300)
                 fetchData()
             })
             .catch(function(err) {
@@ -126,7 +188,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         return (
             <NumericFormat
                 displayType="text"
-                value={(Math.round(amount * 100) / 100).toFixed(2)}
+                value={(Math.round(amount * 100) / 100).toFixed(0)}
                 suffix={'₫'}
                 thousandSeparator={true}
             />
@@ -144,7 +206,6 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         columnHelper.accessor('quantity', {
             header: 'Số lượng',
             cell: (props) => {
-                const row = props.row.original
                 return (
                     <div className="flex gap-1 items-center justify-start">
                         {
@@ -164,18 +225,40 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 )
             }
         }),
+        columnHelper.accessor('productDetailResponseDTO.quantity', {
+            header: 'Kho',
+            cell: (props) => {
+                const row = props.row.original
+                return (
+                    <div className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
+                        <p>{row.productDetailResponseDTO.quantity}</p>
+                    </div>
+                )
+            }
+        }),
         columnHelper.accessor('productDetailResponseDTO.price', {
             header: 'Giá',
             cell: (props) => {
                 const row = props.row.original
-                return <PriceAmount amount={row.productDetailResponseDTO.price} />
+                return (
+                    <div className={'flex gap-3 text-red-600'}>
+                        <div className={`${hasSaleEvent(row.productDetailResponseDTO) ? 'line-through' : 'hidden'}`}>
+                            <PriceAmount amount={row.productDetailResponseDTO.price} />
+                        </div>
+                        <PriceAmount amount={getFinalPriceInThePart(row)} />
+                    </div>
+                )
             }
         }),
         columnHelper.accessor('productDetailResponseDTO', {
             header: 'Tổng',
             cell: (props) => {
                 const row = props.row.original
-                return <PriceAmount amount={row.quantity * row.productDetailResponseDTO.price} />
+                return (
+                    <div className={'flex gap-3 text-red-600'}>
+                        <PriceAmount amount={row.quantity * getFinalPriceInThePart(row)} />
+                    </div>
+                )
             }
         }),
         columnHelper.accessor('productDetailResponseDTO.id', {
@@ -199,7 +282,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         setIsOpen(true)
     }
 
-    const onDrawerClose = (e: MouseEvent | any) => {
+    const onDrawerClose = (e: MouseEvent) => {
         console.log('onDrawerClose', e)
         setIsOpen(false)
     }
@@ -207,8 +290,25 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const [isOpenProductModal, setIsOpenProductModal] = useState<boolean>(false)
 
 
+    const handleCloseOverride = () => {
+        console.log('Close')
+        setIsOpenOverrideConfirm(false)
+    }
+
+    const handleConfirmOverride = async () => {
+        console.log('Confirm')
+        setIsOpenOverrideConfirm(false)
+        console.log(selectedOrderRequestContext)
+        await instance.post('/order-details', selectedOrderRequestContext).then(function() {
+            fetchData()
+        })
+    }
+
+    const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
+
     return (
-        <div className="h-[555px]">
+        <div
+            className={`h-full`}>
             <ConfirmDialog
                 isOpen={openDelete}
                 type={'danger'}
@@ -221,9 +321,21 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             >
                 <p>Xác nhận muốn xóa ?</p>
             </ConfirmDialog>
+            <ConfirmDialog
+                isOpen={isOpenOverrideConfirm}
+                type={'warning'}
+                title={'Xác nhận tạo bản ghi mới ?'}
+                confirmButtonColor={'red-600'}
+                onClose={handleCloseOverride}
+                onRequestClose={handleCloseOverride}
+                onCancel={handleCloseOverride}
+                onConfirm={handleConfirmOverride}
+            >
+                <p>Đợt giảm giá cho đơn này đã có sự thay đổi</p>
+            </ConfirmDialog>
             {/*  */}
-            {isOpenProductModal && <ProductModal fetchData={fetchData} setIsOpenProductModal={setIsOpenProductModal}
-                                                 selectOrder={selectObject}></ProductModal>}
+            {isOpenProductModal && <SellProductModal fetchData={fetchData} setIsOpenProductModal={setIsOpenProductModal}
+                                                     selectOrder={selectObject}></SellProductModal>}
             {/*  */}
             <div className="">
                 <Drawer
@@ -238,8 +350,8 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             </div>
             <AdaptableCard className="mb-4 h-full">
                 <div className="flex justify-end items-center pb-4 gap-2">
-                    <Button onClick={() => openDrawer()} block variant="default" size="sm"
-                            className="bg-indigo-500 !w-auto" icon={<HiViewList />}>
+                    <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
+                            icon={<HiViewList />} onClick={() => openDrawer()}>
                         Xem lịch sử
                     </Button>
                     {
@@ -252,7 +364,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                     }
 
                 </div>
-                <div className="max-h-[450px] overflow-y-auto">
+                <div className="max-h-[500px] overflow-y-auto">
                     <Table>
                         <THead>
                             {table.getHeaderGroups().map((headerGroup) => (

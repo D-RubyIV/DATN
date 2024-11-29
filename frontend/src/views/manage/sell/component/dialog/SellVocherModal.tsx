@@ -1,281 +1,230 @@
-import React, {useState, useEffect, useRef, ChangeEvent, SetStateAction, Dispatch} from 'react'
+import React, { useState, useEffect, useRef, ChangeEvent } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
-import type {ColumnDef, OnSortParam} from '@/components/shared/DataTable'
 import CloseButton from '@/components/ui/CloseButton'
-
-
 import instance from '@/axios/CustomAxios'
-import {SellCustomerOverview} from '../..'
-import {OrderResponseDTO} from '@/@types/order'
-import {useLoadingContext} from '@/context/LoadingContext'
+import { OrderResponseDTO } from '@/@types/order'
+import { useLoadingContext } from '@/context/LoadingContext'
 import axios from 'axios'
-import {useToastContext} from '@/context/ToastContext'
-import {DoubleSidedImage} from "@/components/shared";
+import { useToastContext } from '@/context/ToastContext'
+import { Select } from '@/components/ui'
 
 type VoucherDTO = {
     id: number;
     name: string;
     code: string;
-    startDate: string; // hoặc Date nếu bạn muốn xử lý dưới dạng đối tượng Date
-    endDate: string; // hoặc Date nếu bạn muốn xử lý dưới dạng đối tượng Date
-    status: string,
+    startDate: string;
+    endDate: string;
+    status: string;
     quantity: number;
     maxPercent: number;
     minAmount: number;
     typeTicket: string;
-    customerId: number | null; // Có thể là number hoặc null
-    customerName: string | null; // Có thể là string hoặc null
-    customerEmail: string | null; // Có thể là string hoặc null
+    customerId: number | null;
+    customerName: string | null;
+    customerEmail: string | null;
 };
 
-const SellVoucherModal = ({setIsOpenVoucherModal, selectOrder, fetchData}: {
-    setIsOpenVoucherModal: Dispatch<SetStateAction<boolean>>,
-    selectOrder: OrderResponseDTO,
-    fetchData: () => Promise<void>
+const SellVoucherModal = ({
+                              setIsOpenVoucherModal,
+                              selectOrder,
+                              fetchData
+                          }: {
+    setIsOpenVoucherModal: React.Dispatch<React.SetStateAction<boolean>>;
+    selectOrder: OrderResponseDTO;
+    fetchData: () => Promise<void>;
 }) => {
+    const { sleep } = useLoadingContext()
+    const { openNotification } = useToastContext()
     const inputRef = useRef(null)
-    const [data, setData] = useState([])
-    const [loading, setLoading] = useState(false)
-    const {sleep} = useLoadingContext()
-    const {openNotification} = useToastContext()
 
-    const [tableData, setTableData] = useState<{
-        pageIndex: number
-        pageSize: number
-        sort: {
-            order: '' | 'asc' | 'desc'
-            key: string | number;
-        };
-        query: string
-        total: number
-    }>({
+    const [data, setData] = useState<VoucherDTO[]>([])
+    const [loading, setLoading] = useState(false)
+
+    const [tableData, setTableData] = useState({
         total: 0,
-        pageIndex: 0,
+        pageIndex: 1,
         pageSize: 5,
         query: '',
-        sort: {
-            order: '',
-            key: ''
-        }
+        typeTicket: '',
+        sort: { order: '', key: '' }
     })
-    const handlePaginationChange = (pageIndex: number) => {
-        setTableData((prevData) => ({...prevData, ...{pageIndex}}))
-        setQueryParam((pre) => ({...pre, page: pageIndex, size: tableData.pageSize - 1}))
-    }
-    const handleSelectChange = (pageSize: number) => {
-        setTableData((prevData) => ({
-            ...prevData,
-            pageSize: pageSize, // Cập nhật pageSize mới
-            pageIndex: 1 // Đặt pageIndex về 1
-        }))
-        setQueryParam((pre) => ({...pre, size: pageSize}))
-    }
-    const handleSort = ({order, key}: OnSortParam) => {
-        console.log({order, key})
-        setQueryParam((pre) => ({
-            ...pre,
-            page: tableData.pageIndex,
-            size: tableData.pageSize,
-            order: order,
-            sort: typeof key === 'number' ? String(key) : key // Ensure 'sort' is always a string
-        }));
 
-        setTableData((prevData) => ({
-            ...prevData,
-            sort: {
-                order,
-                key: (key as string).replace('___', '.')
-            }
-        }))
-    }
-    const columns: ColumnDef<VoucherDTO>[] = [
+    const typeOptions = [
+        { value: 'Individual', label: 'Cá nhân' },
+        { value: 'Everybody', label: 'Mọi người' }
+    ]
+
+    const columns = [
+        { header: '#', cell: (props: any) => props.row.index + 1 },
+        { header: 'Mã', accessorKey: 'code' },
+        { header: 'Tên', accessorKey: 'name' },
+        { header: 'Ngày bắt đầu', accessorKey: 'startDate' },
+        { header: 'Ngày kết thúc', accessorKey: 'endDate' },
+        { header: 'Số lượng', accessorKey: 'quantity' },
         {
-            header: '#',
-            cell: (props) => (
-                props.row.index + 1
+            header: 'Loại',
+            accessorKey: 'typeTicket',
+            cell: (props: any) => (
+                <p>{props.row.original.typeTicket === 'Everybody' ? 'Mọi người' : 'Cá nhân'}</p>
             )
         },
-        {
-            header: 'Tên',
-            accessorKey: 'name'
-        },
-        {
-            header: 'Ngày bắt đầu',
-            accessorKey: 'startDate'
-        },
-        {
-            header: 'Ngày kết thúc',
-            accessorKey: 'endDate',
-
-        },
-        {
-            header: 'Số lượng',
-            accessorKey: 'quantity'
-        },
-        {
-            header: 'Phần trăm giảm tối đa',
-            accessorKey: 'maxPercent'
-        },
+        { header: '% tối đa', accessorKey: 'maxPercent' },
         {
             accessorKey: 'minAmount',
             header: 'Hóa đơn tối thiểu',
-            cell: (props => (
-                <p>
-                    {props.row.original.minAmount.toLocaleString("vi") + "đ"}
-                </p>
-            ))
+            cell: (props: any) => (
+                <p>{`${props.row.original.minAmount.toLocaleString('vi')}đ`}</p>
+            )
+        },
+        {
+            header: 'Loại',
+            cell: (props: any) => (
+                <p className={'text-red-600'}>{Math.round(props.row.original.maxPercent / 100 * selectOrder.subTotal).toLocaleString('vi') + 'đ'}</p>
+            )
+        },
+        {
+            header: 'Loại',
+            cell: (props: any) => (
+                <div>
+                    <p
+                        className={`${selectOrder.subTotal >= props.row.original.minAmount ? 'text-green-500' : 'text-red-500'}`}
+                    >
+                        {selectOrder.subTotal >= props.row.original.minAmount ? 'Có thể áp dụng' : 'Không đủ điều kiện'}
+                    </p>
+                </div>
+            )
         },
         {
             header: 'Hành động',
             id: 'action',
-            cell: (props) => (
+            cell: (props: any) => (
                 <Button
                     size="xs"
-                    onClick={() => {
-                        console.log('Selected id voucher: ', props.row.original.id)
-                        handleUseVoucher(props.row.original.id)
-
-                    }}
+                    onClick={() => handleUseVoucher(props.row.original.id)}
                 >
                     Chọn
                 </Button>
             )
         }
     ]
-    const [queryParam, setQueryParam] = useState<{
-        size: number | undefined,
-        page: number | undefined,
-        query: string | undefined
-        sort: string | undefined
-        order: string | undefined
 
-    }>({
-        size: 10,
-        page: undefined,
-        query: undefined,
-        sort: undefined,
-        order: 'asc',
-    })
-
-    // FUCTION
+    const fetchDataProduct = async () => {
+        try {
+            setLoading(true)
+            const params = {
+                page: tableData.pageIndex - 1,
+                size: tableData.pageSize,
+                query: tableData.query,
+                typeTicket: tableData.typeTicket,
+                sort: tableData.sort ? (tableData.sort.key + ',' + tableData.sort.order) : '',
+                customerId: selectOrder?.customerResponseDTO?.id
+            }
+            const response = await instance.get(`/voucher/find-valid-voucher`, { params: params })
+            setData(response.data.content || [])
+            setTableData((prev) => ({ ...prev, total: response.data.totalElements || 0 }))
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleUseVoucher = async (idVoucher: number) => {
-        const data = {
-            idOrder: selectOrder.id,
-            idVoucher: idVoucher
-        }
         try {
-            const response = await instance.post(`/orders/use-voucher`, data)
-            console.log(response)
-
-            await handleDelayScreen()
-            fetchData()
-            setIsOpenVoucherModal(false)
-            document.body.style.overflow = 'auto'
+            await instance.post(`/orders/use-voucher-by-id`, {
+                idOrder: selectOrder.id,
+                idVoucher
+            }).then(function(response) {
+                if (response.status === 200) {
+                    openNotification('Áp khuyễn mãi thành công')
+                    sleep(500)
+                    fetchData()
+                }
+            })
+            closeModal()
         } catch (error) {
             if (axios.isAxiosError(error) && error?.response?.status === 400) {
                 openNotification(error.response.data?.error)
-
             }
         }
     }
 
+    const handleDebouncedChange = debounce((value: string) => {
+        setTableData((prev) => ({ ...prev, query: value }))
+    }, 500)
 
-    const fetchDataProduct = async () => {
-        setLoading(true)
-        const response = await instance.get(`/voucher/page`, {
-            params: queryParam,
-        })
-        setData(response.data.content)
-        setLoading(false)
-        setTableData((prevData) => ({
-            ...prevData,
-            ...{total: response.data.totalElements}
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        handleDebouncedChange(e.target.value)
+    }
+
+    const handlePaginationChange = (pageIndex: number) => {
+        setTableData((prev) => ({ ...prev, pageIndex: pageIndex }))
+    }
+
+    const handleSelectChange = (pageSize: number) => {
+        setTableData((prev) => ({ ...prev, pageSize: pageSize }))
+    }
+
+    const handleSort = ({ order, key }: { order: 'asc' | 'desc'; key: string }) => {
+        setTableData((prev) => ({
+            ...prev,
+            sort: { order, key }
         }))
     }
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        debounceFn(e.target.value)
+    const closeModal = () => {
+        setIsOpenVoucherModal(false)
+        document.body.style.overflow = 'auto'
     }
 
-    const debounceFn = debounce(handleDebounceFn, 500)
-
-    function handleDebounceFn(val: string) {
-        if ((val.length > 1 || val.length === 0)) {
-            setTableData((prevData) => ({
-                ...prevData,
-                ...{query: val, pageIndex: 1}
-            }))
-            setQueryParam((pre) => ({...pre, query: val}))
-        }
-    }
-
-
-    const handleDelayScreen = async () => {
-        setLoading(true)
-        await sleep(500)
-        setLoading(false)
-    }
-
-    // HOOK
     useEffect(() => {
         fetchDataProduct()
-    }, [
-        tableData.pageIndex,
-        tableData.sort,
-        tableData.pageSize,
-        tableData.query,
-        queryParam
-    ])
+    }, [tableData.pageIndex, tableData.pageSize, tableData.query, tableData.typeTicket, tableData.sort])
+
+
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 2xl:w-3/5 md:w-4/5 h-auto bg-gray-100 z-20 shadow-md rounded-md">
-                <div className="p-5 bg-white !h-4/5 rounded-md">
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-auto bg-gray-100 shadow-md rounded-md">
+                <div className="p-5 bg-white h-4/5 rounded-md">
                     <div className="flex justify-between pb-3">
-                        <div>
-                            <p className="font-semibold text-xl">Danh sách khuyến mãi</p>
-                        </div>
-                        <div>
-                            <CloseButton
-                                className="text-2xl py-1"
-                                onClick={() => {
-                                    setIsOpenVoucherModal(false)
-                                    document.body.style.overflow = 'auto'
-                                }}
-                            ></CloseButton>
-                        </div>
+                        <p className="font-semibold text-xl">Danh sách khuyến mãi</p>
+                        <CloseButton
+                            className="text-2xl py-1"
+                            onClick={closeModal}
+                        />
                     </div>
-                    <div>
-                        {
-                            Array.isArray(data) && (
-                                <div>
-                                    <div>
-                                        <Input
-                                            ref={inputRef}
-                                            placeholder="Search..."
-                                            size="sm"
-                                            className="lg:w-full"
-                                            onChange={(el) => handleChange(el)}
-                                        />
-                                    </div>
-                                    <DataTable
-                                        columns={columns}
-                                        data={data}
-                                        loading={loading}
-                                        pagingData={tableData}
-                                        onPaginationChange={handlePaginationChange}
-                                        onSelectChange={handleSelectChange}
-                                        onSort={handleSort}
-                                    />
-                                </div>
-                            )
-                        }
-
+                    <div className="grid xl:grid-cols-3 grid-cols-1 gap-2 mb-3">
+                        <Input
+                            ref={inputRef}
+                            placeholder="Tìm kiếm theo tên, mã"
+                            size="sm"
+                            className="xl:col-span-2"
+                            onChange={handleChange}
+                        />
+                        <Select
+                            size="sm"
+                            isClearable
+                            placeholder="Loại phiếu"
+                            options={typeOptions}
+                            onChange={(newValue) => {
+                                setTableData((prev) => ({
+                                    ...prev,
+                                    typeTicket: newValue?.value || ''
+                                }))
+                            }}
+                        />
                     </div>
+                    <DataTable
+                        columns={columns}
+                        data={data}
+                        loading={loading}
+                        pagingData={tableData}
+                        onPaginationChange={handlePaginationChange}
+                        onSelectChange={handleSelectChange}
+                        onSort={handleSort}
+                    />
                 </div>
             </div>
         </div>

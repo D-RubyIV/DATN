@@ -64,8 +64,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
             "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
             "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END), " + // Đếm số đơn hàng 'CANCELED'
-            "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END)," + // Đếm số đơn hàng 'RETURNED'
-            "SUM(CASE WHEN o.status = 'UNPAID' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'UNPAID'
+            "SUM(CASE WHEN o.status = 'RETURNED' THEN 1 ELSE 0 END))" + // Đếm số đơn hàng 'RETURNED'
             "FROM Order o")
     CountStatusOrder getCountStatus();
 
@@ -75,7 +74,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 
     @Query(value =
-            "SELECT ord.createdDate as createDate, ROUND(sum(ord.total),0) as totalRevenue, COUNT(ord.code) as quantityOrder " +
+            "SELECT ord.createdDate as createDate, ROUND(sum(ord.totalPaid),0) as totalRevenue, COUNT(ord.code) as quantityOrder " +
                     "FROM Order ord " +
                     "WHERE ord.status = :status " +
                     "AND ord.createdDate BETWEEN :from AND :to GROUP BY ord.createdDate")
@@ -83,7 +82,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 
     @Query(value = """
-        SELECT ROUND(sum(ord.total), 0) as revenue,
+        SELECT ROUND(sum(ord.totalPaid), 0) as revenue,
         sum(coalesce(detail.quantity, 0)) as quantity,
         CONCAT(DAY(ord.createdDate), '/', MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
         FROM Order ord
@@ -95,7 +94,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<StatisticOverviewSymbol> findAllStatisticByDay(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query(value = """
-        SELECT ROUND(sum(ord.total), 0) as revenue,
+        SELECT ROUND(sum(ord.totalPaid), 0) as revenue,
         sum(coalesce(detail.quantity, 0)) as quantity,
         CONCAT(MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
         FROM Order ord
@@ -107,7 +106,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<StatisticOverviewSymbol> findAllStatisticByMonth(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query(value = """
-        SELECT ROUND(sum(ord.total), 0) as revenue,
+        SELECT ROUND(sum(ord.totalPaid), 0) as revenue,
         sum(coalesce(detail.quantity, 0)) as quantity,
         YEAR(ord.createdDate) as symbol
         FROM Order ord
@@ -134,6 +133,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
         ORDER BY SUM(od.quantity) DESC
         """)
     Page<TopProductObject> findAllTopProduct(Pageable pageable);
+
 
 
 }

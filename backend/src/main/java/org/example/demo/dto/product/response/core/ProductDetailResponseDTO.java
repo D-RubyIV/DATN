@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.demo.dto.product.response.properties.*;
 import org.example.demo.entity.product.properties.*;
+import org.example.demo.util.event.EventUtil;
 
 import java.time.LocalDateTime;
 import java.time.LocalDateTime;
@@ -37,7 +38,5 @@ public class ProductDetailResponseDTO {
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime createdDate;
     @JsonFormat(pattern = "dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
-    private  LocalDateTime modifiedDate;
-
-
+    private LocalDateTime modifiedDate;
 }

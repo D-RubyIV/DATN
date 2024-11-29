@@ -17,6 +17,8 @@ import SellVocherModal from '@/views/manage/sell/component/dialog/SellVocherModa
 import { changeOrderStatus } from '@/services/OrderService'
 import { useToastContext } from '@/context/ToastContext'
 import { useSellContext } from '@/views/manage/sell/context/SellContext'
+import { ConfirmDialog } from '@/components/shared'
+import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
     // init variables
@@ -62,9 +64,9 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                 discount: response.data.discount || 0,
                 total: response.data.total || 0
             })
-        }).catch(function (error){
-            console.log(error.response.data.error === "Order not found")
-            localStorage.removeItem("orderIds")
+        }).catch(function(error) {
+            console.log(error.response.data.error === 'Order not found')
+            localStorage.removeItem('orderIds')
             window.location.reload()
         })
         await sleep(200)
@@ -102,12 +104,18 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     status: EOrderStatusEnums.DELIVERED,
                     note: 'Đã nhận hàng'
                 }
-                const response = await changeOrderStatus(selectedOrder.id, data)
-                if (response.status === 200) {
-                    await sleep(200)
-                    openNotification('Xác nhận thành công')
-                    removeTab(selectedOrder.id)
-                }
+                await changeOrderStatus(selectedOrder.id, data).then(function(response) {
+                    if (response.status === 200) {
+                        sleep(200)
+                        openNotification('Xác nhận thành công')
+                        removeTab(selectedOrder.id)
+                    }
+                }).catch(function(error){
+                    if (error?.response?.data?.error) {
+                        openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                    }
+                })
+
                 console.log('Confirm payment')
             } catch (error) {
                 console.log(error)
@@ -117,6 +125,22 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
         }
     }
+    const handleCloseOverride = () => {
+        console.log('Close')
+        setIsOpenOverrideConfirm(false)
+    }
+
+    const handleConfirmOverride = async () => {
+        console.log('Confirm')
+        setIsOpenOverrideConfirm(false)
+        console.log(selectedOrderRequestContext)
+        await instance.post('/order-details', selectedOrderRequestContext).then(function() {
+            fetchSelectedOrder()
+        })
+    }
+
+    const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
+
 
     return (
         <Fragment>
@@ -147,6 +171,18 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                         </div>
                     </div>
                     <div>
+                        <ConfirmDialog
+                            isOpen={isOpenOverrideConfirm}
+                            type={'warning'}
+                            title={'Xác nhận tạo bản ghi mới ?'}
+                            confirmButtonColor={'red-600'}
+                            onClose={handleCloseOverride}
+                            onRequestClose={handleCloseOverride}
+                            onCancel={handleCloseOverride}
+                            onConfirm={handleConfirmOverride}
+                        >
+                            <p>Đợt giảm giá cho đơn này đã có sự thay đổi</p>
+                        </ConfirmDialog>
                         {
                             selectedOrder && <SellProductTable fetchData={fetchSelectedOrder}
                                                                selectedOrder={selectedOrder}></SellProductTable>

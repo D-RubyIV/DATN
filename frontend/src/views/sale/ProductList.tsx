@@ -303,7 +303,7 @@ const ProductList = () => {
                                             && (
                                                 <div
                                                     className={'absolute top-2 right-2 bg-red-600 text-white p-2 border border-black z-20'}>
-                                                    - {product.listEvent[0].discountPercent}%
+                                                    - {product.discountPercent}%
                                                 </div>
                                             )
                                         }
@@ -364,7 +364,7 @@ const ProductList = () => {
                                                     ? (
                                                         <div className={' flex justify-between'}>
                                                             <p className={'line-through'}>{Math.round(product.price).toLocaleString('vi') + '₫'}</p>
-                                                            <p className={'text-red-600'}>{Math.round(product.price / 100 * (100 - product.listEvent[0].discountPercent)).toLocaleString('vi') + '₫'}</p>
+                                                            <p className={'text-red-600'}>{Math.round(product.price / 100 * (100 - product.discountPercent)).toLocaleString('vi') + '₫'}</p>
                                                         </div>
                                                     )
                                                     :

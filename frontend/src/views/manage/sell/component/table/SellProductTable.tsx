@@ -3,7 +3,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Avatar, Button, Notification, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
 import { HiMinus, HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
-import { OrderDetailResponseDTO, OrderProductDetail, OrderResponseDTO } from '@/@types/order'
+import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import DataTable, { type OnSortParam } from '../../../../../components/shared/DataTable'
@@ -35,22 +35,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
     })
     const { openNotification } = useToastContext()
 
-    const getFinalPrice = (item: OrderProductDetail) => {
-        return Math.round(item.price * (1 - getSalePercent(item) / 100))
-    }
-
-    const hasSale = (item: OrderProductDetail) => {
-        console.log(item)
-        return Array.isArray(item.product.eventDTOList) && item.product.eventDTOList.length > 0
-    }
-
-    const getSalePercent = (item: OrderProductDetail) => {
-        return Array.isArray(item.product.eventDTOList) && item.product.eventDTOList.length > 0
-            ? item.product.eventDTOList[0].discountPercent
-            : 0
-    }
-
-
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
             .then(function() {
@@ -68,7 +52,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 }
             })
     }
-
 
     const getAllOrderDetailWithIdOrder = async (id: number) => {
         instance.get(`/order-details/get-by-order/${id}?page=${tableData.pageIndex - 1}&size=${tableData.pageSize}`).then(function(response) {
@@ -88,6 +71,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
             await getAllOrderDetailWithIdOrder(selectedOrder.id)
         }
     }
+
     useEffect(() => {
         fetchOrderData()
     }, [selectedOrder, tableData.pageSize, tableData.pageIndex])
@@ -127,6 +111,18 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 }
             },
             {
+                accessorKey: 'quantity',
+                header: 'Kho',
+                cell: (props) => {
+                    const row = props.row.original
+                    return (
+                        <div className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
+                            <p>{row.productDetailResponseDTO.quantity}</p>
+                        </div>
+                    )
+                }
+            },
+            {
                 accessorKey: 'price',
                 header: 'Giá Gốc',
                 cell: (props) => {
@@ -134,7 +130,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     return (
                         <div>
                             {
-                                hasSale(row.productDetailResponseDTO) ? (
+                                row.averageDiscountEventPercent ? (
                                         <div className={'flex gap-2 flex-col'}>
                                             <PriceAmount
                                                 className={'text-gray-900 line-through'}
@@ -142,7 +138,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                                             />
                                             <PriceAmount
                                                 className={'text-red-600'}
-                                                amount={getFinalPrice(row.productDetailResponseDTO)}
+                                                amount={getFinalPriceInThePart(row)}
                                             />
                                         </div>
                                     ) :
@@ -150,7 +146,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                                         <div>
                                             <PriceAmount
                                                 className={'text-red-600'}
-                                                amount={getFinalPrice(row.productDetailResponseDTO)}
+                                                amount={getFinalPriceInThePart(row)}
                                             />
                                         </div>
                                     )
@@ -166,7 +162,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     const row = props.row.original as OrderDetailResponseDTO
                     return <PriceAmount
                         className={'text-red-600'}
-                        amount={row.quantity * getFinalPrice(row.productDetailResponseDTO)}
+                        amount={row.quantity * getFinalPriceInThePart(row)}
                     />
                 }
             },
@@ -225,47 +221,81 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         )
     }
 
+    const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
+        const nowPercent = item.averageDiscountEventPercent
+        const partPercent = item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent
+        return nowPercent === partPercent
+    }
+
+    const getFinalPriceInThePart = (item: OrderDetailResponseDTO) => {
+        const discountPercent = item.averageDiscountEventPercent > 0
+            ? item.averageDiscountEventPercent
+            : 0
+
+        return Math.round(item.productDetailResponseDTO.price * (1 - discountPercent / 100))
+    }
+
+    const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
+        const order_detail_quantity = item.quantity
+        const product_detail_quantity = item.productDetailResponseDTO.quantity
+        return product_detail_quantity >= order_detail_quantity
+    }
 
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
         return (
-            <div className="flex">
-                <div className={'relative'}>
-                    {
-                        Array.isArray(row.productDetailResponseDTO.images) && row.productDetailResponseDTO.images.length > 0 ?
-                            (
-                                <Avatar
-                                    size={90}
-                                    src={row.productDetailResponseDTO.images[0].url}
-                                />
-                            )
-                            : (
-                                <Avatar size={90} icon={<FiPackage />} />
-                            )
-                    }
-                    {
-                        hasSale(row.productDetailResponseDTO) && (
-                            <div
-                                className={'absolute -top-2 -right-2 text-white p-[2px] bg-red-600 text-[12px] border border-black'}>
-                                {
-                                    <p>-{getSalePercent(row.productDetailResponseDTO)}%</p>
-                                }
-                            </div>
-                        )
-                    }
+            <div>
+                <div className="flex gap-3">
+                    <div className={'relative'}>
+                        {
+                            Array.isArray(row.productDetailResponseDTO.images) && row.productDetailResponseDTO.images.length > 0 ?
+                                (
+                                    <Avatar
+                                        size={100}
+                                        src={row.productDetailResponseDTO.images[0].url}
+                                    />
+                                )
+                                : (
+                                    <Avatar size={100} icon={<FiPackage />} />
+                                )
+                        }
+                        {
+                            row?.averageDiscountEventPercent ? (
+                                <div
+                                    className={'absolute -top-2 -right-2 text-white p-[2px] bg-red-600 text-[12px] border border-black'}>
+                                    {
+                                        <p>-{row.averageDiscountEventPercent}%</p>
+                                    }
+                                </div>
+                            ) : (<div></div>)
+                        }
 
+                    </div>
+                    <div className="ltr:ml-2 rtl:mr-2">
+                        <h6 className="mb-2">
+                            ({row.productDetailResponseDTO?.product.name})
+                            {row.productDetailResponseDTO?.name}</h6>
+                        <div className="mb-1">
+                            <span className="capitalize">Mã SCPT: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.code}</span>
+                        </div>
+                        <div className="mb-1">
+                            <span className="capitalize">Kích cỡ: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.size.name}</span>
+                        </div>
+                        <div className="mb-1">
+                            <span className="capitalize">Màu sắc: </span>
+                            <span className="font-semibold">{row.productDetailResponseDTO?.color.name}</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="ltr:ml-2 rtl:mr-2">
-                    <h6 className="mb-2">{row.productDetailResponseDTO?.name}</h6>
-                    <div className="mb-1">
-                        <span className="capitalize">Cỡ: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO?.size.name}</span>
-                    </div>
-                    <div className="mb-1">
-                        <span className="capitalize">Màu: </span>
-                        <span className="font-semibold">{row.productDetailResponseDTO?.color.name}</span>
-                    </div>
+                <div className={'text-orange-700'}>
+                    {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+                </div>
+                <div className={'text-orange-700'}>
+                    {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng`}
                 </div>
             </div>
+
         )
     }
 
@@ -295,6 +325,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                             const response = await instance.delete(`/order-details/${idOrderDetail}`)
                             if (response.status === 200) {
                                 console.log('response', response)
+                                await fetchData()
                                 await getAllOrderDetailWithIdOrder(selectedOrder.id)
                             }
                         }}

@@ -5,16 +5,14 @@ import MobileNav from '@/components/template/MobileNav'
 import UserDropdown from '@/components/template/UserDropdown'
 import SideNav from '@/components/template/SideNav'
 import { Route, Routes } from 'react-router-dom'
-import { AdminViews, AuthViews, ClientViews, PublicViews } from '@/views'
+import { AdminViews, AuthViews, PublicViews } from '@/views'
 import Side from '@/components/layouts/AuthLayout/Side'
 import Navbar from '@/views/client/Navbar/Navbar'
 import Footer from '@/views/client/Footer/Footer'
-import { Fragment, useEffect, useState } from 'react'
-import AOS from 'aos'
+import { Fragment } from 'react'
 import 'aos/dist/aos.css'
 import SaleProvider from '@/views/sale/SaleContext'
 import CartDrawer from '@/views/sale/CartDrawer'
-import { AuthProvider } from '@/views/client/auth/AuthContext'
 
 const HeaderActionsStart = () => {
     return (

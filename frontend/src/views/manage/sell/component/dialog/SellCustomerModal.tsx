@@ -11,7 +11,7 @@ import instance from '@/axios/CustomAxios'
 import { SellCustomerOverview } from '../..'
 import { OrderResponseDTO } from '@/@types/order'
 
-const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: { setIsOpenCustomerModal: Dispatch<SetStateAction<boolean>>, selectOrder: OrderResponseDTO, fetchData: () => {} }) => {
+const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: { setIsOpenCustomerModal: Dispatch<SetStateAction<boolean>>, selectOrder: OrderResponseDTO, fetchData: () => Promise<void> }) => {
     const inputRef = useRef(null)
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -65,8 +65,8 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
             ),
         },
         {
-            header: 'Tên',
-            accessorKey: 'name',
+            header: 'Mã',
+            accessorKey: 'code',
         },
         {
             header: 'Số điện thoại',
@@ -177,7 +177,7 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
     ])
     return (
         <div className='fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40'>
-            <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/5 h-auto bg-gray-100 z-20 shadow-md rounded-md'>
+            <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5/6 h-auto bg-gray-100 z-20 shadow-md rounded-md'>
                 <div className='p-5 bg-white !h-4/5 rounded-md'>
                     <div className='flex justify-between pb-3'>
                         <div>
