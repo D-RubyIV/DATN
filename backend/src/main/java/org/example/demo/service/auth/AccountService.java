@@ -15,6 +15,7 @@ import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.exception.DataNotFoundException;
+import org.example.demo.exception.InvalidPasswordException;
 import org.example.demo.exception.PermissionDenyException;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.security.AccountRepository;
@@ -25,6 +26,7 @@ import org.example.demo.util.MessageKeys;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.token.Token;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,7 +54,6 @@ public class AccountService {
         if (accountRepository.existsByUsername(email)) {
             throw new DataIntegrityViolationException("Email đăng ký đã tồn tại");
         }
-
 
         System.out.println("ROlE ID: " + accountRequestDTO.getRoleId());
         Role role = roleRepository.findById(accountRequestDTO.getRoleId())
@@ -97,7 +98,6 @@ public class AccountService {
 
         System.out.println("2");
 
-        // Kiểm tra mật khẩu nếu không phải đăng nhập từ mạng xã hội
         if (account.getProvider() == null && !passwordEncoder.matches(password, account.getPassword())) {
             throw new CustomExceptions.CustomBadRequest(
                     localizationUtils.getLocalizedMessage(MessageKeys.WRONG_EMAIL_PASSWORD)
@@ -183,13 +183,19 @@ public class AccountService {
 //    }
 
     @Transactional
-    public void updateStaff(StaffRequestDTO requestDTO) {
-
-    }
-
-    @Transactional
-    public void updateCustomer(CustomerRequestDTO customerRequestDTO) {
-
+    public void resetPassword(String email, String newPassword)
+            throws InvalidPasswordException, DataNotFoundException {
+        Account existingUser = accountRepository.findByUsername(email)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        System.out.println(existingUser);
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        existingUser.setPassword(encodedPassword);
+        accountRepository.save(existingUser);
+        //reset password => clear token
+        List<TokenRecord> tokens = tokenRepository.findByAccount(existingUser);
+        for (TokenRecord token : tokens) {
+            tokenRepository.delete(token);
+        }
     }
 
 }

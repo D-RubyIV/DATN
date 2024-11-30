@@ -15,13 +15,16 @@ import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.security.Account;
+import org.example.demo.entity.security.TokenRecord;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.mapper.staff.request.StaffMapper;
 import org.example.demo.mapper.staff.request.StaffRequestMapper;
 import org.example.demo.mapper.staff.response.StaffResponseMapper;
 import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.repository.security.RoleRepository;
+import org.example.demo.repository.security.TokenRepository;
 import org.example.demo.repository.staff.StaffRepository;
+import org.example.demo.service.email.EmailService;
 import org.example.demo.service.email.MailSenderService;
 import org.example.demo.service.email.PasswordGenerator;
 import org.example.demo.util.MessageKeys;
@@ -32,6 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +60,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     private StaffResponseMapper staffResponseMapper;
 
     private final RoleRepository roleRepository;
+    private final TokenRepository tokenRepository;
 
     @Autowired
     private StaffRequestMapper staffRequestMapper;
@@ -63,7 +68,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     private final MailSenderService mailService;
     private final LocalizationUtils localizationUtils;
     private final PasswordEncoder passwordEncoder;
-
+    private final EmailService emailService;
     @Autowired
     private StaffValidator staffValidator;
     @Autowired
@@ -218,11 +223,10 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
 
         Role role = roleRepository.findById(requestDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
-        System.out.println(role.getName());
-        Account account = new Account();
 
+        Account account = new Account();
         String randomPassword = PasswordGenerator.generatePassword(12);
-        System.out.println(randomPassword);
+        account.setUsername(requestDTO.getEmail());
         account.setPassword(passwordEncoder.encode(randomPassword));
         account.setStatus("Active");
         account.setEnabled(true);
@@ -238,32 +242,80 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         Staff savedStaff = staffRepository.save(entityMapped);
         sendWelcomeEmail(savedStaff);
         return savedStaff;
-
     }
 
     private void sendWelcomeEmail(Staff staff) {
-        String subject = "Khởi Đầu Hành Trình!";
-        String resetPasswordUrl = "http://localhost:8080/api/v1/staffs/reset-password?email=" + staff.getAccount().getUsername();
-        String text = String.format(
+        validateStaffForEmail(staff);
+
+        try {
+            String resetPasswordUrl = generateResetPasswordUrl(staff);
+            String subject = "Khởi Đầu Hành Trình Tại Fashion Canth Shop!";
+            String emailText = buildWelcomeEmailContent(staff, resetPasswordUrl);
+            mailService.sendEmail(staff.getEmail(), subject, emailText);
+            log.info("Welcome email sent successfully to staff member: {} ({})",
+                    staff.getName(), staff.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to staff member: {} - Error: {}",
+                    staff.getName(), e.getMessage(), e);
+            throw new EmailSendingException("Could not send welcome email to staff", e);
+        }
+    }
+
+    private void validateStaffForEmail(Staff staff) {
+        Objects.requireNonNull(staff, "Staff cannot be null");
+        if (staff.getEmail() == null || staff.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Staff email is required");
+        }
+        if (!isValidEmail(staff.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format: " + staff.getEmail());
+        }
+        if (staff.getName() == null || staff.getName().isBlank()) {
+            throw new IllegalArgumentException("Staff name is required");
+        }
+    }
+
+    private String generateResetPasswordUrl(Staff staff) {
+        return UriComponentsBuilder.fromHttpUrl("http://localhost:8080/api/v1/staffs/reset-password")
+                .queryParam("email", staff.getEmail())
+                .queryParam("token", generateResetPasswordToken(staff))
+                .build()
+                .toUriString();
+    }
+
+    private String buildWelcomeEmailContent(Staff staff, String resetPasswordUrl) {
+        return String.format(
                 "Xin chào %s,\n\n" +
-                        "Chúng tôi rất vui mừng thông báo rằng bạn đã chính thức được nhận vào vị trí. Hành trình của bạn tại Fashion Canth Shop bắt đầu từ bây giờ!\n\n" +
-                        "Chúng tôi tin tưởng vào tiềm năng của bạn và tin rằng bạn sẽ tạo ra những đóng góp tích cực cho đội ngũ của chúng tôi.\n\n" +
-                        "Tài khoản của bạn:\n" +
-                        "Mã nhân viên: %s\n" +
-                        "Để kích hoạt tài khoản của bạn, vui lòng nhấn vào liên kết dưới đây và thiết lập mật khẩu mới:\n" +
+                        "Chúng tôi rất vui mừng thông báo rằng bạn đã chính thức được nhận vào vị trí tại Fashion Canth Shop. Hành trình của bạn bắt đầu từ bây giờ!\n\n" +
+                        "Chúng tôi tin tưởng vào tiềm năng của bạn và mong đợi những đóng góp tích cực từ bạn.\n\n" +
+                        "Thông tin tài khoản của bạn:\n" +
+                        "- Mã nhân viên: %s\n" +
+                        "- Email đăng nhập: %s\n\n" +
+                        "Để kích hoạt tài khoản, vui lòng nhấn vào liên kết dưới đây để thiết lập mật khẩu mới:\n" +
                         "%s\n\n" +
+                        "Liên kết này sẽ hết hạn trong vòng 24 giờ. Nếu bạn không thực hiện được, vui lòng liên hệ bộ phận hỗ trợ.\n\n" +
                         "Chúng tôi mong chờ được làm việc cùng bạn!\n\n" +
-                        "Trân trọng,\n\n" +
-                        "Fashion Canth Shop\n" +
+                        "Trân trọng,\n" +
                         "Đội ngũ Fashion Canth Shop",
                 staff.getName(),
                 staff.getCode(),
+                staff.getEmail(),
                 resetPasswordUrl
         );
-
-        mailService.sendEmail(staff.getAccount().getUsername(), subject, text);
     }
 
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
+    }
+
+    public class EmailSendingException extends RuntimeException {
+        public EmailSendingException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    private String generateResetPasswordToken(Staff staff) {
+        return UUID.randomUUID().toString();
+    }
 
     @Override
     @Transactional
@@ -360,7 +412,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
                         responseData.put("name", staffDTO.getName());
                         responseData.put("email", staffDTO.getEmail());
                         responseData.put("code", staffDTO.getCode());
-                         responseList.add(responseData);
+                        responseList.add(responseData);
                     }
 
                 } catch (IllegalArgumentException e) {

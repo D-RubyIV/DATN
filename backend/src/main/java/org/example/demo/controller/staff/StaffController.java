@@ -7,15 +7,18 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
-import org.example.demo.entity.security.Account;
 import org.example.demo.exception.DataNotFoundException;
+import org.example.demo.exception.InvalidPasswordException;
+import org.example.demo.model.request.PasswordResetRequest;
+import org.example.demo.model.response.ErrorResponse;
+import org.example.demo.model.response.SuccessResponse;
 import org.example.demo.repository.security.AccountRepository;
+import org.example.demo.service.auth.AccountService;
+import org.example.demo.service.email.MailSenderService;
 import org.example.demo.service.staff.StaffService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,7 +40,8 @@ public class StaffController {
     private final StaffService staffService;
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final MailSenderService emailService;
+    private final AccountService accountService;
 
     @GetMapping
     public ResponseEntity<Page<StaffResponseDTO>> getAllNhanVien(
@@ -101,17 +105,27 @@ public class StaffController {
         }
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam("email") String email,
-                                           @RequestParam("newPassword") String newPassword) throws DataNotFoundException {
-        Account account = accountRepository.findByUsername(email)
-                .orElseThrow(() -> new DataNotFoundException("Account not found"));
 
-        account.setPassword(passwordEncoder.encode(newPassword));
-        accountRepository.save(account);
 
-        return ResponseEntity.ok("Password has been updated successfully.");
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> submitNewPassword(
+            @RequestParam("email") String email,
+            @RequestBody PasswordResetRequest resetRequest) {
+        try {
+            accountService.resetPassword(email, resetRequest.getNewPassword());
+            return ResponseEntity.ok(new SuccessResponse("Password reset successfully"));
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("User not found"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Unexpected error during password reset"));
+        }
     }
+
 
 
     @PostMapping
