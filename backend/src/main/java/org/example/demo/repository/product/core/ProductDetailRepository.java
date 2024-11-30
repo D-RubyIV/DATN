@@ -319,4 +319,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             """)
     List<ProductDetail> findAllByProductIdCustom(List<Integer> ids);
 
+    Optional<ProductDetail> findByCode(String code);
+
 }

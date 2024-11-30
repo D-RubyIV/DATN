@@ -10,6 +10,7 @@ import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Image;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.product.request.core.ProductDetailRequestMapper;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
 import org.example.demo.repository.product.core.ProductDetailRepository;
@@ -251,6 +252,9 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         }).collect(Collectors.toList());
     }
 
-
+    public ProductDetail findByCode(String code) {
+        return productDetailRepository.findByCode(code)
+                .orElseThrow(() -> new CustomExceptions.CustomBadRequest("ProductDetail not found with code: " + code));
+    }
 
 }

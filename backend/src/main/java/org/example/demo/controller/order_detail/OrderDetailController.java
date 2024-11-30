@@ -3,6 +3,7 @@ package org.example.demo.controller.order_detail;
 import jakarta.validation.Valid;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.controller.IControllerBasic;
+import org.example.demo.dto.order.properties.request.AllowOverrideOrderDetailRequestDTO;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.mapper.order.properties.response.OrderDetailResponseMapper;
@@ -66,7 +67,7 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     }
 
     @PostMapping(value = "allowOverride")
-    public ResponseEntity<?> checkAllowOverride(@Valid @RequestBody OrderDetailRequestDTO orderDetailRequestDTO) {
+    public ResponseEntity<?> checkAllowOverride(@Valid @RequestBody AllowOverrideOrderDetailRequestDTO orderDetailRequestDTO) {
         return ResponseEntity.ok(orderDetailService.checkAllowOverride(orderDetailRequestDTO));
     }
 }

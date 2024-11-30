@@ -2,6 +2,7 @@ package org.example.demo.service.order_detail;
 
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.example.demo.dto.order.properties.request.AllowOverrideOrderDetailRequestDTO;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Type;
@@ -60,6 +61,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Transactional
     public OrderDetail delete(Integer integer) {
         OrderDetail orderDetail = findById(integer);
+        ProductDetail productDetail = orderDetail.getProductDetail();
+        productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
+        productDetailRepository.save(productDetail);
         orderDetailRepository.delete(orderDetail);
         entityManager.flush();
         orderService.reloadSubTotalOrder(orderDetail.getOrder());
@@ -70,12 +74,17 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Transactional
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
         int requiredQuantity = requestDTO.getQuantity();
-        // tìm kiếm hóa đơn chi tiết
-        Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), requestDTO.getAverageDiscountEventPercent());
         // tìm kiếm sản phẩm chi tiết
         ProductDetail productDetail = productDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found"));
-        // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
+        // tìm kiếm hóa đơn chi tiết
+        List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderIdAndProductDetailId(requestDTO.getOrderId(), requestDTO.getProductDetailId());
+        double currentDiscountPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
 
+        Optional<OrderDetail> entityFound_2 = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), requestDTO.getAverageDiscountEventPercent());
+        Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), currentDiscountPercent);
+
+
+        // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
 
         // ==> GHI ĐÈ
         if (entityFound.isPresent()) {
@@ -173,6 +182,15 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
         // nếu đủ số lượng đáp ứng
         else {
+            // ngăn ng dùng mua thêm với hóa đơn chi tiết có sụ thay đổi % event
+            if(newQuantity > quantityInOrder){
+                double currentSaleDiscountEvent = orderDetail.getProductDetail().getProduct().getNowAverageDiscountPercentEvent();
+                if(orderDetail.getAverageDiscountEventPercent() != currentSaleDiscountEvent){
+                    throw new CustomExceptions.CustomBadRequest("Sản phảm này đã có sự thay đổi % đợt giảm giá ");
+                }
+            }
+
+
             updateQuantityStorageIfInStore(quantityInOrder, newQuantity, orderDetail.getProductDetail(), order);
             orderDetail.setDeleted(false);
             orderDetail.setQuantity(newQuantity);
@@ -200,7 +218,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
     }
 
-    public Map<String, Boolean> checkAllowOverride(OrderDetailRequestDTO orderDetailRequestDTO) {
+    public Map<String, Boolean> checkAllowOverride(AllowOverrideOrderDetailRequestDTO orderDetailRequestDTO) {
         // lấy product detail
         Optional<ProductDetail> productDetail = productDetailRepository.findById(orderDetailRequestDTO.getProductDetailId());
         // lấy hóa đơn

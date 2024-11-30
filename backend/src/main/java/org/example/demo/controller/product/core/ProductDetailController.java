@@ -141,6 +141,7 @@ public class ProductDetailController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductDetail> findById(@PathVariable Integer id) {
         try {
@@ -150,6 +151,11 @@ public class ProductDetailController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(null);
         }
+    }
+
+    @GetMapping("by-code/{code}")
+    public ResponseEntity<?> findByCode(@PathVariable String code) {
+        return ResponseEntity.ok(productDetailResponseMapper.toDTO(productDetailService.findByCode(code)));
     }
 
     @PostMapping("save")
@@ -265,7 +271,7 @@ public class ProductDetailController {
             List<Event> evv = new ArrayList<>();
             events.forEach(event -> {
                 List<Integer> id_products = event.getProducts().stream().map(BaseEntity::getId).toList();
-                if (id_products.contains(s.getProductId())){
+                if (id_products.contains(s.getProductId())) {
                     evv.add(event);
                 }
             });
@@ -324,14 +330,14 @@ public class ProductDetailController {
     }
 
     @GetMapping("product-detail-of-product/{id}")
-    public ResponseEntity<?> findProductDetailOfProduct(@PathVariable Integer id){
+    public ResponseEntity<?> findProductDetailOfProduct(@PathVariable Integer id) {
         List<ProductDetail> list = productDetailRepository.findAllByProductId(id);
         return ResponseEntity.ok(productDetailResponseMapper.toListDTO(list));
     }
 
 
     @GetMapping("product-detail-of-product/hung/{id}")
-    public ResponseEntity<?> findProductDetailOfProductAndImages(@PathVariable("id") Integer id){
+    public ResponseEntity<?> findProductDetailOfProductAndImages(@PathVariable("id") Integer id) {
         Optional<ProductResponseOverDTO> productResponseOverDTOOptional = productDetailRepository.findOneCustom(id);
         if (productResponseOverDTOOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -345,7 +351,6 @@ public class ProductDetailController {
         productResponseOverDTO.setImage(productImages.stream().map(Image::getUrl).toList());
         return ResponseEntity.ok(productResponseOverDTO);
     }
-
 
 
 }
