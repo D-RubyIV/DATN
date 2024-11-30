@@ -301,7 +301,7 @@ public class OrderPdfService {
             contentStream.addRect(25, pageHeight - 310, pageWidth, 2);
             contentStream.fill();
 
-            myTextClass.addSingleLineText("Nội dung hàng (Tổng SL sản phẩm: %s): ".formatted(order.getOrderDetails().size()) + receiveName, 25, pageHeight - 330, font, 12, Color.BLACK);
+            myTextClass.addSingleLineText("Nội dung hàng (Tổng SL sản phẩm: %s): ".formatted(order.getOrderDetails().size()), 25, pageHeight - 330, font, 12, Color.BLACK);
 
 
             AtomicInteger availableHeight = new AtomicInteger(pageHeight - 330 - 20);

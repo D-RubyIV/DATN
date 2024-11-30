@@ -117,7 +117,7 @@ const Bell = () => {
                 >
                     <Dropdown.Item variant="header">
                         <div className="px-3 text-black text-[16px] !hover:bg-gray-600 font-semibold flex items-center gap-2">
-                            Danh sách đơn hàng chờ xác nhận
+                            Danh sách đơn hàng chờ xác nhận mới
                         </div>
                     </Dropdown.Item>
                     <Dropdown.Item variant="divider" />
@@ -148,7 +148,7 @@ const Bell = () => {
                                     <span className="">
                                         <span className="">Phương thức: </span>
                                         <span
-                                            className={item.payment === 'CASH' ? 'text-green-600' : 'text-yellow-600'}>
+                                            className={item.payment === 'CASH' ? 'text-green-600' : 'text-blue-600'}>
                                             {item.payment === 'CASH' ? 'Thanh toán khi nhận hàng' : 'Đã thanh toán ngân hàng'}
                                         </span>
                                     </span>

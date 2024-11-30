@@ -2,6 +2,7 @@ package org.example.demo.repository.product.core;
 
 import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
 import org.example.demo.dto.product.phah04.response.ProductClientResponse;
+import org.example.demo.dto.product.response.properties.ProductDiscountDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.*;
@@ -320,5 +321,90 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     List<ProductDetail> findAllByProductIdCustom(List<Integer> ids);
 
     Optional<ProductDetail> findByCode(String code);
+
+
+//    @Query("SELECT pd FROM ProductDetail pd WHERE pd.createdDate >= :oneWeekAgo")
+//    List<ProductDetail> findNewProductsInLastWeek(@Param("oneWeekAgo") LocalDateTime oneWeekAgo);
+
+
+    @Query("""
+                SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+                    p.id,
+                    p.code,
+                    p.name,
+                    COUNT(DISTINCT c.id),
+                    COUNT(DISTINCT s.id),
+                    MIN(pd.price)
+                )
+                FROM Product p
+                JOIN ProductDetail pd ON p.id = pd.product.id
+                JOIN Color c ON c.id = pd.color.id
+                JOIN Size s ON s.id = pd.size.id
+                JOIN Brand b ON b.id = pd.brand.id
+                WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+                AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+                AND (:brandCodes IS NULL OR b.code IN :brandCodes)
+                AND (:minPrice IS NULL OR pd.price >= :minPrice)
+                AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
+                AND (:createdDate IS NULL OR pd.createdDate >= :createdDate)
+                AND p.deleted = FALSE
+                AND c.deleted = FALSE
+                AND s.deleted = FALSE
+                AND b.deleted = FALSE
+                AND pd.deleted = FALSE
+                GROUP BY p.id, p.code, p.name
+            """)
+    Page<ProductResponseOverDTO> findCustomPage2(
+            Pageable pageable,
+            @Param("sizeCodes") List<String> sizeCodes,
+            @Param("colorCodes") List<String> colorCodes,
+            @Param("brandCodes") List<String> brandCodes,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("createdDate") LocalDateTime createdDate
+    );
+
+    @Query("""
+                SELECT new org.example.demo.dto.product.response.properties.ProductDiscountDTO(
+                    p.id,
+                    p.code,
+                    p.name,
+                    COUNT(DISTINCT c.id),
+                    COUNT(DISTINCT s.id),
+                    MIN(pd.price)
+                )
+                FROM Product p
+                JOIN ProductDetail pd ON p.id = pd.product.id
+                JOIN Color c ON c.id = pd.color.id
+                JOIN Size s ON s.id = pd.size.id
+                JOIN Brand b ON b.id = pd.brand.id
+                JOIN p.events e
+                WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+                AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+                AND (:brandCodes IS NULL OR b.code IN :brandCodes)
+                AND (:minPrice IS NULL OR pd.price >= :minPrice)
+                AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
+                AND (:eventDiscountPercent IS NULL OR e.discountPercent >= :eventDiscountPercent)
+                AND (:eventQuantityDiscount IS NULL OR e.quantityDiscount >= :eventQuantityDiscount)
+                AND e.startDate <= CURRENT_TIMESTAMP
+                AND e.endDate >= CURRENT_TIMESTAMP
+                AND p.deleted = FALSE
+                AND c.deleted = FALSE
+                AND s.deleted = FALSE
+                AND b.deleted = FALSE
+                AND pd.deleted = FALSE
+                GROUP BY p.id, p.code, p.name
+            """)
+    Page<ProductDiscountDTO> findCustomeByEvent(
+            Pageable pageable,
+            @Param("sizeCodes") List<String> sizeCodes,
+            @Param("colorCodes") List<String> colorCodes,
+            @Param("brandCodes") List<String> brandCodes,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            @Param("eventDiscountPercent") Long eventDiscountPercent,  // Lọc theo discountPercent của sự kiện
+            @Param("eventQuantityDiscount") Long eventQuantityDiscount   // Lọc theo quantityDiscount của sự kiện
+    );
+
 
 }

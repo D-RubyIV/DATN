@@ -28,34 +28,34 @@ public class Cart extends BaseEntity {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "address")
+    @Column(name = "address", columnDefinition = "NVARCHAR(255)")
     private String address;
 
     @Column(name = "province_id")
     private Integer provinceId;
 
-    @Column(name = "province_name")
+    @Column(name = "province_name", columnDefinition = "NVARCHAR(255)")
     private String provinceName;
 
     @Column(name = "district_id")
     private Integer districtId;
 
-    @Column(name = "district_name")
+    @Column(name = "district_name", columnDefinition = "NVARCHAR(255)")
     private String districtName;
 
     @Column(name = "ward_id")
     private String wardId;
 
-    @Column(name = "ward_name")
+    @Column(name = "ward_name", columnDefinition = "NVARCHAR(255)")
     private String wardName;
 
-    @Column(name = "recipient_name")
+    @Column(name = "recipient_name", columnDefinition = "NVARCHAR(255)")
     private String recipientName;
 
-    @Column(name = "phone")
+    @Column(name = "phone", columnDefinition = "NVARCHAR(255)")
     private String phone;
 
-    @Column(name = "email")
+    @Column(name = "email", columnDefinition = "NVARCHAR(255)")
     private String email;
 
     @Column(name = "deleted")

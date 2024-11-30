@@ -23,7 +23,7 @@ public class Event extends BaseEntity {
     @Column(name = "discount_code", unique = true)
     private String discountCode;
 
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "NVARCHAR(255)")
     private String name; // tên sự kiện
 
     @Column(name = "discount_percent")
