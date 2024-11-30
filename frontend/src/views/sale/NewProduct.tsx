@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { IoBagHandle } from 'react-icons/io5';
+import { IoBagHandle, IoCart } from 'react-icons/io5';
 import { FaEye } from 'react-icons/fa';
 import { Button } from '@/components/ui';
 import { Pagination, Select } from '@/components/ui'
+import BreadCrumb from './BreadCrumb';
 
 
 interface Color {
@@ -65,10 +66,9 @@ const NewProduct: React.FC = () => {
 
 
     useEffect(() => {
-        // Fetch data from the API
         const fetchProducts = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/v1/productDetails/new-in-last-week?page=0&size=10');
+                const response = await fetch('http://localhost:8080/api/v1/productDetails/event?page=0&size=10');
                 const data = await response.json();
                 setProducts(data.content);
                 setLoading(false);
@@ -86,7 +86,9 @@ const NewProduct: React.FC = () => {
     }
 
     return (
+        
         <div className="product-list">
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-5">
                 {products.map((product) => (
                     <div
@@ -105,7 +107,7 @@ const NewProduct: React.FC = () => {
                                     }
                                     alt={product.productName}
                                     className={`transition-transform duration-300 ease-in-out ${hoveredProductId === product.productId
-                                        ? 'transform scale-105'
+                                        ? 'transform scale-300' // Smaller scale on hover
                                         : 'transform scale-100'
                                         }`}
                                 />
@@ -118,14 +120,16 @@ const NewProduct: React.FC = () => {
 
                             <div
                                 className="absolute bottom-0 left-0 right-0 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-opacity-50 p-2 w-full">
-                                <Link to={`/products/${product.productId}`} className="flex-1 mr-1">
+                                {/* Button 1 */}
+                                <Link to={`/products/${product.productId}`} className="flex items-center justify-center px-2">
                                     <Button
                                         className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
                                         <IoBagHandle />
                                     </Button>
                                 </Link>
 
-                                <Link to={`/products/${product.productId}`} className="flex-1 ml-1">
+                                {/* Button 2 */}
+                                <Link to={`/products/${product.productId}`} className="flex items-center justify-center px-2">
                                     <Button
                                         className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
                                         <FaEye className="mr-2" />
@@ -160,7 +164,8 @@ const NewProduct: React.FC = () => {
                         </div>
                         <div>
                             <Link to={`/products/${product.productId}`}>
-                                <Button className={'w-full !rounded-none !border !border-black !text-black font-'}>Thêm vào giỏ hàng</Button>
+                                <Button className={'w-full !rounded-none !border !border-black !text-black font-'}>
+                                    Thêm vào giỏ hàng</Button>
                             </Link>
                         </div>
                     </div>

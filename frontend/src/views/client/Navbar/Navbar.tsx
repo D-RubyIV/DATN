@@ -32,8 +32,8 @@ const Menu = [
     },
     {
         id: 5,
-        name: 'Black Friday',
-        link: '/sale'
+        name: 'Giá Tốt',
+        link: '/sales'
     }
 
 
@@ -179,13 +179,13 @@ const Navbar = () => {
                                                 </div>
                                             </div>
 
-                                            <Link to={`/cutomer/${email}}`}>
+                                            {/* <Link to={`/cutomer/${email}}`}>
                                                 <button
                                                     className="block w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100"
                                                 >
                                                     Đăng xuất
                                                 </button>
-                                            </Link>
+                                            </Link> */}
                                             <button
                                                 onClick={handleLogoutClick}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"

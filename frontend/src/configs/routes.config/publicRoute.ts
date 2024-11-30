@@ -27,11 +27,25 @@ const publicRoute: Routes = [
         authority: []
     },
     {
-        key: 'new-product',
-        path: '/new-product',
+        key: 'supper-sales',
+        path: '/sales',
         component: lazy(() => import('@/views/sale/BlackFriday')),
         authority: []
     },
+    {
+        key: 'new-product',
+        path: '/new-product',
+        component: lazy(() => import('@/views/sale/EventProduct')),
+        authority: []
+    },
+    {
+        key: 'information',
+        path: '/introduce',
+        component: lazy(() => import('@/views/sale/Introduction')),
+        authority: []
+    },
+
+
     {
         key: 'customer-info',
         path: '/edit-customer',
