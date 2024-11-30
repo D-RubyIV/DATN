@@ -4,17 +4,27 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.example.demo.components.LocalizationUtils;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
+import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.entity.security.Account;
+import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.mapper.staff.request.StaffMapper;
 import org.example.demo.mapper.staff.request.StaffRequestMapper;
 import org.example.demo.mapper.staff.response.StaffResponseMapper;
+import org.example.demo.repository.security.AccountRepository;
+import org.example.demo.repository.security.RoleRepository;
 import org.example.demo.repository.staff.StaffRepository;
+import org.example.demo.service.email.MailSenderService;
+import org.example.demo.service.email.PasswordGenerator;
+import org.example.demo.util.MessageKeys;
 import org.example.demo.validator.staff.StaffValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -33,6 +43,7 @@ import java.util.*;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> {
 
     @Autowired
@@ -44,14 +55,19 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     @Autowired
     private StaffResponseMapper staffResponseMapper;
 
+    private final RoleRepository roleRepository;
+
     @Autowired
     private StaffRequestMapper staffRequestMapper;
 
-    @Autowired
-    private StaffValidator staffValidator;
+    private final MailSenderService mailService;
+    private final LocalizationUtils localizationUtils;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private StaffValidator staffValidator;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Override
     public Page<StaffResponseDTO> findAllByPage(String code, String name, LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable) {
@@ -195,6 +211,60 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         return staffRepository.save(entityMapped);
     }
 
+
+    @Transactional
+    public Staff createStaff(StaffRequestDTO requestDTO) throws BadRequestException, DataNotFoundException {
+        staffValidator.validateStaff(requestDTO, null);
+
+        Role role = roleRepository.findById(requestDTO.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
+        System.out.println(role.getName());
+        Account account = new Account();
+
+        String randomPassword = PasswordGenerator.generatePassword(12);
+        System.out.println(randomPassword);
+        account.setPassword(passwordEncoder.encode(randomPassword));
+        account.setStatus("Active");
+        account.setEnabled(true);
+        account.setRole(role);
+        accountRepository.save(account);
+
+        Staff entityMapped = staffRequestMapper.toEntity(requestDTO);
+        entityMapped.setStatus("Active");
+        entityMapped.setCode(generateRandomMaNV(requestDTO.getName()));
+        entityMapped.setDeleted(false);
+        entityMapped.setAccount(account);
+
+        Staff savedStaff = staffRepository.save(entityMapped);
+        sendWelcomeEmail(savedStaff);
+        return savedStaff;
+
+    }
+
+    private void sendWelcomeEmail(Staff staff) {
+        String subject = "Khởi Đầu Hành Trình!";
+        String resetPasswordUrl = "http://localhost:8080/api/v1/staffs/reset-password?email=" + staff.getAccount().getUsername();
+        String text = String.format(
+                "Xin chào %s,\n\n" +
+                        "Chúng tôi rất vui mừng thông báo rằng bạn đã chính thức được nhận vào vị trí. Hành trình của bạn tại Fashion Canth Shop bắt đầu từ bây giờ!\n\n" +
+                        "Chúng tôi tin tưởng vào tiềm năng của bạn và tin rằng bạn sẽ tạo ra những đóng góp tích cực cho đội ngũ của chúng tôi.\n\n" +
+                        "Tài khoản của bạn:\n" +
+                        "Mã nhân viên: %s\n" +
+                        "Để kích hoạt tài khoản của bạn, vui lòng nhấn vào liên kết dưới đây và thiết lập mật khẩu mới:\n" +
+                        "%s\n\n" +
+                        "Chúng tôi mong chờ được làm việc cùng bạn!\n\n" +
+                        "Trân trọng,\n\n" +
+                        "Fashion Canth Shop\n" +
+                        "Đội ngũ Fashion Canth Shop",
+                staff.getName(),
+                staff.getCode(),
+                resetPasswordUrl
+        );
+
+        mailService.sendEmail(staff.getAccount().getUsername(), subject, text);
+    }
+
+
     @Override
     @Transactional
     public StaffResponseDTO update(Integer id, StaffRequestDTO requestDTO) throws BadRequestException {
@@ -265,7 +335,6 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
                 String code = generateRandomMaNV(staffDTO.getName());
                 String password = generateRandomPassword();
                 staffDTO.setCode(code);
-                staffDTO.setPassword(password);
 
                 // Kiểm tra lỗi trước khi thêm vào danh sách staffList
                 try {
@@ -291,8 +360,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
                         responseData.put("name", staffDTO.getName());
                         responseData.put("email", staffDTO.getEmail());
                         responseData.put("code", staffDTO.getCode());
-                        responseData.put("password", staffDTO.getPassword());
-                        responseList.add(responseData);
+                         responseList.add(responseData);
                     }
 
                 } catch (IllegalArgumentException e) {

@@ -333,21 +333,11 @@ const AddStaffPage = () => {
         }
     }
 
-
-    // Hàm reset biểu mẫu
-    // const handleReset = (resetForm: () => void) => {
-    //     // Keep the state of `isDisableAddressByScanner` as it is
-    //     resetForm();
-    //     setNewStaff(initialStaffState); // Reset the staff state
-    // }
     const handleFullReset = (resetForm: () => void) => {
-        // This function resets the form and keeps the disable state if needed
         resetForm(); // Resets the form fields using Formik's reset function
         setNewStaff(initialStaffState); // Resets the staff data
         setIsDisableAddressByScanner(false); // Optionally reset the disable state or leave if intended to block non-scanned input
 
-        // If there are any specific independent states that should persist or reset differently, manage them here
-        // For example, handling loading states or specific UI flags
     };
 
     // Hàm đóng snackbar

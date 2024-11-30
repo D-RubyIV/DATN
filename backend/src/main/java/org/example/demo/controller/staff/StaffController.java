@@ -2,10 +2,14 @@ package org.example.demo.controller.staff;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.entity.security.Account;
+import org.example.demo.exception.DataNotFoundException;
+import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.service.staff.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,14 +31,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("staffs")
+@RequiredArgsConstructor
 public class StaffController {
 
     private final StaffService staffService;
+    private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public StaffController(StaffService staffService) {
-        this.staffService = staffService;
-    }
 
     @GetMapping
     public ResponseEntity<Page<StaffResponseDTO>> getAllNhanVien(
@@ -97,10 +101,23 @@ public class StaffController {
         }
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam("email") String email,
+                                           @RequestParam("newPassword") String newPassword) throws DataNotFoundException {
+        Account account = accountRepository.findByUsername(email)
+                .orElseThrow(() -> new DataNotFoundException("Account not found"));
+
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+
+        return ResponseEntity.ok("Password has been updated successfully.");
+    }
+
+
     @PostMapping
     public ResponseEntity<StaffResponseDTO> createStaff(@Valid @RequestBody StaffRequestDTO requestDTO) {
         try {
-            Staff savedStaff = staffService.save(requestDTO);
+            Staff savedStaff = staffService.createStaff(requestDTO);
             StaffResponseDTO staffResponse = staffService.getStaffResponseDTO(savedStaff);
             return ResponseEntity.status(HttpStatus.CREATED).body(staffResponse);
         } catch (Exception e) {
@@ -166,7 +183,6 @@ public class StaffController {
         boolean exists = staffService.isCitizenIdExists(citizenId);
         return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
-
 
 
 }

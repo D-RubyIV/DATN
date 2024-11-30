@@ -556,6 +556,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setCustomer(cart.getCustomer());
         order.setVoucher(cart.getVoucher());
 
+        order.setInStore(false);
+
         if (cart.getVoucher() != null) {
             order.setDiscountVoucherPercent(Double.valueOf(cart.getVoucher().getMaxPercent()));
             order.setVoucherMinimumSubtotalRequired(Double.valueOf(cart.getVoucher().getMinAmount()));

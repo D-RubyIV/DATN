@@ -34,6 +34,7 @@ public class Account extends BaseEntity  implements UserDetails {
     private Boolean enabled;
 
     private String provider;
+
     private String socialId;
 
     @ManyToOne
@@ -42,7 +43,7 @@ public class Account extends BaseEntity  implements UserDetails {
     @OneToOne(mappedBy = "account")
     private Staff staff;
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private Customer customer;
 
     @Override

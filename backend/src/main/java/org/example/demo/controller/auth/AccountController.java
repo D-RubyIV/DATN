@@ -6,17 +6,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.demo.components.LocalizationUtils;
 import org.example.demo.dto.auth.request.AccountRequestDTO;
-import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.user.RefreshTokenDTO;
 import org.example.demo.dto.user.UserLoginDTO;
 import org.example.demo.dto.user.response.LoginResponse;
-import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.security.Account;
 import org.example.demo.entity.security.TokenRecord;
-import org.example.demo.exception.DataNotFoundException;
-import org.example.demo.exception.InvalidPasswordException;
 import org.example.demo.mapper.auth.response.AccountResponseMapper;
 import org.example.demo.model.ResponseObject;
+import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.service.auth.AccountService;
 import org.example.demo.service.token.ITokenService;
 import org.example.demo.util.MessageKeys;
@@ -29,7 +26,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("users")
@@ -39,6 +36,7 @@ public class AccountController {
     private final LocalizationUtils localizationUtils;
     private final ITokenService tokenService;
     private final AccountResponseMapper accountResponseMapper;
+    private final AccountRepository accountRepository;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> createUser(
@@ -143,6 +141,14 @@ public class AccountController {
                         .status(HttpStatus.OK)
                         .build()
         );
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String updateUser(@PathVariable Integer id) {
+        Optional<Account> exits = accountRepository.findById(id);
+
+        accountRepository.deleteById(id);
+        return "Ok";
     }
 
 //    @PutMapping("/details/{userId}")

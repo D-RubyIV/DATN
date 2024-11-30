@@ -57,9 +57,9 @@ public class AccountService {
         System.out.println("ROlE ID: " + accountRequestDTO.getRoleId());
         Role role = roleRepository.findById(accountRequestDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
-//        if(role.getName().toUpperCase().equalsIgnoreCase(Role.ADMIN)) {
-//            throw new PermissionDenyException("Không được phép đăng ký tài khoản Admin");
-//        }
+        if(role.getName().toUpperCase().equalsIgnoreCase(Role.ADMIN)) {
+            throw new PermissionDenyException("Không được phép đăng ký tài khoản Admin");
+        }
 
         Account account = Account.builder()
                 .username(email)

@@ -25,8 +25,6 @@ public class StaffRequestDTO {
 
     private String phone;
 
-    private String password;
-
     private String citizenId;
 
     private String address;
@@ -44,5 +42,5 @@ public class StaffRequestDTO {
     private String status;
 
     @JsonProperty("role_id")
-    private Integer roleId;
+    private Integer roleId = 52;
 }

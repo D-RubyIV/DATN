@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProductDetailRepository extends JpaRepository<ProductDetail, Integer> {
-    boolean existsByCodeAndName(String code, String name);
 
     @Query("SELECT p FROM ProductDetail p WHERE  p.size = ?1 AND p.color = ?2 AND p.texture = ?3 " +
             "AND p.origin = ?4 AND p.brand = ?5 AND p.collar = ?6 AND p.sleeve = ?7 " +
@@ -28,9 +27,10 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                                    Style style, Material material, Thickness thickness, Elasticity elasticity);
 
 
-    ProductDetail findByCodeAndName(String code, String name);
-
-    @Query("SELECT p FROM ProductDetail p WHERE p.name = ?1 AND p.size = ?2 AND p.color = ?3")
+//    ProductDetail findByCodeAndName(String code, String name);
+//    boolean existsByCodeAndName(String code, String name);
+    //no ghi no la sao b
+    @Query("SELECT p FROM ProductDetail p WHERE p.product.name = ?1 AND p.size = ?2 AND p.color = ?3")
     ProductDetail findByName(String name, Size size, Color color);
 
     List<ProductDetail> findByProductId(Integer productId);
