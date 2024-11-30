@@ -185,8 +185,9 @@ const ProductDetail = () => {
     }
 
     return (
-        <div>
-            <div className="flex justify-center gap-10 2xl:p-20">
+
+        <div className='px-28 mt-10'>
+            <div className="flex justify-start gap-10">
                 <div className="col-span-6 border border-black p-10">
 
                     <div className="mb-4 relative">
@@ -433,7 +434,7 @@ const ProductDetail = () => {
                 </div>
             </div>
 
-            <div className="flex ml-12 items-center ">
+            <div className="flex justify-start gap-10 ">
                 <ProductInfo />
             </div>
 

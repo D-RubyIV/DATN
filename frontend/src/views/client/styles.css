@@ -23,6 +23,8 @@ body {
 }
 .footer{
     display: none;
+    color: white !important;
+    /* text: white; */
 }
 .unica-one-regular {
      font-family: "Unica One", sans-serif;
