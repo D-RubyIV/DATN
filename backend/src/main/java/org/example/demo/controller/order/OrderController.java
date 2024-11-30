@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -63,6 +64,7 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")
     @PostMapping(value = "")
     public ResponseEntity<OrderResponseDTO> create(@Validated(GroupCreate.class) @RequestBody OrderRequestDTO billResponseDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.save(billResponseDTO)));
