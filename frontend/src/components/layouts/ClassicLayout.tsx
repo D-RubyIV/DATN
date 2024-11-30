@@ -22,6 +22,7 @@ import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
 import { formatDistanceToNow, parse, subHours } from 'date-fns'
 import { vi } from 'date-fns/locale'
+import Aos from 'aos'
 
 type OrderDTO = {
     id: number;
@@ -251,6 +252,15 @@ const AdminLayout = () => {
 //     )
 // }
 const PublicLayout = () => {
+    useEffect(() => {
+        Aos.init({
+            offset: 100,
+            duration: 800,
+            easing: "ease-in-sine",
+            delay: 100,
+        });
+        Aos.refresh();
+    }, []);
     return (
         <Fragment>
             <SaleProvider>

@@ -5,6 +5,8 @@ import { HiOutlineMenu, HiOutlineShoppingBag, HiUser, HiUserCircle } from 'react
 import AuthModal from '../Popup/AuthModal'
 import { useAuth } from '../auth/AuthContext'
 import { getUserDetail } from '../auth/api'
+import { Link } from 'react-router-dom'
+
 
 
 const Menu = [
@@ -17,7 +19,23 @@ const Menu = [
         id: 2,
         name: 'Sản phẩm của chúng tôi',
         link: '/collections'
+    },
+    {
+        id: 3,
+        name: 'Sản phẩm mới',
+        link: '/new-product'
+    },
+    {
+        id: 4,
+        name: 'Giới thiệu',
+        link: '/introduce'
+    },
+    {
+        id: 5,
+        name: 'Giá Tốt',
+        link: '/sales'
     }
+
 
 ]
 
@@ -160,6 +178,14 @@ const Navbar = () => {
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            {/* <Link to={`/cutomer/${email}}`}>
+                                                <button
+                                                    className="block w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100"
+                                                >
+                                                    Đăng xuất
+                                                </button>
+                                            </Link> */}
                                             <button
                                                 onClick={handleLogoutClick}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"

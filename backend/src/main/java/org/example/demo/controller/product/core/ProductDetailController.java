@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
 import org.example.demo.dto.product.requests.core.ProductDetailRequestDTO;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
+import org.example.demo.dto.product.response.properties.ProductDiscountDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.event.Event;
@@ -30,9 +31,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("productDetails")
@@ -236,6 +237,114 @@ public class ProductDetailController {
 //        return ResponseEntity.ok(pageResponse);
 //    }
 
+//    @GetMapping("/new-in-last-week")
+//    public List<ProductDetail> getNewProductsInLastWeek() {
+//        LocalDateTime onWeekAgo = LocalDateTime.now().minusWeeks(1);
+//        return productDetailRepository.findNewProductsInLastWeek(onWeekAgo);
+//    }
+
+
+    @GetMapping("/new-in-last-week")
+    public ResponseEntity<?> custome2(
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @RequestParam(value = "colorCodes", required = false) List<String> colorCodes,
+            @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes,
+            @RequestParam(value = "brandCodes", required = false) List<String> brandCodes,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "week", required = false) Boolean isWeek
+    ) {
+        isWeek = Optional.ofNullable(isWeek).orElse(false);
+        colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+        sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage2(
+                pageable, sizeCodes, colorCodes, brandCodes, minPrice, maxPrice, oneWeekAgo
+        );
+        List<ProductResponseOverDTO> productList = page.getContent();
+        List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
+        List<Event> events = eventRepository.findListEventUseValid();
+        List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
+
+        Map<Integer, List<ProductDetail>> productDetailsMap = listProductDetail.stream()
+                .collect(Collectors.groupingBy(pd -> pd.getProduct().getId()));
+
+        Map<Integer, List<Event>> productEventsMap = events.stream()
+                .flatMap(event -> event.getProducts().stream()
+                        .map(product -> new AbstractMap.SimpleEntry<>(product.getId(), event)))
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+
+        productList.forEach(s -> {
+            Integer idPro = s.getProductId();
+            List<ProductDetail> listProd = productDetailsMap.getOrDefault(idPro, Collections.emptyList());
+
+            s.setListColor(listProd.stream().map(ProductDetail::getColor).toList());
+            s.setListSize(listProd.stream().map(ProductDetail::getSize).toList());
+            s.setImage(listProd.stream().flatMap(pd -> pd.getImages().stream().map(Image::getUrl)).toList());
+            s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0));
+
+            List<Event> evv = productEventsMap.getOrDefault(idPro, Collections.emptyList());
+            s.setListEvent(eventResponseMapper.toListDTO(evv));
+            double avgDiscount = EventUtil.getAveragePercentEvent(evv);
+            s.setDiscountPercent((long) avgDiscount);
+        });
+
+        PageImpl<ProductResponseOverDTO> pageResponse = new PageImpl<>(productList, pageable, page.getTotalElements());
+        return ResponseEntity.ok(pageResponse);
+    }
+
+    @GetMapping("/event")
+    public ResponseEntity<?> custome3(
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            @RequestParam(value = "colorCodes", required = false) List<String> colorCodes,
+            @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes,
+            @RequestParam(value = "brandCodes", required = false) List<String> brandCodes,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "eventDiscountPercent",required = false) Long eventDiscountPercent,
+            @RequestParam(value = "eventQuantityDiscount",required = false ) Long eventQuantityDiscount
+    ) {
+        colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+        sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
+
+        Page<ProductDiscountDTO> page = productDetailRepository.findCustomeByEvent(
+                pageable, sizeCodes, colorCodes, brandCodes, minPrice, maxPrice,eventDiscountPercent, eventQuantityDiscount
+        );
+
+        List<ProductDiscountDTO> productList = page.getContent();
+        List<Integer> productIds = productList.stream().map(ProductDiscountDTO::getProductId).toList();
+
+        List<Event> events = eventRepository.findListEventUseValid();
+        List<ProductDetail> listProductDetail = productDetailRepository.findAllByProductIdCustom(productIds);
+
+        Map<Integer, List<ProductDetail>> productDetailsMap = listProductDetail.stream()
+                .collect(Collectors.groupingBy(pd -> pd.getProduct().getId()));
+
+        Map<Integer, List<Event>> productEventsMap = events.stream()
+                .flatMap(event -> event.getProducts().stream()
+                        .map(product -> new AbstractMap.SimpleEntry<>(product.getId(), event)))
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+
+        productList.forEach(s -> {
+            Integer idPro = s.getProductId();
+            List<ProductDetail> listProd = productDetailsMap.getOrDefault(idPro, Collections.emptyList());
+
+            s.setListColor(listProd.stream().map(ProductDetail::getColor).toList());
+            s.setListSize(listProd.stream().map(ProductDetail::getSize).toList());
+            s.setImage(listProd.stream().flatMap(pd -> pd.getImages().stream().map(Image::getUrl)).toList());
+            s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0));
+
+            List<Event> evv = productEventsMap.getOrDefault(idPro, Collections.emptyList());
+            s.setListEvent(eventResponseMapper.toListDTO(evv));
+            double avgDiscount = EventUtil.getAveragePercentEvent(evv);
+            s.setDiscountPercent((long) avgDiscount);
+        });
+
+        PageImpl<ProductDiscountDTO> pageResponse = new PageImpl<>(productList, pageable, page.getTotalElements());
+        return ResponseEntity.ok(pageResponse);
+    }
+
+
     @GetMapping("abc")
     public ResponseEntity<?> custome(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
@@ -245,6 +354,7 @@ public class ProductDetailController {
             @RequestParam(value = "minPrice", required = false) Double minPrice,
             @RequestParam(value = "maxPrice", required = false) Double maxPrice
     ) {
+
         colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
         sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
 

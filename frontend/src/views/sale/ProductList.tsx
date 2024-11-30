@@ -293,7 +293,7 @@ const ProductList = () => {
 
 
                                     <div
-                                        className={'bg-white p-4 flex justify-center flex-col duration-500 ease-in-out hover:scale-110 relative border-black border'}
+                                        className={'bg-white p-4 flex justify-center flex-col duration-500 ease-in-out hover:scale-110 relative rounded-sm border'}
                                         onMouseEnter={() => setHoveredProductId(product.productId)}
                                         onMouseLeave={() => setHoveredProductId(null)}
                                     >
@@ -388,7 +388,7 @@ const ProductList = () => {
             </div>
             <div className="flex items-center justify-center pb-10">
                 <Pagination
-                    current={currentPage} // Trực tiếp sử dụng currentPage mà không cần +1
+                    currentPage={currentPage + 1} // Trực tiếp sử dụng currentPage mà không cần +1
                     pageSize={pageSize}
                     total={totalElement}
                     onChange={handlePageChange}
