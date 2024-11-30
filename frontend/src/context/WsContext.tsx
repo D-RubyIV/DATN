@@ -37,15 +37,15 @@ const WsProvider = ({ children }: { children: ReactNode }) => {
     }, [])
 
     const connect = () => {
-        const tokenString = localStorage.getItem('token')
-        const token = tokenString ? JSON.parse(tokenString) : null
-        const accessToken = token ? token.accessToken : ''
+        // const tokenString = localStorage.getItem('token')
+        // const token = tokenString ? JSON.parse(tokenString) : null
+        // const accessToken = token ? token.accessToken : ''
 
         const socket = new SockJS(`http://localhost:8080/api/v1/ws-notifications`)
         const client = new Client({
             webSocketFactory: () => socket,
             connectHeaders: {
-                Authorization: `Bearer ${accessToken}`
+                // Authorization: `Bearer ${accessToken}`
             },
             debug: function(str) {
                 console.log(str)

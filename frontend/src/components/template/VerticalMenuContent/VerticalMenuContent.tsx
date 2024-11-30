@@ -115,7 +115,7 @@ const VerticalMenuContent = (props: VerticalMenuContentProps) => {
                     </AuthorityCheck>
                 )
             } else {
-                ;<MenuGroup label={nav.title} />
+                <MenuGroup label={nav.title} />
             }
         }
     }

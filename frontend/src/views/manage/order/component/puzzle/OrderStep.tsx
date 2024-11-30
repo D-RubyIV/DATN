@@ -8,7 +8,6 @@ import {
     HiOutlineHand,
     HiOutlineMap,
     HiOutlineTruck,
-    HiPlusCircle
 } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'

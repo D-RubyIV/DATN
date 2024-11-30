@@ -44,6 +44,18 @@ public class InitDataBase {
             role.setName("ROLE_USER");
             roleRepository.save(role);
         }
+        if(roleRepository.findByCode("ROLE_STAFF").isEmpty()){
+            Role role = new Role();
+            role.setCode("ROLE_STAFF");
+            role.setName("ROLE_STAFF");
+            roleRepository.save(role);
+        }
+        if(roleRepository.findByCode("ROLE_USER").isEmpty()){
+            Role role = new Role();
+            role.setCode("ROLE_USER");
+            role.setName("ROLE_USER");
+            roleRepository.save(role);
+        }
         if (accountRepository.findByUsername("admin@gmail.com").isEmpty()){
             AccountRequestDTO account = new AccountRequestDTO();
             account.setUsername("admin@gmail.com");
@@ -58,6 +70,14 @@ public class InitDataBase {
             account.setPassword("123456");
             account.setEnabled(true);
             account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
+            accountService.createAccount(account);
+        }
+        if (accountRepository.findByUsername("staff@gmail.com").isEmpty()){
+            AccountRequestDTO account = new AccountRequestDTO();
+            account.setUsername("staff@gmail.com");
+            account.setPassword("123456");
+            account.setEnabled(true);
+            account.setRoleId(roleRepository.findByCode("ROLE_STAFF").get().getId());
             accountService.createAccount(account);
         }
     }

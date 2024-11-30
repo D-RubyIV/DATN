@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Button from '@/components/ui/Button';
 import { HiPlusCircle } from 'react-icons/hi';
 import { FaFileDownload } from 'react-icons/fa';
+import { useHasRole } from '@/utils/permission'
 
 const VoucherTableTool = () => {
     return (
@@ -20,7 +21,7 @@ const VoucherTableTool = () => {
                 className="block lg:inline-block md:mb-0 mb-4"
                 to="/admin/manage/voucher/voucher-new"
             >
-                <Button block variant="solid" size="sm" color='blue' icon={<HiPlusCircle />}>
+                <Button block variant="solid" size="sm" color='blue' icon={<HiPlusCircle /> } hidden={useHasRole(['ROLE_ADMIN'])}>
                     Thêm Mới 
                 </Button>
             </Link>

@@ -87,7 +87,9 @@ public class SecurityConfig {
                             .requestMatchers(DELETE, "/voucher/**").hasRole("ADMIN")
                             // customer
                             .requestMatchers(GET, "/customer/*").permitAll()
-                            // staff
+                            // statistics
+                            .requestMatchers("/statistics/**").hasAnyRole("STAFF", "ADMIN")
+
                             .anyRequest()
                             .permitAll();
                 })

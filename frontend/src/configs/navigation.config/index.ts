@@ -1,5 +1,4 @@
 import {
-    NAV_ITEM_TYPE_TITLE,
     NAV_ITEM_TYPE_ITEM,
     NAV_ITEM_TYPE_COLLAPSE
 } from '@/constants/navigation.constant'
@@ -33,7 +32,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.customerTitle',
         icon: 'groupUser',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ["ROLE_ADMIN"],
         subMenu: []
     },
     {
@@ -43,7 +42,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.voucherTitle',
         icon: 'ticket',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ["ROLE_ADMIN"],
         subMenu: []
     },
     {
@@ -53,7 +52,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.productTitle',
         icon: 'product',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ["ROLE_ADMIN"],
         subMenu: []
     },
     {
@@ -63,7 +62,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.staffTitle',
         icon: 'staff',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ["ROLE_ADMIN"],
         subMenu: []
     },
     {
@@ -83,7 +82,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.eventTitle',
         icon: 'event',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ["ROLE_ADMIN"],
         subMenu: []
     },
     {
@@ -93,7 +92,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.propertiesTitle',
         icon: 'order',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ["ROLE_ADMIN"],
         subMenu: [
             {
                 key: 'brandTitle',

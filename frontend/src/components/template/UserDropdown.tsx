@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 import { HiOutlineLogout, HiOutlineUser } from 'react-icons/hi'
 import type { CommonProps } from '@/@types/common'
+import { useAuthContext } from '@/views/client/auth/AuthContext'
 
 type DropdownList = {
     label: string
@@ -19,12 +20,14 @@ const _UserDropdown = ({ className }: CommonProps) => {
 
     const { signOut } = useAuth()
 
+    const { user } = useAuthContext()
+
     const UserAvatar = (
         <div className={classNames(className, 'flex items-center gap-2')}>
             <Avatar size={32} shape="circle" icon={<HiOutlineUser />} />
             <div className="hidden md:block">
-                <div className="text-xs capitalize">admin</div>
-                <div className="font-bold">User01</div>
+                <div className="text-xs capitalize">Xin chào</div>
+                <div className="font-bold">{user?.username}</div>
             </div>
         </div>
     )
@@ -54,8 +57,8 @@ const _UserDropdown = ({ className }: CommonProps) => {
                         eventKey={item.label}
                         className="mb-1 px-0"
                     >
-                        <Link 
-                            className="flex h-full w-full px-2" 
+                        <Link
+                            className="flex h-full w-full px-2"
                             to={item.path}
                         >
                             <span className="flex gap-2 items-center w-full">
@@ -76,7 +79,7 @@ const _UserDropdown = ({ className }: CommonProps) => {
                     <span className="text-xl opacity-50">
                         <HiOutlineLogout />
                     </span>
-                    <span>Sign Out</span>
+                    <span>Đăng xuất</span>
                 </Dropdown.Item>
             </Dropdown>
         </div>

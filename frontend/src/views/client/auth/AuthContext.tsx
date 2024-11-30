@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 // Hook tùy chỉnh để sử dụng context
-export const useAuth = () => {
+export const useAuthContext = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {
         throw new Error('useAuth must be used within an AuthProvider');

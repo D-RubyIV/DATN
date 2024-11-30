@@ -3,7 +3,7 @@ import { FaCaretDown } from 'react-icons/fa'
 import { useSaleContext } from '@/views/sale/SaleContext'
 import { HiOutlineMenu, HiOutlineShoppingBag, HiUser, HiUserCircle } from 'react-icons/hi'
 import AuthModal from '../Popup/AuthModal'
-import { useAuth } from '../auth/AuthContext'
+import { useAuthContext } from '../auth/AuthContext'
 import { getUserDetail } from '../auth/api'
 import { Link } from 'react-router-dom'
 
@@ -53,7 +53,7 @@ const Navbar = () => {
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { user, setUser } = useAuth();
+    const { user, setUser } = useAuthContext();
 
 
     const handleLoginClick = () => {

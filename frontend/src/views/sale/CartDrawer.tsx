@@ -190,7 +190,7 @@ const CartDrawer = () => {
                                                 alt="Empty cart"
                                             />
                                         </div>
-                                        <p className="font-thin">No have any product in your cart</p>
+                                        <p className="font-thin">Hiện không có sản phẩm nào trong giỏ hàng</p>
                                     </div>
                                 )}
                             </div>

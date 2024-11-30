@@ -34,10 +34,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
         console.log(email)
         onClose();
       } else {
-        setError("Invalid email or password");
+        setError("Tài khoản hoặc mật khẩu không hợp lệ");
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      setError('Đã xảy ra lỗi. Vui lòng thử lại');
     } finally {
       setLoading(false);
     }

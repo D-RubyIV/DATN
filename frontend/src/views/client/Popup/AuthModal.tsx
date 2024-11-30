@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../auth/AuthContext';
+import { useAuthContext } from '../auth/AuthContext';
 import { loginApi, registerApi } from '../auth/api';
 
 interface AuthModalProps {
@@ -13,7 +13,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const { setUser } = useAuth();
+    const { setUser } = useAuthContext();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,7 +39,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 onClose();
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            setError('Đã xảy ra lỗi. Vui lòng thử lại');
         } finally {
             setLoading(false);
         }
@@ -75,12 +75,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     <div className="p-5">
                         <div className="text-center">
                             <p className="mb-3 text-2xl font-semibold leading-5 text-slate-900">
-                                {isLogin ? 'Login to your account' : 'Create an account'}
+                                {isLogin ? 'Đăng nhập tài khoản của bạn' : 'Tạo tài khoản mới'}
                             </p>
                             <p className="mt-2 text-sm leading-4 text-slate-600">
                                 {isLogin
-                                    ? 'Welcome back! Please enter your details.'
-                                    : 'Join us! Enter your details below.'}
+                                    ? 'Chào mừng trở lại! Vui lòng nhập thông tin chi tiết của bạn.'
+                                    : 'Tham gia với chúng tôi! Nhập thông tin chi tiết của bạn bên dưới.'}
                             </p>
                         </div>
 

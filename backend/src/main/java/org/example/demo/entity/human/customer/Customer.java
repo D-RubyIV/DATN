@@ -31,7 +31,7 @@ public class Customer extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "gender")
+    @Column(name = "gender", columnDefinition = "NVARCHAR(255)")
     private String gender;
 
     @Column(name = "status")
