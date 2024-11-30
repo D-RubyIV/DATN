@@ -50,12 +50,6 @@ public class InitDataBase {
             role.setName("ROLE_STAFF");
             roleRepository.save(role);
         }
-        if(roleRepository.findByCode("ROLE_USER").isEmpty()){
-            Role role = new Role();
-            role.setCode("ROLE_USER");
-            role.setName("ROLE_USER");
-            roleRepository.save(role);
-        }
         if (accountRepository.findByUsername("admin@gmail.com").isEmpty()){
             AccountRequestDTO account = new AccountRequestDTO();
             account.setUsername("admin@gmail.com");

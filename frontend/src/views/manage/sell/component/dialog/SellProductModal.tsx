@@ -333,10 +333,6 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             }
         },
         {
-            header: 'Tên',
-            accessorKey: 'name'
-        },
-        {
             header: 'Mã',
             accessorKey: 'code'
         },

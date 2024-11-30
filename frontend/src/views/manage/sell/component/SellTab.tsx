@@ -21,7 +21,7 @@ type QuantityInOrder = {
 
 const SellTab = () => {
     const [currentTab, setCurrentTab] = useState('')
-    const { tabs, createTab, removeTab } = useSellContext()
+    const { tabs, createTab, removeTabAndCancel } = useSellContext()
     const [loading, setLoading] = useState<boolean>(false)
     const { openNotification } = useToastContext()
     const [quantityInOrder, setQuantityInOrder] = useState<QuantityInOrder[]>([])
@@ -51,7 +51,7 @@ const SellTab = () => {
                         className="mr-2 bg-red-600"
                         onClick={async () => {
                             closeNotification(notificationKey as string | Promise<string>)
-                            removeTab(orderId)
+                            removeTabAndCancel(orderId)
                         }}
                     >
                         Xác nhận

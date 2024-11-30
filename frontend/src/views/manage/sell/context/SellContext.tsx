@@ -16,6 +16,7 @@ type AppContextType = {
     setTabs: React.Dispatch<React.SetStateAction<TabObject[]>>;
     createTab: (orderId: number) => void;
     removeTab: (orderId: number) => void;
+    removeTabAndCancel: (orderId: number) => void;
 };
 
 
@@ -26,6 +27,8 @@ const SellContext = createContext<AppContextType>({
     createTab: () => {
     },
     removeTab: () => {
+    },
+    removeTabAndCancel: () => {
     }
 })
 
@@ -57,7 +60,7 @@ const SellProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const removeTab = async (orderId: number) => {
+    const removeTabAndCancel = async (orderId: number) => {
         let savedIds = JSON.parse(localStorage.getItem('orderIds') || '[]')
         if (savedIds.includes(orderId)) {
             const data: OrderHistoryResponseDTO = {
@@ -75,9 +78,18 @@ const SellProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
+    const removeTab = async (orderId: number) => {
+        let savedIds = JSON.parse(localStorage.getItem('orderIds') || '[]')
+        if (savedIds.includes(orderId)) {
+            savedIds = savedIds.filter((s: number) => s !== orderId)
+            localStorage.setItem('orderIds', JSON.stringify(savedIds))
+            setTabs(getTabsFromLocalStorage())
+        }
+    }
+
 
     return (
-        <SellContext.Provider value={{ tabs, setTabs, createTab, removeTab }}>
+        <SellContext.Provider value={{ tabs, setTabs, createTab, removeTab, removeTabAndCancel }}>
             {children}
         </SellContext.Provider>
     )

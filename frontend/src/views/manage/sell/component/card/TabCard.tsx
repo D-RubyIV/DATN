@@ -130,7 +130,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
             setIsLoadingComponent(true)
             try {
                 const data: OrderHistoryResponseDTO = {
-                    status: EOrderStatusEnums.DELIVERED,
+                    status: selectedOrder.type === "INSTORE" ? EOrderStatusEnums.DELIVERED : EOrderStatusEnums.TOSHIP,
                     note: 'Đã nhận hàng'
                 }
                 await changeOrderStatus(selectedOrder.id, data).then(function(response) {
@@ -323,7 +323,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
             <div className={'h-full'}>
                 <Dialog isOpen={dialogIsOpenConfirmOrder} closable={true} onClose={() => setIsOpenConfirmOrder(false)}>
-                    <h5 className="mb-4">Xác nhận đơn hàng</h5>
+                    <h5 className="mb-4">Vui lòng xác nhận đơn hàng</h5>
 
                     {
                         selectedOrder && selectedOrder.payment === EPaymentMethod.TRANSFER ? (

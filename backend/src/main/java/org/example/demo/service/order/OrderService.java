@@ -807,12 +807,15 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
 
     private void sendEmail(Order order) {
-        executorService.submit(() -> { // Gửi email trong một luồng riêng biệt
+        executorService.submit(() -> {
             try {
-                log.info("ĐƠN HÀNG NÀY KHÔNG CUNG CẤP EMAIL");
                 if (order.getEmail() != null) {
+                    log.info("ĐƠN HÀNG NÀY CÓ CUNG CẤP EMAIL");
                     mailSenderService.sendNewMail(order.getEmail(), "Subject right here", order);
                     log.info("ĐÃ GỬI EMAIL");
+                }
+                else{
+                    log.info("ĐƠN HÀNG NÀY KHÔNG CUNG CẤP EMAIL");
                 }
             } catch (Exception e) {
                 log.error("Gửi mail thất bại", e);
