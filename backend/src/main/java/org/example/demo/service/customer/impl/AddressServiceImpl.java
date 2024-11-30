@@ -10,6 +10,7 @@ import org.example.demo.validator.AddressValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -53,7 +54,14 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public void deleteAddress(Integer id) {
-        addressRepository.deleteById(id);
+    public void deleteAddress(Integer id) throws BadRequestException {
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+
+        if (address.getDefaultAddress()) {
+            throw new BadRequestException("Cannot delete the default address.");
+        }
+
+        addressRepository.delete(address);
     }
 }

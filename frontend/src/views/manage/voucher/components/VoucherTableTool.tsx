@@ -3,25 +3,23 @@ import Button from '@/components/ui/Button';
 import { HiPlusCircle } from 'react-icons/hi';
 import { FaFileDownload } from 'react-icons/fa';
 
-const VoucherTableTool = () => {
+interface VoucherTableToolProps {
+    exportToExcel: () => void;
+}
+
+const VoucherTableTool: React.FC<VoucherTableToolProps> = ({ exportToExcel }) => {
+
     return (
         <div className="flex flex-col lg:flex-row lg:items-center">
-            <Link
-                download
-                className="block lg:inline-block md:mx-2 md:mb-0 mb-4"
-                to="/data/voucher-list.csv"
-                target="_blank"
-            >
-                <Button block size="sm" icon={<FaFileDownload />}>
-                    Xuất Excel
-                </Button>
-            </Link>
+            <Button block onClick={exportToExcel} size="sm" icon={<FaFileDownload />}>
+                Xuất Excel
+            </Button>
             <Link
                 className="block lg:inline-block md:mb-0 mb-4"
                 to="/admin/manage/voucher/voucher-new"
             >
                 <Button block variant="solid" size="sm" color='blue' icon={<HiPlusCircle />}>
-                    Thêm Mới 
+                    Thêm Mới
                 </Button>
             </Link>
         </div>

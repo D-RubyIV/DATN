@@ -216,8 +216,8 @@ const AddStaffPage = () => {
     // Xác thực dữ liệu nhập vào
     const validationSchema = Yup.object({
         name: Yup.string().required('Họ tên khách hàng là bắt buộc')
-            .min(5, 'Họ và tên khách hàng phải có ít nhất 5 ký tự')
-            .max(100, 'Họ và tên khách hàng không vượt quá 100 ký tự')
+            .min(3, 'Họ và tên khách hàng phải có ít nhất 3 ký tự')
+            .max(50, 'Họ và tên khách hàng không vượt quá 50 ký tự')
             .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => {
                 // kiểm tra khoảng trắng thừa
                 return value.trim() === value && !value.includes('  ')

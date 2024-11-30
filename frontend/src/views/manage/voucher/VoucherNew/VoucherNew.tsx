@@ -29,7 +29,7 @@ const VoucherNew = () => {
 
             if (success == 201) {
                 toast.push('Thêm mới thành công')
-                navigate('/admin/manager/voucher')
+                navigate('/admin/manage/voucher')
             } else {
                 toast.push(
                     <Notification

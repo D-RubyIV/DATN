@@ -11,6 +11,8 @@ import { FaPen } from 'react-icons/fa'
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri';
 import instance from "@/axios/CustomAxios";
 import { useNavigate } from 'react-router-dom'
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 type IVoucher = {
     id: number
@@ -56,6 +58,17 @@ const VoucherTable = () => {
     }, [pagination.currentPage, searchTerm]);
 
 
+
+
+    const exportToExcel = () => {
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Voucher');
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+        saveAs(blob, 'Voucher_data.xlsx');
+    };
+
     // Debounce function for search input
     const debounceFn = debounce((val: string) => {
         setTableData(prevData => ({
@@ -73,7 +86,7 @@ const VoucherTable = () => {
         setTableData(prevData => ({ ...prevData, pageSize, pageIndex: 1 }));
     };
 
-    
+
 
     const handleSort = ({ order, key }: OnSortParam) => {
         setTableData(prevData => {
@@ -85,7 +98,7 @@ const VoucherTable = () => {
             };
         });
     };
-    
+
 
     const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setTableData(prevData => ({
@@ -110,6 +123,14 @@ const VoucherTable = () => {
             {
                 header: 'Loại Phiếu',
                 accessorKey: 'typeTicket',
+                cell: ({ row }) => {
+                    const type = row.original.typeTicket;
+                    return (
+                        <span>
+                            {type === 'Individual' ? 'Cá nhân' : 'Mọi người'}
+                        </span>
+                    );
+                },
             },
             {
                 header: 'Số Lượng',
@@ -267,7 +288,7 @@ const VoucherTable = () => {
         }
     };
 
-    const handleUpdate =  (id: number) => {
+    const handleUpdate = (id: number) => {
         navigate(`/admin/manage/voucher/update/${id}`)
     };
 
@@ -342,7 +363,7 @@ const VoucherTable = () => {
 
                             {/* Bên phải: Nút và công cụ */}
                             <div className="flex items-center space-x-2 justify-end">
-                                <VoucherTableTool />
+                                <VoucherTableTool exportToExcel={exportToExcel} />
                             </div>
                         </div>
                     </div>
@@ -352,7 +373,7 @@ const VoucherTable = () => {
                         {loading ? (
                             <p>Đang tải...</p>
                         ) : data.length === 0 ? (
-                            <p>Không có dữ liệu nhân viên.</p>
+                            <p>Không tìm thấy phiếu giảm giá phù hợp</p>
                         ) : (
                             <DataTable
                                 columns={columns}

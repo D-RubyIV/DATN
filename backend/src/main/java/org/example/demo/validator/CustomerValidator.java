@@ -37,8 +37,8 @@ public class CustomerValidator {
         if (!name.matches("^[\\p{L}\\s]+$")) {
             throw new BadRequestException("Tên không được chứa ký tự đặc biệt hoặc số");
         }
-        if (name.length() < 5 || name.length() > 100) {
-            throw new BadRequestException("Tên phải lớn hơn 5 ký tự và không quá 100 ký tự");
+        if (name.length() < 3 || name.length() > 50) {
+            throw new BadRequestException("Tên phải lớn hơn 3 ký tự và không quá 50 ký tự");
         }
     }
 

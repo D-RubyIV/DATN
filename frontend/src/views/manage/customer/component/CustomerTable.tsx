@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import DataTable, { CellContext } from '@/components/shared/DataTable';
 import { Button, Input, Switcher } from '@/components/ui';
 import { IoIosSearch } from "react-icons/io";
@@ -152,6 +151,7 @@ const CustomerTable = () => {
 
     // // Ham xu ly loc
     const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setPageIndex(1)
         setStatusFilter(event.target.value);
     };
 
@@ -306,20 +306,26 @@ const CustomerTable = () => {
                     </Button>
                 </div>
             </div>
-
-            <DataTable
-                columns={colums}
-                data={data}
-                loading={loading}
-                pagingData={{
-                    pageIndex: pageIndex,
-                    pageSize: pageSize,
-                    total: total,
-                }}
-                onPaginationChange={handlePaginationChange}
-                onSelectChange={handleSelectChange}
-            />
-
+            <div className="overflow-x-auto">
+                {loading ? (
+                    <p>Đang tải...</p>
+                ) : data.length === 0 ? (
+                    <p>Không có dữ liệu khách hàng.</p>
+                ) : (
+                    <DataTable
+                        columns={colums}
+                        data={data}
+                        loading={loading}
+                        pagingData={{
+                            pageIndex: pageIndex,
+                            pageSize: pageSize,
+                            total: total,
+                        }}
+                        onPaginationChange={handlePaginationChange}
+                        onSelectChange={handleSelectChange}
+                    />
+                )}
+            </div>
         </div>
     )
 }
