@@ -12,17 +12,12 @@ const instance = Axios.create({
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
     // Lấy giá trị token từ localStorage
-    const authData = localStorage.getItem("admin");
-    if (authData) {
+    const accessToken = localStorage.getItem("ACCESS_TOKEN");
+    if (accessToken) {
         try {
-            // Phân tích chuỗi JSON và lấy token
-            const parsedAuthData = JSON.parse(JSON.parse(authData).auth);
-            const token = parsedAuthData.session.token;
-            console.log(token)
-
             // Gán token vào headers nếu có
             if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
+                config.headers.Authorization = `Bearer ${accessToken}`;
             }
         } catch (error) {
             console.error("Failed to parse token:", error);

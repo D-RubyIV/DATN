@@ -23,8 +23,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         try {
             if (isLogin) {
                 const response = await loginApi(email, password);
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('refresh_token', response.data.refresh_token);
+                localStorage.clear();
+                localStorage.setItem('ACCESS_TOKEN', response.data.token);
+                localStorage.setItem('REFRESH_TOKEN', response.data.refresh_token);
                 setUser({
                     username: response.data.username,
                 });

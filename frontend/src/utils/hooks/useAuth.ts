@@ -28,7 +28,7 @@ function useAuth() {
 
     const signIn = async (
         values: SignInCredential
-    ): Promise<{ status: Status; message: string } | undefined> => {
+    ): Promise<{ status: Status; message: string, accessToken: string } | undefined> => {
         try {
             const resp = await apiSignIn(values)
             if (resp.data && resp.data.status === 'OK') {
@@ -53,7 +53,7 @@ function useAuth() {
                 navigate(
                     redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
                 )
-                return { status: 'OK', message: resp.data.message || '' }
+                return { status: 'OK', message: resp.data.message || '', accessToken: token }
             }
         } catch (error: any) {
             if(error?.response?.data?.error){

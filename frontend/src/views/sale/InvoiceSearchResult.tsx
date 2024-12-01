@@ -85,16 +85,20 @@ const InvoiceSearchResult = () => {
                     </h3>
                     <div className="space-y-3">
                         <p className="text-red-500">
-                            <strong>Tổng tiền:</strong>{" "}
-                            {Math.round(Number(orderResponseDTO?.subTotal)).toLocaleString("vi") + "đ"}
+                            <strong>Tổng tiền:</strong>{' '}
+                            {Math.round(Number(orderResponseDTO?.subTotal)).toLocaleString('vi') + 'đ'}
                         </p>
                         <p className="text-red-500">
-                            <strong>Giảm giá:</strong>{" "}
-                            {Math.round(Number(orderResponseDTO?.discount || 0)).toLocaleString("vi") + "đ"}
+                            <strong>Giảm giá:</strong>{' '}
+                            {Math.round(Number(orderResponseDTO?.discount || 0)).toLocaleString('vi') + 'đ'}
                         </p>
                         <p className="text-red-500">
-                            <strong>Tổng thanh toán:</strong>{" "}
-                            {Math.round(Number(orderResponseDTO?.total || 0)).toLocaleString("vi") + "đ"}
+                            <strong>Phí vận chuyển:</strong>{' '}
+                            {Math.round(Number(orderResponseDTO?.deliveryFee || 0)).toLocaleString('vi') + 'đ'}
+                        </p>
+                        <p className="text-red-500">
+                            <strong>Tổng thanh toán:</strong>{' '}
+                            {Math.round(Number(orderResponseDTO?.total || 0)).toLocaleString('vi') + 'đ'}
                         </p>
                     </div>
                 </div>
@@ -102,7 +106,7 @@ const InvoiceSearchResult = () => {
                 {/* Danh sách sản phẩm */}
                 <div className="col-span-12 bg-white shadow-lg p-5 rounded-lg">
                     <h3 className="text-2xl font-bold text-gray-800 mb-5">
-                        Danh sách sản phẩm
+                    Danh sách sản phẩm
                     </h3>
                     <div>
                         {

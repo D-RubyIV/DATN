@@ -50,6 +50,12 @@ const SignInForm = (props: SignInFormProps) => {
 
         const result = await signIn({ email, password })
 
+        console.log("================================")
+        console.log(result)
+        if(result?.accessToken){
+            localStorage.clear();
+            localStorage.setItem("ACCESS_TOKEN", result?.accessToken);
+        }
         if (result?.status === 'failed') {
             setMessage(result.message)
         }
@@ -83,7 +89,7 @@ const SignInForm = (props: SignInFormProps) => {
                     <Form>
                         <FormContainer>
                             <FormItem
-                                label="User Name"
+                                label="Tên người dùng/email"
                                 invalid={
                                     (errors.email &&
                                         touched.email) as boolean
@@ -99,7 +105,7 @@ const SignInForm = (props: SignInFormProps) => {
                                 />
                             </FormItem>
                             <FormItem
-                                label="Password"
+                                label="Mật khẩu"
                                 invalid={
                                     (errors.password &&
                                         touched.password) as boolean
@@ -135,10 +141,6 @@ const SignInForm = (props: SignInFormProps) => {
                             >
                                 {isSubmitting ? 'Signing in...' : 'Sign In'}
                             </Button>
-                            <div className="mt-4 text-center">
-                                <span>{`Don't have an account yet?`} </span>
-                                <ActionLink to={signUpUrl}>Sign up</ActionLink>
-                            </div>
                         </FormContainer>
                     </Form>
                 )}

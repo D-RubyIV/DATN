@@ -495,7 +495,7 @@ const CustomerInfor = () => {
       });
       if (response.status === 200) {
         toast('Cập nhật thành công');
-        navigate('/admin/manage/customer');
+        navigate('/collections');
       } else {
         alert('Failed to update customer. Please try again.');
       }
