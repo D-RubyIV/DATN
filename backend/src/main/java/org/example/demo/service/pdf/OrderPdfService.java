@@ -30,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -91,9 +92,15 @@ public class OrderPdfService {
 //            PDFont font = PDType1Font.HELVETICA;
             PDFont italicFont = PDType1Font.HELVETICA_OBLIQUE;
             PDFont helveticaBold = PDType1Font.HELVETICA_BOLD;
-            PDFont font = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans.ttf"));
-            PDFont timeBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-Bold.ttf"));
-            PDFont condensedBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-BoldOblique.ttf"));
+            ClassLoader classLoader = OrderPdfService.class.getClassLoader();
+
+            InputStream fontStream = classLoader.getResourceAsStream("dejavu-sans/ttf/DejaVuSans.ttf");
+            InputStream timeBoldStream = classLoader.getResourceAsStream("dejavu-sans/ttf/DejaVuSans-Bold.ttf");
+            InputStream condensedBoldStream = classLoader.getResourceAsStream("dejavu-sans/ttf/DejaVuSans-BoldOblique.ttf");
+
+            PDFont font = PDType0Font.load(document, fontStream);
+            PDFont timeBold = PDType0Font.load(document, timeBoldStream);
+            PDFont condensedBold = PDType0Font.load(document, condensedBoldStream);
 
 //            PDImageXObject headImage = PDImageXObject.createFromFile("src/main/resources/image/header.png", document);
 //            contentStream.drawImage(headImage, 0, pageHeight - 235, pageWidth, 239);
@@ -262,9 +269,16 @@ public class OrderPdfService {
 
             PDFont italicFont = PDType1Font.HELVETICA_OBLIQUE;
             PDFont helveticaBold = PDType1Font.HELVETICA_BOLD;
-            PDFont font = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans.ttf"));
-            PDFont timeBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-Bold.ttf"));
-            PDFont condensedBold = PDType0Font.load(document, new File("C:\\Users\\phah0\\Downloads\\dejavu-sans\\ttf\\DejaVuSans-BoldOblique.ttf"));
+
+            ClassLoader classLoader = OrderPdfService.class.getClassLoader();
+
+            InputStream fontStream = classLoader.getResourceAsStream("dejavu-sans/ttf/DejaVuSans.ttf");
+            InputStream timeBoldStream = classLoader.getResourceAsStream("dejavu-sans/ttf/DejaVuSans-Bold.ttf");
+            InputStream condensedBoldStream = classLoader.getResourceAsStream("dejavu-sans/ttf/DejaVuSans-BoldOblique.ttf");
+
+            PDFont font = PDType0Font.load(document, fontStream);
+            PDFont timeBold = PDType0Font.load(document, timeBoldStream);
+            PDFont condensedBold = PDType0Font.load(document, condensedBoldStream);
 
             Color bottomRectColor = new Color(122, 122, 122);
             BufferedImage bufferedImageQR = QRUtil.generateQRCodeWithoutBorder(orderCode, 100, 100);
