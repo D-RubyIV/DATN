@@ -164,31 +164,41 @@ const Navbar = () => {
                             {user ? (
                                 <>
                                     {/* User Dropdown */}
-                                    <button id="user-button" onClick={() => setDropdownVisible(!dropdownVisible)} className="menu-title flex items-center gap-2 text-black dark:text-white hover:text-gray-600 transition-colors">
+                                    <button
+                                        id="user-button"
+                                        onClick={() => setDropdownVisible(!dropdownVisible)}
+                                        className="menu-title flex items-center gap-2 text-black dark:text-white hover:text-gray-600 transition-colors focus:outline-none"
+                                    >
                                         <HiUserCircle size={25} />
                                         <span className="text-sm font-medium">{user.username}</span>
                                     </button>
                                     {dropdownVisible && (
-                                        <div id="user-dropdown" className="absolute right-0 mt-2 w-48 bg-white bg-opacity-50 rounded-md shadow-lg py-1 z-50">
-                                            <div className="px-4 py-3 border-b border-gray-100">
+                                        <div
+                                            id="user-dropdown"
+                                            className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50"
+                                        >
+                                            {/* User Info */}
+                                            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                                 <div className="flex items-center gap-3">
-                                                    <HiUserCircle className="text-gray-500" size={30} />
+                                                    <HiUserCircle className="text-gray-500 dark:text-gray-400" size={30} />
                                                     <div>
-                                                        <p className="text-sm font-medium text-black dark:text-white">{user.username}</p>
+                                                        <p className="text-sm font-medium text-black dark:text-white">
+                                                            {user.username}
+                                                        </p>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* <Link to={`/cutomer/${email}}`}>
-                                                <button
-                                                    className="block w-full text-left px-4 py-2 text-sm text-black hover:bg-gray-100"
-                                                >
-                                                    Đăng xuất
-                                                </button>
-                                            </Link> */}
+                                            {/* User Actions */}
+                                            <Link
+                                                to={`/customer/${user.username}`}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                            >
+                                                Thông tin người dùng
+                                            </Link>
                                             <button
                                                 onClick={handleLogoutClick}
-                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-800 rounded-md"
                                             >
                                                 Đăng xuất
                                             </button>

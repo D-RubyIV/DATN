@@ -2,18 +2,28 @@ package org.example.demo.controller.staff;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.exception.CustomExceptions;
+import org.example.demo.exception.DataNotFoundException;
+import org.example.demo.exception.InvalidPasswordException;
+import org.example.demo.model.request.PasswordResetRequest;
+import org.example.demo.model.response.ErrorResponse;
+import org.example.demo.model.response.SuccessResponse;
+import org.example.demo.repository.security.AccountRepository;
+import org.example.demo.service.auth.AccountService;
+import org.example.demo.service.email.MailSenderService;
 import org.example.demo.service.staff.StaffService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,16 +34,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("staffs")
+@RequiredArgsConstructor
 public class StaffController {
 
     private final StaffService staffService;
-
-    @Autowired
-    public StaffController(StaffService staffService) {
-        this.staffService = staffService;
-    }
+    private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MailSenderService emailService;
+    private final AccountService accountService;
 
     @GetMapping
     public ResponseEntity<Page<StaffResponseDTO>> getAllNhanVien(
@@ -97,10 +108,33 @@ public class StaffController {
         }
     }
 
+
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> submitNewPassword(
+            @RequestParam("email") String email,
+            @RequestBody PasswordResetRequest resetRequest) {
+        try {
+            accountService.resetPassword(email, resetRequest.getNewPassword());
+            return ResponseEntity.ok(new SuccessResponse("Password reset successfully"));
+        } catch (DataNotFoundException e) {
+            throw new CustomExceptions.CustomBadRequest("User not found");
+        } catch (IllegalArgumentException e) {
+            log.error("IllegalArgumentException IllegalArgumentException");
+            throw new CustomExceptions.CustomBadRequest(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace(); // b thu xem
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Unexpected error during password reset"));
+        }
+    }
+
+
+
     @PostMapping
     public ResponseEntity<StaffResponseDTO> createStaff(@Valid @RequestBody StaffRequestDTO requestDTO) {
         try {
-            Staff savedStaff = staffService.save(requestDTO);
+            Staff savedStaff = staffService.createStaff(requestDTO);
             StaffResponseDTO staffResponse = staffService.getStaffResponseDTO(savedStaff);
             return ResponseEntity.status(HttpStatus.CREATED).body(staffResponse);
         } catch (Exception e) {
@@ -166,7 +200,6 @@ public class StaffController {
         boolean exists = staffService.isCitizenIdExists(citizenId);
         return ResponseEntity.ok(Collections.singletonMap("exists", exists));
     }
-
 
 
 }

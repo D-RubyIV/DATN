@@ -14,7 +14,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,9 +22,16 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     @Query("SELECT p FROM ProductDetail p WHERE  p.size = ?1 AND p.color = ?2 AND p.texture = ?3 " +
             "AND p.origin = ?4 AND p.brand = ?5 AND p.collar = ?6 AND p.sleeve = ?7 " +
             "AND p.style = ?8 AND p.material = ?9 AND p.thickness = ?10 AND p.elasticity = ?11")
-    ProductDetail findByAttributes( Size size, Color color, Texture texture,
+    ProductDetail findByAttributes(Size size, Color color, Texture texture,
                                    Origin origin, Brand brand, Collar collar, Sleeve sleeve,
                                    Style style, Material material, Thickness thickness, Elasticity elasticity);
+
+
+//    ProductDetail findByCodeAndName(String code, String name);
+//    boolean existsByCodeAndName(String code, String name);
+    //no ghi no la sao b
+    @Query("SELECT p FROM ProductDetail p WHERE p.product.name = ?1 AND p.size = ?2 AND p.color = ?3")
+    ProductDetail findByName(String name, Size size, Color color);
 
     List<ProductDetail> findByProductId(Integer productId);
 
@@ -47,7 +53,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             LEFT JOIN FETCH pd.elasticity
             LEFT JOIN FETCH pd.images
             
-         
+            
             WHERE
             (:productId IS NULL OR pd.product.id = :productId)
             AND 
@@ -63,7 +69,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 OR (:query IS NULL OR LOWER(pd.sleeve.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(pd.thickness.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(pd.texture.name) LIKE LOWER(CONCAT('%', :query, '%')))
-                
+            
                 OR (:query IS NULL OR LOWER(CAST(pd.quantity AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(CAST(pd.price AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
             )
@@ -234,31 +240,31 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
 
     @Query("""
-    SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
-        p.id,
-        p.code,
-        p.name,
-        COUNT(DISTINCT c.id),
-        COUNT(DISTINCT s.id),
-        MIN(pd.price)
-    )
-    FROM Product p
-    JOIN ProductDetail pd ON p.id = pd.product.id
-    JOIN Color c ON c.id = pd.color.id
-    JOIN Size s ON s.id = pd.size.id
-    JOIN Brand b ON b.id = pd.brand.id
-    WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
-    AND (:colorCodes IS NULL OR c.code IN :colorCodes)
-    AND (:brandCodes IS NULL OR b.code IN :brandCodes)
-    AND (:minPrice IS NULL OR pd.price >= :minPrice)
-    AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
-    AND p.deleted = FALSE
-    AND c.deleted = FALSE
-    AND s.deleted = FALSE
-    AND b.deleted = FALSE
-    AND pd.deleted = FALSE
-    GROUP BY p.id, p.code, p.name
-""")
+                SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
+                    p.id,
+                    p.code,
+                    p.name,
+                    COUNT(DISTINCT c.id),
+                    COUNT(DISTINCT s.id),
+                    MIN(pd.price)
+                )
+                FROM Product p
+                JOIN ProductDetail pd ON p.id = pd.product.id
+                JOIN Color c ON c.id = pd.color.id
+                JOIN Size s ON s.id = pd.size.id
+                JOIN Brand b ON b.id = pd.brand.id
+                WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
+                AND (:colorCodes IS NULL OR c.code IN :colorCodes)
+                AND (:brandCodes IS NULL OR b.code IN :brandCodes)
+                AND (:minPrice IS NULL OR pd.price >= :minPrice)
+                AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
+                AND p.deleted = FALSE
+                AND c.deleted = FALSE
+                AND s.deleted = FALSE
+                AND b.deleted = FALSE
+                AND pd.deleted = FALSE
+                GROUP BY p.id, p.code, p.name
+            """)
     Page<ProductResponseOverDTO> findCustomPage(
             Pageable pageable,
             @Param("sizeCodes") List<String> sizeCodes,

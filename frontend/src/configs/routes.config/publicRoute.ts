@@ -8,6 +8,13 @@ const publicRoute: Routes = [
         component: lazy(() => import('@/views/client/LandingPage')),
         authority: []
     },
+
+    {
+        key: 'private',
+        path: `/reset-password`,
+        component: lazy(() => import('@/views/sale/ResetPassword')),
+        authority: []
+    },
     {
         key: 'cart',
         path: `/cart`,
@@ -48,10 +55,11 @@ const publicRoute: Routes = [
 
     {
         key: 'customer-info',
-        path: '/edit-customer',
+        path: '/customer/:email',
         component: lazy(() => import('@/views/sale/CustomerInfor')),
         authority: []
     },
+
     {
         key: 'collections',
         path: '/collections',

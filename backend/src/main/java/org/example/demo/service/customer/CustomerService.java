@@ -40,4 +40,7 @@ public interface CustomerService {
     AddressDTO findDefaultAddressByCustomerId(Integer customerId);
 
     CustomerDTO getCustomerDetailWithPageAddresses(int customerId, int page, int size);
+
+    CustomerDTO getCustomerClientWithPageAddresses(String email, int page, int size);
+
 }

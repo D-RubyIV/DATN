@@ -23,4 +23,6 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
 
     @Query("SELECT a FROM Address a WHERE a.customer.id = :customerId ORDER BY a.createdDate DESC")
     Page<Address> findAddressesByCustomerId(@Param("customerId") int customerId, Pageable pageable);
+    Page<Address> findAddressesByCustomerEmail(@Param("email") String email, Pageable pageable);
+
 }

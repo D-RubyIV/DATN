@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.util.order.OrderUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class MailSenderService {
     @Autowired
     private JavaMailSender mailSender;
-
+    // dejava san =))
     public void sendNewMail(String to, String subject, Order order) throws MessagingException {
         String htmlBody = """
                 <table align="center" style="width: 600px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; border-collapse: collapse; background-color: #ffffff; border-radius: 10px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);">
@@ -64,5 +65,14 @@ public class MailSenderService {
         catch (Exception ex){
             log.error("Gủi email thất bại" + ex.getMessage());
         }
+    }
+
+
+    public void sendEmail(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
     }
 }
