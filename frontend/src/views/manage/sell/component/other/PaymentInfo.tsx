@@ -92,7 +92,13 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
             </div>
             <ul>
                 <PaymentRow label="Tổng tiền" value={data?.subTotal} />
-                <PaymentRow label="Phí vận chuyển" value={data?.deliveryFee} prefix={' + '} />
+                <PaymentRow label={(
+                    <div className={'flex gap-2'}>
+                        <p>Phí vận chuyển</p>
+                        <img src={'https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Blue-Orange-350x88.png'}
+                             width={'60px'} />
+                    </div>
+                )} value={data?.deliveryFee} prefix={' + '} />
                 <PaymentRow label={`Giảm giá (${selectedOrder?.discountVoucherPercent}%)`} value={data?.discount}
                             prefix={' - '} />
                 <div className={'pb-4'}>

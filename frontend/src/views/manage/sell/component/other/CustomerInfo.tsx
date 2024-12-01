@@ -129,11 +129,12 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                                 <div>
                                     + Số điện thoại nhận: {data?.phone || '....'}
                                 </div>
+
                             </div>
                             <Input
                                 disabled
                                 value={
-                                    (data?.address + ', ' + (data?.wardName || "" )+ ', ' + (data?.districtName || "") + ', ' + (data?.provinceName || ""))
+                                    (data?.address + ', ' + (data?.wardName || "") + ', ' + (data?.districtName || "") + ', ' + (data?.provinceName || ""))
                                 }
                                 suffix={
                                     <Tooltip title="Chỉnh sửa" className={'text-black'}>

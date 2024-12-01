@@ -122,6 +122,8 @@ export type OrderResponseDTO = {
     orderDetailResponseDTOS: OrderDetailResponseDTO[];
     historyResponseDTOS: OrderHistoryResponseDTO[];
     createdDate: string;
+    refund: number;
+    surcharge: number
 }
 
 export type Entity = {

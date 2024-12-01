@@ -1,13 +1,13 @@
 import { Fragment, useEffect, useState, useRef } from 'react'
 import Steps from '@/components/ui/Steps'
 import { Button, Dialog, Input, Radio } from '@/components/ui'
-import { OrderResponseDTO, EOrderStatus } from '@/@types/order'
+import { OrderResponseDTO, EOrderStatus, EOrderStatusEnums } from '@/@types/order'
 import {
     HiOutlineArrowLeft,
     HiOutlineCash,
     HiOutlineHand,
     HiOutlineMap,
-    HiOutlineTruck,
+    HiOutlineTruck
 } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
@@ -15,6 +15,7 @@ import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useLoadingContext } from '@/context/LoadingContext'
+import { ErrorMessage, Field, Form, Formik } from 'formik'
 
 
 type ExampleAnswers = {
@@ -28,7 +29,35 @@ type HistoryDTO = {
 }
 
 
+type MODE = "FOR_CANCEL" | "FOR_TOSHIP"
 const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO, fetchData: () => Promise<void> }) => {
+
+
+    const [isMode, setIsMode] = useState<MODE>();
+    // Schema xác thực
+    const validationSchemaTrade = Yup.object().shape({
+        transactionCode: Yup.string()
+            .required('Mã giao dịch là bắt buộc')
+            .min(6, 'Mã giao dịch phải có ít nhất 6 ký tự')
+    })
+
+    // Xử lý khi submit form
+    const handleSubmitCancelTrade = async (values: {transactionCode: string}) => {
+        console.log(values)
+        const data = {
+            amount: selectObject.refund,
+            tradingCode: values.transactionCode,
+            status: isMode === "FOR_TOSHIP" ? EOrderStatusEnums.TOSHIP : EOrderStatusEnums.CANCELED
+        }
+        await instance.post(`orders/refund_and_change_status/${selectObject.id}`, data).then(function(response) {
+            console.log(response)
+            if (response.status === 200) {
+                openNotification('Thay đổi trạng thái thành công')
+            }
+            setIsOpenTradingCodeConfirm(false)
+            fetchData()
+        })
+    }
 
     const { openNotification } = useToastContext()
     const { sleepLoading } = useLoadingContext()
@@ -57,7 +86,42 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             textareaRef.current.focus() // Gọi focus trên DOM node
         }
     }
+    const run = async () => {
+        try {
+            const response = await instance.get(`orders/exportPdf/${selectObject.id}`, {
+                responseType: 'blob' // Đảm bảo nhận phản hồi dưới dạng blob (file)
+            })
 
+            // Tạo URL từ Blob
+            const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+
+            // Tạo iframe ẩn để in
+            const iframe = document.createElement('iframe')
+            iframe.style.display = 'none'
+            iframe.src = url
+
+            // Đợi khi iframe tải xong và in
+            iframe.onload = () => {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.print()
+
+                }
+            }
+
+            // Thêm iframe vào body
+            document.body.appendChild(iframe)
+
+            // Dọn dẹp tài nguyên sau khi in xong
+            iframe.addEventListener('load', () => {
+                setTimeout(() => {
+                    document.body.removeChild(iframe)
+                    window.URL.revokeObjectURL(url)
+                }, 600000) // Để đảm bảo quá trình in hoàn tất trước khi xóa iframe
+            })
+        } catch (error) {
+            console.error('Failed to print PDF', error)
+        }
+    }
     const [currentStatus, setCurrentStatus] = useState<EOrderStatus>(selectObject.status)
 
     const exampleAnswers: ExampleAnswers[] = [
@@ -81,14 +145,10 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         }
     ]
 
-    const [dialogIsOpenCancelOnlineOrder, setIsOpenCancelOnlineOrder] = useState(false)
+    const [dialogIsOpenTradingCodeConfirm, setIsOpenTradingCodeConfirm] = useState(false)
 
     const onDialogClose = () => {
-        setIsOpenCancelOnlineOrder(false)
-    }
-
-    const onDialogOk = () => {
-        setIsOpenCancelOnlineOrder(false)
+        setIsOpenTradingCodeConfirm(false)
     }
 
     useEffect(() => {
@@ -111,7 +171,13 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             'note': getValues('note')
         }
         await sleepLoading(500).then(async () => {
-            instance.put(`/orders/status/change/${selectObject.id}`, data).then(function() {
+            instance.put(`/orders/status/change/${selectObject.id}`, data).then(function(response) {
+                if (response.status === 200) {
+                    openNotification('Thay đổi trạng thái thành công')
+                    if (status === 'TOSHIP') {
+                        run()
+                    }
+                }
                 fetchData()
                 setNoteValue('note', '')
             }).catch(function(error) {
@@ -128,18 +194,34 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         if (currentStatus === 'PENDING') {
             return (
                 <div className="flex gap-2">
-                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineTruck />}
-                            onClick={handleSubmit(async () => submitChangeStatus('TOSHIP'))}>
-                        Chuyển trạng thái chờ vận chuyển
-                    </Button>
+
                     {
-                        selectObject.payment === 'TRANSFER' && selectObject.type === 'ONLINE' ?
+                        selectObject.payment === 'TRANSFER' && selectObject.type === 'ONLINE'  && selectObject.refund > 0?
+                            (
+                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineTruck />}
+                                        onClick={handleSubmit(async () => {
+                                            setIsMode('FOR_TOSHIP')
+                                            setIsOpenTradingCodeConfirm(true)
+                                        })}>
+                                    Trả lại tiền và chuyển sang chờ vận chuyển
+                                </Button>
+                            )
+                            : (
+                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineTruck />}
+                                        onClick={handleSubmit(async () => submitChangeStatus('TOSHIP'))}>
+                                    Chuyển trạng thái chờ vận chuyển
+                                </Button>
+                            )
+                    }
+                    {
+                        selectObject.payment === 'TRANSFER' && selectObject.type === 'ONLINE' && selectObject.refund > 0?
                             (
                                 <Button block variant="default" size="sm" className="bg-indigo-500"
                                         icon={<HiOutlineHand />}
-                                        onClick={handleSubmit(async () => setIsOpenCancelOnlineOrder(true))}>Hủy đơn đã
-                                    thanh
-                                    toán</Button>
+                                        onClick={handleSubmit(async () => {
+                                            setIsMode('FOR_CANCEL')
+                                            setIsOpenTradingCodeConfirm(true)
+                                        })}>Trả lại tiền và hủy đơn</Button>
                             )
                             : (
                                 <Button block variant="default" size="sm" className="bg-indigo-500 !w-32"
@@ -155,18 +237,20 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             return (
                 <div className="flex gap-2">
                     <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineMap />}
-                            onClick={handleSubmit(async() => submitChangeStatus('TORECEIVE'))}>Xác nhận đang vận
+                            onClick={handleSubmit(async () => submitChangeStatus('TORECEIVE'))}>Xác nhận đang vận
                         chuyển </Button>
                     <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
                             icon={<HiOutlineArrowLeft />}
-                            onClick={handleSubmit(async() => submitChangeStatus('PENDING'))}>Quay lại chờ xác nhận</Button>
+                            onClick={handleSubmit(async () => submitChangeStatus('PENDING'))}>Quay lại chờ xác
+                        nhận</Button>
                 </div>
             )
         } else if (currentStatus === 'TORECEIVE') {
             return (
                 <div className="flex gap-2">
                     <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineCash />}
-                            onClick={handleSubmit(async() => submitChangeStatus('DELIVERED'))}>Xác nhận hoàn thành</Button>
+                            onClick={handleSubmit(async () => submitChangeStatus('DELIVERED'))}>Xác nhận hoàn
+                        thành</Button>
                 </div>
             )
         } else if (currentStatus === 'DELIVERED') {
@@ -267,26 +351,59 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 <ChangeForPending />
             </div>
             <Dialog
-                isOpen={dialogIsOpenCancelOnlineOrder}
+                isOpen={dialogIsOpenTradingCodeConfirm}
                 onClose={onDialogClose}
                 onRequestClose={onDialogClose}
             >
                 <h5 className="mb-4">Nhập mã giao dịch</h5>
-                <div>
-                    <Input placeholder={'Vui lòng nhập mã giao dịch'}></Input>
+                <div className={'flex gap-2 pb-4'}>
+                    <p className={'text-black'}>Số tiền cần trả lại: </p>
+                    <p className={'text-red-500'}>{selectObject.refund.toLocaleString("vi") + "đ"}</p>
                 </div>
-                <div className="text-right mt-6">
-                    <Button
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onDialogClose}
-                    >
-                        Hủy
-                    </Button>
-                    <Button variant="solid" onClick={() => onDialogOk}>
-                        Xác nhận
-                    </Button>
-                </div>
+                <Formik
+                    initialValues={{ transactionCode: '' }}
+                    validationSchema={validationSchemaTrade}
+                    onSubmit={handleSubmitCancelTrade}
+                >
+                    {({ errors, touched, isSubmitting }) => (
+                        <Form>
+                            <div>
+                                <Field
+                                    name="transactionCode"
+                                    as={Input}
+                                    placeholder="Vui lòng nhập mã giao dịch"
+                                    className={`${
+                                        errors.transactionCode && touched.transactionCode
+                                            ? 'border-red-500'
+                                            : ''
+                                    }`}
+                                />
+                                <ErrorMessage
+                                    name="transactionCode"
+                                    component="div"
+                                    className="text-red-500 text-sm mt-1"
+                                />
+                            </div>
+                            <div className="text-right mt-6">
+                                <Button
+                                    className="ltr:mr-2 rtl:ml-2"
+                                    variant="plain"
+                                    type="button"
+                                    onClick={onDialogClose}
+                                >
+                                    Hủy
+                                </Button>
+                                <Button
+                                    variant="solid"
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                >
+                                    Xác nhận
+                                </Button>
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
             </Dialog>
         </div>
     )

@@ -3,13 +3,13 @@ package org.example.demo.service.order;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.example.demo.dto.customer.CustomerMapper;
 import org.example.demo.dto.ghn.FeeDTO;
 import org.example.demo.dto.ghn.ItemDTO;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
+import org.example.demo.dto.order.other.RefundAndChangeStatusDTO;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOByCode;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOById;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
@@ -158,6 +158,22 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return entityFound;
     }
 
+    @Transactional
+    public Order refund_and_change_status(RefundAndChangeStatusDTO refundAndChangeStatusDTO, int orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
+        Double amount = refundAndChangeStatusDTO.getAmount();
+        String tradingCode = refundAndChangeStatusDTO.getTradingCode();
+        History history = new History();
+        String note = String.format("Trả lại: %.2f - Mã giao dịch: %s", amount, tradingCode);
+        history.setNote(note);
+        history.setAccount(AuthUtil.getAccount());
+        history.setOrder(order);
+        history.setStatus(refundAndChangeStatusDTO.getStatus());
+        historyRepository.save(history);
+        order.setStatus(refundAndChangeStatusDTO.getStatus());
+        return orderRepository.save(order);
+    }
+
     @Override
     @Transactional
     public Order save(OrderRequestDTO requestDTO) {
@@ -229,6 +245,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             if (requestDTO.getCustomer().getId() != null) {
                 Customer selectedCustomer = customerRepository.findById(requestDTO.getCustomer().getId()).orElse(null);
                 if (selectedCustomer != null) {
+                    order.setEmail(selectedCustomer.getEmail());
+                    order.setPhone(selectedCustomer.getPhone());
                     log.info("THÔNG TIN KHÁCH HÀNG TỒN TẠI");
                     order.setCustomer(selectedCustomer);
 

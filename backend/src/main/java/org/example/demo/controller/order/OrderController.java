@@ -7,6 +7,7 @@ import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
 import org.example.demo.dto.order.core.response.OrderResponseDTO;
+import org.example.demo.dto.order.other.RefundAndChangeStatusDTO;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOByCode;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOById;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
@@ -101,6 +102,11 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     @PutMapping(value = "status/change/{id}")
     public ResponseEntity<OrderResponseDTO> changeStatus(@PathVariable Integer id, @RequestBody HistoryRequestDTO requestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeStatus(id, requestDTO)));
+    }
+
+    @PostMapping(value = "refund_and_change_status/{id}")
+    public ResponseEntity<OrderResponseDTO> refund_and_cancel(@PathVariable Integer id, @Valid @RequestBody RefundAndChangeStatusDTO requestDTO) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.refund_and_change_status(requestDTO, id)));
     }
 
     @PostMapping(value = "use-voucher-by-id")
