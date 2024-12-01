@@ -3,10 +3,12 @@ package org.example.demo.controller.staff;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.staff.response.StaffResponseDTO;
 import org.example.demo.entity.human.staff.Staff;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.exception.InvalidPasswordException;
 import org.example.demo.model.request.PasswordResetRequest;
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("staffs")
 @RequiredArgsConstructor
@@ -115,12 +118,12 @@ public class StaffController {
             accountService.resetPassword(email, resetRequest.getNewPassword());
             return ResponseEntity.ok(new SuccessResponse("Password reset successfully"));
         } catch (DataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse("User not found"));
+            throw new CustomExceptions.CustomBadRequest("User not found");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ErrorResponse(e.getMessage()));
+            log.error("IllegalArgumentException IllegalArgumentException");
+            throw new CustomExceptions.CustomBadRequest(e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace(); // b thu xem
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Unexpected error during password reset"));
         }

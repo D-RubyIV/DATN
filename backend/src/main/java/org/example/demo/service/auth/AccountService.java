@@ -32,6 +32,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,27 +50,46 @@ public class AccountService {
     private final AuthenticationManager authenticationManager;
     private final LocalizationUtils localizationUtils;
 
+    public static String generateCustomerCode(String email) {
+        if (email == null || !email.contains("@")) {
+            throw new IllegalArgumentException("Email không hợp lệ");
+        }
+        String localPart = email.split("@")[0];
+        if (localPart.length() <= 5) {
+            return localPart;
+        }
+        List<Character> chars = new ArrayList<>();
+        for (char c : localPart.toCharArray()) {
+            chars.add(c);
+        }
+        Collections.shuffle(chars);
+        StringBuilder customerCode = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            customerCode.append(chars.get(i));
+        }
+        return customerCode.toString();
+    }
+
+
     @Transactional
     public Account createAccount(AccountRequestDTO accountRequestDTO) throws DataNotFoundException, PermissionDenyException {
         String email = accountRequestDTO.getUsername();
         if (accountRepository.existsByUsername(email)) {
             throw new DataIntegrityViolationException("Email đăng ký đã tồn tại");
         }
-
         System.out.println("ROlE ID: " + accountRequestDTO.getRoleId());
         Role role = roleRepository.findById(accountRequestDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
         if(role.getName().toUpperCase().equalsIgnoreCase(Role.ADMIN)) {
             throw new PermissionDenyException("Không được phép đăng ký tài khoản Admin");
         }
-
         Account account = Account.builder()
                 .username(email)
                 .password(accountRequestDTO.getPassword() != null ? passwordEncoder.encode(accountRequestDTO.getPassword()) : null)
                 .role(role)
                 .provider(accountRequestDTO.getProvider())
                 .enabled(true)
-                .status("Hoạt Động")
+                .status("Active")
                 .build();
 
         if (role.getName().equalsIgnoreCase(Role.USER)) {
@@ -79,8 +100,11 @@ public class AccountService {
             staffRepository.save(staff);
         } else {
             Customer customer = new Customer();
+            customer.setCode(generateCustomerCode(email));
             customer.setEmail(email);
+            customer.setStatus("Active");
             customer.setAccount(account);
+            customer.setDeleted(false);
             account.setCustomer(customer);
             customerRepository.save(customer);
         }
@@ -90,30 +114,24 @@ public class AccountService {
 
     public String authenticate(String email, String password, long roleId) {
         System.out.println("1");
-
         Account account = accountRepository.findByUsername(email)
                 .orElseThrow(() -> new CustomExceptions.CustomBadRequest(
                         localizationUtils.getLocalizedMessage(MessageKeys.WRONG_EMAIL_PASSWORD)
                 ));
-
         System.out.println("2");
-
         if (account.getProvider() == null && !passwordEncoder.matches(password, account.getPassword())) {
             throw new CustomExceptions.CustomBadRequest(
                     localizationUtils.getLocalizedMessage(MessageKeys.WRONG_EMAIL_PASSWORD)
             );
         }
         System.out.println("3");
-
         if (!account.getEnabled()) {
             throw new CustomExceptions.CustomBadRequest(
                     localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED)
             );
         }
         System.out.println("4");
-
         UserDetails userDetail = (UserDetails) account;
-
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 email, password, userDetail.getAuthorities()
         );
@@ -187,7 +205,7 @@ public class AccountService {
             throws InvalidPasswordException, DataNotFoundException {
         Account existingUser = accountRepository.findByUsername(email)
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
-        System.out.println(existingUser);
+        System.out.println(existingUser.getUsername());
         String encodedPassword = passwordEncoder.encode(newPassword);
         existingUser.setPassword(encodedPassword);
         accountRepository.save(existingUser);
