@@ -19,6 +19,8 @@ public class CartRequestDTOV2 {
 
     private String phone;
 
+    private String email;
+
     private String recipientName;
 
     private Boolean deleted;

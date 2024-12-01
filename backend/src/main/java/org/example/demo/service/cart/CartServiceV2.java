@@ -121,6 +121,9 @@ public class CartServiceV2 {
         if (requestDTO.getRecipientName() != null && !DataUtils.isNullOrEmpty(requestDTO.getRecipientName())) {
             cart.setRecipientName(requestDTO.getRecipientName());
         }
+        if (requestDTO.getEmail() != null && !DataUtils.isNullOrEmpty(requestDTO.getEmail())) {
+            cart.setEmail(requestDTO.getEmail());
+        }
         // set address
         if (!DataUtils.isNullOrEmpty(address)) {
             cart.setAddress(requestDTO.getAddress());

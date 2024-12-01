@@ -84,6 +84,7 @@ export interface CartDetailResponseDTO {
     address?: string | null;
     phone?: string | null;
     recipientName?: string | null;
+    email?: string | null;
     provinceId?: number | null;
     provinceName?: string | null;
     districtId?: number | null;
@@ -148,6 +149,7 @@ type VoucherFormValues = {
 
 type RecipientDTO = {
     recipientName: string,
+    email:string,
     phone: string,
     address: string,
     provinceId: string,
@@ -204,6 +206,7 @@ const Checkout = () => {
     // SCHEMA
     const schemaRecipientName: yup.ObjectSchema<RecipientDTO> = yup.object({
         recipientName: yup.string().default('').required('Tên người nhận không được để trống'),
+        email: yup.string().default('').required('Email người nhận không được để trống'),
         phone: yup.string().default('').required('Số điện thoại không được để trống'),
         address: yup.string().default('').required('Địa chỉ không được để trống'),
         provinceId: yup.string().default('').required('Tỉnh/ thành không được để trống'),
@@ -255,6 +258,7 @@ const Checkout = () => {
         )) {
             const data = {
                 recipientName: getValuesFormRecipient('recipientName'),
+                email: getValuesFormRecipient('email'),
                 phone: getValuesFormRecipient('phone'),
                 address: getValuesFormRecipient('address'),
                 provinceId: getValuesFormRecipient('provinceId'),
@@ -264,6 +268,7 @@ const Checkout = () => {
                 districtName: IAddress.idistrict?.DistrictName,
                 wardName: IAddress.iward?.WardName
             }
+            console.log(data.email)
             handleUpdateCart(data)
         }
     }, [formValues])
@@ -299,6 +304,7 @@ const Checkout = () => {
                     status: 'PENDING',
                     payment: paymentMethod,
                     recipientName: getValuesFormRecipient('recipientName'),
+                    email: getValuesFormRecipient('email'),
                     phone: getValuesFormRecipient('phone'),
                     address: getValuesFormRecipient('address'),
                     provinceId: getValuesFormRecipient('provinceId'),
@@ -337,6 +343,7 @@ const Checkout = () => {
                 'status': 'PENDING',
                 payment: paymentMethod,
                 recipientName: getValuesFormRecipient('recipientName'),
+                email: getValuesFormRecipient('email'),
                 phone: getValuesFormRecipient('phone'),
                 address: getValuesFormRecipient('address'),
                 provinceId: getValuesFormRecipient('provinceId'),
@@ -407,6 +414,7 @@ const Checkout = () => {
 
     useEffect(() => {
         setValuesFormRecipient('recipientName', (selectedCart as CartResponseDTO)?.recipientName ?? '')
+        setValuesFormRecipient('email', (selectedCart as CartResponseDTO)?.email ?? '')
         setValuesFormRecipient('phone', (selectedCart as CartResponseDTO)?.phone ?? '')
         setValuesFormRecipient('address', (selectedCart as CartResponseDTO)?.address ?? '')
         setValuesFormRecipient('provinceId', (selectedCart as CartResponseDTO)?.provinceId?.toString() ?? '')
@@ -437,6 +445,7 @@ const Checkout = () => {
                     const data = {
                         payment: paymentMethod,
                         recipientName: getValuesFormRecipient('recipientName'),
+                        email: getValuesFormRecipient('email'),
                         phone: getValuesFormRecipient('phone'),
                         address: getValuesFormRecipient('address'),
                         districtId: IAddress.idistrict?.DistrictID,
@@ -493,6 +502,20 @@ const Checkout = () => {
                                             {...registerFormRecipient('recipientName')}
                                             onChange={(el) => {
                                                 setValuesFormRecipient('recipientName', el.target.value)
+                                            }}
+                                        ></Input>
+                                        {errorsFormRecipient.recipientName && (
+                                            <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.recipientName.message}</p>
+                                        )}
+                                    </div>
+                                    <div className={'col-span-3'}>
+                                        <p className={' text-black text-[18px] font-semibold'}>Email</p>
+                                        <Input
+                                            className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
+                                            placeholder={'Email'}
+                                            {...registerFormRecipient('email')}
+                                            onChange={(el) => {
+                                                setValuesFormRecipient('email', el.target.value)
                                             }}
                                         ></Input>
                                         {errorsFormRecipient.recipientName && (

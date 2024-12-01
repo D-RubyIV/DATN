@@ -539,6 +539,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setAddress(cart.getAddress() + " " + cart.getDistrictName() + " " + cart.getDistrictName() + " " + cart.getProvinceName());
         order.setAddress(cart.getAddress());
         order.setProvinceId(cart.getProvinceId());
+        order.setEmail(cart.getEmail());
         order.setProvinceName(cart.getProvinceName());
         order.setDistrictId(cart.getDistrictId());
         order.setDistrictName(cart.getDistrictName());
