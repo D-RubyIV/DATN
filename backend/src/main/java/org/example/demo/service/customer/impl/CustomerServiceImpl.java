@@ -256,6 +256,21 @@ public class CustomerServiceImpl implements CustomerService {
         return customerDTO;
     }
 
+    @Override
+    public CustomerDTO getCustomerClientWithPageAddresses(String email, int page, int size) {
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found width id " + email));
+        CustomerDTO customerDTO = CustomerMapper.toCustomerDTO(customer);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Address> addressPage = addressRepository.findAddressesByCustomerEmail(email, pageable);
+        List<AddressDTO> addressDTOS = addressPage.getContent().stream()
+                .map(CustomerMapper::toAddressDTO)
+                .collect(Collectors.toList());
+        customerDTO.setAddressDTOS(addressDTOS);
+        customerDTO.setTotalAddresses((int) addressPage.getTotalElements());
+        return customerDTO;
+    }
+
     // Các phương thức kiểm tra trực tiếp
     public boolean isEmailExists(String email) {
         return customerValidator.isEmailExists(email);

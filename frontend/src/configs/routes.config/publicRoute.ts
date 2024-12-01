@@ -48,10 +48,11 @@ const publicRoute: Routes = [
 
     {
         key: 'customer-info',
-        path: '/edit-customer',
+        path: '/customer/:email',
         component: lazy(() => import('@/views/sale/CustomerInfor')),
         authority: []
     },
+
     {
         key: 'collections',
         path: '/collections',

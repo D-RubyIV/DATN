@@ -877,11 +877,6 @@ const UpdateCustomer = () => {
                                                                         style={{ height: '44px' }}
                                                                         placeholder="Nhập số điện thoại..."
                                                                         component={Input}
-                                                                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                                                    //     const value = e.target.value.replace(/\D/g, ''); // Chỉ cho phép nhập ký tự số
-                                                                    //     setFieldValue("phone", value); // Cập nhật giá trị trong Formik
-                                                                    //     // setUpdateCustomer((prev) => ({ ...prev, phone: value })); // Cập nhật giá trị cho state updateCustomer
-                                                                    // }}
                                                                     />
                                                                 </FormItem>
                                                             </div>

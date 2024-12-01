@@ -69,6 +69,13 @@ public class CustomerController {
         return ResponseEntity.ok(customerDTO);
     }
 
+    @GetMapping("/customer-infor/{email}")
+    public ResponseEntity<CustomerDTO> getCustomerInfoClient(@PathVariable("email") String email, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int size) {
+        CustomerDTO customerDTO = customerService.getCustomerClientWithPageAddresses(email, page, size);
+        return ResponseEntity.ok(customerDTO);
+    }
+
+
 
     @GetMapping("/customer/{id}/addresses")
     public ResponseEntity<CustomerDTO> getCustomerWithPagedAddresses(@PathVariable Integer id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size) {
