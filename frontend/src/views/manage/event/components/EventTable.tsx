@@ -328,18 +328,26 @@ const EventTable = () => {
 
                 {/* Table Container */}
                 <div className="bg-white rounded-lg py-6">
-                    <DataTable
-                        columns={columns}
-                        data={data}
-                        loading={loading}
-                        pagingData={{
-                            pageIndex: pageIndex,
-                            pageSize: pageSize,
-                            total: total
-                        }}
-                        onPaginationChange={handlePaginationChange}
-                        onSelectChange={handleSelectChange}
-                    />
+                    <div className="overflow-x-auto">
+                        {loading ? (
+                            <p>Đang tải...</p>
+                        ) : data.length === 0 ? (
+                            <p>Không có dữ liệu event.</p>
+                        ) : (
+                            <DataTable
+                                columns={columns}
+                                data={data}
+                                loading={loading}
+                                pagingData={{
+                                    pageIndex: pageIndex,
+                                    pageSize: pageSize,
+                                    total: total
+                                }}
+                                onPaginationChange={handlePaginationChange}
+                                onSelectChange={handleSelectChange}
+                            />
+                        )}
+                    </div>
                 </div>
                 {/* Dialog xác nhận xóa */}
                 <Dialog isOpen={dialogIsOpen} closable={false} onClose={onDialogClose}>
@@ -350,7 +358,7 @@ const EventTable = () => {
                             Hủy
                         </Button>
                         <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                type="submit" onClick={onDialogOk}>
+                            type="submit" onClick={onDialogOk}>
                             Xác nhận
                         </Button>
                     </div>

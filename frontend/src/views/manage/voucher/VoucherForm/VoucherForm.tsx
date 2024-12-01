@@ -1,5 +1,5 @@
 import { Button, FormContainer } from '@/components/ui'
-import { Form, Formik, FormikProps } from 'formik'
+import { Form, Formik, FormikProps, Field, FieldProps } from 'formik'
 import { forwardRef, useCallback, useState } from 'react'
 import StickyFooter from '@/components/shared/StickyFooter'
 import cloneDeep from 'lodash/cloneDeep'
@@ -7,7 +7,6 @@ import * as Yup from 'yup'
 import CustomerTable from '../components/CustomerTable'
 import Input from '@/components/ui/Input'
 import { FormItem } from '@/components/ui/Form'
-import { Field, FieldProps } from 'formik'
 import { addDays, format, parseISO } from 'date-fns'
 
 
@@ -48,7 +47,13 @@ interface ICustomer {
 
 // Validation Schema
 const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Tên voucher không được để trống'),
+    name: Yup.string().required('Tên voucher không được để trống')
+        .min(3, "Tên voucher phải có ít nhất 3 ký tự")
+        .max(50, "Tên voucher không vượt quá 50 ký tự")
+        .test('no-whitespace', 'Tên voucher không được chứa nhiều khoảng trắng', value => {
+            // kiểm tra khoảng trắng thừa
+            return value.trim() === value && !value.includes('  ')
+        }),
     minAmount: Yup.number()
         .min(0, 'Giá trị tối thiểu phải lớn hơn hoặc bằng 0')
         .required('Vui lòng nhập giá trị tối thiểu'),
@@ -65,7 +70,7 @@ const validationSchema = Yup.object().shape({
     startDate: Yup.string().required('Vui lòng chọn ngày bắt đầu'),
     endDate: Yup.string()
         .required('Vui lòng chọn ngày kết thúc')
-        .test('is-after-start', 'Ngày kết thúc phải sau ngày bắt đầu', function(value) {
+        .test('is-after-start', 'Ngày kết thúc phải sau ngày bắt đầu', function (value) {
             const { startDate } = this.parent;
             if (!startDate || !value) return true;
             return new Date(value) > new Date(startDate);
@@ -94,7 +99,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
     }, [])
 
 
-    
+
     const {
         type,
         initialData = defaultInitialData,
@@ -105,14 +110,14 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
     return (
         <>
             <Formik
-                  innerRef={ref}
-                  initialValues={initialData}
-                  validationSchema={validationSchema}
-                  onSubmit={(values, { setSubmitting }) => {
-                      const formData = cloneDeep(values);
-                      formData.customers = selectedCustomerIds;
-                      onFormSubmit?.(formData, setSubmitting);
-                  }}
+                innerRef={ref}
+                initialValues={initialData}
+                validationSchema={validationSchema}
+                onSubmit={(values, { setSubmitting }) => {
+                    const formData = cloneDeep(values);
+                    formData.customers = selectedCustomerIds;
+                    onFormSubmit?.(formData, setSubmitting);
+                }}
             >
                 {({ values, touched, errors, isSubmitting }) => (
                     <Form>
@@ -291,7 +296,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
                                 className="-mx-8 px-8 flex items-center justify-between py-4"
                                 stickyClass="border-t bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                             >
-                                
+
                                 <div className="md:flex items-center">
                                     <Button
                                         size="sm"

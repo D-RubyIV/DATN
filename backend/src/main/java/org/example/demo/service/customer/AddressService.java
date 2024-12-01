@@ -14,5 +14,5 @@ public interface AddressService {
 
     AddressDTO updateAddress(Integer id, AddressDTO addressDTO) throws BadRequestException;
 
-    void deleteAddress(Integer id);
+    void deleteAddress(Integer id) throws BadRequestException;
 }

@@ -216,8 +216,8 @@ const AddStaffPage = () => {
     // Xác thực dữ liệu nhập vào
     const validationSchema = Yup.object({
         name: Yup.string().required('Họ tên khách hàng là bắt buộc')
-            .min(5, 'Họ và tên khách hàng phải có ít nhất 5 ký tự')
-            .max(100, 'Họ và tên khách hàng không vượt quá 100 ký tự')
+            .min(3, 'Họ và tên khách hàng phải có ít nhất 3 ký tự')
+            .max(50, 'Họ và tên khách hàng không vượt quá 50 ký tự')
             .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => {
                 // kiểm tra khoảng trắng thừa
                 return value.trim() === value && !value.includes('  ')
@@ -333,11 +333,21 @@ const AddStaffPage = () => {
         }
     }
 
+
+    // Hàm reset biểu mẫu
+    // const handleReset = (resetForm: () => void) => {
+    //     // Keep the state of `isDisableAddressByScanner` as it is
+    //     resetForm();
+    //     setNewStaff(initialStaffState); // Reset the staff state
+    // }
     const handleFullReset = (resetForm: () => void) => {
+        // This function resets the form and keeps the disable state if needed
         resetForm(); // Resets the form fields using Formik's reset function
         setNewStaff(initialStaffState); // Resets the staff data
         setIsDisableAddressByScanner(false); // Optionally reset the disable state or leave if intended to block non-scanned input
 
+        // If there are any specific independent states that should persist or reset differently, manage them here
+        // For example, handling loading states or specific UI flags
     };
 
     // Hàm đóng snackbar

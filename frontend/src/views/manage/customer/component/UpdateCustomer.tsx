@@ -11,6 +11,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { toast } from 'react-toastify';
 import { Pagination } from 'antd';
 import Dialog from '@/components/ui/Dialog'
+import { SingleValue } from 'react-select';
 
 
 
@@ -67,11 +68,11 @@ const UpdateCustomer = () => {
         name: '',
         phone: '',
         provinceId: 0,
-        province: null,
+        province: '',
         districtId: 0,
-        district: null,
+        district: '',
         wardId: '',
-        ward: null,
+        ward: '',
         detail: '',
         isDefault: false,
     };
@@ -156,8 +157,8 @@ const UpdateCustomer = () => {
     const validationSchema = Yup.object({
 
         name: Yup.string().required('Họ tên khách hàng là bắt buộc')
-            .min(5, "Họ và tên khách hàng phải có ít nhất 5 ký tự")
-            .max(100, "Họ và tên khách hàng không vượt quá 100 ký tự")
+            .min(3, "Họ và tên khách hàng phải có ít nhất 3 ký tự")
+            .max(50, "Họ và tên khách hàng không vượt quá 50 ký tự")
             .test('no-whitespace', 'Họ tên không được chứa nhiều khoảng trắng', value => {
                 // kiểm tra khoảng trắng thừa
                 return value.trim() === value && !value.includes('  ')
@@ -200,7 +201,7 @@ const UpdateCustomer = () => {
             .max(new Date(), "Ngày sinh không được là tương lai")
             .test(
                 "age-range",
-                "Tuổi khách hàng không hợp lệ",
+                "Độ tuổi của bạn không đủ điều kiện để mua hàng",
                 function (value) {
                     const age = dayjs().diff(dayjs(value), 'year');
                     return age >= 5 && age <= 100;
@@ -214,8 +215,8 @@ const UpdateCustomer = () => {
         addressDTOS: Yup.array().of(
             Yup.object().shape({
                 name: Yup.string().required('Họ và tên khách hàng là bắt buộc')
-                    .min(5, "Họ tên khách hàng phải có ít nhất 5 ký tự")
-                    .max(100, "Họ tên khách hàng không vượt quá 100 ký tự")
+                    .min(3, "Họ tên khách hàng phải có ít nhất 5 ký tự")
+                    .max(50, "Họ tên khách hàng không vượt quá 100 ký tự")
                     .test('no-whitespace', 'Họ và tên không được chứa nhiều khoảng trắng', value => {
                         // kiểm tra khoảng trắng thừa
                         return value.trim() === value && !value.includes('  ')
@@ -518,21 +519,26 @@ const UpdateCustomer = () => {
     };
 
     // Delete Address
-    const handleDelete = async (id: string, index: number, remove: (index: number) => void) => {
+    const handleDelete = async (id: string, index: number, remove: (index: number) => void, address: AddressDTO) => {
+        if (address.isDefault) {
+            setIsOpen(false)
+            toast.success('Không thể xóa địa chỉ mặc định')
+            return;
+        }
         try {
             const response = await axios.delete(`http://localhost:8080/api/v1/address/delete/${id}`);
             if (response.status === 200) {
-                toast('Xóa thành công')
+                toast.success('Xóa thành công')
                 remove(index);
                 setFormModes(prev => prev.filter((_, i) => i !== index));
                 setIsOpen(false)
             } else {
                 console.error('Lỗi khi xóa địa chỉ:', response.statusText);
-                toast('Xóa thất bại');
+                toast.success('Xóa thất bại');
             }
         } catch (error) {
             console.error('Lỗi xóa khách hàng:', error);
-            toast('Xóa thất bại')
+            toast.success('Xóa thất bại')
         }
     }
 
@@ -568,7 +574,7 @@ const UpdateCustomer = () => {
             });
 
             if (response.status === 200) {
-                toast('Cập nhật thành công');
+                toast.success('Cập nhật thành công');
                 navigate('/admin/manage/customer');
             } else {
                 alert('Failed to update customer. Please try again.');
@@ -616,7 +622,7 @@ const UpdateCustomer = () => {
 
                     setFormModes((prev) => ['edit', ...prev]); // Cập nhật formModes
                 }
-                toast('Thêm địa chỉ mới thành công');
+                toast.success('Thêm địa chỉ mới thành công');
             } else {
                 // Gửi yêu cầu cập nhật với các trường ID quận và xã
                 response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, {
@@ -628,7 +634,7 @@ const UpdateCustomer = () => {
                 updatedAddressDTOS[addressIndex] = response.data;
                 // setFieldValue('addressDTOS', updatedAddressDTOS); // Cập nhật lại danh sách sau khi chỉnh sửa
                 console.log('dữ liệu cập nhật lại địa chỉ: ', updatedAddressDTOS)
-                toast('Cập nhật địa chỉ thành công');
+                toast.success('Cập nhật địa chỉ thành công');
             }
             fetchCustomer(customerId, currentPage);
         } catch (error) {
@@ -675,7 +681,7 @@ const UpdateCustomer = () => {
 
             // Cập nhật địa chỉ trong state (tạm thời)
             setUpdateCustomer({ ...updateCustomer, addressDTOS: updatedAddresses });
-            toast('cập nhật địa chỉ mặc định thành công');
+            toast.success('cập nhật địa chỉ mặc định thành công');
             // Gọi API chỉ một lần để cập nhật địa chỉ mặc định và các địa chỉ khác
             await updateDefaultAddress(updateCustomer.addressDTOS[index].id, true);
 
@@ -900,7 +906,7 @@ const UpdateCustomer = () => {
 
                                                                             return (
                                                                                 <Select
-                                                                                    value={provinces.find(prov => prov.NameExtension[1] === field.value) || null}
+                                                                                    value={provinces.find(prov => prov.NameExtension[1] === field.value)}
                                                                                     placeholder="Chọn tỉnh/thành phố..."
                                                                                     getOptionLabel={(option: Province) => option.NameExtension[1]}
                                                                                     getOptionValue={(option: Province) => String(option.ProvinceID)}
@@ -933,7 +939,7 @@ const UpdateCustomer = () => {
                                                                             return (
                                                                                 <Select
                                                                                     isDisabled={!address.province}
-                                                                                    value={districts.find(prov => prov.DistrictName === field.value) || null}
+                                                                                    value={districts.find(prov => prov.DistrictName === field.value)}
                                                                                     placeholder="Chọn quận/huyện..."
                                                                                     getOptionLabel={(option: District) => option.DistrictName}
                                                                                     getOptionValue={(option: District) => String(option.DistrictID)}
@@ -967,7 +973,7 @@ const UpdateCustomer = () => {
 
                                                                                 <Select
                                                                                     isDisabled={!address.district}
-                                                                                    value={wards.find(prov => prov.WardName === field.value) || null}
+                                                                                    value={wards.find(prov => prov.WardName === field.value)}
                                                                                     placeholder="Chọn xã/phường/thị trấn..."
                                                                                     getOptionLabel={(option: Ward) => option.WardName}
                                                                                     getOptionValue={(option: Ward) => String(option.WardCode)}
@@ -1046,7 +1052,7 @@ const UpdateCustomer = () => {
                                                             <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
                                                                 Hủy
                                                             </Button>
-                                                            <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} type='submit' onClick={() => handleDelete(address.id, index, remove)}>
+                                                            <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} type='submit' onClick={() => handleDelete(address.id, index, remove, address)}>
                                                                 Xác nhận
                                                             </Button>
                                                         </div>
