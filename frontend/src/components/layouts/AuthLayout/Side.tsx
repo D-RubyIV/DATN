@@ -27,7 +27,7 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                         />
                         <div className="text-white">
                             <div className="font-semibold text-base">
-                                Lê Ngọc Hùng
+                                Nguyễn Thuý Hằng
                             </div>
                             <span className="opacity-80">CTO, Onward</span>
                         </div>

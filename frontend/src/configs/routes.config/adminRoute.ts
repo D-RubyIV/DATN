@@ -3,12 +3,14 @@ import type { Routes } from '@/@types/routes'
 
 
 const adminRoute: Routes = [
+
     {
         key: 'home',
         path: 'manage/home',
         component: lazy(() => import('@/views/manage/statistics/SalesDashboard')),
         authority: []
     },
+    
     {
         key: 'customerManager',
         path: `manage/customer`,
