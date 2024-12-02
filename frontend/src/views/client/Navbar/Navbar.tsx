@@ -5,7 +5,7 @@ import { HiOutlineMenu, HiOutlineShoppingBag, HiUser, HiUserCircle } from 'react
 import AuthModal from '../Popup/AuthModal'
 import { useAuthContext } from '../auth/AuthContext'
 import { getUserDetail } from '../auth/api'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 
 
@@ -54,6 +54,7 @@ const Navbar = () => {
     const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { user, setUser } = useAuthContext();
+    const navigate = useNavigate();
 
 
     const handleLoginClick = () => {
@@ -61,12 +62,12 @@ const Navbar = () => {
     };
 
     const handleLogoutClick = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refresh_token');
+        localStorage.clear();
         // Reset user state after logout
         setIsModalOpen(false); // Đóng modal khi đăng xuất
         setDropdownVisible(false);
         setUser(null);
+        navigate("/")
     };
 
 

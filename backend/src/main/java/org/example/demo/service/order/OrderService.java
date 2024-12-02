@@ -604,7 +604,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         List<CartDetail> listCardDetail = cart.getCartDetails();
         Order orderSaved = orderRepository.save(order);
 
-        historyService.createNewHistoryObject(orderSaved, Status.PENDING, "Khởi tạo hóa đơn");
+        historyService.createNewHistoryObject(orderSaved, Status.PENDING, "Khởi tạo đơn hàng");
 
         // HOÀN THÀNH LƯU HÓA ĐƠN MỚI
         listCardDetail.forEach(s -> {
@@ -623,6 +623,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         reloadSubTotalOrder(order);
         cart.setDeleted(Boolean.TRUE);
         cartRepository.save(cart);
+        sendEmail(result,  "Khởi tạo đơn hàng");
         return result;
     }
 
