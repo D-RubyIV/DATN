@@ -358,6 +358,140 @@ export async function apiCreateSalesSize<T, U extends Record<string, unknown>>(d
     });
 }
 
+
+
+// get byID
+
+
+export async function apiGetBrandById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    // Lấy id từ params
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/brand/${id}`, // Truyền id trực tiếp vào URL
+        method: 'get',
+    });
+}
+
+
+export async function apiGetCollarById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/collar/${id}`,
+        method: 'get',
+    });
+}
+
+
+export async function apiGetColorById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/color/${id}`,
+        method: 'get',
+    });
+}
+
+export async function apiGetElasticityById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/elasticity/${id}`,
+        method: 'get',
+    });
+}
+
+
+export async function apiGetMaterialById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/material/${id}`,
+        method: 'get',
+    });
+}
+
+export async function apiGetOriginById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/origin/${id}`,
+        method: 'get',
+    });
+}
+
+
+
+export async function apiGetSizeById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/size/${id}`,
+        method: 'get',
+    });
+}
+
+export async function apiGetSleeveById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/sleeve/${id}`,
+        method: 'get',
+    });
+}
+
+export async function apiGetStyleById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/style/${id}`,
+        method: 'get',
+    });
+}
+
+export async function apiGetTextureById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/texture/${id}`,
+        method: 'get',
+    });
+}
+
+export async function apiGetThicknessById<T, U extends Record<string, unknown>>(
+    params: { id: number }
+) {
+    const { id } = params;
+
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/thickness/${id}`,
+        method: 'get',
+    });
+}
+
+
+
 // delete data
 export async function apiDeleteSalesProducts<T>(id: string | string[]) {
     // Đảm bảo id là kiểu string trước khi đưa vào URL
@@ -491,6 +625,135 @@ export async function apiPutSalesProductDetail<T, U extends Record<string, unkno
 ) {
     return ApiService.fetchData<T>({
         url: `http://localhost:8080/api/v1/productDetails/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+
+export async function apiPutSalesBrand<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+ 
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/brand/${param}`,
+        method: 'put',
+        data,
+    });
+}
+export async function apiPutSalesCollar<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/collar/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+
+
+export async function apiPutSalesColor<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/color/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+export async function apiPutSalesElasticity<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/elasticity/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+
+
+export async function apiPutSalesMaterial<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/material/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+export async function apiPutSalesOrigin<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/origin/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+
+
+export async function apiPutSalesSize<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/size/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+export async function apiPutSalesSleeve<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/sleeve/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+export async function apiPutSalesStyle<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/style/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+export async function apiPutSalesTexture<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/texture/${param}`,
+        method: 'put',
+        data,
+    });
+}
+
+export async function apiPutSalesThickness<T, U extends Record<string, unknown>>(
+    data: U,
+    param: string
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/thickness/${param}`,
         method: 'put',
         data,
     });

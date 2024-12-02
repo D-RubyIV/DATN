@@ -1,6 +1,6 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesSleeveOverview, apiDeleteSalesSleeve, apiCreateSalesSleeve } from '@/services/ProductSalesService';
+import { apiGetSalesSleeveOverview, apiDeleteSalesSleeve, apiCreateSalesSleeve, apiGetSleeveById, apiPutSalesSleeve } from '@/services/ProductSalesService';
 
 const SleeveList = () => {
     return (
@@ -9,6 +9,8 @@ const SleeveList = () => {
                 apiFunc={apiGetSalesSleeveOverview}
                 apiDelete={apiDeleteSalesSleeve}
                 apiAdd={apiCreateSalesSleeve}
+                apiGetByID={apiGetSleeveById}
+                apiUpdate={apiPutSalesSleeve}
                 lablel='kiểu tay áo'
             />
         </>

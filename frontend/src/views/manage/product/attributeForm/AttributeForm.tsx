@@ -8,10 +8,12 @@ type AttributeFormProps = {
     lablel:string;
     apiFunc: any;
     apiDelete:any;
+    apiGetByID:any;
     apiAdd:any
+    apiUpdate:any;
 };
 
-const AttributeForm = ({ apiFunc, lablel, apiDelete, apiAdd }: AttributeFormProps) => {
+const AttributeForm = ({ apiFunc, lablel, apiDelete, apiAdd, apiGetByID, apiUpdate }: AttributeFormProps) => {
     return ( 
 
         <div className="bg-white h-full">
@@ -20,7 +22,7 @@ const AttributeForm = ({ apiFunc, lablel, apiDelete, apiAdd }: AttributeFormProp
                 <div className='mb-5 mt-6'>
                     <AttributeTableTools apiFunc={apiFunc} lablel={lablel} apiAdd={apiAdd}/>
                 </div>
-                <AttributeTable apiFunc={apiFunc} apiDelete={apiDelete} lablel={lablel} />
+                <AttributeTable apiFunc={apiFunc} apiDelete={apiDelete} lablel={lablel} apiGetByID={apiGetByID} apiUpdate={apiUpdate} />
             </div>
         </div>
     );

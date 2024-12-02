@@ -75,7 +75,6 @@ public class TextureService implements IService<Texture, Integer, TextureRequest
     @Override
     public Texture update(Integer id, TextureRequestDTO requestDTO) throws BadRequestException { // Đổi từ Style sang Texture
         Texture entityFound = findById(id); // Đổi từ Style sang Texture
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return textureRepository.save(entityFound); // Đổi từ styleRepository sang textureRepository

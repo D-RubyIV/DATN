@@ -20,4 +20,5 @@ public class ImageResponseDTO {
     @JsonFormat( shape = JsonFormat.Shape.STRING)
     private  LocalDateTime modifiedDate;
 
+
 }

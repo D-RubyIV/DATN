@@ -20,4 +20,5 @@ public class ThicknessResponseDTO {
     @JsonFormat( shape = JsonFormat.Shape.STRING)
     private  LocalDateTime modifiedDate;
 
+
 }

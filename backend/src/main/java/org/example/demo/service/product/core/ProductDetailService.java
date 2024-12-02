@@ -256,5 +256,4 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         return productDetailRepository.findByCode(code)
                 .orElseThrow(() -> new CustomExceptions.CustomBadRequest("ProductDetail not found with code: " + code));
     }
-
 }

@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,14 +23,10 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     @Query("SELECT p FROM ProductDetail p WHERE  p.size = ?1 AND p.color = ?2 AND p.texture = ?3 " +
             "AND p.origin = ?4 AND p.brand = ?5 AND p.collar = ?6 AND p.sleeve = ?7 " +
             "AND p.style = ?8 AND p.material = ?9 AND p.thickness = ?10 AND p.elasticity = ?11")
-    ProductDetail findByAttributes(Size size, Color color, Texture texture,
+    ProductDetail findByAttributes( Size size, Color color, Texture texture,
                                    Origin origin, Brand brand, Collar collar, Sleeve sleeve,
                                    Style style, Material material, Thickness thickness, Elasticity elasticity);
 
-
-//    ProductDetail findByCodeAndName(String code, String name);
-//    boolean existsByCodeAndName(String code, String name);
-    //no ghi no la sao b
     @Query("SELECT p FROM ProductDetail p WHERE p.product.name = ?1 AND p.size = ?2 AND p.color = ?3")
     ProductDetail findByName(String name, Size size, Color color);
 
@@ -53,7 +50,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             LEFT JOIN FETCH pd.elasticity
             LEFT JOIN FETCH pd.images
             
-            
+         
             WHERE
             (:productId IS NULL OR pd.product.id = :productId)
             AND 
@@ -69,7 +66,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 OR (:query IS NULL OR LOWER(pd.sleeve.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(pd.thickness.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(pd.texture.name) LIKE LOWER(CONCAT('%', :query, '%')))
-            
+                
                 OR (:query IS NULL OR LOWER(CAST(pd.quantity AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(CAST(pd.price AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
             )

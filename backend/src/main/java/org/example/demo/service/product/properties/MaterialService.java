@@ -75,7 +75,6 @@ public class MaterialService implements IService<Material, Integer, MaterialRequ
     @Override
     public Material update(Integer id, MaterialRequestDTO requestDTO) throws BadRequestException { // Đổi từ Image sang Material
         Material entityFound = findById(id); // Đổi từ Image sang Material
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return materialRepository.save(entityFound); // Đổi từ imageRepository sang materialRepository

@@ -1,17 +1,19 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesColorOverview, apiDeleteSalesCollar, apiCreateSalesBrand } from '@/services/ProductSalesService';
+import { apiGetSalesColorOverview, apiDeleteSalesColor, apiCreateSalesBrand, apiGetColorById, apiPutSalesColor } from '@/services/ProductSalesService';
 
 const ColorList = () => {
     return (
         <>
             <AttributeForm
                 apiFunc={apiGetSalesColorOverview}
-                apiDelete={apiDeleteSalesCollar}
+                apiDelete={apiDeleteSalesColor}
                 apiAdd={apiCreateSalesBrand}
+                apiGetByID={apiGetColorById}
+                apiUpdate={apiPutSalesColor}
                 lablel='màu sắc'
             />
-        </>
+        </> 
     )
 }
 

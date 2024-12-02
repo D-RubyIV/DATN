@@ -76,7 +76,6 @@ public class OriginService implements IService<Origin, Integer, OriginRequestDTO
     @Override
     public Origin update(Integer id, OriginRequestDTO requestDTO) throws BadRequestException { // Đổi từ Material sang Origin
         Origin entityFound = findById(id); // Đổi từ Material sang Origin
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return originRepository.save(entityFound); // Đổi từ materialRepository sang originRepository

@@ -74,7 +74,6 @@ public class ThicknessService implements IService<Thickness, Integer, ThicknessR
     @Override
     public Thickness update(Integer id, ThicknessRequestDTO requestDTO) throws BadRequestException { // Đổi từ Texture sang Thickness
         Thickness entityFound = findById(id); // Đổi từ Texture sang Thickness
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return thicknessRepository.save(entityFound); // Đổi từ textureRepository sang thicknessRepository

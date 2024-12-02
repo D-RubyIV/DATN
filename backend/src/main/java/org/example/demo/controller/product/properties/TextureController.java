@@ -81,7 +81,7 @@ public class TextureController {
         return ResponseEntity.ok(texture);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<TextureResponseDTO> updateTexture(
             @PathVariable Integer id,
             @RequestBody TextureRequestDTO requestDTO) { // Đổi từ StyleRequestDTO sang TextureRequestDTO
@@ -103,7 +103,7 @@ public class TextureController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTexture(@PathVariable Integer id) throws BadRequestException { // Đổi từ Style sang Texture
         try {
             textureService.delete(id); // Đổi từ styleService sang textureService

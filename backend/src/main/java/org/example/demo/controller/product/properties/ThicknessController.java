@@ -82,7 +82,7 @@ public class ThicknessController {
         return ResponseEntity.ok(thickness);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ThicknessResponseDTO> updateThickness(
             @PathVariable Integer id,
             @RequestBody ThicknessRequestDTO requestDTO) { // Đổi từ TextureRequestDTO sang ThicknessRequestDTO
@@ -104,7 +104,7 @@ public class ThicknessController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteThickness(@PathVariable Integer id) throws BadRequestException { // Đổi từ Texture sang Thickness
         try {
             thicknessService.delete(id); // Đổi từ textureService sang thicknessService

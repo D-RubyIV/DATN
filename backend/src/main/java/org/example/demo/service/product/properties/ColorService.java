@@ -77,7 +77,6 @@ public class ColorService implements IService<Color, Integer, ColorRequestDTO> {
     @Override
     public Color update(Integer id, ColorRequestDTO requestDTO) throws BadRequestException { // Đổi từ Collar sang Color
         Color entityFound = findById(id); // Đổi từ Collar sang Color
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return colorRepository.save(entityFound); // Đổi từ collarRepository sang colorRepository

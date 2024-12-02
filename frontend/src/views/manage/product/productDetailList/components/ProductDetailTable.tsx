@@ -20,6 +20,8 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../store'
+
+
 import cloneDeep from 'lodash/cloneDeep'
 import type {
     DataTableResetHandle,
@@ -101,7 +103,7 @@ const ProductDetailColumn = ({ row }: { row: ProductDetail }) => {
     return (
         <div className="flex items-center">
             {avatar}
-            <span className={`ml-2 rtl:mr-2 font-semibold`}>{row?.product?.name || ""}</span>
+            <span className={`ml-2 rtl:mr-2 font-semibold`}>{row.name}</span>
         </div>
     )
 }
@@ -123,12 +125,6 @@ const ProductDetailTable = () => {
     const data = useAppSelector(
         (state) => state.salesProductDetailList.data.productDetailList
     )
-
-    useEffect(() => {
-        fetchData()
-        dispatch(setProductId(id));
-    }, [id])
-
 
     useEffect(() => {
         fetchData()
@@ -160,12 +156,12 @@ const ProductDetailTable = () => {
             onDelete()
         }
         return (
-            <div className="flex text-lg">
+            <div className="flex justify-end text-lg">
                 <FaEye
+                    onClick={onUpdate}
                     size={20}
                     className="mr-3 text-2xl"
                     style={{ cursor: 'pointer' }}
-                    onClick={onUpdate}
                 />
                 <Switcher
                     className='text-sm'
@@ -191,20 +187,13 @@ const ProductDetailTable = () => {
                     return <span>{index}</span>; // Hiển thị số thứ tự
                 },
             },
+
             {
-                header: 'Ảnh',
+                header: 'Tên',
                 accessorKey: 'name',
                 cell: (props: any) => {
                     const row = props.row.original
                     return <ProductDetailColumn row={row} />
-                },
-            },
-            {
-                header: 'Mã',
-                accessorKey: 'name',
-                cell: (props: any) => {
-                    const row = props.row.original
-                    return <p>{row.code}</p>
                 },
             },
             {
@@ -216,7 +205,6 @@ const ProductDetailTable = () => {
                         style={{
                             backgroundColor: row.color.name
                         }} >
-                        {row.color.name}
                     </span>
                 },
             },
@@ -264,7 +252,7 @@ const ProductDetailTable = () => {
                 },
             },
             {
-                header: 'Hành động',
+                header: '',
                 id: 'action',
                 cell: (props: any) => <ActionColumn row={props.row.original} />,
             },

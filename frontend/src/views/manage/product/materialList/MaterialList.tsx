@@ -1,6 +1,6 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesMaterialOverview, apiDeleteSalesMaterial, apiCreateSalesMaterial } from '@/services/ProductSalesService';
+import { apiGetSalesMaterialOverview, apiDeleteSalesMaterial, apiCreateSalesMaterial, apiGetMaterialById, apiPutSalesMaterial } from '@/services/ProductSalesService';
 
 const MaterialList = () => {
     return (
@@ -9,6 +9,8 @@ const MaterialList = () => {
                 apiFunc={apiGetSalesMaterialOverview}
                 apiDelete={apiDeleteSalesMaterial}
                 apiAdd={apiCreateSalesMaterial}
+                apiGetByID={apiGetMaterialById}
+                apiUpdate={apiPutSalesMaterial}
                 lablel='chất liệu'
             />
         </>

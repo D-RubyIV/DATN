@@ -80,7 +80,6 @@ public class ElasticityService implements IService<Elasticity, Integer, Elastici
     @Override
     public Elasticity update(Integer id, ElasticityRequestDTO requestDTO) throws BadRequestException { // Đổi từ Color sang Elasticity
         Elasticity entityFound = findById(id); // Đổi từ Color sang Elasticity
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return elasticityRepository.save(entityFound); // Đổi từ colorRepository sang elasticityRepository

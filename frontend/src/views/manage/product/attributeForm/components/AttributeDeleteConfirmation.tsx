@@ -23,6 +23,7 @@ const ProductDeleteConfirmation = ({ apiFunc, apiDelete, lablel }: ProductDelete
     const selectedProduct = useAppSelector(
         (state) => state.salesAttributeList.data.selectedAttribute
     );
+
     const tableData = useAppSelector(
         (state) => state.salesAttributeList.data.tableData
     );
@@ -30,6 +31,7 @@ const ProductDeleteConfirmation = ({ apiFunc, apiDelete, lablel }: ProductDelete
     const onDialogClose = () => {
         dispatch(toggleDeleteConfirmation(false));
     };
+    
     const { pageIndex, pageSize, sort, query, total } = useAppSelector(
         (state) => state.salesAttributeList.data.tableData
     )

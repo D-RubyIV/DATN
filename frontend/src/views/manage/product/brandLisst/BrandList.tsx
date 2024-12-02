@@ -1,6 +1,6 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesBrandOverview, apiDeleteSalesBrand,apiCreateSalesBrand } from '@/services/ProductSalesService';
+import { apiGetSalesBrandOverview, apiDeleteSalesBrand, apiCreateSalesBrand, apiGetBrandById, apiPutSalesBrand } from '@/services/ProductSalesService';
 
 const BrandList = () => {
     return (
@@ -9,6 +9,8 @@ const BrandList = () => {
                 apiFunc={apiGetSalesBrandOverview}
                 apiDelete={apiDeleteSalesBrand}
                 apiAdd={apiCreateSalesBrand}
+                apiGetByID={apiGetBrandById}
+                apiUpdate={apiPutSalesBrand}
                 lablel='thương hiệu'
             />
         </>

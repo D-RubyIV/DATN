@@ -142,7 +142,6 @@ public class ProductDetailController {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<ProductDetail> findById(@PathVariable Integer id) {
         try {
@@ -461,6 +460,7 @@ public class ProductDetailController {
         productResponseOverDTO.setImage(productImages.stream().map(Image::getUrl).toList());
         return ResponseEntity.ok(productResponseOverDTO);
     }
+
 
 
 }

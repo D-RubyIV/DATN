@@ -86,7 +86,7 @@ public class OriginController {
         return ResponseEntity.ok(origin);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<OriginResponseDTO> updateOrigin(
             @PathVariable Integer id,
             @RequestBody OriginRequestDTO requestDTO) { // Đổi từ MaterialRequestDTO sang OriginRequestDTO
@@ -108,7 +108,7 @@ public class OriginController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrigin(@PathVariable Integer id) throws BadRequestException { // Đổi từ Material sang Origin
         try {
             originService.delete(id); // Đổi từ materialService sang originService
