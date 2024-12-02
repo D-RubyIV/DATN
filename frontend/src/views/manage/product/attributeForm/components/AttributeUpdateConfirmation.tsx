@@ -20,6 +20,7 @@ import isEmpty from 'lodash/isEmpty'
 import Notification from '@/components/ui/Notification'
 import toast from '@/components/ui/toast'
 injectReducer('updateAttribute', reducer);
+import StickyFooter from '@/components/shared/StickyFooter';
 
 type AttributeUpdateConfirmationProps = {
     apiFunc: any;
@@ -135,15 +136,20 @@ const AttributeUpdateConfirmation = ({ apiFunc, label, apiUpdate }: AttributeUpd
                                             component={Input}
                                         />
                                     </FormItem>
+                                    <div
+                                        className="-mx-4 px-8 flex items-center justify-between py-2"
+                                    >
 
+                                        <div>
+                                        </div>
                                     <div className="md:flex items-center mt-4">
                                         <Button
                                             size="sm"
                                             className="ltr:mr-3 rtl:ml-3"
                                             type="button"
                                             onClick={onDialogClose}
-                                        >
-                                            Discard
+                                            >
+                                            Hủy 
                                         </Button>
                                         <Button
                                             size="sm"
@@ -151,9 +157,10 @@ const AttributeUpdateConfirmation = ({ apiFunc, label, apiUpdate }: AttributeUpd
                                             loading={isSubmitting}
                                             icon={<AiOutlineSave />}
                                             type="submit"
-                                        >
-                                            Save
+                                            >
+                                            Lưu
                                         </Button>
+                                    </div>
                                     </div>
                                 </FormContainer>
                             </Form>
