@@ -80,7 +80,7 @@ const SellVoucherModal = ({
             )
         },
         {
-            header: 'Loại',
+            header: 'Giảm',
             cell: (props: any) => (
                 <p className={'text-red-600'}>{Math.round(props.row.original.maxPercent / 100 * selectOrder.subTotal).toLocaleString('vi') + 'đ'}</p>
             )
@@ -186,7 +186,7 @@ const SellVoucherModal = ({
     return (
         <div className="fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40">
             <div
-                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-auto bg-gray-100 shadow-md rounded-md">
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10/12 h-auto bg-gray-100 shadow-md rounded-md">
                 <div className="p-5 bg-white h-4/5 rounded-md">
                     <div className="flex justify-between pb-3">
                         <p className="font-semibold text-xl">Danh sách khuyến mãi</p>
