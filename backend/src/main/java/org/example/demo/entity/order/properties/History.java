@@ -29,7 +29,7 @@ public class History {
     @Column(name = "note", columnDefinition = "NVARCHAR(255)")
     private String note;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "order_id")
     private Order order;
 

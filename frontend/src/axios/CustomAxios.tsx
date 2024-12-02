@@ -16,7 +16,7 @@ instance.interceptors.request.use(function (config) {
     if (accessToken) {
         try {
             // Gán token vào headers nếu có
-            if (token) {
+            if (accessToken) {
                 config.headers.Authorization = `Bearer ${accessToken}`;
             }
         } catch (error) {

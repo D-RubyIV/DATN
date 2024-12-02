@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuthContext } from '../auth/AuthContext';
 import { loginApi, registerApi } from '../auth/api';
+import { useNavigate } from 'react-router-dom'
+import { useToastContext } from '@/context/ToastContext'
 
 interface AuthModalProps {
     isOpen: boolean;
@@ -14,6 +16,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const { setUser } = useAuthContext();
+    const navigate = useNavigate();
+    const {openNotification} = useToastContext();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,9 +34,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     username: response.data.username,
                 });
                 onClose();
+                openNotification("Đăng nhập thành công")
+                navigate("/")
             } else {
-                const defaultRoleId = 3; 
-                const response = await registerApi(defaultRoleId, password, email); 
+                const defaultRoleId = 3;
+                const response = await registerApi(defaultRoleId, password, email);
                 localStorage.setItem('token', response.data.token);
                 setUser({
                     username: response.data.username,

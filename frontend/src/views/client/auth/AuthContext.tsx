@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Kiểm tra người dùng đã đăng nhập chưa
     const checkAuth = async () => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('ACCESS_TOKEN');
         if (token) {
             try {
                 const userDetail = await getUserDetail(token); // Lấy thông tin người dùng từ API

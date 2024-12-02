@@ -1,23 +1,29 @@
 package org.example.demo.controller.cart;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.example.demo.dto.cart.request.CartRequestDTO;
 import org.example.demo.dto.cart.request.CartRequestDTOV2;
 import org.example.demo.dto.cart.request.UseCartVoucherDTO;
 import org.example.demo.dto.cart.response.CartResponseDTO;
 import org.example.demo.entity.cart.enums.Status;
 import org.example.demo.entity.cart.properties.Cart;
+import org.example.demo.entity.human.customer.Address;
+import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.enums.Payment;
 import org.example.demo.entity.order.enums.Type;
+import org.example.demo.entity.security.Account;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.cart.response.CartResponseMapper;
 import org.example.demo.repository.cart.CartRepository;
+import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.cart.CartService;
 import org.example.demo.service.cart.CartServiceV2;
 import org.example.demo.service.fee.FeeService;
 import org.example.demo.util.RandomCodeGenerator;
+import org.example.demo.util.auth.AuthUtil;
 import org.example.demo.validate.group.GroupUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +36,7 @@ import java.util.List;
  * @author PHAH04
  * Vui lòng không chỉnh sửa =))
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "cart")
 public class CartController {
@@ -54,6 +61,9 @@ public class CartController {
 
     @Autowired
     private CartResponseMapper cartResponseMapper;
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @GetMapping("/{idCustomer}")
     public List<CartResponseDTO> getListCart(@PathVariable Integer idCustomer) {
@@ -94,6 +104,15 @@ public class CartController {
         return ResponseEntity.ok(cartResponseMapper.toDTO(cartRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Giỏ hàng ko tồn tại"))));
     }
 
+    private Address getDefaultAddress(Integer customerId) {
+        return customerRepository.findById(customerId)
+                .map(customer -> customer.getAddresses().stream()
+                        .filter(Address::getDefaultAddress) // Lọc địa chỉ mặc định
+                        .findFirst()
+                        .orElse(null))
+                .orElse(null);
+    }
+
     //  phah04
     @GetMapping("new-cart")
     public ResponseEntity<?> createNewCart() {
@@ -107,6 +126,36 @@ public class CartController {
         cart.setTotal(0.);
         cart.setDiscount(0.);
         cart.setDeliveryFee(0.);
+
+        Account account = AuthUtil.getAccount();
+        if(account.getCustomer() != null){
+            log.info("CÓ TÀI KHOẢN KHÁCH HÀNG");
+            Customer customerFound = account.getCustomer();
+            Address defaultAddress = getDefaultAddress(customerFound.getId());
+            if(defaultAddress != null){
+                log.info("CÓ ĐỊA CHỈ MẶC ĐỊNH");
+                try {
+                    cart.setAddress(defaultAddress.getDetail());
+                    cart.setDistrictId(Integer.valueOf(defaultAddress.getDistrictId()));
+                    cart.setProvinceId(Integer.valueOf(defaultAddress.getProvinceId()));
+                    cart.setWardId(defaultAddress.getWardId());
+                    cart.setProvinceName(defaultAddress.getProvince());
+                    cart.setDistrictName(defaultAddress.getDistrict());
+                    cart.setWardName(defaultAddress.getName());
+                    cart.setRecipientName(defaultAddress.getName());
+                    cart.setPhone(defaultAddress.getPhone());
+                }
+                catch (Exception ex){
+                    log.error("SET DIA CHI MAC DINH CHO KHACH HANG XAY RA LOI");
+                }
+            }
+            else{
+                log.info("KHÔNG CÓ ĐỊA CHỈ MẶC ĐỊNH");
+            }
+        }
+        else{
+            log.info("KHÔNG CÓ TÀI KHOẢN KHÁCH HÀNG");
+        }
         return ResponseEntity.ok(cartRepository.save(cart));
     }
 

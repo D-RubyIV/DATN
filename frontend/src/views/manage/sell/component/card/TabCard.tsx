@@ -82,7 +82,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
     }
     const run = async () => {
         try {
-            const response = await instance.get(`orders/exportPdf/${selectedOrder.id}`, {
+            const response = await instance.get(`orders/exportPdf/${(selectedOrder as OrderResponseDTO).id}`, {
                 responseType: 'blob' // Đảm bảo nhận phản hồi dưới dạng blob (file)
             })
 
@@ -234,15 +234,15 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                 >Chọn
                                 </Button>
                             </div>
-                            <div>
-                                <Button
-                                    size="sm"
-                                    variant="solid"
-                                    style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                                    className="flex items-center justify-center gap-2 button-bg-important"
-                                    icon={<HiPlusCircle />}
-                                >Thêm mới</Button>
-                            </div>
+                            {/*<div>*/}
+                            {/*    <Button*/}
+                            {/*        size="sm"*/}
+                            {/*        variant="solid"*/}
+                            {/*        style={{ backgroundColor: 'rgb(79, 70, 229)' }}*/}
+                            {/*        className="flex items-center justify-center gap-2 button-bg-important"*/}
+                            {/*        icon={<HiPlusCircle />}*/}
+                            {/*    >Thêm mới</Button>*/}
+                            {/*</div>*/}
                         </div>
                     </div>
                     <div className="py-2">

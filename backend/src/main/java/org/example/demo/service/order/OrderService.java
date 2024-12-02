@@ -202,8 +202,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setVoucherMinimumSubtotalRequired(0.0);
         entityMapped.setInStore(true);
 
-        orderHistory.setNote("Tạo Đơn Hàng");
+        orderHistory.setNote("khởi tạo đon hàng tại quầy");
+        orderHistory.setStatus(Status.PENDING);
+        orderHistory.setOrder(entityMapped);
+        orderHistory.setAccount(AuthUtil.getAccount());
 
+        entityMapped.getHistories().add(orderHistory);
 
         Customer customerSelected = requestDTO.getCustomer();
         Voucher voucherSelected = requestDTO.getVoucher();
@@ -419,7 +423,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             called_order(entityFound);
         }
         if (oldStatus != newStatus) {
-            sendEmail(entityFound);
+            sendEmail(entityFound,  requestDTO.getNote());
         }
         log.info("-----------------2");
 
@@ -825,12 +829,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
 
-    private void sendEmail(Order order) {
+    private void sendEmail(Order order, String note) {
         executorService.submit(() -> {
             try {
                 if (order.getEmail() != null) {
                     log.info("ĐƠN HÀNG NÀY CÓ CUNG CẤP EMAIL");
-                    mailSenderService.sendNewMail(order.getEmail(), "Subject right here", order);
+                    mailSenderService.sendNewMail(order.getEmail(), "Kính chào quý khách", order, note);
                     log.info("ĐÃ GỬI EMAIL");
                 }
                 else{

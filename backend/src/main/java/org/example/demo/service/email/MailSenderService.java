@@ -17,7 +17,7 @@ public class MailSenderService {
     @Autowired
     private JavaMailSender mailSender;
     // dejava san =))
-    public void sendNewMail(String to, String subject, Order order) throws MessagingException {
+    public void sendNewMail(String to, String subject, Order order, String note) throws MessagingException {
         String htmlBody = """
                 <table align="center" style="width: 600px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; border-collapse: collapse; background-color: #ffffff; border-radius: 10px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);">
                     <!-- Header -->
@@ -37,6 +37,10 @@ public class MailSenderService {
                                 <strong style="font-size: 18px;">Trạng thái:</strong>
                                 <span style="color: #007BFF; font-weight: 600;">%s</span>
                             </div>
+                            <div style="margin-bottom: 25px;">
+                                <strong style="font-size: 18px;">Ghi chú:</strong>
+                                <span style="color: #000; font-weight: 600;">%s</span>
+                            </div>
                             <div style="font-size: 14px; color: #777; margin-top: 30px;">
                                 <p style="margin: 0;">Cảm ơn bạn đã tin tưởng sử dụng dịch vụ của chúng tôi!</p>
                                 <p style="margin: 0;">Mọi thắc mắc xin vui lòng liên hệ: <a href="mailto:support@cantch.com" style="color: #007BFF; text-decoration: none;">support@cantch.com</a></p>
@@ -50,7 +54,7 @@ public class MailSenderService {
                         </td>
                     </tr>
                 </table>
-                """.formatted(order.getCode(), OrderUtil.getNameOfStatus(order.getStatus()));
+                """.formatted(order.getCode(), OrderUtil.getNameOfStatus(order.getStatus()), note);
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 

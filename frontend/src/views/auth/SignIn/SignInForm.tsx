@@ -125,10 +125,10 @@ const SignInForm = (props: SignInFormProps) => {
                                     name="rememberMe"
                                     component={Checkbox}
                                 >
-                                    Remember Me
+                                    Nhớ mật khẩu
                                 </Field>
                                 <ActionLink to={forgotPasswordUrl}>
-                                    Forgot Password?
+                                    Quên mật khẩu?
                                 </ActionLink>
                             </div>
                             <Button

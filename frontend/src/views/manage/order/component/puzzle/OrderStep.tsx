@@ -327,6 +327,24 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         )
     }
 
+    const getLabel = (st: EOrderStatusEnums) =>  {
+        if(st === EOrderStatusEnums.PENDING){
+            return "Chờ xác nhận";
+        }else if(st === EOrderStatusEnums.TOSHIP){
+            return "Chờ vận chuyển";
+        }else if(st === EOrderStatusEnums.TORECEIVE){
+            return "Đang vận chuyển";
+        }else if(st === EOrderStatusEnums.DELIVERED){
+            return "Đã giao hàng"
+        }else if(st === EOrderStatusEnums.CANCELED){
+            return "Đã hủy";
+        }else if(st === EOrderStatusEnums.RETURNED){
+            return "Đã trả"
+        }else{
+            return "Không xác định"
+        }
+    }
+
 
     return (
         <div className="bg-white p-5 card card-border min-h-[345px] h-auto">
@@ -336,7 +354,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                         <Steps current={selectObject.historyResponseDTOS.length}>
                             {
                                 selectObject.historyResponseDTOS.map((item, index) => (
-                                    <Steps.Item key={index} title={item.status} className={'pr-20'} />
+                                    <Steps.Item key={index} title={getLabel((item.status as EOrderStatusEnums))} className={'pr-20'} />
                                 ))
                             }
                         </Steps>
