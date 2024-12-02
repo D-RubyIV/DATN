@@ -275,7 +275,7 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
     }
 
     private String generateResetPasswordUrl(Staff staff) {
-        return UriComponentsBuilder.fromHttpUrl("http://localhost:8080/api/v1/staffs/reset-password")
+        return UriComponentsBuilder.fromHttpUrl("http://localhost:5173/private/reset-password")
                 .queryParam("email", staff.getEmail())
                 .queryParam("token", generateResetPasswordToken(staff))
                 .build()

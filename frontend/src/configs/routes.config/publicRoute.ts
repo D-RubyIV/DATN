@@ -11,7 +11,7 @@ const publicRoute: Routes = [
 
     {
         key: 'private',
-        path: `/reset-password`,
+        path: `/private/reset-password`,
         component: lazy(() => import('@/views/sale/ResetPassword')),
         authority: []
     },

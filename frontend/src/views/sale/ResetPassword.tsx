@@ -35,7 +35,7 @@ const ResetPassword = () => {
         }
 
         try {
-            const response = await axios.post(
+            const response = await axios.put(
                 `http://localhost:8080/api/v1/staffs/reset-password?email=${email}`,
                 {
                     newPassword,
@@ -61,6 +61,14 @@ const ResetPassword = () => {
                 <h1 className="text-2xl font-bold mb-4 text-center text-red-600">
                     Reset Password
                 </h1>
+                <div className="mb-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative">
+                    <strong className="font-bold">Chú ý: </strong>
+                    <span className="block sm:inline">
+                        Đây là trang bảo mật, không tiết lộ thông tin hoặc gửi liên kết này cho bất kỳ ai khác. Nếu bị phát hiện, bạn sẽ phải chịu trách nhiệm.
+                    </span>
+                </div>
+
+
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                 {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
                 <form onSubmit={handleReset}>
