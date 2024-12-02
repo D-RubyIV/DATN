@@ -301,28 +301,7 @@ const AddStaffPage = () => {
             if (response.status === 201) {
                 const { code, password } = response.data
                 setNewStaff((prev) => ({ ...prev, code, password }))
-
-
-                const serviceId = 'service_kp8m1z8'
-                const templateId = 'template_lad6zvl'
-                const publicKey = '2TdUStOWX9A6vm7Ex'
-
-                // const serviceId = 'service_t622scu';
-                // const templateId = 'template_j3dv5du';
-                // const publicKey = 'OHyULXp7jha_7dpil';
-
-                const templateParams = {
-                    from_name: 'Fashion Canth Shop',
-                    from_email: 'no-reply@fashioncanthshop.com',
-                    to_name: values.name,
-                    to_email: values.email,
-                    message: `Tài khoản của bạn:\nMã nhân viên: ${code}\nMật khẩu: ${password}`
-                }
-
-                // Gửi email
-                await emailjs.send(serviceId, templateId, templateParams, publicKey)
                 toast.success('Nhân viên đã thêm thành công! Thông tin đã gửi qua email.')
-
                 resetForm() // Reset biểu mẫu
                 navigate('/admin/manage/staff') // Điều hướng đến trang quản lý nhân viên
             }

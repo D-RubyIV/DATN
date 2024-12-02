@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-
 import './hiddennavbarfooter.css'
+import { Navigate, useNavigate } from "react-router-dom";
+
+
 const ResetPassword = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [retypePassword, setRetypePassword] = useState("");
@@ -44,6 +47,9 @@ const ResetPassword = () => {
 
             if (response.status === 200) {
                 setSuccess("Mật khẩu đã được đặt lại thành công!");
+                setTimeout(() => {
+                    navigate(`/auth/sign-in`); // day den trang dang nhap ma
+                }, 1000);
             }
         } catch (err) {
             setError("Có lỗi xảy ra! Vui lòng thử lại.");

@@ -156,7 +156,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
             nativeQuery = true)
     Page<VoucherResponse> getAllVoucher(@Param("req") VoucherRequest request, Pageable pageable);
 
-
+/// CAI NAY VOI DB THÔI
     @Query("""
                 SELECT v FROM Voucher v
                 WHERE v.deleted = false AND
@@ -165,7 +165,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                        v.code LIKE %:keyword%) 
                   AND (:name IS NULL OR v.name LIKE %:name%) 
                   AND (:code IS NULL OR v.code LIKE %:code%) 
-                  AND (:typeTicket IS NULL OR v.typeTicket = :typeTicket) 
+                  AND (:typeTicket IS NULL OR CAST(v.typeTicket as string) = :typeTicket) 
                   AND (:quantity IS NULL OR v.quantity = :quantity) 
                   AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
                   AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
