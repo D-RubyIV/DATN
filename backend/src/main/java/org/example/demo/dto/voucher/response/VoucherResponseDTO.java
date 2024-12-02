@@ -22,4 +22,5 @@ public class VoucherResponseDTO {
     private Double minAmount;
     private String typeTicket;
     private boolean deleted;
+    private Integer countOrders;
 }

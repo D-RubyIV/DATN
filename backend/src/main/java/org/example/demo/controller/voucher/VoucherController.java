@@ -8,6 +8,7 @@ import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.mapper.voucher.response.VoucherResponseMapper;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
+import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.service.voucher.VoucherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ public class VoucherController {
 
     @Autowired
     private VoucherResponseMapper voucherResponseMapper;
+
 
     @GetMapping("/private/{id}")
     public ResponseEntity<List<VoucherResponse>> getCustomerVoucher(@PathVariable Integer id, VoucherRequest request) {
@@ -98,13 +100,25 @@ public class VoucherController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Add voucher successfully");
     }
 
+//    @PutMapping("/update/{id}")
+//    public ResponseEntity<?> updateVoucher(@PathVariable Integer id, @RequestBody VoucherRequest request) {
+//        Voucher updateVoucher = voucherService.updateVoucher(id, request);
+//        if (updateVoucher == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body(updateVoucher);
+//    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateVoucher(@PathVariable Integer id, @RequestBody VoucherRequest request) {
-        Voucher updateVoucher = voucherService.updateVoucher(id, request);
-        if (updateVoucher == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
+        try {
+            VoucherResponseDTO updatedVoucher = voucherService.updateVoucher(id, request);
+            return ResponseEntity.ok(updatedVoucher);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(updateVoucher);
     }
 
     @PutMapping("/delete/{id}")

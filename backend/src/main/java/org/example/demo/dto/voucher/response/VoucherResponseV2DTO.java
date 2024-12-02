@@ -23,4 +23,5 @@ public class VoucherResponseV2DTO {
     private Integer minAmount;
     private String typeTicket;
     private List<Integer> customers;
+    private Integer countOrders;
 }
