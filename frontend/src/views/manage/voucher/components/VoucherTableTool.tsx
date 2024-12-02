@@ -11,7 +11,7 @@ const VoucherTableTool: React.FC<VoucherTableToolProps> = ({ exportToExcel }) =>
 
     return (
         <div className="flex flex-col lg:flex-row lg:items-center">
-            <Button block onClick={exportToExcel} size="sm" icon={<FaFileDownload />}>
+            <Button className='mr-2' block onClick={exportToExcel} size="sm" icon={<FaFileDownload />}>
                 Xuất Excel
             </Button>
             <Link

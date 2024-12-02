@@ -43,6 +43,7 @@ const VoucherTable = () => {
         query: '',
         total: 0,
         statusFilter: '',
+        typeTicketFilter: '',
     });
     const [pagination, setPagination] = useState({
         totalPages: 0,
@@ -104,9 +105,20 @@ const VoucherTable = () => {
         setTableData(prevData => ({
             ...prevData,
             statusFilter: e.target.value,
+            typeTicketFilter: e.target.value,
             pageIndex: 1,
         }));
     };
+
+
+
+const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
+    setTableData(prevData => ({
+        ...prevData,
+        typeTicketFilter: e.target.value,
+        pageIndex: 1,
+    }));
+};
 
 
 
@@ -253,7 +265,7 @@ const VoucherTable = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const { pageIndex, pageSize, query, sort, statusFilter } = tableData;
+            const { pageIndex, pageSize, query, sort, statusFilter, typeTicketFilter } = tableData;
             const params: any = {
                 page: pageIndex - 1,
                 size: pageSize,
@@ -263,9 +275,20 @@ const VoucherTable = () => {
                 keyword: searchTerm,
             };
 
+            // if (statusFilter) {
+            //     params.status = statusFilter;
+            // }
+
+
             if (statusFilter) {
                 params.status = statusFilter;
+            } else if (typeTicketFilter) {
+                params.typeTicket = typeTicketFilter;
+            } else {
+                params.keyword = query || ''; // Fallback khi cả hai đều trống
             }
+    
+
 
             console.log('Fetching data with params:', params);
 
@@ -299,7 +322,7 @@ const VoucherTable = () => {
 
     useEffect(() => {
         fetchData();
-    }, [tableData.pageIndex, tableData.sort, tableData.pageSize, tableData.query, tableData.statusFilter]);
+    }, [tableData.pageIndex, tableData.sort, tableData.pageSize, tableData.query, tableData.statusFilter, tableData.typeTicketFilter]);
 
 
 
@@ -358,6 +381,22 @@ const VoucherTable = () => {
                                     <option value="In progress">Đang diễn ra</option>
                                     <option value="Expired">Đã kết thúc</option>
                                     <option value="Not started yet">Chưa bắt đầu</option>
+                                </select>
+
+                                <select
+                                    className='border border-gray-300 rounded focus:outline-none'
+                                    value={tableData.typeTicketFilter || ''}
+                                    onChange={handleFilterChange2}
+                                    style={{
+                                        height: '37px',
+                                        marginLeft: '8px',
+                                        padding: '0 12px', // Đảm bảo padding bên trong
+                                        boxSizing: 'border-box', // Đảm bảo chiều rộng chính xác
+                                    }}
+                                >
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="Individual">Cá Nhân</option>
+                                    <option value="Everybody">Mọi Người</option>
                                 </select>
                             </div>
 

@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.voucher.core.Voucher;
+import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.mapper.voucher.response.VoucherResponseMapper;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
@@ -20,6 +21,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -71,6 +73,17 @@ public class VoucherController {
             Sort.Order orderSort = new Sort.Order(direction, sort);
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(orderSort));
         }
+// do k duoc
+        // /dung nó là string di, toi cx meo biét cast kieu gì string thi k dc
+//        Type ticketType = null;
+//        if (typeTicket != null && !typeTicket.isEmpty()) {
+//            try {
+//                ticketType = Type.valueOf(typeTicket);
+//            } catch (IllegalArgumentException e) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ticket type.");
+//            }
+//        }
+        // b dịnh cát vè enum à đúng r mà bth enum gán thành Sting xong uppercase lên trước t k dung, ko nó là string luon r , cái ben order toi cx dngf enum dó, nma toi ko cast vè, toi dùng luon string dó
         Page<Voucher> result = voucherService.searchVoucher(
                 keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);

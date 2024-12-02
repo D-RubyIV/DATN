@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-
 import './hiddennavbarfooter.css'
+import { Navigate, useNavigate } from "react-router-dom";
+
+
 const ResetPassword = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [retypePassword, setRetypePassword] = useState("");
@@ -44,8 +47,10 @@ const ResetPassword = () => {
 
             if (response.status === 200) {
                 setSuccess("Mật khẩu đã được đặt lại thành công!");
-                localStorage.clear();
-                window.location.href = "/auth/sign-in"
+                setTimeout(() => {
+                    localStorage.clear();
+                    window.location.href = "/auth/sign-in"
+                }, 1000);
             }
         } catch (err) {
             setError("Có lỗi xảy ra! Vui lòng thử lại.");
