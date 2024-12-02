@@ -57,6 +57,8 @@ public class BrandService implements IService<Brand, Integer, BrandRequestDTO> {
         return brandRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Brand not found with id: " + id));
     }
+
+
     @Override
     public Brand delete(Integer id) throws BadRequestException {
         Brand entityFound = findById(id);
@@ -81,7 +83,6 @@ public class BrandService implements IService<Brand, Integer, BrandRequestDTO> {
     @Override
     public Brand update(Integer id, BrandRequestDTO requestDTO) throws BadRequestException { // Đổi từ Product sang Brand
         Brand entityFound = findById(id); // Đổi từ Product sang Brand
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return brandRepository.save(entityFound); // Đổi từ productRepository sang brandRepository

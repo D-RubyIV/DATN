@@ -78,7 +78,7 @@ public class ColorController {
         return ResponseEntity.ok(color);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ColorResponseDTO> updateColor(
             @PathVariable Integer id,
             @RequestBody ColorRequestDTO requestDTO) { // Đổi từ CollarRequestDTO sang ColorRequestDTO
@@ -100,7 +100,7 @@ public class ColorController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteColor(@PathVariable Integer id) throws BadRequestException { // Đổi từ Collar sang Color
         try {
             colorService.delete(id); // Đổi từ collarService sang colorService

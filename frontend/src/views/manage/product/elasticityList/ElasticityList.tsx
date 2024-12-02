@@ -1,6 +1,6 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesElasticityOverview, apiDeleteSalesElasticity, apiCreateSalesElasticity } from '@/services/ProductSalesService';
+import { apiGetSalesElasticityOverview, apiDeleteSalesElasticity, apiCreateSalesElasticity, apiGetElasticityById, apiPutSalesElasticity } from '@/services/ProductSalesService';
 
 const ElasticityList = () => {
     return (
@@ -9,6 +9,8 @@ const ElasticityList = () => {
                 apiFunc={apiGetSalesElasticityOverview}
                 apiDelete={apiDeleteSalesElasticity}
                 apiAdd={apiCreateSalesElasticity}
+                apiGetByID={apiGetElasticityById}
+                apiUpdate={apiPutSalesElasticity}
                 lablel='độ co giãn'
             />
         </>

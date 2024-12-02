@@ -77,7 +77,6 @@ public class CollarService implements IService<Collar, Integer, CollarRequestDTO
     @Override
     public Collar update(Integer id, CollarRequestDTO requestDTO) throws BadRequestException { // Đổi từ Brand sang Collar
         Collar entityFound = findById(id); // Đổi từ Brand sang Collar
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return collarRepository.save(entityFound); // Đổi từ brandRepository sang collarRepository

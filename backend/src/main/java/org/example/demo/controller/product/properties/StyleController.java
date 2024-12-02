@@ -79,7 +79,7 @@ public class StyleController {
         return ResponseEntity.ok(style);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<StyleResponseDTO> updateStyle(
             @PathVariable Integer id,
             @RequestBody StyleRequestDTO requestDTO) { // Đổi từ SleeveRequestDTO sang StyleRequestDTO
@@ -101,7 +101,7 @@ public class StyleController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStyle(@PathVariable Integer id) throws BadRequestException { // Đổi từ updatedStyle sang Style
         try {
             styleService.delete(id); // Đổi từ sleeveService sang styleService

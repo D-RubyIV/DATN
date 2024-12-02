@@ -77,7 +77,6 @@ public class StyleService implements IService<Style, Integer, StyleRequestDTO> {
     @Override
     public Style update(Integer id, StyleRequestDTO requestDTO) throws BadRequestException { // Đổi từ Sleeve sang Style
         Style entityFound = findById(id); // Đổi từ Sleeve sang Style
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return styleRepository.save(entityFound); // Đổi từ sleeveRepository sang styleRepository

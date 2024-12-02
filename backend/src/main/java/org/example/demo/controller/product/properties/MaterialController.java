@@ -82,7 +82,7 @@ public class MaterialController {
         return ResponseEntity.ok(material);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<MaterialResponseDTO> updateMaterial(
             @PathVariable Integer id,
             @RequestBody MaterialRequestDTO requestDTO) { // Đổi từ ImageRequestDTO sang MaterialRequestDTO
@@ -104,7 +104,7 @@ public class MaterialController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMaterial(@PathVariable Integer id) throws BadRequestException { // Đổi từ Image sang Material
         try {
             materialService.delete(id); // Đổi từ imageService sang materialService

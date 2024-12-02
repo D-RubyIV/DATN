@@ -81,7 +81,7 @@ public class SleeveController {
         return ResponseEntity.ok(sleeve);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<SleeveResponseDTO> updateSleeve(
             @PathVariable Integer id,
             @RequestBody SleeveRequestDTO requestDTO) { // Đổi từ SizeRequestDTO sang SleeveRequestDTO
@@ -103,7 +103,7 @@ public class SleeveController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSleeve(@PathVariable Integer id) throws BadRequestException { // Đổi từ Size sang Sleeve
         try {
             sleeveService.delete(id); // Đổi từ sizeService sang sleeveService

@@ -76,7 +76,6 @@ public class SleeveService implements IService<Sleeve, Integer, SleeveRequestDTO
     @Override
     public Sleeve update(Integer id, SleeveRequestDTO requestDTO) throws BadRequestException { // Đổi từ Size sang Sleeve
         Sleeve entityFound = findById(id); // Đổi từ Size sang Sleeve
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return sleeveRepository.save(entityFound); // Đổi từ sizeRepository sang sleeveRepository

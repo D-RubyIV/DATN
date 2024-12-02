@@ -79,7 +79,7 @@ public class CollarController {
         return ResponseEntity.ok(collar);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<CollarResponseDTO> updateCollar(
             @PathVariable Integer id,
             @RequestBody CollarRequestDTO requestDTO) { // Đổi từ BrandRequestDTO sang CollarRequestDTO
@@ -101,7 +101,7 @@ public class CollarController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCollar(@PathVariable Integer id) throws BadRequestException { // Đổi từ Brand sang Collar
         try {
             collarService.delete(id); // Đổi từ brandService sang collarService

@@ -25,6 +25,7 @@ export type AddAttributeState = {
     addAttribute: boolean;
     dataAttribute: Attribute | null;
     labelAttribute: string;
+    nameAttribute:string
     options: Attribute[]; // Danh sách tùy chọn 
 };
 
@@ -78,6 +79,7 @@ const initialStateAttribute: AddAttributeState = {
     addAttribute: false,
     dataAttribute: null,
     labelAttribute: '',
+    nameAttribute:'',
     options: [], // Khởi tạo options là một mảng rỗng
 };
 
@@ -102,6 +104,9 @@ const attributeAdd = createSlice({
         },
         setLabelAttribute: (state, action) => {
             state.labelAttribute = action.payload;
+        },
+        setNameAttribute: (state, action) => {
+            state.nameAttribute = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -154,7 +159,7 @@ const productAdd = createSlice({
 });
 
 // Xuất actions và reducer
-export const { setAttributeData, toggleAddAttributeConfirmation, setLabelAttribute } = attributeAdd.actions;
+export const { setAttributeData, toggleAddAttributeConfirmation, setLabelAttribute, setNameAttribute } = attributeAdd.actions;
 export const { setProductData, toggleAddProductConfirmation, setNameProduct } = productAdd.actions;
 
 export default {

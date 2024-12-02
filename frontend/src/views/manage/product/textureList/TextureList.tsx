@@ -1,6 +1,6 @@
 import AttributeForm, {
 } from '@/views/manage/product/AttributeForm'
-import { apiGetSalesTextureOverview, apiDeleteSalesTexture, apiCreateSalesTexture } from '@/services/ProductSalesService';
+import { apiGetSalesTextureOverview, apiDeleteSalesTexture, apiCreateSalesTexture, apiGetTextureById, apiPutSalesTexture } from '@/services/ProductSalesService';
 
 const TextureList = () => {
     return (
@@ -9,6 +9,8 @@ const TextureList = () => {
                 apiFunc={apiGetSalesTextureOverview}
                 apiDelete={apiDeleteSalesTexture}
                 apiAdd={apiCreateSalesTexture}
+                apiGetByID={apiGetTextureById}
+                apiUpdate={apiPutSalesTexture}
                 lablel='kết cấu'
             />
         </>

@@ -1,15 +1,18 @@
 import { useEffect, useMemo, useRef, ReactNode, ChangeEvent } from 'react'
-import Avatar from '@/components/ui/Avatar'
 import Badge from '@/components/ui/Badge'
 import DataTable from '@/components/shared/DataTable'
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri'
+import useThemeClass from '@/utils/hooks/useThemeClass'
+import { HiOutlinePencil } from 'react-icons/hi'
 import Switcher from '@/components/ui/Switcher'
 import {
     Attribute,
+    getAttributeByID,
     getAttributes,
     setTableData,
     setSelectedAttribute,
     toggleDeleteConfirmation,
+    toggleUpdateConfirmation,
     useAppDispatch,
     useAppSelector,
 } from '../store'
@@ -20,12 +23,19 @@ import type {
     OnSortParam,
     ColumnDef,
 } from '@/components/shared/DataTable'
-import ProductDeleteConfirmation from './AttributeDeleteConfirmation'
+import DeleteConfirmation from './AttributeDeleteConfirmation'
+import UpdateConfirmation from './AttributeUpdateConfirmation'
 type AttributeTableProps = {
     apiFunc: any;
-    apiDelete:any
-    lablel:string
+    apiDelete:any;
+    apiGetByID:any;
+    lablel:string;
+    apiUpdate:any;
 };
+
+
+
+
 
 const withIcon = (component: ReactNode) => {
     return <div className="text-lg">{component}</div>
@@ -36,7 +46,6 @@ const AttributeColumn = ({ row }: { row: Attribute }) => {
 
     return (
         <div className="flex items-center">
-            {/* {avatar} */}
             <span className={`ml-2 rtl:mr-2 font-semibold`}>{row.name}</span>
         </div>
     )
@@ -60,7 +69,7 @@ const getDeletedStatus = (deleted: boolean) => {
 
 
 
-const AttributeTable = ({ apiFunc, apiDelete, lablel }: AttributeTableProps) => {
+const AttributeTable = ({ apiFunc, apiDelete, lablel, apiGetByID, apiUpdate }: AttributeTableProps) => {
     const tableRef = useRef<DataTableResetHandle>(null)
 
     const dispatch = useAppDispatch()
@@ -100,16 +109,41 @@ const AttributeTable = ({ apiFunc, apiDelete, lablel }: AttributeTableProps) => 
 
     const ActionColumn = ({ row }: { row: Attribute }) => {
         const dispatch = useAppDispatch()
+        const { textTheme } = useThemeClass()
         const onDelete = () => {
             dispatch(toggleDeleteConfirmation(true)) 
             dispatch(setSelectedAttribute(row.id))
+         
+
+        }
+        const onUpdate = () => {
+            dispatch(toggleUpdateConfirmation(true)) 
+             dispatch(
+                getAttributeByID({
+                    apiFunc: apiGetByID,
+                    params: { id: row.id },
+                })
+            ).unwrap();
         }
 
         const onSwitcherToggle = (val: boolean, e: ChangeEvent) => {
-            onDelete()
-        }
+             onDelete()
+        } 
         return (
             <div className="flex w-full justify-start gap-2 items-center">
+
+                {/* <span
+                    className={`cursor-pointer p-2 hover:${textTheme}`}
+                    onClick={onUpdate}
+                >
+                    <HiOutlinePencil size={20} />
+                </span> */}
+                <HiOutlinePencil
+                    onClick={onUpdate}
+                    size={20}
+                    className="mr-3 text-2xl"
+                    style={{ cursor: 'pointer' }}
+                />
                 <Switcher
                     className='text-sm'
                     unCheckedContent={withIcon(<RiMoonClearLine />)}
@@ -218,7 +252,8 @@ const AttributeTable = ({ apiFunc, apiDelete, lablel }: AttributeTableProps) => 
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
-            <ProductDeleteConfirmation apiDelete={apiDelete} apiFunc={apiFunc} lablel={lablel} />
+            <DeleteConfirmation apiDelete={apiDelete} apiFunc={apiFunc} lablel={lablel} />
+            <UpdateConfirmation apiFunc={apiFunc} label={lablel} apiUpdate={apiUpdate} />
         </>
     )
 }

@@ -48,7 +48,7 @@ const ProducttDetailUpdateConfirmation = () => {
 
     const handleFormSubmit = async (
         values: FormModel,
-        setSubmitting: SetSubmitting
+        setSubmitting: SetSubmitting 
     ) => {
         setSubmitting(true)
         const success = await updateProductDetailId(values, values.id)

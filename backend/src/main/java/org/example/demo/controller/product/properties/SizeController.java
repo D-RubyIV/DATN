@@ -83,7 +83,7 @@ public class SizeController {
         return ResponseEntity.ok(size);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<SizeResponseDTO> updateSize(
             @PathVariable Integer id,
             @RequestBody SizeRequestDTO requestDTO) { // Đổi từ OriginRequestDTO sang SizeRequestDTO
@@ -105,7 +105,7 @@ public class SizeController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSize(@PathVariable Integer id) throws BadRequestException { // Đổi từ Origin sang Size
         try {
             sizeService.delete(id); // Đổi từ originService sang sizeService

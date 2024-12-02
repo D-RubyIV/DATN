@@ -78,7 +78,7 @@ public class ElasticityController {
         return ResponseEntity.ok(elasticity);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ElasticityResponseDTO> updateElasticity(
             @PathVariable Integer id,
             @RequestBody ElasticityRequestDTO requestDTO) { // Đổi từ ColorRequestDTO sang ElasticityRequestDTO
@@ -100,7 +100,7 @@ public class ElasticityController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteElasticity(@PathVariable Integer id) throws BadRequestException { // Đổi từ Color sang Elasticity
         try {
             elasticityService.delete(id); // Đổi từ colorService sang elasticityService

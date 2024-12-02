@@ -77,7 +77,6 @@ public class SizeService implements IService<Size, Integer, SizeRequestDTO> { //
     @Override
     public Size update(Integer id, SizeRequestDTO requestDTO) throws BadRequestException { // Đổi từ Origin sang Size
         Size entityFound = findById(id); // Đổi từ Origin sang Size
-        entityFound.setCode(requestDTO.getCode());
         entityFound.setName(requestDTO.getName());
 
         return sizeRepository.save(entityFound); // Đổi từ originRepository sang sizeRepository

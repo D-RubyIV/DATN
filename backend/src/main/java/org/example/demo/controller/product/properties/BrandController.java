@@ -81,12 +81,12 @@ public class BrandController {
         return ResponseEntity.ok(brand);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<BrandResponseDTO> updateBrand(
             @PathVariable Integer id,
             @RequestBody BrandRequestDTO requestDTO) {
         try {
-            Brand updatedBrand = brandService.update(id, requestDTO); // Đổi từ productService sang brandService
+            Brand updatedBrand = brandService.update(id, requestDTO);
 
             BrandResponseDTO responseDTO = new BrandResponseDTO(
 

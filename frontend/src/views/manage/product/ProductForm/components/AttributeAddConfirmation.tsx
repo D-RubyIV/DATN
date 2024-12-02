@@ -54,9 +54,10 @@ type OrganizationFieldsProps = {
 
 const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: OrganizationFieldsProps) => {
     const dispatch = useAppDispatch();
-    const { dataAttribute: addedAttribute, labelAttribute, addAttribute: openDialog } = useAppSelector((state) => ({
+    const { dataAttribute: addedAttribute, labelAttribute, nameAttribute, addAttribute: openDialog } = useAppSelector((state) => ({
         dataAttribute: state.addAttribute.attributeAdd.dataAttribute,
         labelAttribute: state.addAttribute.attributeAdd.labelAttribute,
+        nameAttribute: state.addAttribute.attributeAdd.nameAttribute,
         addAttribute: state.addAttribute.attributeAdd.addAttribute,
     }));
 
@@ -66,7 +67,7 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
 
     const onAdd = async () => {
         let apiFunc;
-        switch (labelAttribute) {
+        switch (nameAttribute) {
             case 'brand':
                 apiFunc = apiCreateSalesBrand;
                 break;
@@ -135,14 +136,14 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
                     modifiedDate: newlyAddedAttribute.modifiedDate || new Date().toISOString(),
                 };
 
-                const fieldName = labelAttribute === 'brand' || labelAttribute === 'origin' || labelAttribute === 'style' ||
-                    labelAttribute === 'material' || labelAttribute === 'collar' ||
-                    labelAttribute === 'sleeve' || labelAttribute === 'texture' ||
-                    labelAttribute === 'thickness' || labelAttribute === 'elasticity'
-                    ? labelAttribute : labelAttribute === 'size' ? 'size' : 'color';
+                const fieldName = nameAttribute === 'brand' || nameAttribute === 'origin' || nameAttribute === 'style' ||
+                    nameAttribute === 'material' || nameAttribute === 'collar' ||
+                    nameAttribute === 'sleeve' || nameAttribute === 'texture' ||
+                    nameAttribute === 'thickness' || nameAttribute === 'elasticity'
+                    ? nameAttribute : nameAttribute === 'size' ? 'size' : 'color';
 
-                if (labelAttribute === 'size' || labelAttribute === 'color') {
-                    const currentValues = props.values[labelAttribute] || [];
+                if (nameAttribute === 'size' || nameAttribute === 'color') {
+                    const currentValues = props.values[nameAttribute] || [];
                     const updatedValues = [...currentValues, newAttributeOption];
                     setFieldValue(fieldName, updatedValues);
                 } else {
@@ -155,7 +156,7 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
                     <Notification title={`Thêm nhanh ${labelAttribute}`} type="success" duration={2500}>
                         Thành công thêm {labelAttribute} {newAttributeOption.name}.
                     </Notification>,
-                    { placement: 'top-center' }
+                    { placement: 'top-center' } 
                 );
             } else {
                 throw new Error("Failed to add attribute");

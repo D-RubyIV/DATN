@@ -7,6 +7,7 @@ import CreatableSelect from 'react-select/creatable';
 import { useAppDispatch, useAppSelector } from '../store';
 import AttributeAddConfirmation from './AttributeAddConfirmation';
 import {
+    setNameAttribute,
     setAttributeData,
     toggleAddAttributeConfirmation,
     setLabelAttribute,
@@ -145,10 +146,11 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
         modifiedDate: new Date().toISOString(),
     });
 
-    const handleCreate = (inputValue: string, fieldLabel: string) => {
+    const handleCreate = (inputValue: string, fieldLabel: string, fieldName:string ) => {
         const newOption = createOption(inputValue);
         dispatch(setAttributeData(newOption));
         dispatch(setLabelAttribute(fieldLabel));
+        dispatch(setNameAttribute(fieldName));
         dispatch(toggleAddAttributeConfirmation(true));
     };
 
@@ -189,7 +191,7 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
                                 Option: CustomSelectOption,
                                 MultiValueLabel: CustomControlMulti,
                             }}
-                            onCreateOption={(inputValue) => handleCreate(inputValue, name)}
+                            onCreateOption={(inputValue) => handleCreate(inputValue, label,name)}
                             field={field}
                             form={form}
                             options={options}
@@ -290,7 +292,7 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
                     } else if (field === 'color') {
                         setColors((prev) => [...prev, { label: newOption.name, value: newOption }]);
                     } else if (field === 'style') {
-                        setStyles((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật styles
+                        setStyles((prev) => [...prev, { label: newOption.name, value: newOption }]); 
                     } else if (field === 'material') {
                         setMaterials((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật materials
                     } else if (field === 'collar') {
