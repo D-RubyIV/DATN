@@ -255,4 +255,5 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
             Pageable pageable
     );
 
+    int countByVoucherId(Integer voucherId);
 }
