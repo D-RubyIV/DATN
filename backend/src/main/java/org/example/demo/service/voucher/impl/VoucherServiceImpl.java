@@ -79,11 +79,14 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public VoucherResponseV2DTO findVoucherById(Integer id) {
         Optional<Voucher> voucherOptional = voucherRepository.findById(id);
-        return toDTO(voucherOptional.get());
+        Voucher voucher = voucherOptional.get();
+        int countOder = orderRepository.countByVoucherId(id);
+
+        return toDTO(voucher, countOder);
     }
 
 
-    public VoucherResponseV2DTO toDTO(Voucher voucher) {
+    public VoucherResponseV2DTO toDTO(Voucher voucher, int countOrders) {
         VoucherResponseV2DTO dto = new VoucherResponseV2DTO();
         dto.setId(voucher.getId());
         dto.setName(voucher.getName());
@@ -101,6 +104,8 @@ public class VoucherServiceImpl implements VoucherService {
                         .map(BaseEntity::getId)
                         .collect(Collectors.toList())
         );
+
+        dto.setCountOrders(countOrders);
 
         return dto;
     }
@@ -259,7 +264,7 @@ public class VoucherServiceImpl implements VoucherService {
             voucherSaved = voucherRepository.save(voucherSaved);
         }
         voucherRepository.save(voucherSaved);
-        return voucherResponseMapper.toDTO(voucherSaved , countOrdersUsingVoucher);
+        return voucherResponseMapper.toDTO(voucherSaved, countOrdersUsingVoucher);
     }
 
     @Override

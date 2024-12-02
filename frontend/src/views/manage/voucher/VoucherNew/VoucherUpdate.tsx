@@ -330,6 +330,9 @@ const VoucherUpdate = () => {
         const fetchVoucherData = async () => {
             try {
                 const response = await instance.get(`/voucher/${id}`);
+                const { countOrders } = response.data;
+                toast.success(`Voucher đã được cập nhật. Số lượt sử dụng: ${countOrders}`);
+
                 const voucherData = response.data;
 
                 // Set initial form values and directly pass Date objects to DatePicker
