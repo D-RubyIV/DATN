@@ -11,4 +11,7 @@ public interface VoucherResponseMapper extends IMapperBasic<Voucher, VoucherResp
 
 //    @Mapping(target = "countOrders", expression = "java(countOrders != null ? countOrders : 0)")
 //    VoucherResponseDTO toDTO(Voucher voucher, Integer countOrders);
+
+    @Mapping(target = "countOrders", expression = "java(countOrders != null ? countOrders : 0)")
+    VoucherResponseDTO toDTO(Voucher voucher, Integer countOrders);
 }
