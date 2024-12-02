@@ -44,6 +44,8 @@ const ResetPassword = () => {
 
             if (response.status === 200) {
                 setSuccess("Mật khẩu đã được đặt lại thành công!");
+                localStorage.clear();
+                window.location.href = "/auth/sign-in"
             }
         } catch (err) {
             setError("Có lỗi xảy ra! Vui lòng thử lại.");

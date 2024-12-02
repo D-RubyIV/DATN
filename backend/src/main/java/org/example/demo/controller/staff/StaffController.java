@@ -132,14 +132,11 @@ public class StaffController {
 
 
     @PostMapping
-    public ResponseEntity<StaffResponseDTO> createStaff(@Valid @RequestBody StaffRequestDTO requestDTO) {
-        try {
+    public ResponseEntity<StaffResponseDTO> createStaff(@Valid @RequestBody StaffRequestDTO requestDTO) throws DataNotFoundException, BadRequestException {
             Staff savedStaff = staffService.createStaff(requestDTO);
             StaffResponseDTO staffResponse = staffService.getStaffResponseDTO(savedStaff);
             return ResponseEntity.status(HttpStatus.CREATED).body(staffResponse);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid request data", e);
-        }
+
     }
 
     @PutMapping("/{id}")

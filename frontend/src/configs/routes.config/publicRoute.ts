@@ -8,7 +8,12 @@ const publicRoute: Routes = [
         component: lazy(() => import('@/views/client/LandingPage')),
         authority: []
     },
-
+    {
+        key: '404',
+        path: `/404`,
+        component: lazy(() => import('@/views/404/PageNotFound')),
+        authority: []
+    },
     {
         key: 'private',
         path: `/private/reset-password`,

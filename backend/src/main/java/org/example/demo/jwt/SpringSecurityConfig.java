@@ -58,7 +58,7 @@ public class SpringSecurityConfig {
 //                    authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll();
                     authorize.requestMatchers("/users/login").permitAll();
                     authorize.requestMatchers("/ws-notifications/**").permitAll();
-                    authorize.requestMatchers("/statistics/**").hasRole("ADMIN");
+                    authorize.requestMatchers("/statistics/**").hasAnyRole("ADMIN", "STAFF");
                     authorize.requestMatchers("/api/auth/**").permitAll();
                     authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     authorize.anyRequest().permitAll();

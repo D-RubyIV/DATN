@@ -23,6 +23,8 @@ import instance from '@/axios/CustomAxios'
 import { formatDistanceToNow, parse, subHours } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import Aos from 'aos'
+import { useHasRole } from '@/utils/permission'
+import PageNotFound from '@/views/404/PageNotFound'
 
 type OrderDTO = {
     id: number;
@@ -289,11 +291,11 @@ const SecurityLayout = () => {
 const RootLayout = () => {
     return (
         <Routes>
-            {/*<Route path="/client/*" element={<ClientLayout/>}/>*/}
-            <Route path="/admin/*" element={<AdminLayout />} />
+            {
+                useHasRole(["ROLE_ADMIN", 'ROLE_STAFF']) && <Route path="/admin/*" element={<AdminLayout />} />
+            }
             <Route path="/auth/*" element={<SecurityLayout />} />
             <Route path="/*" element={<PublicLayout />} />
-            {/*<Route path="*" element={<Navigate replace to="/sign-in" />} />*/}
         </Routes>
     )
 }

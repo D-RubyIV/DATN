@@ -128,11 +128,11 @@ public class CartController {
         cart.setDeliveryFee(0.);
 
         Account account = AuthUtil.getAccount();
-        if(account.getCustomer() != null){
+        if (account != null && account.getCustomer() != null) {
             log.info("CÓ TÀI KHOẢN KHÁCH HÀNG");
             Customer customerFound = account.getCustomer();
             Address defaultAddress = getDefaultAddress(customerFound.getId());
-            if(defaultAddress != null){
+            if (defaultAddress != null) {
                 log.info("CÓ ĐỊA CHỈ MẶC ĐỊNH");
                 try {
                     cart.setAddress(defaultAddress.getDetail());
@@ -144,16 +144,13 @@ public class CartController {
                     cart.setWardName(defaultAddress.getName());
                     cart.setRecipientName(defaultAddress.getName());
                     cart.setPhone(defaultAddress.getPhone());
-                }
-                catch (Exception ex){
+                } catch (Exception ex) {
                     log.error("SET DIA CHI MAC DINH CHO KHACH HANG XAY RA LOI");
                 }
-            }
-            else{
+            } else {
                 log.info("KHÔNG CÓ ĐỊA CHỈ MẶC ĐỊNH");
             }
-        }
-        else{
+        } else {
             log.info("KHÔNG CÓ TÀI KHOẢN KHÁCH HÀNG");
         }
         return ResponseEntity.ok(cartRepository.save(cart));
@@ -169,6 +166,7 @@ public class CartController {
             return ResponseEntity.ok(cart);
         }
     }
+
     //  phah04
     @PostMapping(value = "use-voucher")
     public ResponseEntity<?> addVoucher(@Valid @RequestBody UseCartVoucherDTO request) {

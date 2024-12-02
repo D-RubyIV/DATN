@@ -3,7 +3,6 @@ import type { Routes } from '@/@types/routes'
 
 
 const adminRoute: Routes = [
-
     {
         key: 'home',
         path: 'manage/home',

@@ -218,11 +218,10 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
 
 
     @Transactional
-    public Staff createStaff(StaffRequestDTO requestDTO) throws BadRequestException, DataNotFoundException {
+    public Staff createStaff(StaffRequestDTO requestDTO) throws BadRequestException {
         staffValidator.validateStaff(requestDTO, null);
 
-        Role role = roleRepository.findById(requestDTO.getRoleId())
-                .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
+        Role role = roleRepository.findByCode("ROLE_STAFF").orElse(null);
 
         Account account = new Account();
         String randomPassword = PasswordGenerator.generatePassword(12);
