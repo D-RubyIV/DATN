@@ -9,9 +9,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface VoucherResponseMapper extends IMapperBasic<Voucher, VoucherResponseDTO> {
 
-//    @Mapping(target = "countOrders", expression = "java(countOrders != null ? countOrders : 0)")
-//    VoucherResponseDTO toDTO(Voucher voucher, Integer countOrders);
-
     @Mapping(target = "countOrders", expression = "java(countOrders != null ? countOrders : 0)")
     VoucherResponseDTO toDTO(Voucher voucher, Integer countOrders);
+
+
 }
