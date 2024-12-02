@@ -32,7 +32,6 @@ const AllAdminRoutes = (props: AllRoutesProps) => {
                     path="/"
                     element={<Navigate replace to={authenticatedEntryPath} />}
                 />
-                <Route path="*" element={<PageNotFound/>} />
                 {adminRoutes.map((route, index) => (
                     <Route
                         key={route.key + index}
@@ -52,8 +51,8 @@ const AllAdminRoutes = (props: AllRoutesProps) => {
                             </AuthorityGuard>
                         }
                     />
-
                 ))}
+                <Route path="*" element={<Navigate replace to="/404" />} />
             </Route>
         </Routes>
     )
