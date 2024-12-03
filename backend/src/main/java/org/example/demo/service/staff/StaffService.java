@@ -44,6 +44,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -342,98 +343,242 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         return staffRepository.save(staff);
     }
 
+//    @Transactional
+//    public List<Map<String, String>> importFromExcel(MultipartFile file) throws IOException {
+//        List<Map<String, String>> responseList = new ArrayList<>();
+//        List<Staff> staffList = new ArrayList<>();
+//        List<String> errorMessages = new ArrayList<>();
+//
+//        try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
+//            Sheet sheet = workbook.getSheetAt(0);
+//
+//            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+//                Row row = sheet.getRow(i);
+//                if (row == null) continue;
+//
+//                StaffRequestDTO staffDTO = new StaffRequestDTO();
+//                staffDTO.setName(getCellValue(row.getCell(1)));
+//                staffDTO.setEmail(getCellValue(row.getCell(2)));
+//                staffDTO.setPhone(getCellValue(row.getCell(3)));
+//                staffDTO.setAddress(getCellValue(row.getCell(4)));
+//                staffDTO.setWard(getCellValue(row.getCell(5)));
+//                staffDTO.setDistrict(getCellValue(row.getCell(6)));
+//                staffDTO.setProvince(getCellValue(row.getCell(7)));
+//                staffDTO.setCitizenId(getCellValue(row.getCell(8)));
+//
+//                String statusValue = getCellValue(row.getCell(9)).trim();
+//                String statusString = "Inactive";
+//
+//                // Xử lý trạng thái
+//                if ("Hoạt động".equalsIgnoreCase(statusValue) || "Active".equalsIgnoreCase(statusValue)) {
+//                    statusString = "Active";
+//                }
+//                staffDTO.setStatus(statusString);
+//
+//                // Xử lý ngày sinh
+//                if (row.getCell(10) != null && DateUtil.isCellDateFormatted(row.getCell(10))) {
+//                    LocalDate birthDate = row.getCell(10).getDateCellValue().toInstant()
+//                            .atZone(ZoneId.systemDefault()).toLocalDate();
+//                    staffDTO.setBirthDay(birthDate);
+//                }
+//
+//                staffDTO.setGender("Nam".equalsIgnoreCase(getCellValue(row.getCell(11))));
+//                staffDTO.setNote(getCellValue(row.getCell(12)));
+//                staffDTO.setDeleted("Không".equalsIgnoreCase(getCellValue(row.getCell(13))));
+//                String code = generateRandomMaNV(staffDTO.getName());
+//                String password = generateRandomPassword();
+//                staffDTO.setCode(code);
+//
+//                // Kiểm tra lỗi trước khi thêm vào danh sách staffList
+//                try {
+//                    staffValidator.validateStaff(staffDTO, null);
+//
+//                    // Kiểm tra xem email, phone, citizenId có tồn tại không
+//                    if (isEmailExists(staffDTO.getEmail())) {
+//                        errorMessages.add("Dòng " + (i + 1) + ": Email đã tồn tại trong hệ thống.");
+//                    }
+//                    if (isPhoneExists(staffDTO.getPhone())) {
+//                        errorMessages.add("Dòng " + (i + 1) + ": Số điện thoại đã tồn tại trong hệ thống.");
+//                    }
+//                    if (isCitizenIdExists(staffDTO.getCitizenId())) {
+//                        errorMessages.add("Dòng " + (i + 1) + ": CCCD đã tồn tại trong hệ thống.");
+//                    }
+//
+//                    // Nếu không có lỗi, thêm vào danh sách staffList
+//                    if (errorMessages.isEmpty()) {
+//                        Staff staff = StaffMapper.toEntity(staffDTO);
+//                        staffList.add(staff);
+//
+//                        Map<String, String> responseData = new HashMap<>();
+//                        responseData.put("name", staffDTO.getName());
+//                        responseData.put("email", staffDTO.getEmail());
+//                        responseData.put("code", staffDTO.getCode());
+//                        responseList.add(responseData);
+//                    }
+//
+//                } catch (IllegalArgumentException e) {
+//                    errorMessages.add("Dòng " + (i + 1) + ": " + e.getMessage());
+//                }
+//            }
+//
+//            // Nếu có lỗi, không lưu dữ liệu
+//            if (!errorMessages.isEmpty()) {
+//                log.warn("Lỗi khi import nhân viên từ Excel: \n" + String.join("\n", errorMessages));
+//                throw new CustomException(errorMessages); // Ném ngoại lệ nếu có lỗi
+//            }
+//
+//            // Lưu danh sách nhân viên nếu không có lỗi
+//            if (!staffList.isEmpty()) {
+//                staffRepository.saveAll(staffList);
+//            }
+//        }
+//
+//        return responseList; // Trả về danh sách phản hồi
+//    }
+
+
+    private StaffRequestDTO mapRowToStaffDTO(Row row) {
+        StaffRequestDTO staffDTO = new StaffRequestDTO();
+
+        staffDTO.setName(getCellValue(row.getCell(1)));
+        staffDTO.setEmail(getCellValue(row.getCell(2)));
+        staffDTO.setPhone(getCellValue(row.getCell(3)));
+        staffDTO.setAddress(getCellValue(row.getCell(4)));
+        staffDTO.setWard(getCellValue(row.getCell(5)));
+        staffDTO.setDistrict(getCellValue(row.getCell(6)));
+        staffDTO.setProvince(getCellValue(row.getCell(7)));
+        staffDTO.setCitizenId(getCellValue(row.getCell(8)));
+
+        // Status handling
+        String statusValue = getCellValue(row.getCell(9)).trim();
+        staffDTO.setStatus("Hoạt động".equalsIgnoreCase(statusValue) ||
+                "Active".equalsIgnoreCase(statusValue) ? "Active" : "Inactive");
+
+        // Birth date handling
+        if (row.getCell(10) != null && DateUtil.isCellDateFormatted(row.getCell(10))) {
+            LocalDate birthDate = row.getCell(10).getDateCellValue().toInstant()
+                    .atZone(ZoneId.systemDefault()).toLocalDate();
+            staffDTO.setBirthDay(birthDate);
+        }
+
+        // Additional fields
+        staffDTO.setGender("Nam".equalsIgnoreCase(getCellValue(row.getCell(11))));
+        staffDTO.setNote(getCellValue(row.getCell(12)));
+        staffDTO.setDeleted(!"Không".equalsIgnoreCase(getCellValue(row.getCell(13))));
+
+        return staffDTO;
+    }
+
+    private void validateStaffData(StaffRequestDTO staffDTO, int rowIndex, List<String> errorMessages) {
+        try {
+            // Validate staff data
+            staffValidator.validateStaff(staffDTO, null);
+
+            // Check for existing email, phone, citizen ID
+            if (isEmailExists(staffDTO.getEmail())) {
+                errorMessages.add("Dòng " + (rowIndex + 1) + ": Email đã tồn tại trong hệ thống.");
+            }
+            if (isPhoneExists(staffDTO.getPhone())) {
+                errorMessages.add("Dòng " + (rowIndex + 1) + ": Số điện thoại đã tồn tại trong hệ thống.");
+            }
+            if (isCitizenIdExists(staffDTO.getCitizenId())) {
+                errorMessages.add("Dòng " + (rowIndex + 1) + ": CCCD đã tồn tại trong hệ thống.");
+            }
+        } catch (IllegalArgumentException | BadRequestException e) {
+            errorMessages.add("Dòng " + (rowIndex + 1) + ": " + e.getMessage());
+        }
+    }
     @Transactional
     public List<Map<String, String>> importFromExcel(MultipartFile file) throws IOException {
-        List<Map<String, String>> responseList = new ArrayList<>();
-        List<Staff> staffList = new ArrayList<>();
+        List<Map<String, String>> successfulImports = new ArrayList<>();
+        List<Staff> staffToSave = new ArrayList<>();
         List<String> errorMessages = new ArrayList<>();
 
-        try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
+        try (InputStream is = file.getInputStream();
+             Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
 
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
+            for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                Row row = sheet.getRow(rowIndex);
                 if (row == null) continue;
 
-                StaffRequestDTO staffDTO = new StaffRequestDTO();
-                staffDTO.setName(getCellValue(row.getCell(1)));
-                staffDTO.setEmail(getCellValue(row.getCell(2)));
-                staffDTO.setPhone(getCellValue(row.getCell(3)));
-                staffDTO.setAddress(getCellValue(row.getCell(4)));
-                staffDTO.setWard(getCellValue(row.getCell(5)));
-                staffDTO.setDistrict(getCellValue(row.getCell(6)));
-                staffDTO.setProvince(getCellValue(row.getCell(7)));
-                staffDTO.setCitizenId(getCellValue(row.getCell(8)));
-
-                String statusValue = getCellValue(row.getCell(9)).trim();
-                String statusString = "Inactive";
-
-                // Xử lý trạng thái
-                if ("Hoạt động".equalsIgnoreCase(statusValue) || "Active".equalsIgnoreCase(statusValue)) {
-                    statusString = "Active";
-                }
-                staffDTO.setStatus(statusString);
-
-                // Xử lý ngày sinh
-                if (row.getCell(10) != null && DateUtil.isCellDateFormatted(row.getCell(10))) {
-                    LocalDate birthDate = row.getCell(10).getDateCellValue().toInstant()
-                            .atZone(ZoneId.systemDefault()).toLocalDate();
-                    staffDTO.setBirthDay(birthDate);
-                }
-
-                staffDTO.setGender("Nam".equalsIgnoreCase(getCellValue(row.getCell(11))));
-                staffDTO.setNote(getCellValue(row.getCell(12)));
-                staffDTO.setDeleted("Không".equalsIgnoreCase(getCellValue(row.getCell(13))));
-                String code = generateRandomMaNV(staffDTO.getName());
-                String password = generateRandomPassword();
-                staffDTO.setCode(code);
-
-                // Kiểm tra lỗi trước khi thêm vào danh sách staffList
                 try {
-                    staffValidator.validateStaff(staffDTO, null);
+                    StaffRequestDTO staffDTO = mapRowToStaffDTO(row);
+                    validateStaffData(staffDTO, rowIndex, errorMessages);
 
-                    // Kiểm tra xem email, phone, citizenId có tồn tại không
-                    if (isEmailExists(staffDTO.getEmail())) {
-                        errorMessages.add("Dòng " + (i + 1) + ": Email đã tồn tại trong hệ thống.");
-                    }
-                    if (isPhoneExists(staffDTO.getPhone())) {
-                        errorMessages.add("Dòng " + (i + 1) + ": Số điện thoại đã tồn tại trong hệ thống.");
-                    }
-                    if (isCitizenIdExists(staffDTO.getCitizenId())) {
-                        errorMessages.add("Dòng " + (i + 1) + ": CCCD đã tồn tại trong hệ thống.");
-                    }
-
-                    // Nếu không có lỗi, thêm vào danh sách staffList
                     if (errorMessages.isEmpty()) {
-                        Staff staff = StaffMapper.toEntity(staffDTO);
-                        staffList.add(staff);
+                        Account account = createAccountForStaff(staffDTO);
 
-                        Map<String, String> responseData = new HashMap<>();
-                        responseData.put("name", staffDTO.getName());
-                        responseData.put("email", staffDTO.getEmail());
-                        responseData.put("code", staffDTO.getCode());
-                        responseList.add(responseData);
+                        Staff staff = processValidStaff(staffDTO, account);
+                        staffToSave.add(staff);
+
+                        Map<String, String> successResponse = new HashMap<>();
+                        successResponse.put("name", staffDTO.getName());
+                        successResponse.put("email", staffDTO.getEmail());
+                        successResponse.put("code", staffDTO.getCode());
+                        successfulImports.add(successResponse);
                     }
-
-                } catch (IllegalArgumentException e) {
-                    errorMessages.add("Dòng " + (i + 1) + ": " + e.getMessage());
+                } catch (Exception e) {
+                    log.error("Lỗi khi import dòng {}: {}", rowIndex + 1, e.getMessage(), e);
+                    errorMessages.add("Dòng " + (rowIndex + 1) + ": " + e.getMessage());
                 }
             }
 
-            // Nếu có lỗi, không lưu dữ liệu
             if (!errorMessages.isEmpty()) {
-                log.warn("Lỗi khi import nhân viên từ Excel: \n" + String.join("\n", errorMessages));
-                throw new CustomException(errorMessages); // Ném ngoại lệ nếu có lỗi
+                log.warn("Lỗi trong quá trình import nhân viên: \n" + String.join("\n", errorMessages));
+                throw new CustomException(errorMessages);
             }
 
-            // Lưu danh sách nhân viên nếu không có lỗi
-            if (!staffList.isEmpty()) {
-                staffRepository.saveAll(staffList);
+            if (!staffToSave.isEmpty()) {
+                List<Account> accounts = staffToSave.stream()
+                        .map(Staff::getAccount)
+                        .collect(Collectors.toList());
+                accountRepository.saveAll(accounts);
+
+                staffRepository.saveAll(staffToSave);
             }
         }
 
-        return responseList; // Trả về danh sách phản hồi
+        return successfulImports;
     }
+
+    private Account createAccountForStaff(StaffRequestDTO staffDTO) {
+        Role role = roleRepository.findByCode("ROLE_STAFF")
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò STAFF"));
+
+        String randomPassword = PasswordGenerator.generatePassword(12);
+
+        Account account = new Account();
+        account.setUsername(staffDTO.getEmail());
+        account.setPassword(passwordEncoder.encode(randomPassword));
+        account.setStatus("Active");
+        account.setEnabled(true);
+        account.setRole(role);
+
+
+        return account;
+    }
+
+    private Staff processValidStaff(StaffRequestDTO staffDTO, Account account) {
+        try {
+            // Sinh mã nhân viên
+            String code = generateRandomMaNV(staffDTO.getName());
+            staffDTO.setCode(code);
+
+            // Chuyển đổi DTO sang entity
+            Staff staff = StaffMapper.toEntity(staffDTO);
+
+            // Gán account
+            staff.setAccount(account);
+            staff.setStatus("Active");
+
+            return staff;
+        } catch (Exception e) {
+            log.error("Lỗi chuyển đổi staff DTO sang entity", e);
+            throw new RuntimeException("Không thể chuyển đổi dữ liệu nhân viên: " + e.getMessage(), e);
+        }
+    }
+
 
     public class CustomException extends RuntimeException {
         private final List<String> errorMessages;
