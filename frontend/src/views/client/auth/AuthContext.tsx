@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getUserDetail, loginApi, registerApi } from './api';
+import useAuth from '@/utils/hooks/useAuth'
 
 interface User {
     username: string;
@@ -18,7 +19,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-
 
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);

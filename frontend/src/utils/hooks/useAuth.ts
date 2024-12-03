@@ -12,9 +12,10 @@ import { useNavigate } from 'react-router-dom'
 import useQuery from './useQuery'
 import type { SignInCredential, SignUpCredential } from '@/@types/auth'
 import { useToastContext } from '@/context/ToastContext'
+import { useEffect } from 'react'
+import { getUserDetail } from '@/views/client/auth/api'
 
 type Status = 'OK' | 'failed';
-
 
 function useAuth() {
     const dispatch = useAppDispatch()
@@ -25,6 +26,32 @@ function useAuth() {
     const query = useQuery()
 
     const { token, signedIn } = useAppSelector((state) => state.auth.session)
+
+    const checkAuthenticated = async () => {
+        const token = localStorage.getItem('ACCESS_TOKEN');
+        if (token) {
+            try {
+                const userDetail = await getUserDetail(token); // Lấy thông tin người dùng từ API
+                console.log("-----")
+                console.log(userDetail)
+                dispatch(
+                    setUser({
+                        userName: userDetail?.data?.username,
+                        authority: userDetail?.data?.role?.code,
+                        email: userDetail?.data?.username,
+                        avatar: ''
+                    })
+                )
+            } catch (err) {
+                console.error('Failed to get user details:', err);
+            }
+        }
+    };
+
+    useEffect(() => {
+        console.log("OLLLLLLLLLLLLLL")
+        checkAuthenticated()
+    }, [])
 
     const signIn = async (
         values: SignInCredential

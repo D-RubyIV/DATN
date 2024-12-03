@@ -369,10 +369,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     private void checkValidateQuantity(Order order) {
         // B1: CHECK ĐỦ SỐ LƯỢNG PRODUCT DETAIL CÓ THỂ CUNG CẤP (CHỈ CẦN CHECK KHI CHUYỂN TỪ PENDING SANG TOSHIP)
-        boolean availableProductDetailQuantity = check_valid_product_detail_quantity_in_storage(order);
-        log.info("VALIDATE PRODUCT DETAIL QUANTITY: " + availableProductDetailQuantity);
-        if (!availableProductDetailQuantity) {
-            throw new CustomExceptions.CustomBadRequest("Có sản phẩm nào đó không đủ cung ứng");
+        if(!order.getInStore()){
+            boolean availableProductDetailQuantity = check_valid_product_detail_quantity_in_storage_for_online_order(order);
+            log.info("VALIDATE PRODUCT DETAIL QUANTITY: " + availableProductDetailQuantity);
+            if (!availableProductDetailQuantity) {
+                throw new CustomExceptions.CustomBadRequest("Có sản phẩm nào đó không đủ cung ứng");
+            }
         }
         // B2: CHECK ĐỦ SỐ LƯỢNG VOUCHER CÓ THỂ CUNG CẤP (CHỈ CẦN CHECK KHI CHUYỂN TỪ PENDING SANG TOSHIP)
         boolean availableVoucherQuantity = check_valid_voucher_quantity_in_storage(order);
@@ -405,7 +407,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 check_validate_address_for_online_order(entityFound);
             }
             log.info("1");
-            minusProductDetailsQuantity(entityFound);
+            // kiem tra xem là đơn tại quầy hay đơn khách đặt online mà nhân viên đổi trạng thái
+            if(!entityFound.getInStore()){
+                minusProductDetailsQuantity(entityFound);
+            }
         } else if (oldStatus == Status.TOSHIP && newStatus == Status.PENDING) {
             log.info("2");
             restoreProductDetailsQuantity(entityFound);
@@ -806,7 +811,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
-    public boolean check_valid_product_detail_quantity_in_storage(Order order) {
+    public boolean check_valid_product_detail_quantity_in_storage_for_online_order(Order order) {
         boolean available = true;
         List<OrderDetail> orderDetails = order.getOrderDetails();
         for (OrderDetail orderDetail : orderDetails) {

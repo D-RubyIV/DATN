@@ -1,19 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
-import { Avatar, Button, Notification, toast } from '@/components/ui'
+import { Avatar, Button, Dialog, Input, Notification, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
-import { HiMinus, HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
+import { HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import DataTable, { type OnSortParam } from '../../../../../components/shared/DataTable'
 import { FiPackage } from 'react-icons/fi'
+import { DeleteOutline } from '@mui/icons-material'
 
 const SellProductTable = ({ selectedOrder, fetchData }: {
     selectedOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
 }) => {
+    const [isOpenEditQuantity, setIsOpenEditQuantity] = useState<boolean>(false)
     const [data, setData] = useState<OrderDetailResponseDTO[]>([])
+    const [selectedOrderDetail, setSelectedOrderDetail] = useState<OrderDetailResponseDTO>()
     const [tableData, setTableData] = useState<{
         pageIndex: number
         pageSize: number
@@ -37,15 +40,18 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
-            .then(function() {
-                fetchData()
+            .then(function(response) {
+                if(response.status === 200){
+                    openNotification("Thay đổi thành công")
+                    fetchData()
+                }
             })
             .catch(function(err) {
                 console.error('Error updating quantity:', err)
                 if (err.response) {
                     console.log('Status code:', err.response.status) // Trạng thái HTTP từ phản hồi
                     if (err.response.status === 400) {
-                        openNotification(err.response.data.error, "Thông báo", "warning", 1500)
+                        openNotification(err.response.data.error, 'Thông báo', 'warning', 1500)
                     }
                 } else {
                     console.log('Error message:', err.message) // Nếu không có phản hồi từ máy chủ
@@ -116,7 +122,8 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 cell: (props) => {
                     const row = props.row.original
                     return (
-                        <div className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
+                        <div
+                            className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? 'text-green-600' : 'text-red-600'} `}>
                             <p>{row.productDetailResponseDTO.quantity}</p>
                         </div>
                     )
@@ -172,9 +179,17 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
                     return (
-                        <div>
+                        <div className={'flex gap-4'}>
                             <Button
-                                icon={<HiMinus />}
+                                icon={<HiPencil />}
+                                variant="plain"
+                                onClick={() => {
+                                    setSelectedOrderDetail(row)
+                                    setIsOpenEditQuantity(true)
+                                }}
+                            ></Button>
+                            <Button
+                                icon={<DeleteOutline />}
                                 variant="plain"
                                 onClick={() => openDeleteConfirm(row.id)}
                             ></Button>
@@ -237,7 +252,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
     const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
         const product_detail_quantity = item.productDetailResponseDTO.quantity
-        return product_detail_quantity > 0;
+        return product_detail_quantity > 0
     }
 
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
@@ -294,7 +309,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng thêm`}
                 </div>
             </div>
-
         )
     }
 
@@ -344,6 +358,42 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         )
     }
 
+    const EditQuantityDialog = () => {
+        const [quantity, setQuantity] = useState<number>(selectedOrderDetail?.quantity || 0)
+        useEffect(() => {
+            setQuantity(selectedOrderDetail?.quantity || 0)
+        }, [selectedOrderDetail])
+        const onDialogEditNumberOk = () => {
+            console.log('OK')
+            selectedOrderDetail && handleUpdateQuantity(selectedOrderDetail?.id, quantity)
+            setIsOpenEditQuantity(false)
+        }
+        return (
+            <Dialog isOpen={isOpenEditQuantity} closable={false}>
+                <h5 className="mb-4">Thay đổi số lượng</h5>
+                <p>Vui lòng nhập số lượng mong muôn:</p>
+                <Input
+                    type={'number'}
+                    min={1}
+                    defaultValue={quantity}
+                    onChange={(el: ChangeEvent<HTMLInputElement>) => setQuantity(Number(el.target.value))}
+                ></Input>
+                <div className="text-right mt-6">
+                    <Button
+                        className="ltr:mr-2 rtl:ml-2"
+                        variant="plain"
+                        onClick={() => setIsOpenEditQuantity(false)}
+                    >
+                        Hủy
+                    </Button>
+                    <Button variant="solid" onClick={onDialogEditNumberOk}>
+                        Xác nhận
+                    </Button>
+                </div>
+            </Dialog>
+        )
+    }
+
     return (
         <div>
             <DataTable
@@ -354,6 +404,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 onSelectChange={handleSelectChange}
                 onSort={handleSort}
             />
+            <EditQuantityDialog/>
         </div>
     )
 }
