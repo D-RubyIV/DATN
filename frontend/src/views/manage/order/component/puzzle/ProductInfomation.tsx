@@ -3,7 +3,7 @@ import { Avatar } from '@/components/ui'
 import { FiPackage } from 'react-icons/fi'
 
 const hasSaleEvent = (item: ProductDetailOverviewPhah04) => {
-    return item.eventResponseDTOS.length > 0
+    return item.nowAverageDiscountPercentEvent > 0
 
 }
 const getFinalPrice = (item: ProductDetailOverviewPhah04) => {
@@ -116,8 +116,7 @@ const ProductInformation = ({ seletedProductDetail }: { seletedProductDetail: Pr
                                 </span>
                             ) : (
                                 <span>
-                                    <span
-                                        className={'line-through'}>{Math.round(seletedProductDetail.price).toLocaleString('vi') + 'đ'}</span>
+                                    <span>{Math.round(seletedProductDetail.price).toLocaleString('vi') + 'đ'}</span>
                                 </span>
                             )
                         }

@@ -36,8 +36,10 @@ public class OrderOverviewResponseDTO {
     @Enumerated(EnumType.STRING)
     private Type type;
     @Enumerated(EnumType.STRING)
+    private Boolean inStore;
     private Payment payment;
     private Double total;
+    private Double totalPaid;
     private Double deliveryFee;
     private Double subTotal;
     private Double discount;

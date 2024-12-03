@@ -1,7 +1,7 @@
 import { string } from "yup";
 
 export type typeEnums = "" | "ONLINE" | "INSTORE"
-export type statusEnums = "" | "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
+export type statusEnums = "" | "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED"
 
 export type TypeBill = {
     label: string,
@@ -14,7 +14,7 @@ export type StatusBill = {
     badge: string
 }
 
-export type EBillStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "RETURNED"
+export type EBillStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED"
 export type EBillType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 
 type AddressResponseDTOS = {

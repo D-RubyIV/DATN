@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, ChangeEvent } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
@@ -13,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { HiEye, HiOutlineSearch } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { parse, formatDistanceToNow, format } from 'date-fns'
-import { vi } from "date-fns/locale";
+import { vi } from 'date-fns/locale'
 
 type BadgeType =
     'countAll'
@@ -44,7 +43,12 @@ type IOveriewBill = {
     address: string;
     type: string;
     total: number;
+    totalPaid: number;
+    deliveryFee: number;
     subTotal: number;
+    discount: number;
+    inStore: boolean;
+    discountVoucherPercent: number;
     createdDate: string
 }
 
@@ -58,11 +62,12 @@ export const OrderTable = () => {
         countCancelled: 0,
         countDelivered: 0,
         countReturned: 0,
-        countToReceive: 0,
+        countToReceive: 0
     })
     const [queryParam, setQueryParam] = useState<{
         type: EOrderTypeEnums,
         status: EOrderStatusEnums | string,
+        inStore?: boolean,
         createdFrom: string,
         createdTo: string
     }>({
@@ -83,6 +88,13 @@ export const OrderTable = () => {
         setQueryParam(prevState => ({
             ...prevState,
             createdTo: p
+        }))
+    }
+
+    const setInStoreParam = (p: boolean) => {
+        setQueryParam(prevState => ({
+            ...prevState,
+            inStore: p
         }))
     }
 
@@ -139,21 +151,21 @@ export const OrderTable = () => {
     }
 
     const calculateDistanceTime = (formattedDate: string) => {
-        console.log("Input formattedDate:", formattedDate);
+        console.log('Input formattedDate:', formattedDate)
 
         // Parse date theo định dạng "yyyy-MM-dd HH:mm:ss.SSSSSS"
-        const date = parse(formattedDate, "HH:mm dd-MM-yyyy", new Date());
+        const date = parse(formattedDate, 'HH:mm dd-MM-yyyy', new Date())
         if (isNaN(date.getTime())) {
-            console.error("Invalid date format");
-            return "Invalid date";
+            console.error('Invalid date format')
+            return 'Invalid date'
         }
 
 
         // Tính khoảng cách thời gian so với hiện tại
-        const distance = formatDistanceToNow(date, { addSuffix: true, locale: vi });
+        const distance = formatDistanceToNow(date, { addSuffix: true, locale: vi })
 
-        return distance;
-    };
+        return distance
+    }
 
 
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
@@ -194,7 +206,7 @@ export const OrderTable = () => {
             accessorKey: 'code'
         },
         {
-            header: 'Khách hàng',
+            header: 'Khách',
             accessorKey: 'customer___name',
             cell: (props) => (
                 props.row.original.customerName ?? 'N/a'
@@ -215,14 +227,42 @@ export const OrderTable = () => {
             )
         },
         {
-            header: 'Tổng tiền',
+            header: 'Tổng giá trị',
+            accessorKey: 'subTotal',
+            cell: (props) => (
+                Math.round(props.row.original.subTotal).toLocaleString('vi') + 'đ'
+            )
+        },
+        {
+            header: 'Tiền giảm',
+            accessorKey: 'discount',
+            cell: (props) => (
+                `(${props.row.original.discountVoucherPercent}%)` + ' ~ ' + Math.round(props.row.original.discount).toLocaleString('vi') + 'đ'
+            )
+        },
+        {
+            header: 'Phí',
+            accessorKey: 'deliveryFee',
+            cell: (props) => (
+                Math.round(props.row.original.deliveryFee).toLocaleString('vi') + 'đ'
+            )
+        },
+        {
+            header: 'Đã Trả',
+            accessorKey: 'totalPaid',
+            cell: (props) => (
+                Math.round(props.row.original.totalPaid).toLocaleString('vi') + 'đ'
+            )
+        },
+        {
+            header: 'Cần TT',
             accessorKey: 'total',
             cell: (props) => (
                 Math.round(props.row.original.total).toLocaleString('vi') + 'đ'
             )
         },
         {
-            header: 'Thời gian tạo',
+            header: 'Thời gian',
             accessorKey: 'createdDate',
             cell: (props) => (
                 calculateDistanceTime(props.row.original.createdDate)
@@ -236,7 +276,7 @@ export const OrderTable = () => {
                     size="xs"
                     block
                     variant="solid"
-                    className={`bg-white ${props.row.original.status === 'PENDING'
+                    className={`!bg-none !bg-transparent !bg-opacity-100 ${props.row.original.status === 'PENDING'
                         ? '!text-yellow-500'
                         : props.row.original.status === 'TOSHIP'
                             ? '!text-blue-500'
@@ -246,10 +286,8 @@ export const OrderTable = () => {
                                     ? '!text-purple-500'
                                     : props.row.original.status === 'CANCELED'
                                         ? '!text-red-500'
-                                        : props.row.original.status === 'RETURNED'
-                                            ? '!text-orange-500'
-                                                    : '!text-gray-500'
-                        }`}
+                                        : '!text-gray-500'
+                    }`}
                 >
                     <span className={`flex items-center font-bold`}>
                         <span
@@ -263,10 +301,8 @@ export const OrderTable = () => {
                                             ? '!bg-purple-500'
                                             : props.row.original.status === 'CANCELED'
                                                 ? '!bg-red-500'
-                                                : props.row.original.status === 'RETURNED'
-                                                    ? '!bg-orange-500'
-                                                            : '!bg-gray-500'
-                                }`}></span>
+                                                : '!bg-gray-500'
+                            }`}></span>
                         <span>
                             <p>
                                 {props.row.original.status === 'PENDING'
@@ -279,9 +315,7 @@ export const OrderTable = () => {
                                                 ? 'Đã hoàn thành'
                                                 : props.row.original.status === 'CANCELED'
                                                     ? 'Đã hủy đơn'
-                                                    : props.row.original.status === 'RETURNED'
-                                                        ? 'Đã trả hàng'
-                                                                : 'Không xác định'}
+                                                    : 'Không xác định'}
                             </p>
                         </span>
                     </span>
@@ -290,14 +324,14 @@ export const OrderTable = () => {
             )
         },
         {
-            header: 'Loại hóa đon',
+            header: 'PT Nhận Hàng',
             accessorKey: 'type',
             cell: (props) => (
                 <Button
                     size="xs"
                     block
                     variant="solid"
-                    className={'bg-white'}
+                    className={'!bg-none !bg-transparent !bg-opacity-100'}
                 >
 
                     <span
@@ -319,12 +353,31 @@ export const OrderTable = () => {
             )
         },
         {
+            header: 'Loại đơn',
+            id: 'action',
+            cell: (props) => (
+                <span
+                    className={`flex items-center font-bold text-[12px] ${props.row.original.inStore ? 'text-indigo-600' : 'text-yellow-600'}`}>
+                        <span
+                            className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.inStore ? 'bg-indigo-600' : 'bg-yellow-600'}`}
+                        ></span>
+                        <span>
+                            <p>
+                                {props.row.original.inStore
+                                    ? 'Tại quầy'
+                                    : 'Trực tuyến'}
+                            </p>
+                        </span>
+                    </span>
+            )
+        },
+        {
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
                 <Button size="xs" className="w-full flex justify-start items-center" variant="plain">
                     <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className="mr-3 text-2xl"
-                        style={{ cursor: 'pointer' }} /></Link>
+                                                                               style={{ cursor: 'pointer' }} /></Link>
                 </Button>
 
             )
@@ -337,8 +390,7 @@ export const OrderTable = () => {
         { label: 'CHỜ VẬN CHUYỂN', value: EOrderStatusEnums.TOSHIP, badge: 'countToShip' },
         { label: 'ĐANG VẬN CHUYỂN', value: EOrderStatusEnums.TORECEIVE, badge: 'countToReceive' },
         { label: 'ĐÃ HOÀN THÀNH', value: EOrderStatusEnums.DELIVERED, badge: 'countDelivered' },
-        { label: 'ĐÃ HỦY', value: EOrderStatusEnums.CANCELED, badge: 'countCancelled' },
-        { label: 'TRẢ HÀNG', value: EOrderStatusEnums.RETURNED, badge: 'countReturned' }
+        { label: 'ĐÃ HỦY', value: EOrderStatusEnums.CANCELED, badge: 'countCancelled' }
     ]
 
     const handlePaginationChange = (pageIndex: number) => {
@@ -399,8 +451,14 @@ export const OrderTable = () => {
         { label: 'Giao hàng', value: 'ONLINE' }
     ]
 
+    const listTypeOrder = [
+        { label: 'Tất cả', value: null },
+        { label: 'Tại quầy', value: true },
+        { label: 'Trực tuyến', value: false }
+    ]
+
     const fetchCountAnyStatus = async () => {
-        instance.get(`orders/count-any-status?type=${queryParam.type}`).then(function (response) {
+        instance.get(`orders/count-any-status?type=${queryParam.type}`).then(function(response) {
             if (response.data) {
                 setCountAnyStatus(response.data as ICountStatus)
             }
@@ -413,33 +471,50 @@ export const OrderTable = () => {
             <div>
                 <h1 className="font-semibold text-xl text-black mb-4 text-transform: uppercase">Quản lý hóa đơn</h1>
             </div>
-            <div className="grid grid-cols-3 gap-2 py-2">
+            <div className="grid grid-cols-4 gap-2 py-2">
                 <div>
                     <div className="relative mr-4">
+                        <p className={'font-black'}>Tìm kiếm</p>
                         <Input
+                            size={'sm'}
                             ref={inputRef}
                             placeholder="Tìm kiếm theo mã, tên nhân viên, tên khách hàng ..."
                             className="lg:w-full"
-                            style={{ height: '44px' }}
                             prefix={<HiOutlineSearch className="text-lg" />}
                             onChange={handleChange}
                         />
                     </div>
                 </div>
-                <div className="flex justify-between gap-5">
+                <div className="relative mr-4">
+                    <p className={'font-black'}>Lọc khoảng ngày</p>
                     <DatePicker.DatePickerRange
+                        size={'sm'}
                         placeholder="Chọn khoảng ngày"
                         value={dateRange}
                         dateViewCount={2}
                         onChange={handleRangePickerChange}
                     />
                 </div>
-                <div>
+                <div className="relative mr-4">
+                    <p className={'font-black'}>Hình thức nhận hàng</p>
                     <Select
+                        size={'sm'}
                         placeholder="Loại hóa đơn"
                         options={listTypeBillOptions}
                         onChange={(el) => {
                             setTypeParam((el as OrderTypeBill).value) // Sử dụng as để xác nhận kiểu
+                        }}
+                    ></Select>
+
+                </div>
+                <div className="relative mr-4">
+                    <p className={'font-black'}>Hình thức tạo đơn</p>
+                    <Select
+                        size={'sm'}
+                        placeholder="Hình thức tạo đơn"
+                        options={listTypeOrder}
+                        onChange={(el) => {
+                            setInStoreParam(el.value)// Sử dụng as để xác nhận kiểu
                         }}
                     ></Select>
 
@@ -450,10 +525,10 @@ export const OrderTable = () => {
                     {
                         statusBills.map((item, index) => (
                             <TabNav key={index}
-                                className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
-                                value={item.value}>
+                                    className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
+                                    value={item.value}>
                                 <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)}
-                                    maxCount={99} innerClass="bg-red-50 text-red-500">
+                                       maxCount={99} innerClass="bg-red-50 text-red-500">
                                     <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
                                         {item.label}
                                     </button>

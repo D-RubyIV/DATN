@@ -53,10 +53,11 @@ public class OrderResponseDTO {
     @Enumerated(EnumType.STRING)
     private Payment payment;
     private Double total;
+    private Boolean inStore;
+    private Double totalPaid;
     private Double deliveryFee;
     private Double discount;
     private Double subTotal;
-    private Double totalPaid;
     private Double surcharge;
     private Double refund;
     private Double totalAfterDiscountAndFee;

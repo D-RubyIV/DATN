@@ -123,6 +123,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     public Page<OrderOverviewResponseDTO> findAllOverviewByPage(
             String status,
             String type,
+            Boolean inStore,
             LocalDateTime createdFrom,
             LocalDateTime createdTo,
             PageableObject pageableObject
@@ -138,7 +139,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             );
         }
 
-        return orderRepository.findAllByPageWithQuery(query, status, type, createdFrom, createdTo, pageable).map(s -> orderResponseMapper.toOverViewDTO(s));
+        return orderRepository.findAllByPageWithQuery(query, status, type, inStore, createdFrom, createdTo, pageable).map(s -> orderResponseMapper.toOverViewDTO(s));
     }
 
     @Override
@@ -403,14 +404,23 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         log.info("-----------------1");
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP) {
             checkValidateQuantity(entityFound);
+            // nếu là đơn giao hàng
             if (entityFound.getType() == Type.ONLINE) {
                 check_validate_address_for_online_order(entityFound);
+                // kiem tra xem là đơn tại quầy hay đơn khách đặt online mà nhân viên đổi trạng thái
+                // nếu là đơn khách đặt mua online thì trừ (bên offline đã trừ từ lúc thêm)
+                if(!entityFound.getInStore()){
+                    minusProductDetailsQuantity(entityFound);
+                }
+                // chuyển trạng thái thang toán(vì khách đã thanh toán hết tại quầy)
+                if(entityFound.getInStore()){
+                    entityFound.setIsPayment(true);
+                    entityFound.setTotalPaid(entityFound.getTotal());
+                }
             }
             log.info("1");
-            // kiem tra xem là đơn tại quầy hay đơn khách đặt online mà nhân viên đổi trạng thái
-            if(!entityFound.getInStore()){
-                minusProductDetailsQuantity(entityFound);
-            }
+
+
         } else if (oldStatus == Status.TOSHIP && newStatus == Status.PENDING) {
             log.info("2");
             restoreProductDetailsQuantity(entityFound);

@@ -196,7 +196,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 <div className="flex gap-2">
 
                     {
-                        selectObject.payment === 'TRANSFER' && selectObject.type === 'ONLINE'  && selectObject.refund > 0?
+                        selectObject.type === 'ONLINE'  && selectObject.refund > 0?
                             (
                                 <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineTruck />}
                                         onClick={handleSubmit(async () => {
@@ -214,7 +214,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                             )
                     }
                     {
-                        selectObject.payment === 'TRANSFER' && selectObject.type === 'ONLINE' && selectObject.refund > 0?
+                        selectObject.type === 'ONLINE' && selectObject.refund > 0?
                             (
                                 <Button block variant="default" size="sm" className="bg-indigo-500"
                                         icon={<HiOutlineHand />}
@@ -287,8 +287,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                                             <div className="text-[15px] font-semibold text-center py-5">
                                                 {currentStatus === 'DELIVERED'
                                                     ? 'Đơn hàng được giao thành công'
-                                                    : currentStatus === 'RETURNED'
-                                                        ? 'Trạng thái đơn hàng chưa cập nhật'
                                                         : currentStatus === 'CANCELED'
                                                             ? 'Trạng thái đơn hàng bị hủy'
                                                             : null}
@@ -302,7 +300,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
                     </div>
                     <div className="col-span-4"
-                         hidden={currentStatus === 'DELIVERED' || currentStatus === 'CANCELED' || currentStatus === 'RETURNED'}>
+                         hidden={currentStatus === 'DELIVERED' || currentStatus === 'CANCELED' }>
                         <Input
                             placeholder="Nhập nội dung"
                             {...register('note')}
@@ -338,8 +336,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             return "Đã giao hàng"
         }else if(st === EOrderStatusEnums.CANCELED){
             return "Đã hủy";
-        }else if(st === EOrderStatusEnums.RETURNED){
-            return "Đã trả"
         }else{
             return "Không xác định"
         }

@@ -21,5 +21,4 @@ public class CountStatusOrder {
     private Long countToReceive;
     private Long countDelivered;
     private Long countCancelled;
-    private Long countReturned;
 }

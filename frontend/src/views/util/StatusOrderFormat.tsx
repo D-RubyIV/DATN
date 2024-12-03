@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import Button from '@/components/ui/Button'
 
-const StatusOrderFormat = ({status}: {status: string}) => {
+const StatusOrderFormat = ({ status }: { status: string }) => {
     return (
         <Fragment>
             <Button
@@ -17,9 +17,7 @@ const StatusOrderFormat = ({status}: {status: string}) => {
                                 ? '!text-purple-500'
                                 : status === 'CANCELED'
                                     ? '!text-red-500'
-                                    : status === 'RETURNED'
-                                        ? '!text-orange-500'
-                                            : '!text-gray-500'
+                                    : '!text-gray-500'
                 }`}
             >
                     <span className={`flex items-center font-bold`}>
@@ -34,9 +32,7 @@ const StatusOrderFormat = ({status}: {status: string}) => {
                                             ? '!bg-purple-500'
                                             : status === 'CANCELED'
                                                 ? '!bg-red-500'
-                                                : status === 'RETURNED'
-                                                    ? '!bg-orange-500'
-                                                        : '!bg-gray-500'
+                                                : '!bg-gray-500'
                             }`}></span>
                         <span>
                             <p>
@@ -50,9 +46,7 @@ const StatusOrderFormat = ({status}: {status: string}) => {
                                                 ? 'Đã hoàn thành'
                                                 : status === 'CANCELED'
                                                     ? 'Đã hủy đơn'
-                                                    : status === 'RETURNED'
-                                                        ? 'Đã trả hàng'
-                                                            : 'Không xác định'}
+                                                    : 'Không xác định'}
                             </p>
                         </span>
                     </span>
@@ -60,4 +54,4 @@ const StatusOrderFormat = ({status}: {status: string}) => {
         </Fragment>
     )
 }
-export default StatusOrderFormat;
+export default StatusOrderFormat

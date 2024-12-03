@@ -52,6 +52,7 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     public ResponseEntity<Page<OrderOverviewResponseDTO>> findAllByPageV2(
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "inStore", required = false) Boolean inStore,
             @RequestParam(value = "createdFrom", required = false) LocalDateTime createdFrom,
             @RequestParam(value = "createdTo", required = false) LocalDateTime createdTo,
             @Valid @RequestBody PageableObject pageableObject,
@@ -61,7 +62,7 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
             throw new BindException(bindingResult);
         }
         String query = pageableObject.getQuery();
-        return ResponseEntity.ok(orderService.findAllOverviewByPage(status, type, createdFrom, createdTo, pageableObject));
+        return ResponseEntity.ok(orderService.findAllOverviewByPage(status, type, inStore, createdFrom, createdTo, pageableObject));
     }
 
     @Override

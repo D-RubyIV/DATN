@@ -59,12 +59,7 @@ const orderStatusColor: Record<
         label: 'Đã hủy đơn',
         dotClass: 'bg-red-500',
         textClass: 'text-red-500'
-    },
-    'RETURNED': {
-        label: 'Đã trả hàng',
-        dotClass: 'bg-orange-500',
-        textClass: 'text-orange-500'
-    },
+    }
 }
 
 const orderTypeColor: Record<

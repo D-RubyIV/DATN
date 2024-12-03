@@ -148,5 +148,4 @@ public class GlobalExceptionHandler {
         CustomError error = new CustomError(HttpStatus.FORBIDDEN, ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
-
 }

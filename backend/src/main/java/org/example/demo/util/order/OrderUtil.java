@@ -17,9 +17,6 @@ public class OrderUtil {
             case DELIVERED -> {
                 return "Đã nhận hàng";
             }
-            case RETURNED -> {
-                return "Đã trả hàng";
-            }
             case CANCELED -> {
                 return "Đã hủy đơn";
             }
