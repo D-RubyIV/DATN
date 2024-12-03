@@ -80,6 +80,7 @@ function useAuth() {
                 navigate(
                     redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
                 )
+                window.location.reload()
                 return { status: 'OK', message: resp.data.message || '', accessToken: token }
             }
         } catch (error: any) {

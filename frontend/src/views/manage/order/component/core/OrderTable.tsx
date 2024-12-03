@@ -13,6 +13,8 @@ import { HiEye, HiOutlineSearch } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { parse, formatDistanceToNow, format } from 'date-fns'
 import { vi } from 'date-fns/locale'
+import TypeOrderFormat from '@/views/util/TypeOrderFormat'
+import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
 
 type BadgeType =
     'countAll'
@@ -327,48 +329,14 @@ export const OrderTable = () => {
             header: 'PT Nhận Hàng',
             accessorKey: 'type',
             cell: (props) => (
-                <Button
-                    size="xs"
-                    block
-                    variant="solid"
-                    className={'!bg-none !bg-transparent !bg-opacity-100'}
-                >
-
-                    <span
-                        className={`flex items-center font-bold ${props.row.original.type === 'INSTORE' ? 'text-green-600' : 'text-red-600'}`}>
-                        <span
-                            className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.type === 'INSTORE' ? 'bg-green-600' : 'bg-red-600'}`}
-                        ></span>
-                        <span>
-                            <p>
-                                {props.row.original.type === 'INSTORE'
-                                    ? 'Tại quầy'
-                                    : props.row.original.type === 'ONLINE'
-                                        ? 'Giao hàng'
-                                        : 'Không xác định'}
-                            </p>
-                        </span>
-                    </span>
-                </Button>
+                    <span><TypeOrderFormat status={props.row.original.type }></TypeOrderFormat></span>
             )
         },
         {
             header: 'Loại đơn',
-            id: 'action',
+            accessorKey: 'inStore',
             cell: (props) => (
-                <span
-                    className={`flex items-center font-bold text-[12px] ${props.row.original.inStore ? 'text-indigo-600' : 'text-yellow-600'}`}>
-                        <span
-                            className={`inline-block w-2 h-2 rounded-full mr-2 ${props.row.original.inStore ? 'bg-indigo-600' : 'bg-yellow-600'}`}
-                        ></span>
-                        <span>
-                            <p>
-                                {props.row.original.inStore
-                                    ? 'Tại quầy'
-                                    : 'Trực tuyến'}
-                            </p>
-                        </span>
-                    </span>
+                <span><IsInStoreOrderFormat status={props.row.original.inStore }></IsInStoreOrderFormat></span>
             )
         },
         {

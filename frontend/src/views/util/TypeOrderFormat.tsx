@@ -1,7 +1,9 @@
 import { Fragment } from 'react'
 import Button from '@/components/ui/Button'
+import IconAndLabel from '@/views/util/IconAndLabel'
+import { HiOutlineDesktopComputer, HiOutlineTruck } from 'react-icons/hi'
 
-const TypeOrderFormat = ({status}: {status: string}) => {
+const TypeOrderFormat = ({ status }: { status: string }) => {
     return (
         <Fragment>
             <Button
@@ -9,23 +11,22 @@ const TypeOrderFormat = ({status}: {status: string}) => {
                 variant="plain"
             >
 
-                    <span
-                        className={`flex items-center font-bold ${status=== 'INSTORE' ? 'text-green-600' : 'text-red-600'}`}>
-                        <span
-                            className={`inline-block w-2 h-2 rounded-full mr-2 ${status === 'INSTORE' ? 'bg-green-600' : 'bg-red-600'}`}
-                        ></span>
-                        <span>
-                            <p>
+                    <div
+                        className={`flex items-center font-bold ${status === 'INSTORE' ? 'text-green-600' : 'text-blue-600'}`}>
                                 {status === 'INSTORE'
-                                    ? 'Tại của hàng'
+                                    ? <IconAndLabel
+                                        label={'Tại của hàng'}
+                                        icon={<HiOutlineDesktopComputer size={20} />}
+                                    />
                                     : status === 'ONLINE'
-                                        ? 'Giao hàng'
+                                        ? <IconAndLabel
+                                            label={'Giao hàng'}
+                                            icon={<HiOutlineTruck size={20} />}
+                                        />
                                         : 'Không xác định'}
-                            </p>
-                        </span>
-                    </span>
+                    </div>
             </Button>
         </Fragment>
     )
 }
-export default TypeOrderFormat;
+export default TypeOrderFormat

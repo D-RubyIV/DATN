@@ -165,7 +165,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Double amount = refundAndChangeStatusDTO.getAmount();
         String tradingCode = refundAndChangeStatusDTO.getTradingCode();
         History history = new History();
-        String note = String.format("Trả lại: %.2f - Mã giao dịch: %s", amount, tradingCode);
+        String note = String.format("Trả lại: %.0f - Mã giao dịch: %s", amount, tradingCode);
         history.setNote(note);
         history.setAccount(AuthUtil.getAccount());
         history.setOrder(order);
@@ -604,12 +604,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             order.setDiscountVoucherPercent(0.0);
         }
 
-        if (order.getPayment() == Payment.TRANSFER) {
-            isPayment = true;
-            order.setTotalPaid(NumberUtil.roundDouble(cart.getTotal()));
-        } else {
-            order.setTotalPaid(0.0);
-        }
+        order.setTotalPaid(0.0);
         order.setIsPayment(isPayment);
         //
         Account account = AuthUtil.getAccount();

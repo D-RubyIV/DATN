@@ -1,7 +1,6 @@
 import Card from '@/components/ui/Card'
 import { OrderResponseDTO } from '@/@types/order'
 import { Button } from '@/components/ui';
-import { FileforgeClient } from '@fileforge/client';
 import Document from './Document';
 import { useState } from 'react';
 import CloseButton from '@/components/ui/CloseButton';
@@ -9,12 +8,8 @@ import instance from '@/axios/CustomAxios'
 import StatusOrderFormat from '@/views/util/StatusOrderFormat'
 import TypeOrderFormat from '@/views/util/TypeOrderFormat'
 import IsPaymentFormat from '@/views/util/IsPaymentFormat'
-
-const ff = new FileforgeClient({
-    apiKey: '029d0f13-d976-43f8-a3ec-16955667b1d2',
-});
-
-
+import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
+import MethodPaymentOrderFormat from '@/views/util/MethodPaymentOrderFormat'
 
 const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
     const [viewInvoice, setViewInvoice] = useState<boolean>(false)
@@ -59,7 +54,7 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
 
     return (
         <div className=''>
-            <Card className="mb-5 h-[200px]">
+            <Card className="mb-5 h-[280px]">
                 <div className='flex gap-3 justify-between'>
                     <h5 className="mb-4">Đơn hàng #{data.code}</h5>
                     <div className=''>
@@ -70,15 +65,23 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
                 <ul>
                     <hr className="mb-3" />
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Loại đơn: </span>
+                        <span>Hình thức đặt hàng: </span>
+                        <span>{<IsInStoreOrderFormat status={data?.inStore}></IsInStoreOrderFormat>} </span>
+                    </div>
+                    <div className="font-semibold py-1 flex justify-items-start items-center">
+                        <span>Hình thức nhận hàng</span>
                         <span>{<TypeOrderFormat status={data.type} />}</span>
                     </div>
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Trạng thái: </span>
+                        <span>Hình thức thanh toán </span>
+                        <span>{<MethodPaymentOrderFormat inStore={data.inStore} payment={data.payment} />}</span>
+                    </div>
+                    <div className="font-semibold py-1 flex justify-items-start items-center">
+                        <span>Trạng thái đơn hàng: </span>
                         <span>{<StatusOrderFormat status={data.status} />}</span>
                     </div>
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Thanh toán: </span>
+                        <span>Trạng thái thanh toán: </span>
                         <span>{<IsPaymentFormat status={data.isPayment} />}</span>
                     </div>
                 </ul>

@@ -106,6 +106,7 @@ export type OrderResponseDTO = {
     type: EOrderType;
     payment: EOrderPayment;
     isPayment: boolean;
+    inStore: boolean;
     total: number;
     subTotal: number;
     provinceId: string;    // ID của tỉnh
