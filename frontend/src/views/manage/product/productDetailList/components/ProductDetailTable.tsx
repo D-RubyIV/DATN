@@ -127,8 +127,8 @@ const ProductDetailTable = () => {
     )
 
     useEffect(() => {
+        dispatch(setProductId(productId));
         fetchData()
-        dispatch(setProductId(productId)); 
     }, [pageIndex, pageSize, sort, id])
 
     const tableData = useMemo(
