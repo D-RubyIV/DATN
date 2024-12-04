@@ -176,10 +176,10 @@ const Checkout = () => {
     const [provinces, setProvinces] = useState<IProvince[]>([])
     const [districts, setDistricts] = useState<IDistrict[]>([])
     const [wards, setWards] = useState<IWard[]>([])
-    const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>(EPaymentMethod.CASH)
     const [listCartDetailResponseDTO, setListCartDetailResponseDTO] = useState<CartDetailResponseDTO[]>([])
     const { id } = useParams()
     const [selectedCart, setSelectedCart] = useState<CartResponseDTO>()
+    const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>((selectedCart?.payment as EPaymentMethod))
     const navigate = useNavigate()
     const { openNotification } = useToastContext()
     const { setIsOpenCartDrawer } = useSaleContext()
@@ -272,6 +272,13 @@ const Checkout = () => {
             handleUpdateCart(data)
         }
     }, [formValues])
+
+    useEffect(() => {
+        const data = {
+            payment: paymentMethod
+        }
+        handleUpdateCart(data)
+    }, [paymentMethod])
 
     const customHandleSubmit = async (data: VoucherFormValues) => {
         event?.preventDefault()
@@ -478,7 +485,6 @@ const Checkout = () => {
 
     const onChangeMethod = async (val: EPaymentMethod) => {
         setPaymentMethod(val)
-
     }
 
 
@@ -636,8 +642,8 @@ const Checkout = () => {
                                             value={paymentMethod}
                                             onChange={onChangeMethod}
                                         >
-                                            <Radio value={EPaymentMethod.TRANSFER}>Thanh toán ngân hàng</Radio>
-                                            <Radio value={EPaymentMethod.CASH}>Thanh toán khi nhận hàng</Radio>
+                                            <Radio value={EPaymentMethod.TRANSFER} checked={selectedCart?.payment === "TRANSFER"}>Thanh toán ngân hàng</Radio>
+                                            <Radio value={EPaymentMethod.CASH} checked={selectedCart?.payment === "CASH"}>Thanh toán khi nhận hàng</Radio>
                                         </Radio.Group>
                                     </Card>
                                 </div>

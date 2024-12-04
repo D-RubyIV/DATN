@@ -18,7 +18,10 @@ type TicketDTO = {
     deleted: boolean;
 };
 
-const SuggestVoucher = ({ selectedOrder, fetchSelectedOrder }: { selectedOrder: OrderResponseDTO, fetchSelectedOrder: () => Promise<void> }) => {
+const SuggestVoucher = ({ selectedOrder, fetchSelectedOrder }: {
+    selectedOrder: OrderResponseDTO,
+    fetchSelectedOrder: () => Promise<void>
+}) => {
     const [listVoucherSuggest, setListVoucherSuggest] = useState<TicketDTO[]>([])
     const [listVoucherCanUse, setListVoucherCanUse] = useState<TicketDTO[]>([])
 
@@ -32,7 +35,13 @@ const SuggestVoucher = ({ selectedOrder, fetchSelectedOrder }: { selectedOrder: 
     }
 
     const getBetterVoucher = async () => {
-        await instance.get(`voucher/find-valid-voucher?sort=minAmount,asc&size=50`).then(
+        const params = {
+            page: 0,
+            size: 100,
+            customerId: selectedOrder?.customerResponseDTO?.id,
+            sort: "minAmount"
+        }
+        await instance.get(`voucher/find-valid-voucher`, { params: params }).then(
             function(response) {
                 console.log(response)
                 Array.isArray(response.data.content) && setFilterVoucherSuggest(response.data.content)
@@ -40,7 +49,6 @@ const SuggestVoucher = ({ selectedOrder, fetchSelectedOrder }: { selectedOrder: 
             }
         )
     }
-
 
 
     const onUseVoucherById = async (idVoucher: number) => {
@@ -63,12 +71,13 @@ const SuggestVoucher = ({ selectedOrder, fetchSelectedOrder }: { selectedOrder: 
             <div className={`${selectedOrder.status !== 'PENDING' ? 'hidden' : ''}`}>
                 {
                     selectedOrder?.voucherResponseDTO?.code ? (
-                            <div className="flex py-1 border px-2 justify-start gap-5 items-center mt-2">
+                            <div className="flex pt-1 pb-3 border px-2 justify-start gap-5 items-center mt-2 relative">
                                 <div className="col-span-1 flex items-center text-green-600">
                                     <HiOutlineTicket size={32} />
                                 </div>
                                 <div className="">
                                     <div>
+                                        <p className={'absolute -bottom-1 left-0 text-red-600 text-[12px] font-semibold'}>{selectedOrder.voucherResponseDTO.typeTicket === 'Everybody' ? `(Đang sử dụng) Phiếu công khai - Còn lại:${selectedOrder.voucherResponseDTO.quantity}` : `(Đang sử dụng) Phiếu cá nhân - Còn lại: ${selectedOrder.voucherResponseDTO.quantity}`}</p>
                                         <p>{`Mã phiếu ${selectedOrder.voucherResponseDTO.code}`}</p>
                                     </div>
                                 </div>

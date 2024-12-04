@@ -16,6 +16,7 @@ import java.util.List;
 public class CustomerListDTO {
 
     private int id;
+    private String code;
     private String name;
     private String email;
     private String phone;

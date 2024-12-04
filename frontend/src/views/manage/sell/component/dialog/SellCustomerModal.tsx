@@ -65,12 +65,26 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
             ),
         },
         {
-            header: 'Số điện thoại',
-            accessorKey: 'phone',
+            header: 'Mã',
+            accessorKey: 'code',
+        },
+        {
+            header: 'Tên',
+            accessorKey: 'name',
         },
         {
             header: 'Email',
             accessorKey: 'email',
+        },
+        {
+            header: 'Số điện thoại',
+            accessorKey: 'phone',
+        },
+        {
+            header: 'Đ/c mặc định',
+            cell: (props) => (
+                <p>{props.row.original.defaultAddress ? "Có" : "Không"}</p>
+            ),
         },
         {
             header: 'Giới tính',
@@ -100,12 +114,14 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
     const [queryParam, setQueryParam] = useState<{
         size: number | undefined,
         page: number | undefined,
-        query: string | undefined
+        query: string | undefined,
+        status: string
 
     }>({
         size: 10,
         page: undefined,
         query: undefined,
+        status: "Active"
     })
 
     // FUCTION
@@ -121,14 +137,14 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
             console.log(response)
         })
         await handleDelayScreen();
-        fetchData();
+        await fetchData();
         setIsOpenCustomerModal(false)
         document.body.style.overflow = 'auto';
     }
 
     const fetchDataProduct = async () => {
         setLoading(true)
-        const response = await instance.get('/customer/search', {
+        const response = await instance.get('/customer', {
             params: queryParam
         });
         setData(response.data.content)
@@ -177,7 +193,7 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
     ])
     return (
         <div className='fixed top-0 left-0 bg-gray-300 bg-opacity-50 w-screen h-screen z-40'>
-            <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5/6 h-auto bg-gray-100 z-20 shadow-md rounded-md'>
+            <div className='fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/6 h-auto bg-gray-100 z-20 shadow-md rounded-md'>
                 <div className='p-5 bg-white !h-4/5 rounded-md'>
                     <div className='flex justify-between pb-3'>
                         <div>
@@ -194,7 +210,7 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
                         </div>
                     </div>
                     <div>
-                        <div>
+                        <div className={'pb-5'}>
                             <Input
                                 ref={inputRef}
                                 placeholder="Search..."

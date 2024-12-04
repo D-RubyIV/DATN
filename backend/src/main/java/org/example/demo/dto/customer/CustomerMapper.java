@@ -22,6 +22,7 @@ public class CustomerMapper {
 
         return new CustomerListDTO(
                 customer.getId(),
+                customer.getCode(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),

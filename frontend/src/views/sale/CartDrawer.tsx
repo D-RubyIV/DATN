@@ -1,13 +1,16 @@
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { useSaleContext } from '@/views/sale/SaleContext'
 import CloseButton from '@/components/ui/CloseButton'
-import { HiMinusCircle, HiPlusCircle } from 'react-icons/hi'
+import { HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { CartDetailResponseDTO, Color, ProductDetailResponseDTO, Size } from '@/views/sale/index'
 import { Link } from 'react-router-dom'
-import { Avatar } from '@/components/ui'
+import { Avatar, Button, Dialog } from '@/components/ui'
 import instance from '@/axios/CustomAxios'
 import { FiPackage } from 'react-icons/fi'
 import { Delete } from '@mui/icons-material'
+import { useToastContext } from '@/context/ToastContext'
+import { Input } from '@/components/ui/Input'
+import { Cart } from '@/views/client/types/cart.type'
 
 const CartDrawer = () => {
     const {
@@ -17,13 +20,34 @@ const CartDrawer = () => {
         isOpenCartDrawer,
         setIsOpenCartDrawer
     } = useSaleContext()
+    const { openNotification } = useToastContext()
+    const [openChangeQuantityModal, setOpenChangeQuantityModal] = useState<boolean>(false)
 
+    const [selectedCartDetail, setSelectedCartDetail] = useState<CartDetailResponseDTO>()
     const handleChangeQuantity = async (item: CartDetailResponseDTO, isIncrease: boolean) => {
         const quantity = isIncrease ? item.quantity += 1 : item.quantity -= 1
-        instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function (response) {
+        instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
             console.log(response)
             if (response.status === 200) {
                 getCartDetailInCard()
+            }
+        }).catch(function(error) {
+            if (error?.response?.data?.error) {
+                openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+            }
+        })
+    }
+
+    const handleChangeQuantityForInput = async (item: CartDetailResponseDTO, quantity) => {
+        instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
+            console.log(response)
+            if (response.status === 200) {
+                getCartDetailInCard()
+                openNotification("Thay đổi thành công")
+            }
+        }).catch(function(error) {
+            if (error?.response?.data?.error) {
+                openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
             }
         })
     }
@@ -31,33 +55,32 @@ const CartDrawer = () => {
     const handleRemoveItem = async (itemId: number) => {
         instance.delete(`http://localhost:8080/api/v1/cart-details/remove/${itemId}`).then((response) => {
             if (response.status === 200) {
-                getCartDetailInCard();
+                getCartDetailInCard()
             }
-        });
-    };
+        })
+    }
 
     const getFinalPrice = (item: CartDetailResponseDTO) => {
-        const { price, product } = item.productDetailResponseDTO;
+        const { price, product } = item.productDetailResponseDTO
         const discountPercent = product.eventDTOList.length > 0
             ? product.nowAverageDiscountPercentEvent
-            : 0;
+            : 0
 
-        return Math.round(price * (1 - discountPercent / 100));
-    };
-
+        return Math.round(price * (1 - discountPercent / 100))
+    }
 
 
     const PriceProductDetail = ({ item }: { item: CartDetailResponseDTO }) => {
         const getFinalPrice = (item: CartDetailResponseDTO) => {
-            const { price, product } = item.productDetailResponseDTO;
+            const { price, product } = item.productDetailResponseDTO
             const discountPercent = product.eventDTOList.length > 0
                 ? product.nowAverageDiscountPercentEvent
-                : 0;
+                : 0
 
-            return Math.round(price * (1 - discountPercent / 100));
-        };
+            return Math.round(price * (1 - discountPercent / 100))
+        }
 
-        const { productDetailResponseDTO } = item;
+        const { productDetailResponseDTO } = item
 
         return (
             <div>
@@ -70,16 +93,63 @@ const CartDrawer = () => {
                     </p>
                 ) : (
                     <p>
-                        <span>{getFinalPrice(item).toLocaleString("vi") + " đ"}</span>
+                        <span>{getFinalPrice(item).toLocaleString('vi') + ' đ'}</span>
                     </p>
                 )}
             </div>
-        );
-    };
+        )
+    }
+
+    const DialogChangeQuantity = () => {
+        const [quantity, setQuantity] = useState<number>((selectedCartDetail as CartDetailResponseDTO)?.quantity)
+        const onClose = () => {
+            setOpenChangeQuantityModal(false)
+            document.body.style.overflow = 'auto'
+        }
+        const onSubmit = () => {
+            handleChangeQuantityForInput((selectedCartDetail as CartDetailResponseDTO), quantity)
+            onClose()
+        }
+        return (
+            <Dialog
+                className={'z-50 mt-40'}
+                isOpen={openChangeQuantityModal}
+                onClose={onClose}
+                onRequestClose={onClose}
+                closable={false}
+            >
+                <h5 className="mb-4">Thay đổi số lượng</h5>
+                <p>Vui lòng nhập số lượng mong muốn</p>
+                <div className="text-right mt-6">
+                    <Input
+                        type={'number'}
+                        min={1}
+                        defaultValue={selectedCartDetail?.quantity}
+                        onChange={(el) => {
+                            setQuantity(el.target.value)
+                        }}
+                    />
+                </div>
+                <div className="text-right mt-6">
+                    <Button
+                        className="ltr:mr-2 rtl:ml-2"
+                        variant="plain"
+                        onClick={onClose}
+                    >
+                        Hủy
+                    </Button>
+                    <Button variant="solid" onClick={onSubmit}>
+                        Xác nhận
+                    </Button>
+                </div>
+            </Dialog>
+        )
+    }
 
 
     return (
         <Fragment>
+            <DialogChangeQuantity />
             <div
                 className={`z-40 fixed border-gray-200 rounded-none h-[100svh] top-0 from-indigo-900 bg-gradient-to-l 2xl:w-3/12 md:w-4/12 transition-all duration-500 block ${isOpenCartDrawer ? 'right-0' : '-right-full'}`}>
                 <div className="grid h-[100svh]">
@@ -91,7 +161,7 @@ const CartDrawer = () => {
                                 <div><span className="text-xl font-semibold font-hm text-black">Giỏ hàng</span></div>
                                 <div>
                                     <CloseButton className={'text-xl text-black'}
-                                        onClick={() => setIsOpenCartDrawer(false)}></CloseButton>
+                                                 onClick={() => setIsOpenCartDrawer(false)}></CloseButton>
                                 </div>
                             </div>
                             {/* CENTER */}
@@ -103,7 +173,7 @@ const CartDrawer = () => {
                                                 <div className="flex gap-4">
                                                     <div className="relative w-24 h-24">
                                                         {Array.isArray((item.productDetailResponseDTO as ProductDetailResponseDTO).images) &&
-                                                            (item.productDetailResponseDTO as ProductDetailResponseDTO).images.length > 0 ? (
+                                                        (item.productDetailResponseDTO as ProductDetailResponseDTO).images.length > 0 ? (
                                                             <Avatar
                                                                 size={100}
                                                                 shape="round"
@@ -120,7 +190,8 @@ const CartDrawer = () => {
                                                             />
                                                         )}
                                                         {Number(item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent) > 0 && (
-                                                            <div className="absolute top-0 right-0 px-[4px] py-[2px] bg-red-600 text-white text-xs rounded">
+                                                            <div
+                                                                className="absolute top-0 right-0 px-[4px] py-[2px] bg-red-600 text-white text-xs rounded">
                                                                 -{item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%
                                                             </div>
                                                         )}
@@ -141,7 +212,16 @@ const CartDrawer = () => {
                                                             <span className="font-medium">Đơn giá:</span>
                                                             <PriceProductDetail item={item} />
                                                         </p>
-
+                                                    </div>
+                                                    <div>
+                                                        <Button
+                                                            icon={<HiPencil />}
+                                                            onClick={() => {
+                                                                setSelectedCartDetail(item)
+                                                                setOpenChangeQuantityModal(true)
+                                                                document.body.style.overflow = 'hidden'
+                                                            }}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-between items-center mt-4">
@@ -153,7 +233,8 @@ const CartDrawer = () => {
                                                         >
                                                             <HiPlusCircle size={20} />
                                                         </button>
-                                                        <span className="text-gray-900 font-medium">{item?.quantity}</span>
+                                                        <span
+                                                            className="text-gray-900 font-medium">{item?.quantity}</span>
                                                         <button
                                                             onClick={() => handleChangeQuantity(item, false)}
                                                             className="text-gray-700 hover:text-black"
@@ -164,13 +245,14 @@ const CartDrawer = () => {
 
                                                     {/* Tổng giá */}
                                                     <span className="font-semibold text-red-600">
-                                                        {(getFinalPrice(item) * item.quantity).toLocaleString("vi") + " đ"}
+                                                        {(getFinalPrice(item) * item.quantity).toLocaleString('vi') + ' đ'}
                                                     </span>
                                                 </div>
 
                                                 {/* Kho và nút xóa */}
                                                 <div className="flex justify-between items-center mt-2">
-                                                    <span className="text-sm text-gray-500">Kho: {item.productDetailResponseDTO.quantity}</span>
+                                                    <span
+                                                        className="text-sm text-gray-500">Kho: {item.productDetailResponseDTO.quantity}</span>
                                                     <button
                                                         onClick={() => handleRemoveItem(item.id)}
                                                         className="text-red-600 hover:text-red-800 text-sm"

@@ -1,6 +1,6 @@
 import { Button, Card, Dialog } from '@/components/ui'
 import { useEffect, useState } from 'react'
-import { HiArrowsExpand, HiPlusCircle, HiQrcode } from 'react-icons/hi'
+import { HiPlusCircle, HiQrcode } from 'react-icons/hi'
 import { Fragment } from 'react/jsx-runtime'
 import SellProductTable from '../table/SellProductTable'
 import { EOrderStatusEnums, OrderHistoryResponseDTO, OrderResponseDTO } from '@/@types/order'
@@ -19,6 +19,7 @@ import { useToastContext } from '@/context/ToastContext'
 import { useSellContext } from '@/views/manage/sell/context/SellContext'
 import { ConfirmDialog } from '@/components/shared'
 import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
+
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
     // init variables
@@ -130,7 +131,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
             setIsLoadingComponent(true)
             try {
                 const data: OrderHistoryResponseDTO = {
-                    status: selectedOrder.type === "INSTORE" ? EOrderStatusEnums.DELIVERED : EOrderStatusEnums.TOSHIP,
+                    status: selectedOrder.type === 'INSTORE' ? EOrderStatusEnums.DELIVERED : EOrderStatusEnums.TOSHIP,
                     note: 'Đã nhận hàng'
                 }
                 await changeOrderStatus(selectedOrder.id, data).then(function(response) {
@@ -174,6 +175,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
     return (
         <Fragment>
+
             <div className="2xl:grid 2xl:grid-cols-12 gap-5 mt-2">
                 <Card className="xl:col-span-8">
                     <div className="flex justify-between items-center py-2">
@@ -225,30 +227,14 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             <label>Thông tin khách hàng</label>
                         </div>
                         <div className="flex gap-3 justify-between">
-                            <div>
-                                <Button
-                                    size="sm"
-                                    variant="default"
-                                    icon={<HiArrowsExpand />}
-                                    onClick={() => setIsOpenCustomerModal(true)}
-                                >Chọn
-                                </Button>
-                            </div>
-                            {/*<div>*/}
-                            {/*    <Button*/}
-                            {/*        size="sm"*/}
-                            {/*        variant="solid"*/}
-                            {/*        style={{ backgroundColor: 'rgb(79, 70, 229)' }}*/}
-                            {/*        className="flex items-center justify-center gap-2 button-bg-important"*/}
-                            {/*        icon={<HiPlusCircle />}*/}
-                            {/*    >Thêm mới</Button>*/}
-                            {/*</div>*/}
+
                         </div>
                     </div>
                     <div className="py-2">
                         {
                             selectedOrder ? (
-                                <CustomerInfo data={selectedOrder} fetchSelectedOrder={fetchSelectedOrder} />) : (
+                                <CustomerInfo data={selectedOrder} fetchSelectedOrder={fetchSelectedOrder}
+                                              setIsOpenCustomerModal={setIsOpenCustomerModal} />) : (
                                 <div></div>)
                         }
                     </div>

@@ -137,6 +137,17 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             AND (:thickness IS NULL OR pd.thickness.id = :thickness)
             AND (:elasticity IS NULL OR pd.elasticity.id = :elasticity)
             AND pd.deleted = FALSE
+            AND pdse.deleted = FALSE
+            AND pdcr.deleted = FALSE
+            AND pdpt.deleted = FALSE
+            AND pdt.deleted = FALSE
+            AND pdo.deleted = FALSE
+            AND pdbr.deleted = FALSE
+            AND pdc.deleted = FALSE
+            AND pds.deleted = FALSE
+            AND pdm.deleted = FALSE
+            AND pdth.deleted = FALSE
+            AND pde.deleted = FALSE
             """)
     Page<ProductDetail> findAllByPageWithQuery(
             @Param("query") String query,

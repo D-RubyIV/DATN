@@ -1,5 +1,6 @@
 package org.example.demo.util.voucher;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.voucher.core.Voucher;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class VoucherUtil {
     @Autowired
@@ -22,15 +24,16 @@ public class VoucherUtil {
         Customer customer = order.getCustomer();
 //        Pageable pageable = PageRequest.of(0, 1);
         List<Voucher> voucherList = voucherService.selectPageActiveAndAbleToUseVoucher(null, null, customer != null ? customer.getId() : null, null).getContent();
-        voucherList.forEach(s -> {
-            System.out.println(s.getCode() + " " + s.getMaxPercent() + " " + s.getMinAmount());
-        });
-        List<Voucher> voucherValidList = voucherList.stream().filter(s -> s.getMinAmount() < subTotal).collect(Collectors.toList());
-        if (voucherValidList.isEmpty()){
+        log.info("TOTAL VOUCHER FOUND: " + voucherList.size());
+        List<Voucher> voucherValidList = voucherList.stream().filter(s -> s.getMinAmount() <= subTotal).collect(Collectors.toList());
+        if (voucherValidList.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             voucherValidList.sort((voucher1, voucher2) -> Double.compare(voucher2.getMaxPercent(), voucher1.getMaxPercent()));
+            log.info("TOTAL VOUCHER VALID FOUND: " + voucherValidList.size());
+            voucherValidList.forEach(s -> {
+                System.out.println(s.getCode() + " - PERCENT: " + s.getMaxPercent() + " - MIN AMOUNT: " + s.getMinAmount());
+            });
             return voucherValidList.get(0);
         }
     }

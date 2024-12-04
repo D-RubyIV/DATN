@@ -76,7 +76,7 @@ const SalesReport = () => {
                             Số lượng
                         </TabNav>
                         <TabNav value="1" icon={<HiOutlineCash />}>
-                            Doanh thu
+                            Doanh số
                         </TabNav>
                     </TabList>
                 </Tabs>

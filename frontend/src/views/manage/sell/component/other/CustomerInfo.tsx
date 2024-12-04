@@ -1,24 +1,27 @@
 import { IconText } from '@/components/shared'
-import { Avatar, Card, Input, Radio, Tooltip } from '@/components/ui'
+import { Avatar, Button, Card, Input, Notification, Radio, toast, Tooltip } from '@/components/ui'
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal'
 import { OrderAddressResponseDTOS, OrderResponseDTO } from '@/@types/order'
-import { useEffect, useState } from 'react'
-import { HiExternalLink, HiMail, HiPencilAlt, HiPhone } from 'react-icons/hi'
-import { Link } from 'react-router-dom'
+import { SetStateAction, useEffect, useState } from 'react'
+import { HiArrowsExpand, HiMail, HiOutlineBackspace, HiPencilAlt, HiPhone, HiPlusCircle } from 'react-icons/hi'
 import { updateOrder } from '@/services/OrderService'
 import instance from '@/axios/CustomAxios'
-import { Form } from 'formik'
+import { useToastContext } from '@/context/ToastContext'
+import CreateNewCustomerModal from '@/views/manage/sell/component/dialog/CreateNewCustomerModal'
 
-const CustomerInfo = ({ data, fetchSelectedOrder }: {
+const CustomerInfo = ({ data, fetchSelectedOrder, setIsOpenCustomerModal }: {
     data: OrderResponseDTO,
     fetchSelectedOrder: () => Promise<void>
+    setIsOpenCustomerModal: React.Dispatch<SetStateAction<boolean>>
 }) => {
     const [isOpenEditAddress, setIsOpenEditAddress] = useState(false)
+    const [isOpenCreateCustomerModal, setIsOpenCreateCustomerModal] = useState<boolean>(false)
 
     // Đặt giá trị mặc định của isShipping là false để "Tại quầy" được chọn
     const [isShipping, setIsShipping] = useState<boolean>(true)
     const customer = data?.customerResponseDTO || {}
     const addresses = customer.addressResponseDTOS || []
+    const { openNotification } = useToastContext()
 
     useEffect(() => {
         const typeLocal = data.type
@@ -59,6 +62,55 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
         })
     }
 
+    const closeNotification = (key: string | Promise<string>) => {
+        if (typeof key !== 'string') {
+            key.then((resolvedValue) => {
+                toast.remove(resolvedValue)
+            })
+        } else {
+            toast.remove(key)
+        }
+    }
+
+    const openUnLinkCustomerConfirm = async (orderId: number) => {
+        const notificationKey = toast.push(
+            <Notification title="Xác nhận bỏ gán cho khách hàng cho đơn?" duration={15000}>
+                <p className={'text-black py-1 '}>Các phiếu giảm giá cá nhân đang dùng có thể sẽ được gỡ bỏ</p>
+                <div className="text-right mt-3">
+                    <Button
+                        size="sm"
+                        variant="solid"
+                        className="mr-2 bg-red-600"
+                        onClick={async () => {
+                            closeNotification(notificationKey as string | Promise<string>)
+                            await instance.get(`orders/unlink-customer/${orderId}`).then(function(response) {
+                                if (response.status === 200) {
+                                    fetchSelectedOrder()
+                                    openNotification('Bỏ gán thành công')
+                                }
+                            }).catch(function(error) {
+                                if (error?.response?.data?.error) {
+                                    openNotification(error?.response?.data?.error, 'Thông báo', 'danger', 5000)
+                                }
+                            })
+
+                        }}
+                    >
+                        Xác nhận
+                    </Button>
+                    <Button
+                        size="sm"
+                        onClick={() =>
+                            closeNotification(notificationKey as string | Promise<string>)
+                        }
+                    >
+                        Hủy
+                    </Button>
+                </div>
+            </Notification>
+        )
+    }
+
     return (
         <Card
             className={`mb-5`}>
@@ -68,11 +120,45 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                 onCloseModal={setIsOpenEditAddress}
             />}
 
-            <h5 className="mb-4">
-                Khách hàng #{customer.code || 'Khách lẻ'}
-            </h5>
+            <div className={'flex justify-between'}>
+                <h5 className="mb-4">
+                    Khách hàng #{customer.code || 'Khách lẻ'}
+                </h5>
+                <div className={'flex gap-2'}>
+                    <div>
+                        <Button
+                            size="sm"
+                            variant="default"
+                            icon={<HiArrowsExpand />}
+                            onClick={() => setIsOpenCustomerModal(true)}
+                        >Chọn
+                        </Button>
+                    </div>
+                    <div>
+                        <Button
+                            size="sm"
+                            variant="solid"
+                            style={{ backgroundColor: 'rgb(79, 70, 229)' }}
+                            className="flex items-center justify-center gap-2 button-bg-important"
+                            icon={<HiPlusCircle />}
+                            onClick={() => setIsOpenCreateCustomerModal(true)}
+                        >Thêm mới</Button>
+                    </div>
+                </div>
 
-            <Link className="group flex items-center justify-between" to="/app/crm/customer-details?id=11">
+            </div>
+
+            {
+                isOpenCreateCustomerModal && (
+                    <CreateNewCustomerModal
+                        selectedOrder={data}
+                        fetchSelectedOrder={fetchSelectedOrder}
+                        setIsOpenCreateCustomerModal={setIsOpenCreateCustomerModal}
+                    />
+                )
+            }
+
+            <div className="group flex items-center justify-between">
                 <div className="flex items-center">
                     <Avatar
                         shape="circle"
@@ -84,8 +170,18 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                         </div>
                     </div>
                 </div>
-                <HiExternalLink className="text-xl hidden group-hover:block" />
-            </Link>
+                {
+                    data?.customerResponseDTO && (
+                        <Tooltip title={'Hủy gán'} className={'text-black'}>
+                            <Button
+                                variant={'plain'}
+                                icon={<HiOutlineBackspace size={25} />}
+                                onClick={() => openUnLinkCustomerConfirm(data?.id)}
+                            />
+                        </Tooltip>
+                    )
+                }
+            </div>
             <hr className="my-5" />
             {
                 customer.code && (
@@ -134,7 +230,7 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                             <Input
                                 disabled
                                 value={
-                                    (data?.address + ', ' + (data?.wardName || "") + ', ' + (data?.districtName || "") + ', ' + (data?.provinceName || ""))
+                                    (data?.address + ', ' + (data?.wardName || '') + ', ' + (data?.districtName || '') + ', ' + (data?.provinceName || ''))
                                 }
                                 suffix={
                                     <Tooltip title="Chỉnh sửa" className={'text-black'}>
@@ -146,15 +242,20 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
                                 }
                             />
                         </address>
-                        <Radio.Group vertical className={'text-sm'}>
+                        <Radio.Group vertical className={'text-sm w-full'}>
                             {addresses.length ? (
                                 addresses.map((item, index) => (
-                                    <Radio key={index} value={item.id} onClick={() => handleChangeAddress(item)}>
-                                        {item.name} - {item.phone} - {item.detail}, {item.ward}, {item.district}, {item.province}
+                                    <Radio key={index} value={item.id}
+                                           className={'border px-2 py-2 !w-full rounded border-dashed'}
+                                           onClick={() => handleChangeAddress(item)}>
+                                        <div className={'ml-2 font-normal'}>
+                                            <div>KH: {item.name} - SDT: {item.phone}</div>
+                                            <div>D/C: {item.detail}, {item.ward}, {item.district}, {item.province}</div>
+                                        </div>
                                     </Radio>
                                 ))
                             ) : (
-                                <div className="flex justify-center items-center">
+                                <div className="flex justify-start items-center">
                                     <p className="py-2">Không có bất kỳ địa chỉ nào khác</p>
                                 </div>
                             )}
@@ -168,5 +269,3 @@ const CustomerInfo = ({ data, fetchSelectedOrder }: {
 }
 
 export default CustomerInfo
-
-

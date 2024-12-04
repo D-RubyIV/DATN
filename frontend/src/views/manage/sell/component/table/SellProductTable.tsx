@@ -186,6 +186,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                                 onClick={() => {
                                     setSelectedOrderDetail(row)
                                     setIsOpenEditQuantity(true)
+                                    document.body.style.overflow = 'hidden'
                                 }}
                             ></Button>
                             <Button
@@ -366,7 +367,12 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         const onDialogEditNumberOk = () => {
             console.log('OK')
             selectedOrderDetail && handleUpdateQuantity(selectedOrderDetail?.id, quantity)
+            onClose()
+
+        }
+        const onClose = () => {
             setIsOpenEditQuantity(false)
+            document.body.style.overflow = 'auto'
         }
         return (
             <Dialog isOpen={isOpenEditQuantity} closable={false}>
@@ -382,7 +388,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     <Button
                         className="ltr:mr-2 rtl:ml-2"
                         variant="plain"
-                        onClick={() => setIsOpenEditQuantity(false)}
+                        onClick={onClose}
                     >
                         Hủy
                     </Button>
