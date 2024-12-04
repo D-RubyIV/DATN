@@ -73,71 +73,82 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Override
     @Transactional
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
-        int requiredQuantity = requestDTO.getQuantity();
+
+        int REQUIRED_QUANTITY = requestDTO.getQuantity();
+        // tìm kiếm hóa đơn
+        Order orderFounded = orderRepository.findById(requestDTO.getOrderId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy hóa đơn"));
         // tìm kiếm sản phẩm chi tiết
         ProductDetail productDetail = productDetailRepository.findById(requestDTO.getProductDetailId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Product detail not found"));
         // tìm kiếm hóa đơn chi tiết
         List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderIdAndProductDetailId(requestDTO.getOrderId(), requestDTO.getProductDetailId());
-        double currentDiscountPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
 
-        Optional<OrderDetail> entityFound_2 = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), requestDTO.getAverageDiscountEventPercent());
+        double currentDiscountPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
         Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), currentDiscountPercent);
 
+        orderService.check_validate_non_cancel_order(orderFounded);
 
-        // nếu tồn tại hóa đơn chi tiết và sản phẩm chi tiết
-
-        // ==> GHI ĐÈ
+        // NẾU CÓ BẢN GHI CŨ
         if (entityFound.isPresent()) {
-            if (!isAvailableQuantityProductDetail(productDetail, entityFound.get().getQuantity(), requiredQuantity)) {
-                log.error("KHÔNG ĐỦ ĐÁP ỨNG");
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-            }
-            // cập nhật số lượng trong kho
-            updateQuantityStorageIfInStore(entityFound.get().getQuantity(), requiredQuantity, entityFound.get().getProductDetail(), entityFound.get().getOrder());
+            OrderDetail ORDER_DETAIL_FOUNDED = entityFound.get();
+            Order ORDER_FOUND = ORDER_DETAIL_FOUNDED.getOrder();
+            ProductDetail PRODUCT_DETAIL_FOUNDED = ORDER_DETAIL_FOUNDED.getProductDetail();
+            int oldOrderDetailQuantity = ORDER_DETAIL_FOUNDED.getQuantity();
+            int STORE_QUANTITY = PRODUCT_DETAIL_FOUNDED.getQuantity();
+            boolean IS_IN_STORE_ORDER = ORDER_FOUND.getInStore();
+            int cumulativeQuantity = REQUIRED_QUANTITY + oldOrderDetailQuantity;
+            int ABS_RANGE_FROM_CUMULATIVE_AND_REQUIRED = Math.abs(REQUIRED_QUANTITY - cumulativeQuantity);
 
-            entityFound.get().setDeleted(false);
-            // cộng dồn số lượng cũ và mới
-            int newCount = entityFound.get().getQuantity() + requiredQuantity;
-            // nếu không đủ số lượng đáp ứng
-            if (!(productDetail.getQuantity() - newCount >= 0)) {
-                log.error("KHÔNG ĐỦ ĐÁP ỨNG SAU CỘNG DỒN");
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-            }
-            // ngược lại nếu đủ số lượng
-            else {
-                entityFound.get().setQuantity(newCount);
-                OrderDetail response = orderDetailRepository.save(entityFound.get());
-                orderService.reloadSubTotalOrder(response.getOrder());
-                return response;
-            }
-        }
-        // ==> TẠO BẢN GHI MỚI
-        // nếu không tìm thấy hóa đơn chi tiết và sản phẩm chi tiết
-        else {
-            if (!isAvailableQuantityProductDetail(productDetail, 0, requiredQuantity)) {
-                log.error("KHÔNG ĐỦ ĐÁP ỨNG");
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-            }
-            // tạo hóa đơn chi tiết mới
-            OrderDetail orderDetail = new OrderDetail();
-            // set trạng thái xóa cho hóa đơn
-            orderDetail.setDeleted(false);
-            // set số lượng
-            orderDetail.setQuantity(requiredQuantity);
 
-            // set gia trị event trung bình
-            orderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
-            // set hóa đơn vào hóa đơn chi tiết
-            orderDetail.setOrder(orderService.findById(requestDTO.getOrderId()));
-            // set spct vào hóa đơn chi tiết
-            orderDetail.setProductDetail(productDetail);
-            // lưu lại hóa đơn chi tết
-            OrderDetail response = orderDetailRepository.save(orderDetail);
-            // cập nhật số lượng trong kho
-            updateQuantityStorageIfInStore(0, requiredQuantity, productDetail, orderDetail.getOrder());
+            //================VALIDATE-QUANTITY================//
+            System.out.println("REQUIRED_QUANTITY" + REQUIRED_QUANTITY);
+            System.out.println("STORE_QUANTITY" + STORE_QUANTITY);
+//            System.out.println("cumulativeQuantity" + cumulativeQuantity);
+//            System.out.println("ABS_RANGE_FROM_CUMULATIVE_AND_REQUIRED" + ABS_RANGE_FROM_CUMULATIVE_AND_REQUIRED);
+            if (IS_IN_STORE_ORDER) {
+                if (STORE_QUANTITY - REQUIRED_QUANTITY >= 0) {
+                    log.info("[HDTQ] - ĐỦ ĐIỀU KIỆN");
+                } else {
+                    log.error("[HDTQ] - KHÔNG ĐỦ ĐIỀU KIỆN");
+                    throw new CustomExceptions.CustomBadRequest("#ERIB23 - Không đủ số lượng đáp ứng");
+                }
+            } else {
+                if (STORE_QUANTITY -cumulativeQuantity >= 0 ) {
+                    log.info("[HDTT] - ĐỦ ĐIỀU KIỆN");
+                } else {
+                    log.error("[HDTT] - KHÔNG ĐỦ ĐIỀU KIỆN");
+                    throw new CustomExceptions.CustomBadRequest("#ERIB24 - Không đủ số lượng đáp ứng");
+                }
+            }
+            //================VALIDATE-QUANTITY================//
 
-            orderService.reloadSubTotalOrder(orderDetail.getOrder());
+            //============TRỪ SL NẾU LÀ ĐƠN TẠO QUẦY===========//
+            updateQuantityStorageIfInStore(oldOrderDetailQuantity, cumulativeQuantity, productDetail, orderFounded);
+            //============TRỪ SL NẾU LÀ ĐƠN TẠO QUẦY===========//
+
+            ORDER_DETAIL_FOUNDED.setQuantity(cumulativeQuantity);
+            OrderDetail response = orderDetailRepository.save(ORDER_DETAIL_FOUNDED);
+            orderService.reloadSubTotalOrder(response.getOrder());
             return response;
+
+        } else {
+            OrderDetail newOrderDetail = new OrderDetail();
+            // set trạng thái xóa cho hóa đơn
+            newOrderDetail.setDeleted(false);
+            // set số lượng
+            newOrderDetail.setQuantity(REQUIRED_QUANTITY);
+            // set gia trị event trung bình
+            newOrderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
+            // set hóa đơn vào hóa đơn chi tiết
+            newOrderDetail.setOrder(orderService.findById(requestDTO.getOrderId()));
+            // set spct vào hóa đơn chi tiết
+            newOrderDetail.setProductDetail(productDetail);
+            // lưu lại hóa đơn chi tết
+            OrderDetail response = orderDetailRepository.save(newOrderDetail);
+            // cập nhật số lượng trong kho
+            updateQuantityStorageIfInStore(0, REQUIRED_QUANTITY, productDetail, newOrderDetail.getOrder());
+            orderService.reloadSubTotalOrder(newOrderDetail.getOrder());
+            return response;
+
         }
     }
 
@@ -154,13 +165,14 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         log.info("ĐÃ TÌM THẤY HÓA ĐƠN");
         // tìm hóa đơn
         Order order = orderDetail.getOrder();
+        orderService.check_validate_non_cancel_order(order);
         // số lương trong kho
         int quantityInStorage = orderDetail.getProductDetail().getQuantity();
         // số lượng trong hóa đơn chi tiết
         int quantityInOrder = orderDetail.getQuantity();
 
         // nếu số lượng mới lớn hơn trong kho và là mua thêm
-        if (!isAvailableQuantityProductDetail(orderDetail.getProductDetail(), quantityInOrder, newQuantity)) {
+        if (!isAvailableQuantityProductDetail(order.getInStore(), orderDetail.getProductDetail(), quantityInOrder, newQuantity)) {
             throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
         }
         //nếu số luọng về 0
@@ -183,9 +195,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         // nếu đủ số lượng đáp ứng
         else {
             // ngăn ng dùng mua thêm với hóa đơn chi tiết có sụ thay đổi % event
-            if(newQuantity > quantityInOrder){
+            if (newQuantity > quantityInOrder) {
                 double currentSaleDiscountEvent = orderDetail.getProductDetail().getProduct().getNowAverageDiscountPercentEvent();
-                if(orderDetail.getAverageDiscountEventPercent() != currentSaleDiscountEvent){
+                if (orderDetail.getAverageDiscountEventPercent() != currentSaleDiscountEvent) {
                     throw new CustomExceptions.CustomBadRequest("Sản phảm này đã có sự thay đổi % đợt giảm giá ");
                 }
             }
@@ -199,7 +211,8 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
     }
 
-    private void updateQuantityStorageIfInStore(int old_quantity, int new_quantity, ProductDetail productDetail, Order order) {
+    @Transactional
+    public void updateQuantityStorageIfInStore(int old_quantity, int new_quantity, ProductDetail productDetail, Order order) {
         if (order.getInStore()) {
             log.info("OLD QUA: {}", old_quantity);
             log.info("NEW QUA: {}", new_quantity);
@@ -208,13 +221,17 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             if (new_quantity > old_quantity) {
                 log.info("KHÁCH MUA THEM SP MÃ {}", productDetail.getCode());
                 productDetail.setQuantity(currentQuantityOfProductDetail - rangeABS);
+                productDetailRepository.save(productDetail);
+            } else if (new_quantity == old_quantity) {
+                log.info("KHÔNG CÓ SỰ THAY ĐỔI SỐ LƯỢNG");
             }
             // nếu khách giảm bớt đi
             else {
                 log.info("KHÁCH TRẢ LẠI SP MÃ {}", productDetail.getCode());
                 productDetail.setQuantity(currentQuantityOfProductDetail + rangeABS);
+                productDetailRepository.save(productDetail);
+
             }
-            productDetailRepository.save(productDetail);
         }
     }
 
@@ -250,14 +267,19 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         return !percentList.contains(newAverageDiscountEventPercent);
     }
 
-    private boolean isAvailableQuantityProductDetail(ProductDetail productDetail, int currentQuantity, int requiredQuantity) {
-        log.info("KHO : " + productDetail.getQuantity());
+    private boolean isAvailableQuantityProductDetail(Boolean isInStore, ProductDetail productDetail, int currentQuantity, int requiredQuantity) {
+        int quantityInStorage = productDetail.getQuantity();
+        log.info("KHO : " + quantityInStorage);
         log.info("Y/C : " + requiredQuantity);
         int range = Math.abs(requiredQuantity - currentQuantity);
         // khi tổng số lượng yêu cầu lớn hơn hoặc = trong đơn hiện tại
         if (requiredQuantity >= currentQuantity) {
             // kiểm tra xem số lượng trong kho có đủ cho số lượng cần hay không
-            return productDetail.getQuantity() - range >= 0;
+            if (isInStore) {
+                return productDetail.getQuantity() - range >= 0;
+            } else {
+                return quantityInStorage >= requiredQuantity;
+            }
         }
         // nếu tổng số lượng yêu cầu nhỏ hơn trong đơn hiện tại
         else {

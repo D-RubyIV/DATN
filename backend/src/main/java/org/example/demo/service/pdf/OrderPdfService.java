@@ -21,6 +21,7 @@ import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.util.CurrencyFormat;
 import org.example.demo.util.caculate.CalculateUtil;
+import org.example.demo.util.number.NumberUtil;
 import org.example.demo.util.qr.QRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -186,8 +187,14 @@ public class OrderPdfService {
                 OrderDetail s = orderDetailList.get(i);
                 String productName = s.getProductDetail().getProduct().getName();
                 String quantity = s.getQuantity().toString();
-                String price = CurrencyFormat.format(Math.round(s.getProductDetail().getPrice())) + " VND";
-                String subTotal = CurrencyFormat.format(Math.round(s.getProductDetail().getPrice() * s.getQuantity())) + " VND";
+
+                double productDetailPrice = s.getProductDetail().getPrice();
+                // lấy ra phần trăm giảm giá của sự kiện lúc tạo hóa đơn chờ tại thời điểm đó
+                double averageEventPercent = s.getAverageDiscountEventPercent();
+                double currentPrice = NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
+
+                String price = CurrencyFormat.format(currentPrice) + " VND";
+                String subTotal = CurrencyFormat.format(currentPrice * s.getQuantity()) + " VND";
                 String color = s.getProductDetail().getColor().getName();
                 String size = s.getProductDetail().getSize().getName();
 

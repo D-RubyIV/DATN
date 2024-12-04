@@ -51,6 +51,7 @@ import org.example.demo.util.phah04.PageableObject;
 import org.example.demo.util.voucher.VoucherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,6 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -162,6 +164,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Transactional
     public Order refund_and_change_status(RefundAndChangeStatusDTO refundAndChangeStatusDTO, int orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
+        Status oldStatus = order.getStatus();
+        Status newStatus = refundAndChangeStatusDTO.getStatus();
         Double amount = refundAndChangeStatusDTO.getAmount();
         String tradingCode = refundAndChangeStatusDTO.getTradingCode();
         History history = new History();
@@ -171,7 +175,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         history.setOrder(order);
         history.setStatus(refundAndChangeStatusDTO.getStatus());
         historyRepository.save(history);
-        order.setStatus(refundAndChangeStatusDTO.getStatus());
+        order.setStatus(newStatus);
+        if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && order.getInStore()) {
+            rollback_quantity_order(order);
+        }
         return orderRepository.save(order);
     }
 
@@ -185,7 +192,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         if (authentication != null && authentication.isAuthenticated()
             && !(authentication instanceof AnonymousAuthenticationToken)) {
             Account account = (Account) authentication.getPrincipal();
-            log.info("STAFF CODE: " + account.getStaff().getCode());
+            if (account.getStaff() != null) {
+                log.info("STAFF CODE: " + account.getStaff().getCode());
+            }
             entityMapped.setStaff(account.getStaff());
         }
 
@@ -246,7 +255,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         history.setAccount(AuthUtil.getAccount());
 
 
-
         if (requestDTO.getCustomer() != null) {
             if (requestDTO.getCustomer().getId() != null) {
                 Customer selectedCustomer = customerRepository.findById(requestDTO.getCustomer().getId()).orElse(null);
@@ -286,6 +294,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         history.setStatus(order.getStatus());
         historyRepository.save(history);
+        reloadSubTotalOrder(order);
 
         return orderRepository.save(order);
     }
@@ -415,17 +424,25 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                     minusProductDetailsQuantity(entityFound);
                 }
                 // chuyển trạng thái thang toán(vì khách đã thanh toán hết tại quầy)
-                if (entityFound.getInStore()) {
+                if (entityFound.getInStore() && !entityFound.getIsPayment()) {
                     entityFound.setIsPayment(true);
                     entityFound.setTotalPaid(entityFound.getTotal());
                 }
+
             }
             log.info("1");
         }
         // CHỜ VẬN CHUYỂN -> CHỜ XÁC NHẬN
         else if (oldStatus == Status.TOSHIP && newStatus == Status.PENDING) {
             log.info("2");
-            restoreProductDetailsQuantity(entityFound);
+            // CHỈ ROLLBACK CHO ĐƠN ONLINE (ĐƠN OFFLINE CHỈ ROLLBACK KHI HỦY)
+            if (!entityFound.getInStore()) {
+                rollback_quantity_order(entityFound);
+            }
+            // ROLLBACK VOUCHER
+            if (entityFound.getVoucher() != null){
+                increaseQuantityVoucher(entityFound.getVoucher());
+            }
         }
         // CHỜ XÁC NHẬN -> ĐÃ GIAO HÀNG
         else if (oldStatus == Status.PENDING && newStatus == Status.DELIVERED) {
@@ -433,6 +450,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 check_validate_address_for_online_order(entityFound);
             }
             checkValidateQuantity(entityFound);
+
+            //
             log.info("3");
             entityFound.setIsPayment(true);
         }
@@ -441,10 +460,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             log.info("4");
             entityFound.setIsPayment(true);
         }
-        // CHỜ VẬN CHUYỂN -> HỦY (ĐƠN TẠI QUẦY) --> ROLLBACK LẠI SỐ LƯỢNG SP VÀ VOUCHER
+        // CHỜ XÁC NHẬN -> HỦY (ĐƠN TẠI QUẦY) --> ROLLBACK LẠI SỐ LƯỢNG SP VÀ VOUCHER
         else if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && entityFound.getInStore()) {
-            called_order(entityFound);
+            rollback_quantity_order(entityFound);
         }
+
         if (oldStatus != newStatus) {
             sendEmail(entityFound, requestDTO.getNote());
         }
@@ -462,6 +482,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
 
         reloadSubTotalOrder(entityFound);
+        if (entityFound.getInStore()) {
+            if (oldStatus == Status.PENDING && (newStatus == Status.DELIVERED || newStatus == Status.TOSHIP)) {
+                // trừ số lượng voucher
+                if (entityFound.getVoucher() != null) {
+                    decreaseQuantityVoucher(entityFound.getVoucher());
+                }
+            }
+        }
         return orderRepository.save(entityFound);
     }
 
@@ -522,7 +550,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.getCountOrderDetailByIds(ids);
     }
 
-    public JsonNode calculateFee(Integer idOrder) {
+    @Async
+    public CompletableFuture<JsonNode> calculateFee(Integer idOrder) {
         Order order = findById(idOrder);
         FeeDTO feeDTO = new FeeDTO();
         feeDTO.setService_type_id(2);
@@ -558,7 +587,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 );
                 String a = String.valueOf(fee.get("data").get("total"));
                 System.out.println(a);
-                return fee;
+                return CompletableFuture.completedFuture(fee);
             } catch (Exception ex) {
                 log.error(ex.getMessage());
                 throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển. Vui lòng xem xét lại địa chỉ hợp lệ");
@@ -580,7 +609,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Order order = new Order();
         order.setCode("HDO" + randomCodeGenerator.generateRandomCode());
         order.setRecipientName(cart.getRecipientName());
-        order.setPhone(cart.getPhone());
         order.setAddress(cart.getAddress() + " " + cart.getDistrictName() + " " + cart.getDistrictName() + " " + cart.getProvinceName());
         order.setAddress(cart.getAddress());
         order.setProvinceId(cart.getProvinceId());
@@ -599,6 +627,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setType(Type.ONLINE);
         order.setStatus(Status.PENDING);
         order.setPayment(cart.getPayment());
+
+        // SET CUSTOMER
+        Account account = AuthUtil.getAccount();
+        if (account != null && account.getCustomer() != null) {
+            order.setCustomer(account.getCustomer());
+        }
+        // SET CUSTOMER
+
         order.setCustomer(cart.getCustomer());
         order.setVoucher(cart.getVoucher());
 
@@ -615,7 +651,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setTotalPaid(0.0);
         order.setIsPayment(isPayment);
         //
-        Account account = AuthUtil.getAccount();
 
 
         List<OrderDetail> list = new ArrayList<>();
@@ -767,10 +802,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return NumberUtil.roundDouble(subtotal);
     }
 
+
     public double get_fee_ship_of_order(Order order) {
         try {
             if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE) {
-                JsonNode feeObject = calculateFee(order.getId());
+                CompletableFuture<JsonNode> feeFuture = calculateFee(order.getId());
+                // Chờ kết quả trong trường hợp cần (có thể dùng timeout)
+                JsonNode feeObject = feeFuture.join();
+                log.info("TÍNH PHÍ XONG");
                 if (feeObject != null) {
                     String feeString = String.valueOf(feeObject.get("data").get("total"));
                     return DataUtils.safeToDouble(feeString);
@@ -797,16 +836,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             int new_quantity = productDetail.getQuantity() - orderDetail.getQuantity();
             log.info("OLD QUANTITY: " + productDetail.getQuantity());
             log.info("NEW QUANTITY: " + new_quantity);
-            productDetail.setQuantity(new_quantity);
-            productDetailRepository.save(productDetail);
-        }
-    }
-
-    public void restoreProductDetailsQuantity(Order order) {
-        List<OrderDetail> orderDetails = order.getOrderDetails();
-        for (OrderDetail orderDetail : orderDetails) {
-            ProductDetail productDetail = orderDetail.getProductDetail();
-            int new_quantity = productDetail.getQuantity() + orderDetail.getQuantity();
             productDetail.setQuantity(new_quantity);
             productDetailRepository.save(productDetail);
         }
@@ -852,7 +881,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         });
     }
 
-    private void called_order(Order order) {
+    private void rollback_quantity_order(Order order) {
         List<OrderDetail> orderDetails = order.getOrderDetails().stream().filter(s -> !s.getDeleted()).toList();
         for (OrderDetail orderDetail : orderDetails) {
             int orderQuantity = orderDetail.getQuantity();
@@ -876,41 +905,59 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         voucherRepository.save(voucher);
     }
 
-    private void auto_fill_best_voucher_for_inStore_order(Order order){
+    private void auto_fill_best_voucher_for_inStore_order(Order order) {
         if (order.getInStore()) {
             Voucher oldVoucher = order.getVoucher();
             Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
+            double subTotal = get_subtotal_of_order(order);
             order.setVoucher(bestVoucher);
             // NẾU KHÔNG CÓ VOUCHER PHÙ HỢP (KO CÓ VOUCHER NÀO DÙNG ĐƯỢC)
-            if (bestVoucher == null) {
-                log.info("BEST VOUCHER NULL");
-                order.setDiscountVoucherPercent(0.0);
-                order.setVoucherMinimumSubtotalRequired(0.0);
-            }
+
             // NẾU CÓ VOUCHER PHÙ HỢP
-            else {
+            if (bestVoucher != null){
                 log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
                 order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
                 order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
             }
-            // => ROLLBACK SO LUONG CU VOUCHER CŨ DA AP DUNG
-            if(oldVoucher != null){
-                increaseQuantityVoucher(oldVoucher);
+            else if(oldVoucher != null){
+                // kiem tra dk voucher cu
+                log.info("CÓ VOUCHER CŨ");
+                if(subTotal >= oldVoucher.getMinAmount()){
+                    log.info("VOUCHER CŨ VẪN ĐỦ ĐIỀU KIỆN");
+                    return;
+                }
+                log.info("VOUCHER CŨ KHÔNG ĐỦ ĐIỀU KIỆN");
             }
-            if(bestVoucher != null){
-                decreaseQuantityVoucher(bestVoucher);
+            else {
+                log.info("BEST VOUCHER NULL");
+                order.setDiscountVoucherPercent(0.0);
+                order.setVoucherMinimumSubtotalRequired(0.0);
             }
+
+//            // => ROLLBACK SO LUONG CU VOUCHER CŨ DA AP DUNG
+//            if(oldVoucher != null){
+//                increaseQuantityVoucher(oldVoucher);
+//            }
+//            if(bestVoucher != null){
+//                decreaseQuantityVoucher(bestVoucher);
+//            }
         }
     }
 
-    public Order unLinkCustomer(Integer id){
+    public Order unLinkCustomer(Integer id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         reloadSubTotalOrder(order);
-        if (order.getCustomer() != null){
+        if (order.getCustomer() != null) {
             String note = String.format("Bỏ gán thông tin K/H %s cho đơn hàng", order.getCustomer().getCode());
             historyService.createNewHistoryObject(order, order.getStatus(), note);
         }
         order.setCustomer(null);
         return orderRepository.save(order);
+    }
+
+    public void check_validate_non_cancel_order(Order order){
+        if(order.getStatus() == Status.CANCELED){
+            throw new CustomExceptions.CustomBadRequest("Hóa đơn này đã bị hủy trước đó");
+        }
     }
 }

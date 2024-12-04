@@ -244,8 +244,8 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                 :idCustomer IS NULL AND LOWER(v.typeTicket) like 'everybody' OR
                 :idCustomer IS NOT NULL AND ((LOWER(v.typeTicket) like 'individual' AND c.id = :idCustomer) OR LOWER(v.typeTicket) like 'everybody')
             )
-           AND v.startDate < CURRENT_DATE
-           AND v.endDate >= CURRENT_DATE
+           AND v.startDate < CURRENT_TIMESTAMP
+           AND v.endDate >= CURRENT_TIMESTAMP
             """
     )
     Page<Voucher> selectPageActiveAndAbleToUseVoucher(
