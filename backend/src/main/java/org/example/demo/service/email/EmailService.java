@@ -46,4 +46,13 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void sendVerificationCode(String to, String verificationCode) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Mã Xác Nhận Đặt Lại Mật Khẩu");
+        message.setText("Mã xác nhận của bạn là: " + verificationCode +
+                "\nMã này sẽ hết hạn sau 15 phút.");
+        mailSender.send(message);
+    }
+
 }

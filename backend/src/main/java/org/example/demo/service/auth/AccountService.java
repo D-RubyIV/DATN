@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.demo.components.JwtTokenUtils;
 import org.example.demo.components.LocalizationUtils;
 import org.example.demo.dto.auth.request.AccountRequestDTO;
+import org.example.demo.dto.auth.request.ChangePasswordRequest;
+import org.example.demo.dto.auth.request.ResetPasswordRequest;
 import org.example.demo.dto.customer.request.CustomerRequestDTO;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
 import org.example.demo.dto.user.UserLoginDTO;
@@ -216,4 +218,33 @@ public class AccountService {
         }
     }
 
+
+    @Transactional
+    public void updatePassword(
+            String email,
+            ChangePasswordRequest changePasswordRequest
+    ) throws DataNotFoundException {
+        Account account = accountRepository.findByUsername(email)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), account.getPassword())) {
+            throw new CustomExceptions.CustomBadRequest("Current password is incorrect");
+        }
+        account.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        accountRepository.save(account);
+        List<TokenRecord> tokens = tokenRepository.findByAccount(account);
+        tokenRepository.deleteAll(tokens);
+    }
+
+    @Transactional
+    public void forgotPassword(String email, ResetPasswordRequest resetPasswordRequest)
+            throws DataNotFoundException {
+        Account existingUser = accountRepository.findByUsername(email)
+                .orElseThrow(() -> new DataNotFoundException("User not found"));
+        String encodedPassword = passwordEncoder.encode(resetPasswordRequest.getNewPassword());
+        existingUser.setPassword(encodedPassword);
+        accountRepository.save(existingUser);
+        List<TokenRecord> tokens = tokenRepository.findByAccount(existingUser);
+        tokenRepository.deleteAll(tokens);
+    }
 }

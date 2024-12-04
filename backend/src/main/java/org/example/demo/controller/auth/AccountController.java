@@ -6,15 +6,22 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.demo.components.LocalizationUtils;
 import org.example.demo.dto.auth.request.AccountRequestDTO;
+import org.example.demo.dto.auth.request.ChangePasswordRequest;
+import org.example.demo.dto.auth.request.ForgotPasswordDTO;
 import org.example.demo.dto.user.RefreshTokenDTO;
 import org.example.demo.dto.user.UserLoginDTO;
 import org.example.demo.dto.user.response.LoginResponse;
 import org.example.demo.entity.security.Account;
 import org.example.demo.entity.security.TokenRecord;
+import org.example.demo.exception.CustomExceptions;
+import org.example.demo.exception.DataNotFoundException;
+import org.example.demo.exception.InvalidPasswordException;
 import org.example.demo.mapper.auth.response.AccountResponseMapper;
 import org.example.demo.model.ResponseObject;
 import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.service.auth.AccountService;
+import org.example.demo.service.auth.VerificationService;
+import org.example.demo.service.email.EmailService;
 import org.example.demo.service.token.ITokenService;
 import org.example.demo.util.MessageKeys;
 import org.springframework.http.HttpStatus;
@@ -25,6 +32,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +45,8 @@ public class AccountController {
     private final ITokenService tokenService;
     private final AccountResponseMapper accountResponseMapper;
     private final AccountRepository accountRepository;
+    private final EmailService emailService;
+    private final VerificationService verificationService;
 
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> createUser(
@@ -98,6 +108,7 @@ public class AccountController {
     }
 
 
+
     private boolean isMobileDevice(String userAgent) {
         // Kiểm tra User-Agent header để xác định thiết bị di động
         // Ví dụ đơn giản:
@@ -149,6 +160,57 @@ public class AccountController {
 
         accountRepository.deleteById(id);
         return "Ok";
+    }
+
+    @PostMapping("/request-verification-code")
+    public ResponseEntity<?> requestVerificationCode(@RequestBody ForgotPasswordDTO request) {
+        accountRepository.findByUsername(request.getEmail());
+        String verificationCode = verificationService.generateVerificationCode();
+        verificationService.saveVerificationCode(request.getEmail(), verificationCode);
+        emailService.sendVerificationCode(request.getEmail(), verificationCode);
+        return ResponseEntity.ok("Mã xác nhận đã được gửi tới email của bạn");
+    }
+
+    @PostMapping("/reset-password/v2")
+    public ResponseEntity<?> resetPassword(@RequestBody ForgotPasswordDTO request) {
+        try {
+            if (!verificationService.validateVerificationCode(
+                    request.getEmail(),
+                    request.getVerificationCode())) {
+                return ResponseEntity.badRequest().body("Mã xác nhận không hợp lệ hoặc đã hết hạn");
+            }
+
+            accountService.resetPassword(
+                    request.getEmail(),
+                    request.getNewPassword()
+            );
+
+            // Xóa mã xác nhận
+            verificationService.invalidateVerificationCode(request.getEmail());
+
+            return ResponseEntity.ok("Đặt lại mật khẩu thành công");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body("Người dùng không tồn tại");
+        } catch (InvalidPasswordException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/change-password/{email}")
+    public ResponseEntity<?> changePassword(
+            @PathVariable String email,
+            @RequestBody ChangePasswordRequest changePasswordRequest,
+            Principal principal // To get the current user
+    ) {
+        try {
+            accountService.updatePassword(email, changePasswordRequest
+            );
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (CustomExceptions.CustomBadRequest e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (DataNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 //    @PutMapping("/details/{userId}")
