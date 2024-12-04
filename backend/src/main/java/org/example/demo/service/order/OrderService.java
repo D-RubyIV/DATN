@@ -204,7 +204,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         entityMapped.setVoucherMinimumSubtotalRequired(0.0);
         entityMapped.setInStore(true);
 
-        orderHistory.setNote("khởi tạo đon hàng tại quầy");
+        orderHistory.setNote("Khởi tạo đơn hàng tại quầy");
         orderHistory.setStatus(Status.PENDING);
         orderHistory.setOrder(entityMapped);
         orderHistory.setAccount(AuthUtil.getAccount());
@@ -243,9 +243,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         History history = new History();
         history.setOrder(order);
-        history.setNote("Cập nhật thông tin khách hàng");
-        history.setStatus(order.getStatus());
-        historyRepository.save(history);
+        history.setAccount(AuthUtil.getAccount());
+
+
 
         if (requestDTO.getCustomer() != null) {
             if (requestDTO.getCustomer().getId() != null) {
@@ -255,6 +255,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                     order.setPhone(selectedCustomer.getPhone());
                     log.info("THÔNG TIN KHÁCH HÀNG TỒN TẠI");
                     order.setCustomer(selectedCustomer);
+                    history.setNote(String.format("Gán thông tin K/H %s cho đơn hàng", selectedCustomer.getCode()));
 
                     Address defaultAddress = getDefaultAddress(selectedCustomer.getId());
                     if (order.getType() == Type.ONLINE) {
@@ -283,6 +284,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 }
             }
         }
+        history.setStatus(order.getStatus());
+        historyRepository.save(history);
 
         return orderRepository.save(order);
     }
@@ -902,8 +905,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     public Order unLinkCustomer(Integer id){
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
-        order.setCustomer(null);
         reloadSubTotalOrder(order);
+        if (order.getCustomer() != null){
+            String note = String.format("Bỏ gán thông tin K/H %s cho đơn hàng", order.getCustomer().getCode());
+            historyService.createNewHistoryObject(order, order.getStatus(), note);
+        }
+        order.setCustomer(null);
         return orderRepository.save(order);
     }
 }

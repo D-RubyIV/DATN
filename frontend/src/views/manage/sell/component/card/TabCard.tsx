@@ -1,6 +1,6 @@
-import { Button, Card, Dialog } from '@/components/ui'
+import { Button, Card, Dialog, Drawer } from '@/components/ui'
 import { useEffect, useState } from 'react'
-import { HiPlusCircle, HiQrcode } from 'react-icons/hi'
+import { HiPlusCircle, HiQrcode, HiViewList } from 'react-icons/hi'
 import { Fragment } from 'react/jsx-runtime'
 import SellProductTable from '../table/SellProductTable'
 import { EOrderStatusEnums, OrderHistoryResponseDTO, OrderResponseDTO } from '@/@types/order'
@@ -19,6 +19,7 @@ import { useToastContext } from '@/context/ToastContext'
 import { useSellContext } from '@/views/manage/sell/context/SellContext'
 import { ConfirmDialog } from '@/components/shared'
 import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
+import History from '@/views/manage/order/component/puzzle/History'
 
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
@@ -172,6 +173,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
     const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
 
+    const [isOpenHistory, setIsOpenHistory] = useState<boolean>(false);
 
     return (
         <Fragment>
@@ -222,12 +224,28 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                     </div>
                 </Card>
                 <Card className="2xl:col-span-4">
+                    <div className="">
+                        <Drawer
+                            title="Lịch sử"
+                            isOpen={isOpenHistory}
+                            width={600}
+                            onClose={() => setIsOpenHistory(false)}
+                            onRequestClose={() => setIsOpenHistory(false)}
+                        >
+                            {
+                                selectedOrder && <History selectObject={selectedOrder}></History>
+                            }
+                        </Drawer>
+                    </div>
                     <div className="flex justify-between items-center">
                         <div className="font-semibold text-[16px] text-black">
                             <label>Thông tin khách hàng</label>
                         </div>
                         <div className="flex gap-3 justify-between">
-
+                            <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
+                                    icon={<HiViewList />} onClick={() => setIsOpenHistory(true)}>
+                                Xem lịch sử
+                            </Button>
                         </div>
                     </div>
                     <div className="py-2">
@@ -281,7 +299,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                 }
             </div>
             <div>
-                {
+            {
                     (isOpenProductModal && selectedOrder) && (
                         <SellProductModal setIsOpenProductModal={setIsOpenProductModal} selectOrder={selectedOrder}
                                           fetchData={fetchSelectedOrder}></SellProductModal>)

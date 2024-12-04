@@ -162,4 +162,9 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     public ResponseEntity<?> convert(@PathVariable Integer id) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.convertCartToOrder(id)));
     }
+
+    @GetMapping(value = "unlink-customer/{id}")
+    public ResponseEntity<?> unlinkCustomer(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.unLinkCustomer(id)));
+    }
 }
