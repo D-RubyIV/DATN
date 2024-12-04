@@ -168,7 +168,7 @@ const ProductDetail = () => {
         }
     }, [selectedColor, selectedSize, listProductDetail])
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         const dataRequest = {
             'cartId': myCartId,
             'productDetailId': selectedProductDetail?.id,
@@ -347,7 +347,11 @@ const ProductDetail = () => {
                             Thêm vào giỏ hàng
                         </button>
                         <button
-                            className={'px-4 font-semibold bg-red-500 text-white py-2 border border-red-500'}>
+                            className={'px-4 font-semibold bg-red-500 text-white py-2 border border-red-500'}
+                            onClick={async () => {
+                                await handleAddToCart();
+                                window.location.href = `/checkout/${myCartId}`
+                            }}>
                             Mua ngay
                         </button>
                     </div>

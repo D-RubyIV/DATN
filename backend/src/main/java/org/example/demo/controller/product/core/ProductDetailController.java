@@ -371,8 +371,8 @@ public class ProductDetailController {
             List<Image> productImages = new ArrayList<>();
             listProd.forEach(pd -> productImages.addAll(pd.getImages()));
 
-            s.setListColor(listProd.stream().map(ProductDetail::getColor).toList());
-            s.setListSize(listProd.stream().map(ProductDetail::getSize).toList());
+            s.setListColor(listProd.stream().map(ProductDetail::getColor).filter(e -> !e.getDeleted()).toList());
+            s.setListSize(listProd.stream().map(ProductDetail::getSize).filter(e -> !e.getDeleted()).toList());
             s.setImage(productImages.stream().map(Image::getUrl).toList());
             s.setPrice(listProd.stream().map(ProductDetail::getPrice).min(Double::compare).orElse(0.0));
 

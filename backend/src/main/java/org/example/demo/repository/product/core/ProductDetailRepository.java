@@ -32,6 +32,14 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     List<ProductDetail> findByProductId(Integer productId);
 
+    @Query("""
+            SELECT pd FROM ProductDetail pd
+            JOIN FETCH pd.size pds
+            JOIN FETCH pd.color pdc
+            WHERE pd.deleted = false
+            AND pds.deleted = false
+            AND pdc.deleted = false
+            """)
     List<ProductDetail> findAllByProductId(Integer id);
 
     @Query(value = """
@@ -331,7 +339,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     @EntityGraph(attributePaths = {"brand", "color", "size", "material", "images"})
     @Query(value = """
-            SELECT pd from ProductDetail pd  where pd.product.id in :ids
+            SELECT pd from ProductDetail pd  where pd.product.id in :ids and pd.deleted = false
             """)
     List<ProductDetail> findAllByProductIdCustom(List<Integer> ids);
 

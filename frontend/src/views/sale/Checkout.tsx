@@ -274,10 +274,7 @@ const Checkout = () => {
     }, [formValues])
 
     useEffect(() => {
-        const data = {
-            payment: paymentMethod
-        }
-        handleUpdateCart(data)
+
     }, [paymentMethod])
 
     const customHandleSubmit = async (data: VoucherFormValues) => {
@@ -485,6 +482,10 @@ const Checkout = () => {
 
     const onChangeMethod = async (val: EPaymentMethod) => {
         setPaymentMethod(val)
+        const data = {
+            payment: val
+        }
+        await handleUpdateCart(data)
     }
 
 
