@@ -99,7 +99,7 @@ const Navbar = () => {
                 <div className="px-[8%] flex justify-between items-center">
                     <div>
                         <a href="/"
-                            className="md:text-4xl sm:text-3xl flex gap-2 text-black dark:text-white font-hm font-bold menu-title">
+                            className="md:text-4xl sm:text-3xl flex gap-2 text-black dark:text-white font-hm font-bold menu-title  text-shadow-sm">
                             CANTH
                         </a>
                     </div>
@@ -110,7 +110,7 @@ const Navbar = () => {
                                 <li key={data.id}>
                                     <a
                                         href={data.link}
-                                        className="inline-block px-4 duration-200 text-xl hover:underline hover:text-gray-200 underline-offset-4 text-black dark:text-white font-sans font-bold menu-title"
+                                        className="inline-block px-4 duration-200 text-xl hover:underline hover:text-gray-800 underline-offset-4 text-black dark:text-white font-sans font-bold menu-title text-shadow-sm"
                                     >
                                         {data.name}
                                     </a>
@@ -121,9 +121,7 @@ const Navbar = () => {
                         </ul>
                     </div>
                     {/* search bar */}
-                    <div className="flex justify-between items-center gap-4">
-
-
+                    <div className="flex justify-between items-center gap-4 text-shadow-sm">
                         <div>
                             <ul>
                                 <li className="group relative cursor-pointer">
@@ -156,7 +154,7 @@ const Navbar = () => {
                         </div>
 
                         <button
-                            className="text-black menu-title"
+                            className="text-black menu-title text-shadow-sm"
                             onClick={() => setIsOpenCartDrawer(!isOpenCartDrawer)}
                         >
                             <HiOutlineShoppingBag size={25} />
@@ -167,11 +165,11 @@ const Navbar = () => {
                                     {/* User Dropdown */}
                                     <button
                                         id="user-button"
-                                        onClick={() => setDropdownVisible(!dropdownVisible)}
                                         className="menu-title flex items-center gap-2 text-black dark:text-white hover:text-gray-600 transition-colors focus:outline-none"
+                                        onClick={() => setDropdownVisible(!dropdownVisible)}
                                     >
                                         <HiUserCircle size={25} />
-                                        <span className="text-sm font-medium">{user.username}</span>
+                                        <span className="text-sm font-medium  text-shadow-sm">{user.username}</span>
                                     </button>
                                     {dropdownVisible && (
                                         <div
@@ -208,11 +206,11 @@ const Navbar = () => {
                                 </>
                             ) : (
                                 <button
+                                    className="flex items-center gap-2 hover:text-gray-600 transition-colors text-black "
                                     onClick={handleLoginClick}
-                                    className="flex items-center gap-2 text-white hover:text-gray-600 transition-colors"
                                 >
-                                    <HiUser size={25} />
-                                    <span className="text-sm font-medium">Đăng nhập</span>
+                                    <HiUser size={25} className={'menu-title text-black text-shadow-sm'}/>
+                                    <span className="text-sm font-medium text-black menu-title text-shadow-sm">Đăng nhập</span>
                                 </button>
                             )}
 

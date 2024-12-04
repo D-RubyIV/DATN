@@ -98,7 +98,6 @@ function LandingPage() {
                     }}
                 >
                     <Display title={'Hãy để mỗi ngày của bạn trở nên đặc biệt hơn '} />
-
                 </SwiperSlide>
                 <SwiperSlide
                     className={'!bg-no-repeat !bg-left-top !bg-cover !bg-fixed'}
@@ -106,6 +105,13 @@ function LandingPage() {
                         backgroundImage: 'url("/res730d2838062b0cdbeffbc6ff8ce591e0fr.jpg")'
                     }}>
                     <Display title={'Chất lượng áo phông được thiết kế để bạn thoải mái cả ngày.'} />
+                </SwiperSlide>
+                <SwiperSlide
+                    className={'!bg-no-repeat !bg-left-top !bg-cover !bg-fixed'}
+                    style={{
+                        backgroundImage: 'url("/res771f1f73d44489439cfc34fc857ffd5ffr.jpg")'
+                    }}>
+                    <Display title={'Lấy cảm hứng thiết kế tay ngắn từ thập niên năm 90.'} />
                 </SwiperSlide>
             </Swiper>
         </>

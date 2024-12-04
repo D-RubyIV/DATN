@@ -71,6 +71,11 @@ module.exports = {
             '2xl': '1536px'
         },
         extend: {
+            textShadow: {
+                sm: '1px 1px 2px rgba(0, 0, 0, 0.5)',
+                DEFAULT: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                lg: '3px 3px 6px rgba(0, 0, 0, 0.5)',
+            },
             colors: {
                 primary: '#fea928',
                 secondary: '#ed8900'
@@ -96,7 +101,17 @@ module.exports = {
                 }
             })
         }
-    }
+    },
+    plugins: [
+        function ({ addUtilities }) {
+            addUtilities({
+                '.text-shadow-sm': { textShadow: '1px 1px 2px rgba(0, 0, 0, 0.5)' },
+                '.text-shadow': { textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' },
+                '.text-shadow-lg': { textShadow: '3px 3px 6px rgba(0, 0, 0, 0.5)' },
+                '.text-shadow-none': { textShadow: 'none' },
+            });
+        },
+    ],
     // plugins: [
     // 	// eslint-disable-next-line @typescript-eslint/no-var-requires
     // 	require('./twSafelistGenerator')({

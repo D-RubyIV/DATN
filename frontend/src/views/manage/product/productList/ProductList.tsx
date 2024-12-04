@@ -32,7 +32,7 @@ const ProductList = () => {
                             <li aria-current="page">
                                 <div className="flex items-center">
                                     <span className="mx-2">/</span>
-                                    <span className="text-gray-500">Phiếu Giảm Giá</span>
+                                    <span className="text-gray-500">Sản phẩm</span>
                                 </div>
                             </li>
                         </ol>
