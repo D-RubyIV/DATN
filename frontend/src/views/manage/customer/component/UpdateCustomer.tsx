@@ -15,6 +15,7 @@ import { SingleValue } from 'react-select';
 
 
 
+
 type CustomerDTO = {
     id: string;
     code: string;
@@ -229,13 +230,7 @@ const UpdateCustomer = () => {
                 phone: Yup.string()
                     .required("Số điện thoại là bắt buộc")
                     .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
-                    .test('phone-unique', 'Số điện thoại đã tồn tại', async (phone) => {
-                        if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
-
-                        // Gọi API kiểm tra số điện thoại có trùng không
-                        const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
-                        return !response.data.exists; // Nếu phone đã tồn tại, trả về false
-                    }),
+                ,
 
                 province: Yup.string().required('Vui lòng chọn tỉnh/thành phố'),
                 district: Yup.string().required('Vui lòng chọn quận/huyện'),
@@ -661,6 +656,12 @@ const UpdateCustomer = () => {
             if (response.status === 200) {
                 console.log('Địa chỉ đã được cập nhật thành công:', response.data);
                 // fetchCustomer(updateCustomer.id, currentPage); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
+                // đồng bộ lại danh sách địa chỉ
+                const updatedAddresses = updateCustomer.addressDTOS.map((addr) => ({
+                    ...addr,
+                    isDefault: addr.id === addressId ? isDefault : false,
+                }));
+                setUpdateCustomer({ ...updateCustomer, addressDTOS: updatedAddresses })
             } else {
                 console.error('Cập nhật địa chỉ không thành công:', response.statusText);
             }
