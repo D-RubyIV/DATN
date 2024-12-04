@@ -65,23 +65,23 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
                 <ul>
                     <hr className="mb-3" />
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Hình thức đặt hàng: </span>
+                        <span className={'min-w-[150px]'}>Hình thức đặt hàng: </span>
                         <span>{<IsInStoreOrderFormat status={data?.inStore}></IsInStoreOrderFormat>} </span>
                     </div>
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Hình thức nhận hàng</span>
+                        <span className={'min-w-[150px]'}>Hình thức nhận hàng:</span>
                         <span>{<TypeOrderFormat status={data.type} />}</span>
                     </div>
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Hình thức thanh toán </span>
+                        <span className={'min-w-[150px]'}>Hình thức thanh toán:</span>
                         <span>{<MethodPaymentOrderFormat inStore={data.inStore} payment={data.payment} />}</span>
                     </div>
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Trạng thái đơn hàng: </span>
+                        <span className={'min-w-[150px]'}>Trạng thái đơn hàng:</span>
                         <span>{<StatusOrderFormat status={data.status} />}</span>
                     </div>
                     <div className="font-semibold py-1 flex justify-items-start items-center">
-                        <span>Trạng thái thanh toán: </span>
+                        <span className={'min-w-[150px]'}>Trạng thái thanh toán:</span>
                         <span>{<IsPaymentFormat status={data.isPayment} />}</span>
                     </div>
                 </ul>

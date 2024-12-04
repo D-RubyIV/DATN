@@ -29,7 +29,7 @@ const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
 
 const PaymentSummary = ({selectObject, fetchData,  data }: {selectObject: OrderResponseDTO, fetchData: () => Promise<void> ,  data: PaymentSummaryProps }) => {
     return (
-        <Card className="h-[552px]">
+        <Card className="h-auto">
             <h5 className="mb-4">Thông tin thanh toán</h5>
             <PaymentRow label="Tổng tiền các sản phẩm" value={data?.subTotal} />
             <PaymentRow label={

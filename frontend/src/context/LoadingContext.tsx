@@ -32,7 +32,7 @@ const LoadingProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <LoadingContext.Provider value={{ isLoadingComponent, setIsLoadingComponent, sleep, sleepLoading }}>
-            <Loading loading={isLoadingComponent} type="cover">
+            <Loading loading={isLoadingComponent} type="cover" className={'h-screen'}>
                 {children}
             </Loading>
         </LoadingContext.Provider>

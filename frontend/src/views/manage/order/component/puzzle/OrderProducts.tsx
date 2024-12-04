@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 import Avatar from '@/components/ui/Avatar'
@@ -9,8 +9,8 @@ import {
     createColumnHelper
 } from '@tanstack/react-table'
 import { NumericFormat } from 'react-number-format'
-import { Button, Drawer } from '@/components/ui'
-import { HiLockClosed, HiMinus, HiMinusCircle, HiPlusCircle, HiViewList } from 'react-icons/hi'
+import { Button, Dialog, Drawer, Input } from '@/components/ui'
+import { HiLockClosed, HiMinus, HiMinusCircle, HiPencil, HiPlusCircle, HiViewList } from 'react-icons/hi'
 import {
     OrderResponseDTO,
     OrderDetailResponseDTO,
@@ -24,6 +24,8 @@ import { FiPackage } from 'react-icons/fi'
 import SellProductModal from '@/views/manage/sell/component/dialog/SellProductModal'
 import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
 import { useLoadingContext } from '@/context/LoadingContext'
+import { DeleteOutline } from '@mui/icons-material'
+import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
 
 
 const OrderProducts = ({ data, selectObject, fetchData }: {
@@ -35,7 +37,10 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
 
     // FUCTION
     const { openNotification } = useToastContext()
+    const [selectedOrderDetail, setSelectedOrderDetail] = useState<OrderDetailResponseDTO>()
+    const [isOpenEditQuantity, setIsOpenEditQuantity] = useState<boolean>(false)
 
+    const { setIsLoadingComponent } = useLoadingContext()
     const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
     const hasSaleEvent = (item: OrderProductDetail) => {
@@ -46,7 +51,16 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
         const order_detail_quantity = item.quantity
         const product_detail_quantity = item.productDetailResponseDTO.quantity
-        return product_detail_quantity > 0;
+        console.log('Y/C: ', order_detail_quantity)
+        console.log('KHO: ', product_detail_quantity)
+        console.log(data)
+        if (selectObject.inStore) {
+            console.log('DON TAI QUAY')
+            return product_detail_quantity > 0
+        } else {
+            console.log('DON TRUC TUYEN')
+            return product_detail_quantity < order_detail_quantity
+        }
     }
 
     const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
@@ -110,10 +124,10 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                         </div>
                     </div>
                 </div>
-                <div className={'text-orange-700'}>
+                <div className={'text-yellow-700'}>
                     {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
                 </div>
-                <div className={'text-orange-700'}>
+                <div className={'text-yellow-700'}>
                     {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng thêm`}
                 </div>
             </div>
@@ -140,9 +154,12 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
     }
 
     const handleUpdateQuantity = async (id: number, quantity: number) => {
+        setIsLoadingComponent(true)
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
-            .then(function() {
-                sleepLoading(300)
+            .then(function(response) {
+                if (response.status === 200) {
+                    openNotification('Thay đổi thành công')
+                }
                 fetchData()
             })
             .catch(function(err) {
@@ -150,12 +167,14 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 if (err.response) {
                     console.log('Status code:', err.response.status) // Trạng thái HTTP từ phản hồi
                     if (err.response.status === 400) {
-                        openNotification(err.response.data.error)
+                        openNotification(err.response.data.error, 'Thông báo', 'warning', 1500)
                     }
                 } else {
                     console.log('Error message:', err.message) // Nếu không có phản hồi từ máy chủ
                 }
                 fetchData()
+            }).finally(function() {
+                setIsLoadingComponent(false)
             })
     }
 
@@ -172,7 +191,16 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                     selectObject.status === 'PENDING' ? (
                         <div className="flex gap-2">
                             {/*<button><HiPencil size={20}></HiPencil></button>*/}
-                            <button onClick={() => onOpenDeleteOrderDetail(row.id)}><HiMinus size={20}></HiMinus>
+                            <Button
+                                icon={<HiPencil />}
+                                variant="plain"
+                                onClick={() => {
+                                    setSelectedOrderDetail(row)
+                                    setIsOpenEditQuantity(true)
+                                    document.body.style.overflow = 'hidden'
+                                }}
+                            ></Button>
+                            <button onClick={() => onOpenDeleteOrderDetail(row.id)}><DeleteOutline />
                             </button>
                         </div>
                     ) : (
@@ -230,7 +258,8 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             cell: (props) => {
                 const row = props.row.original
                 return (
-                    <div className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? "text-green-600" : "text-red-600"} `}>
+                    <div
+                        className={`${row.productDetailResponseDTO.quantity >= props.row.original.quantity ? 'text-green-600' : 'text-red-600'} `}>
                         <p>{row.productDetailResponseDTO.quantity}</p>
                     </div>
                 )
@@ -305,6 +334,47 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
 
     const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
 
+    const EditQuantityDialog = () => {
+        const [quantity, setQuantity] = useState<number>(selectedOrderDetail?.quantity || 0)
+        useEffect(() => {
+            setQuantity(selectedOrderDetail?.quantity || 0)
+        }, [selectedOrderDetail])
+        const onDialogEditNumberOk = () => {
+            console.log('OK')
+            selectedOrderDetail && handleUpdateQuantity(selectedOrderDetail?.id, quantity)
+            onClose()
+
+        }
+        const onClose = () => {
+            setIsOpenEditQuantity(false)
+            document.body.style.overflow = 'auto'
+        }
+        return (
+            <Dialog isOpen={isOpenEditQuantity} closable={false}>
+                <h5 className="mb-4">Thay đổi số lượng</h5>
+                <p>Vui lòng nhập số lượng mong muôn:</p>
+                <Input
+                    type={'number'}
+                    min={1}
+                    defaultValue={quantity}
+                    onChange={(el: ChangeEvent<HTMLInputElement>) => setQuantity(Number(el.target.value))}
+                ></Input>
+                <div className="text-right mt-6">
+                    <Button
+                        className="ltr:mr-2 rtl:ml-2"
+                        variant="plain"
+                        onClick={onClose}
+                    >
+                        Hủy
+                    </Button>
+                    <Button variant="solid" onClick={onDialogEditNumberOk}>
+                        Xác nhận
+                    </Button>
+                </div>
+            </Dialog>
+        )
+    }
+
     return (
         <div
             className={`h-full`}>
@@ -348,20 +418,25 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 </Drawer>
             </div>
             <AdaptableCard className="mb-4 h-full">
-                <div className="flex justify-end items-center pb-4 gap-2">
-                    <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
-                            icon={<HiViewList />} onClick={() => openDrawer()}>
-                        Xem lịch sử
-                    </Button>
-                    {
-                        selectObject.status === 'PENDING' && (
-                            <Button block variant="solid" size="sm" className="bg-indigo-500 !w-36" icon={<HiPlusCircle />}
-                                    onClick={() => setIsOpenProductModal(true)}>
-                                Thêm sản phẩm
-                            </Button>
-                        )
-                    }
-
+                <div className={'flex justify-between'}>
+                    <div className={'!text-xl'}>
+                        <IsInStoreOrderFormat status={selectObject.inStore} />
+                    </div>
+                    <div className="flex justify-end items-center pb-4 gap-2">
+                        <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
+                                icon={<HiViewList />} onClick={() => openDrawer()}>
+                            Xem lịch sử
+                        </Button>
+                        {
+                            selectObject.status === 'PENDING' && (
+                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-36"
+                                        icon={<HiPlusCircle />}
+                                        onClick={() => setIsOpenProductModal(true)}>
+                                    Thêm sản phẩm
+                                </Button>
+                            )
+                        }
+                    </div>
                 </div>
                 <div className="max-h-[500px] overflow-y-auto">
                     <Table>
@@ -405,6 +480,8 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                     </Table>
                 </div>
             </AdaptableCard>
+            <EditQuantityDialog />
+
         </div>
     )
 }

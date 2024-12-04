@@ -15,7 +15,7 @@ const TypeOrderFormat = ({ status }: { status: string }) => {
                         className={`flex items-center font-bold ${status === 'INSTORE' ? 'text-green-600' : 'text-blue-600'}`}>
                                 {status === 'INSTORE'
                                     ? <IconAndLabel
-                                        label={'Tại của hàng'}
+                                        label={'Tại cửa hàng'}
                                         icon={<HiOutlineDesktopComputer size={20} />}
                                     />
                                     : status === 'ONLINE'

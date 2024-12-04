@@ -14,7 +14,7 @@ const IsInStoreOrderFormat = ({ status }: { status: boolean }) => {
                     className={`flex items-center font-bold ${status ? 'text-indigo-600' : 'text-yellow-600'}`}>
                     {status ? <IconAndLabel
                         className={'text-green-600'}
-                        label={'Tại của hàng'}
+                        label={'Tại cửa hàng'}
                         icon={<HiOutlinePresentationChartLine size={20} />}
                     /> : <IconAndLabel
                         className={'text-blue-600'}

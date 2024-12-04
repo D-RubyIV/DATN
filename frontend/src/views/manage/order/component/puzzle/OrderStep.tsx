@@ -29,11 +29,11 @@ type HistoryDTO = {
 }
 
 
-type MODE = "FOR_CANCEL" | "FOR_TOSHIP"
+type MODE = 'FOR_CANCEL' | 'FOR_TOSHIP'
 const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO, fetchData: () => Promise<void> }) => {
 
-
-    const [isMode, setIsMode] = useState<MODE>();
+    const { setIsLoadingComponent } = useLoadingContext()
+    const [isMode, setIsMode] = useState<MODE>()
     // Schema xác thực
     const validationSchemaTrade = Yup.object().shape({
         transactionCode: Yup.string()
@@ -42,12 +42,12 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
     })
 
     // Xử lý khi submit form
-    const handleSubmitCancelTrade = async (values: {transactionCode: string}) => {
+    const handleSubmitCancelTrade = async (values: { transactionCode: string }) => {
         console.log(values)
         const data = {
-            amount: selectObject.refund,
+            amount: isMode === 'FOR_TOSHIP' ? selectObject.refund : selectObject.totalPaid,
             tradingCode: values.transactionCode,
-            status: isMode === "FOR_TOSHIP" ? EOrderStatusEnums.TOSHIP : EOrderStatusEnums.CANCELED
+            status: isMode === 'FOR_TOSHIP' ? EOrderStatusEnums.TOSHIP : EOrderStatusEnums.CANCELED
         }
         await instance.post(`orders/refund_and_change_status/${selectObject.id}`, data).then(function(response) {
             console.log(response)
@@ -128,13 +128,15 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         {
             'status': 'PENDING',
             'messages': [
-                'Xác nhận đơn hàng'
+                'Đã xác nhận đơn hàng',
+                'Khách muốn hủy đơn'
             ]
         },
         {
             'status': 'TOSHIP',
             'messages': [
-                'Xác nhận đơn hàng đang được vận chuyển'
+                'Xác nhận đơn hàng đang được vận chuyển',
+                'Khách hàng muốn chỉnh sửa giỏ hàng'
             ]
         },
         {
@@ -172,6 +174,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         }
         await sleepLoading(500).then(async () => {
             instance.put(`/orders/status/change/${selectObject.id}`, data).then(function(response) {
+                setIsLoadingComponent(true)
                 if (response.status === 200) {
                     openNotification('Thay đổi trạng thái thành công')
                     if (status === 'TOSHIP') {
@@ -186,6 +189,8 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 if (error?.response?.data?.error) {
                     openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
                 }
+            }).finally(function(){
+                setIsLoadingComponent(false)
             })
         })
     }
@@ -196,9 +201,10 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 <div className="flex gap-2">
 
                     {
-                        selectObject.type === 'ONLINE'  && selectObject.refund > 0?
+                        selectObject.type === 'ONLINE' && selectObject.refund > 0 ?
                             (
-                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineTruck />}
+                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto"
+                                        icon={<HiOutlineTruck />}
                                         onClick={handleSubmit(async () => {
                                             setIsMode('FOR_TOSHIP')
                                             setIsOpenTradingCodeConfirm(true)
@@ -207,14 +213,15 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                                 </Button>
                             )
                             : (
-                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineTruck />}
+                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto"
+                                        icon={<HiOutlineTruck />}
                                         onClick={handleSubmit(async () => submitChangeStatus('TOSHIP'))}>
                                     Chuyển trạng thái chờ vận chuyển
                                 </Button>
                             )
                     }
                     {
-                        selectObject.type === 'ONLINE' && selectObject.refund > 0?
+                        selectObject.isPayment ?
                             (
                                 <Button block variant="default" size="sm" className="bg-indigo-500"
                                         icon={<HiOutlineHand />}
@@ -287,9 +294,9 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                                             <div className="text-[15px] font-semibold text-center py-5">
                                                 {currentStatus === 'DELIVERED'
                                                     ? 'Đơn hàng được giao thành công'
-                                                        : currentStatus === 'CANCELED'
-                                                            ? 'Trạng thái đơn hàng bị hủy'
-                                                            : null}
+                                                    : currentStatus === 'CANCELED'
+                                                        ? 'Trạng thái đơn hàng bị hủy'
+                                                        : null}
                                             </div>
                                         </Fragment>
                                     )}
@@ -300,7 +307,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
                     </div>
                     <div className="col-span-4"
-                         hidden={currentStatus === 'DELIVERED' || currentStatus === 'CANCELED' }>
+                         hidden={currentStatus === 'DELIVERED' || currentStatus === 'CANCELED'}>
                         <Input
                             placeholder="Nhập nội dung"
                             {...register('note')}
@@ -325,32 +332,33 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         )
     }
 
-    const getLabel = (st: EOrderStatusEnums) =>  {
-        if(st === EOrderStatusEnums.PENDING){
-            return "Chờ xác nhận";
-        }else if(st === EOrderStatusEnums.TOSHIP){
-            return "Chờ vận chuyển";
-        }else if(st === EOrderStatusEnums.TORECEIVE){
-            return "Đang vận chuyển";
-        }else if(st === EOrderStatusEnums.DELIVERED){
-            return "Đã giao hàng"
-        }else if(st === EOrderStatusEnums.CANCELED){
-            return "Đã hủy";
-        }else{
-            return "Không xác định"
+    const getLabel = (st: EOrderStatusEnums) => {
+        if (st === EOrderStatusEnums.PENDING) {
+            return 'Chờ xác nhận'
+        } else if (st === EOrderStatusEnums.TOSHIP) {
+            return 'Chờ vận chuyển'
+        } else if (st === EOrderStatusEnums.TORECEIVE) {
+            return 'Đang vận chuyển'
+        } else if (st === EOrderStatusEnums.DELIVERED) {
+            return 'Đã giao hàng'
+        } else if (st === EOrderStatusEnums.CANCELED) {
+            return 'Đã hủy'
+        } else {
+            return 'Không xác định'
         }
     }
 
 
     return (
-        <div className="bg-white p-5 card card-border min-h-[345px] h-auto">
+        <div className="bg-white p-5 card card-border  h-auto">
             <div className={'max-w-full py-5 overflow-auto'}>
                 {
                     selectObject.historyResponseDTOS.length > 0 ? (
                         <Steps current={selectObject.historyResponseDTOS.length}>
                             {
                                 selectObject.historyResponseDTOS.map((item, index) => (
-                                    <Steps.Item key={index} title={getLabel((item.status as EOrderStatusEnums))} className={'pr-20'} />
+                                    <Steps.Item key={index} title={getLabel((item.status as EOrderStatusEnums))}
+                                                className={'pr-20'} />
                                 ))
                             }
                         </Steps>
@@ -372,7 +380,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 <h5 className="mb-4">Nhập mã giao dịch</h5>
                 <div className={'flex gap-2 pb-4'}>
                     <p className={'text-black'}>Số tiền cần trả lại: </p>
-                    <p className={'text-red-500'}>{selectObject.refund.toLocaleString("vi") + "đ"}</p>
+                    <p className={'text-red-500'}>{isMode === 'FOR_CANCEL' ? `${selectObject.totalPaid.toLocaleString('vi')}` : `${selectObject.refund.toLocaleString('vi')}` + 'đ'}</p>
                 </div>
                 <Formik
                     initialValues={{ transactionCode: '' }}

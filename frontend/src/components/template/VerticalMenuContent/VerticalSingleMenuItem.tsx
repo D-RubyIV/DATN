@@ -35,6 +35,7 @@ const CollapsedItem = ({
 
     return (
         <Tooltip
+            className={'text-black p-2 bg-white border  ml-2'}
             title={t(translateKey) || title}
             placement={direction === 'rtl' ? 'left' : 'right'}
         >

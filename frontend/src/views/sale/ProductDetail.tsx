@@ -257,7 +257,7 @@ const ProductDetail = () => {
                             {listColor.map((item, index) => (
                                 <button
                                     key={index}
-                                    className={`relative hover:bg-gray-200 p-2 aspect-square w-[50px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${selectedColor?.id === item.id ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
+                                    className={`relative hover:bg-gray-200 p-2 aspect-square w-[60px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${selectedColor?.id === item.id ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
                                     disabled={!listColorValid.includes(item.code) && listColorValid.length > 0}
                                     onClick={() => handleColorSelect(item)}
                                 >
@@ -281,7 +281,7 @@ const ProductDetail = () => {
                             {listSize.map((item, index) => (
                                 <button
                                     key={index}
-                                    className={`relative hover:bg-gray-200 p-2 aspect-square w-[50px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${selectedSize?.id === item.id ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
+                                    className={`relative hover:bg-gray-200 p-2 aspect-square w-[60px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${selectedSize?.id === item.id ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
 
                                     disabled={!listSizeValid.includes(item.code) && listSizeValid.length > 0}
                                     onClick={() => handleSizeSelect(item)}

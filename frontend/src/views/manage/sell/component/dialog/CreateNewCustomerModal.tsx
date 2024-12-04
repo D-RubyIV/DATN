@@ -328,7 +328,7 @@ const CreateNewCustomerModal: React.FC<IProps> = ({setIsOpenCreateCustomerModal,
                         <div className={'flex gap-2 py-1'}>
                             <HiOutlineLightBulb size={20} />
                             <p className={'text-yellow-700'}>
-                                Khách hàng tự động đuọc gán vào đon hàng & Địa chỉ tự động được gán mặc định</p>
+                                Khách hàng tự động đuọc gán vào đơn hàng & Địa chỉ tự động được gán mặc định</p>
                         </div>
 
 
