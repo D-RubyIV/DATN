@@ -59,7 +59,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             LEFT JOIN FETCH pd.images
             
          
-            WHERE
+            WHERE 
             (:productId IS NULL OR pd.product.id = :productId)
             AND 
             (
@@ -80,6 +80,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             )
             AND (:createdFrom IS NULL OR pd.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR pd.createdDate <= :createdTo)
+            ORDER BY pd.createdDate DESC
             """)
     Page<ProductDetail> findAllByProductIdWithQuery(
             @Param("productId") Integer productId,
@@ -205,54 +206,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     Page<ProductClientResponse> productClient(@Param("req")FindProductDetailRequest request, Pageable pageable);
 
 
-//    @Query(
-//            """
-//            SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
-//                p.id,
-//                p.code,
-//                p.name,
-//                COUNT(DISTINCT c.id),
-//                COUNT(DISTINCT s.id)
-//            )
-//            FROM Product p
-//            JOIN ProductDetail pd ON p.id = pd.product.id
-//            JOIN Color c ON c.id = pd.color.id
-//            JOIN Size s ON s.id = pd.size.id
-//            WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
-//            AND (:colorCodes IS NULL OR c.code IN :colorCodes)
-//            GROUP BY p.id, p.code, p.name
-//            """
-//    )
-//    Page<ProductResponseOverDTO> findCustomPage(
-//            Pageable pageable,
-//            @Param("sizeCodes") List<String> sizeCodes,
-//             @Param("colorCodes") List<String> colorCodes
-//    );
 
-//    @Query(
-//            """
-//            SELECT new org.example.demo.dto.product.response.properties.ProductResponseOverDTO(
-//                p.id,
-//                p.code,
-//                p.name,
-//                COUNT(DISTINCT c.id),
-//                COUNT(DISTINCT s.id),
-//                MIN(pd.price)
-//            )
-//            FROM Product p
-//            JOIN ProductDetail pd ON p.id = pd.product.id
-//            JOIN Color c ON c.id = pd.color.id
-//            JOIN Size s ON s.id = pd.size.id
-//            WHERE (:sizeCodes IS NULL OR s.code IN :sizeCodes)
-//            AND (:colorCodes IS NULL OR c.code IN :colorCodes)
-//            GROUP BY p.id, p.code, p.name
-//            """
-//    )
-//    Page<ProductResponseOverDTO> findCustomPage(
-//            Pageable pageable,
-//            @Param("sizeCodes") List<String> sizeCodes,
-//            @Param("colorCodes") List<String> colorCodes
-//    );
 
 
 

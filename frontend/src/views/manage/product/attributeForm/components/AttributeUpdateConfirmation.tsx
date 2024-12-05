@@ -17,8 +17,7 @@ import { FormContainer } from '@/components/ui/Form';
 import { AiOutlineSave } from 'react-icons/ai';
 import * as Yup from 'yup';
 import isEmpty from 'lodash/isEmpty'
-import Notification from '@/components/ui/Notification'
-import toast from '@/components/ui/toast'
+import { toast } from 'react-toastify';
 injectReducer('updateAttribute', reducer);
 
 type AttributeUpdateConfirmationProps = {
@@ -58,40 +57,13 @@ const AttributeUpdateConfirmation = ({ apiFunc, label, apiUpdate }: AttributeUpd
         (state) => state.salesAttributeList.data.tableData
     )
 
-    const handleFormSubmit = async (
-        values: AttributeData,
-        // setSubmitting: SetSubmitting
-    ) => {
-        // setSubmitting(true)
-        const success = await updateAttribute(apiUpdate, { values }, values.id);
-        // setSubmitting(false)
-        // if (success) {
-        //     dispatch(getProductDetails(tableData))
-        //     popNotification('updated')
-        // }
-    }
-    const popNotification = (keyword: string) => {
-        toast.push(
-
-            <Notification
-                title={`Successfuly ${keyword}`}
-                type="success"
-                duration={2500}
-            >
-                sử thành công {label}   {keyword}
-            </Notification>,
-            {
-                placement: 'top-center',
-            }
-        )
-        onDialogClose();
-    }
-
     return (
         <Dialog
             isOpen={updateAttributeState}
             onClose={onDialogClose}
             onRequestClose={onDialogClose}
+            shouldCloseOnEsc={false}
+            shouldCloseOnOverlayClick={false}
         >
             <h5 className="mb-4">Sửa {label}</h5>
             <Loading loading={loading}>
@@ -110,11 +82,14 @@ const AttributeUpdateConfirmation = ({ apiFunc, label, apiUpdate }: AttributeUpd
                                 if (success) {
                                     const requestData = { pageIndex, pageSize, sort, query };
                                     dispatch(getAttributes({ apiFunc, requestData }));
-                                    popNotification('updated');
+                                    onDialogClose();
+                                    toast.success(`Cập nhật ${ label } thành công`);
+                                } else {
+                                    onDialogClose();
+                                    toast.error(`Lỗi cập nhật  ${ label }. Vui lòng thử lại.`);
                                 }
                             } catch (error) {
                                 setSubmitting(false);
-                                // Handle error appropriately, e.g., show a notification or log the error
                                 console.error("Update failed:", error);
                             }
                         }}
@@ -135,15 +110,19 @@ const AttributeUpdateConfirmation = ({ apiFunc, label, apiUpdate }: AttributeUpd
                                             component={Input}
                                         />
                                     </FormItem>
-
+                                    <div
+                                        className="-mx-8 px-8 flex items-center justify-between py-4"
+                                    >
+                                        <div> </div>
+                              
                                     <div className="md:flex items-center mt-4">
                                         <Button
-                                            size="sm"
+                                            size="sm" 
                                             className="ltr:mr-3 rtl:ml-3"
                                             type="button"
                                             onClick={onDialogClose}
                                         >
-                                            Discard
+                                            Hủy
                                         </Button>
                                         <Button
                                             size="sm"
@@ -152,8 +131,9 @@ const AttributeUpdateConfirmation = ({ apiFunc, label, apiUpdate }: AttributeUpd
                                             icon={<AiOutlineSave />}
                                             type="submit"
                                         >
-                                            Save
+                                            Lưu
                                         </Button>
+                                    </div>
                                     </div>
                                 </FormContainer>
                             </Form>

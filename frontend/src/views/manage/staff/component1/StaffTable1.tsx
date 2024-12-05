@@ -196,7 +196,7 @@ const StaffTableStaff = () => {
                 </Button>
               </Tooltip>
             </div>
-        );
+        ); 
       },
       size: 100,
     },
@@ -212,7 +212,6 @@ const StaffTableStaff = () => {
       fetchData();
     } catch (error) {
       toast.error('Lỗi cập nhật trạng thái. Vui lòng thử lại.');
-      // console.error('Error updating status:', error);
     }
   };
 

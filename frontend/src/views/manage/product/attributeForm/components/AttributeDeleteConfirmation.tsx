@@ -1,5 +1,4 @@
-import toast from '@/components/ui/toast';
-import Notification from '@/components/ui/Notification';
+import { toast } from 'react-toastify';
 import ConfirmDialog from '@/components/shared/ConfirmDialog';
 import {
     toggleDeleteConfirmation,
@@ -42,18 +41,9 @@ const ProductDeleteConfirmation = ({ apiFunc, apiDelete, lablel }: ProductDelete
         if (success) {
             const requestData = { pageIndex, pageSize, sort, query };
             dispatch(getAttributes({ apiFunc, requestData }));
-            toast.push(
-                <Notification
-                    title={'Successfully Deleted'}
-                    type="success"
-                    duration={2500}
-                >
-                    {lablel} được xóa thành công.
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            );
+            toast.success('Cập nhật trạng thái thành công');
+        } else {
+            toast.error('Lỗi cập nhật trạng thái. Vui lòng thử lại.');
         }
 
     };
@@ -63,8 +53,10 @@ const ProductDeleteConfirmation = ({ apiFunc, apiDelete, lablel }: ProductDelete
         <ConfirmDialog
             isOpen={dialogOpen}
             type="danger"
-            title="Xóa sản phẩm"
+            title={`Xóa ${lablel}`  }
             confirmButtonColor="red-600"
+            cancelText='Hủy'
+            confirmText='Xác nhận'
             onClose={onDialogClose}
             onRequestClose={onDialogClose}
             onCancel={onDialogClose}
@@ -72,7 +64,7 @@ const ProductDeleteConfirmation = ({ apiFunc, apiDelete, lablel }: ProductDelete
         >
             <p>
                 Bạn có chắc chắn muốn ngừng sử dụng {lablel} này không? Tất cả sản phẩm chi tiết liên quan
-                đến sản phẩm này cũng sẽ bị xóa.
+                đến {lablel} này cũng sẽ bị xóa.
             </p>
         </ConfirmDialog>
     );

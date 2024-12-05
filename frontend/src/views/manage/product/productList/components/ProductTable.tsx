@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, ReactNode, ChangeEvent } from 'react'
 import Avatar from '@/components/ui/Avatar'
 import Badge from '@/components/ui/Badge'
-import DataTable from '@/components/shared/DataTable'
+// import DataTable from '@/components/shared/DataTable'
+import DataTable, { CellContext } from '@/components/shared/DataTable';
 import { RiMoonClearLine, RiSunLine } from 'react-icons/ri'
 import ProductDeleteConfirmation from './ProductDeleteConfirmation'
+import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import Switcher from '@/components/ui/Switcher'
 import {
     getProducts,
@@ -29,7 +31,7 @@ type Product = {
     code: string
     // price: number
     deleted: boolean
-    // createdDate: string;
+    // createdDate: string; 
     quantity: number;
 }
 const getInventoryStatus = (quantity: number) => {
@@ -142,11 +144,16 @@ const ProductTable = () => {
             {
                 header: '#',
                 id: 'index',
-                cell: (props:any) => {
-                    const { pageIndex, pageSize } = props.table.getState().pagination; // Lấy thông tin phân trang
-                    const index = (pageIndex) * pageSize + (props.row.index + 1); // Tính số thứ tự
-                    return <span>{index}</span>; // Hiển thị số thứ tự
-                },
+                cell: (props: any) => {
+                    const { pageIndex, pageSize } = useAppSelector(
+                        (state) => state.salesProductList.data.tableData
+                    );
+                    const safePageIndex = pageIndex ?? 0; 
+                    const safePageSize = pageSize ?? 10; 
+                    const index = (safePageIndex-1) * safePageSize + (props.row.index + 1); // Tính số thứ tự
+                    return index;
+                }
+               
             },
             {
                 header: 'Mã',
@@ -232,6 +239,7 @@ const ProductTable = () => {
 
     return (
         <>
+            {data.length > 0 ? (
             <DataTable
                 ref={tableRef}
                 columns={columns}
@@ -248,9 +256,22 @@ const ProductTable = () => {
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
+            ) : (
+                <div className="flex flex-col justify-center items-center h-full">
+                    <DoubleSidedImage
+                        className="max-w-[200px]"
+                            src="/img/others/image-removebg-preview-order-empty.png"
+                            darkModeSrc="/img/others/image-removebg-preview-order-empty.png"
+                    />
+                    <div className="mt-4 text-2xl font-semibold">
+                        Không có sản phẩm nào như mô tả của bạn!!!
+                    </div>
+                </div>
+            )
+            } 
             <ProductDeleteConfirmation />
         </>
     )
 }
-
+ 
 export default ProductTable

@@ -50,6 +50,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
            AND (:createdFrom IS NULL OR p.createdDate >= :createdFrom)
            AND (:createdTo IS NULL OR p.createdDate <= :createdTo)
         GROUP BY p.id, p.code, p.name, p.deleted, p.createdDate, p.updatedDate
+         ORDER BY p.createdDate DESC
         """)
     Page<ProductWithQuantityResponseDTO> findAllByPageWithQueryV2(
             @Param("query") String query,

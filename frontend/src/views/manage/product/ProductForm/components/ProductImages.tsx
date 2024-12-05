@@ -110,10 +110,10 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
         if (file) {
             for (const f of file) {
                 if (!allowedFileTypes.includes(f.type)) {
-                    return 'Please upload a .jpeg or .png file!';
+                    return 'Vui lòng tải lên tệp .jpeg hoặc .png!';
                 }
                 if (f.size >= maxFileSize) {
-                    return 'Upload image cannot exceed 500KB!';
+                    return 'Tải lên hình ảnh không được vượt quá 500KB!';
                 }
             }
         }
@@ -121,54 +121,55 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
     };
 
     const handleUpload = async (files: File[] | null) => {
-        if (!files) return;
+        if (!files || files.length === 0) return;
 
         setLoading(true); // Bật loading khi bắt đầu upload
 
-        const newImages: Image[] = [];
+        // Lấy file mới nhất (file cuối cùng trong mảng)
+        const file = files[files.length - 1];
 
-        for (const file of files) {
-            const formData = new FormData();
-            formData.append("file", file);
+        if (!file) return;
 
-            try {
-                const response = await fetch("http://localhost:8080/api/v1/image/upload", {
-                    method: "POST",
-                    body: formData,
-                });
+        const formData = new FormData();
+        formData.append("file", file);
 
-                if (!response.ok) {
-                    throw new Error('Failed to upload image');
-                }
+        try {
+            const response = await fetch("http://localhost:8080/api/v1/image/upload", {
+                method: "POST",
+                body: formData,
+            });
 
-                const imageUrl = await response.text(); // URL ảnh trả về từ backend
-
-                newImages.push({
-                    id: Date.now(), // ID duy nhất
-                    code: file.name, // Tên file làm mã ảnh
-                    url: imageUrl,   // URL ảnh sau khi upload
-                    deleted: false,
-                    createdDate: new Date().toISOString(),
-                    modifiedDate: new Date().toISOString(),
-                });
-            } catch (error) {
-                console.error("Error uploading image:", error);
-                // Có thể thêm thông báo lỗi ở đây
+            if (!response.ok) {
+                throw new Error('Không tải được hình ảnh lên');
             }
+
+            const imageUrl = await response.text(); // URL ảnh trả về từ backend
+
+            const newImage = {
+                id: Date.now(), // ID duy nhất
+                code: file.name, // Tên file làm mã ảnh
+                url: imageUrl,   // URL ảnh sau khi upload
+                deleted: false,
+                createdDate: new Date().toISOString(),
+                modifiedDate: new Date().toISOString(),
+            };
+
+            const updatedImages = [
+                ...productImages.filter(img => !img.deleted),  // Loại bỏ ảnh bị xóa
+                ...productImages.some(existingImg => existingImg.code === newImage.code && !existingImg.deleted)
+                    ? []  // Nếu đã tồn tại ảnh cùng mã, không thêm mới
+                    : [newImage] // Thêm ảnh mới vào danh sách
+            ];
+
+            dispatch(updateProductImagesByColor({ colorName, images: updatedImages }));
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            // Có thể thêm thông báo lỗi ở đây 
+        } finally {
+            setLoading(false); // Tắt loading khi upload hoàn thành
         }
-
-        const updatedImages = [
-            ...productImages.filter(img => !img.deleted),  // Loại bỏ ảnh bị xóa
-            ...newImages.filter(newImg =>
-                !productImages.some(existingImg =>
-                    existingImg.code === newImg.code && !existingImg.deleted
-                )
-            )
-        ];
-
-        dispatch(updateProductImagesByColor({ colorName, images: updatedImages }));
-        setLoading(false); // Tắt loading khi upload hoàn thành
     };
+
 
     const handleImageDelete = (deletedImg: Image) => {
         const updatedImages = productImages.filter(img => img.id !== deletedImg.id);

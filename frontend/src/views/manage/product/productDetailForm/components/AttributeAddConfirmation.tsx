@@ -10,8 +10,7 @@ import Dialog from '@/components/ui/Dialog';
 import { MouseEvent } from 'react';
 import { FormItem } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
-import Notification from '@/components/ui/Notification';
-import toast from '@/components/ui/toast';
+import { toast } from 'react-toastify';
 import { Option } from '../store';
 import { FormikErrors, FormikTouched } from 'formik';
 import {
@@ -101,22 +100,13 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
                 apiFunc = apiCreateSalesColor;
                 break;
             default:
-                toast.push(
-                    <Notification title={'Error'} type="danger" duration={2500}>
-                        Không có chức năng API cho thuộc tính này.
-                    </Notification>,
-                    { placement: 'top-center' }
-                );
+              
+                toast.error('Không có chức năng API cho thuộc tính này.');
                 return;
         }
 
         if (!addedAttribute) {
-            toast.push(
-                <Notification title={'Error'} type="danger" duration={2500}>
-                    Không có dữ liệu thuộc tính để thêm.
-                </Notification>,
-                { placement: 'top-center' }
-            );
+            toast.error(' Không có dữ liệu thuộc tính để thêm.');
             return;
         }
 
@@ -131,8 +121,8 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
                     code: newlyAddedAttribute.code,
                     name: newlyAddedAttribute.name,
                     deleted: false,
-                    createdDate: newlyAddedAttribute.createdDate || new Date().toISOString(),
-                    modifiedDate: newlyAddedAttribute.modifiedDate || new Date().toISOString(),
+                    // createdDate: newlyAddedAttribute.createdDate || new Date().toISOString(),
+                    // modifiedDate: newlyAddedAttribute.modifiedDate || new Date().toISOString(),
                 };
 
                 const fieldName = labelAttribute === 'brand' || labelAttribute === 'origin' || labelAttribute === 'style' ||
@@ -145,24 +135,15 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
                 setFieldValue(fieldName, newAttributeOption);
 
                 updateOptions(fieldName, newAttributeOption);
-
-                toast.push(
-                    <Notification title={`Thêm nhanh ${labelAttribute}`} type="success" duration={2500}>
-                        Thành công thêm {labelAttribute} {newAttributeOption.name}.
-                    </Notification>,
-                    { placement: 'top-center' }
-                );
+               
+                toast.success(`Thành công thêm ${labelAttribute} ${newAttributeOption.name}.`);
             } else {
+                toast.error('Lỗi khi thêm thuộc tính');
                 throw new Error("Failed to add attribute");
             }
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-            toast.push(
-                <Notification title={'Error'} type="danger" duration={2500}>
-                    {errorMessage}
-                </Notification>,
-                { placement: 'top-center' }
-            );
+            const errorMessage = error instanceof Error ? error.message : 'Một lỗi không xác định đã xảy ra!';
+            toast.error(errorMessage);
         } finally {
             dispatch(toggleAddAttributeConfirmation(false));
         }

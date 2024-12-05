@@ -5,6 +5,7 @@ import { RiMoonClearLine, RiSunLine } from 'react-icons/ri'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { HiOutlinePencil } from 'react-icons/hi'
 import Switcher from '@/components/ui/Switcher'
+import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import {
     Attribute,
     getAttributeByID,
@@ -132,12 +133,6 @@ const AttributeTable = ({ apiFunc, apiDelete, lablel, apiGetByID, apiUpdate }: A
         return (
             <div className="flex w-full justify-start gap-2 items-center">
 
-                {/* <span
-                    className={`cursor-pointer p-2 hover:${textTheme}`}
-                    onClick={onUpdate}
-                >
-                    <HiOutlinePencil size={20} />
-                </span> */}
                 <HiOutlinePencil
                     onClick={onUpdate}
                     size={20}
@@ -161,10 +156,14 @@ const AttributeTable = ({ apiFunc, apiDelete, lablel, apiGetByID, apiUpdate }: A
                 header: '#',
                 id: 'index',
                 cell: (props: any) => {
-                    const { pageIndex, pageSize } = props.table.getState().pagination; // Lấy thông tin phân trang
-                    const index = (pageIndex) * pageSize + (props.row.index + 1); // Tính số thứ tự
-                    return <span>{index}</span>; // Hiển thị số thứ tự
-                },
+                    const { pageIndex, pageSize } = useAppSelector(
+                        (state) => state.salesAttributeList.data.tableData
+                    );
+                    const safePageIndex = pageIndex ?? 0;
+                    const safePageSize = pageSize ?? 10;
+                    const index = (safePageIndex - 1) * safePageSize + (props.row.index + 1); // Tính số thứ tự
+                    return index;
+                }
             },
             {
                 header: 'Mã',
@@ -236,6 +235,7 @@ const AttributeTable = ({ apiFunc, apiDelete, lablel, apiGetByID, apiUpdate }: A
 
     return (
         <>
+            {data.length > 0 ? (
             <DataTable
                 ref={tableRef}
                 columns={columns}
@@ -252,6 +252,19 @@ const AttributeTable = ({ apiFunc, apiDelete, lablel, apiGetByID, apiUpdate }: A
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
+            ) : (
+                <div className="flex flex-col justify-center items-center h-full">
+                    <DoubleSidedImage
+                        className="max-w-[200px]"
+                        src="/img/others/image-removebg-preview-order-empty.png"
+                        darkModeSrc="/img/others/image-removebg-preview-order-empty.png"
+                    />
+                    <div className="mt-4 text-2xl font-semibold">
+                        Không có {lablel} nào!!!
+                    </div>
+                </div>
+            )
+            } 
             <DeleteConfirmation apiDelete={apiDelete} apiFunc={apiFunc} lablel={lablel} />
             <UpdateConfirmation apiFunc={apiFunc} label={lablel} apiUpdate={apiUpdate} />
         </>

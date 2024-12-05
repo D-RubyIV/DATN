@@ -5,8 +5,8 @@ export type Attribute = {
     code: string;
     name: string;
     deleted: boolean;
-    createdDate: string;
-    modifiedDate: string;
+    // createdDate: string;
+    // modifiedDate: string;
 }; 
 
 export type Product = {
