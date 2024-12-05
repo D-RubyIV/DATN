@@ -266,7 +266,7 @@ const EventTable = () => {
                             <li aria-current="page">
                                 <div className="flex items-center">
                                     <span className="mx-2">/</span>
-                                    <span className="text-gray-500">Hóa đơn</span>
+                                    <span className="text-gray-500">Đợt giảm giá</span>
                                 </div>
                             </li>
                         </ol>

@@ -124,12 +124,19 @@ public class EventServiceImpl implements EventService {
 
         // Ánh xạ từ EventDTO sang Event
         Event eventUpdate = EventMapper.toEventEntity(eventDTO);
-        eventUpdate.setId(exitstingEvent.getId());  // Thiết lập ID của event đã tồn tại
+
+        exitstingEvent.setName(eventUpdate.getName());
+        exitstingEvent.setProducts(eventUpdate.getProducts());
+        exitstingEvent.setStatus(eventUpdate.getStatus());
+        exitstingEvent.setStartDate(eventUpdate.getStartDate());
+        exitstingEvent.setEndDate(eventUpdate.getEndDate());
+        exitstingEvent.setDiscountCode(exitstingEvent.getDiscountCode());
+        exitstingEvent.setQuantityDiscount(eventUpdate.getQuantityDiscount());
 
         // Cập nhật trạng thái sự kiện dựa trên thời gian
-        eventUpdate.updateStatusBasedOnTime();
+        exitstingEvent.updateStatusBasedOnTime();
 
-        Event updateEvent = eventRepository.save(eventUpdate);
+        Event updateEvent = eventRepository.save(exitstingEvent);
 
         return EventMapper.toEventDTO(updateEvent);
     }
