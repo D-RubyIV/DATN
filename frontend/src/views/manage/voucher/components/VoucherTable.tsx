@@ -169,8 +169,8 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                 accessorKey: 'status',
                 cell: ({ row }) => {
                     const status = row.original.status;
-                    const isGreen = status === 'Not started yet';
-                    const isRed = status === 'In progress';
+                    const isGreen = status === 'In progress';
+                    const isRed = status === 'Not started yet';
                     const isYellow = status === 'Expired';
 
                     const statusColor = isGreen
