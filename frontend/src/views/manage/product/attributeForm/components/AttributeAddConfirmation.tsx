@@ -12,8 +12,7 @@ import { useState } from 'react';
 import { FormItem } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
 import { Option } from '../store';
-import toast from '@/components/ui/toast';
-import Notification from '@/components/ui/Notification';
+import { toast } from 'react-toastify';
 injectReducer('attributeNew', reducer);
 
 type AttributeAddConfirmationProps = {
@@ -24,12 +23,12 @@ type AttributeAddConfirmationProps = {
 
 const AttributeAddConfirmation = ({ apiFunc, apiAdd, label }: AttributeAddConfirmationProps) => {
     const dispatch = useAppDispatch();
-    const addAttributeState = useAppSelector((state) => state.attributeNew.attributeAdd.addAttribute); // Lấy giá trị addAttribute từ Redux
+    const addAttributeState = useAppSelector((state) => state.attributeNew.attributeAdd.addAttribute); 
     const [inputValue, setInputValue] = useState<string>('');
     const [addedAttribute, setAddedAttribute] = useState<Option | null>(null);
 
     const onDialogClose = () => {
-        dispatch(toggleAddAttributeConfirmation(false)); // Đóng dialog
+        dispatch(toggleAddAttributeConfirmation(false)); 
     };
 
     const generateRandomCode = () => {
@@ -49,8 +48,8 @@ const AttributeAddConfirmation = ({ apiFunc, apiAdd, label }: AttributeAddConfir
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newName = e.target.value;
         setInputValue(newName);
-        const newAttribute = createAttribute(newName); // Tạo attribute mới
-        setAddedAttribute(newAttribute); // Cập nhật addedAttribute
+        const newAttribute = createAttribute(newName); 
+        setAddedAttribute(newAttribute); 
     };
     const { pageIndex, pageSize, sort, query, total } = useAppSelector(
         (state) => state.salesAttributeList.data.tableData
@@ -65,32 +64,25 @@ const AttributeAddConfirmation = ({ apiFunc, apiAdd, label }: AttributeAddConfir
             const requestData = { pageIndex, pageSize, sort, query };
 
             dispatch(getAttributes({ apiFunc, requestData }));
-            toast.push(
-                <Notification
-                    title={'Successfully Deleted'}
-                    type="success"
-                    duration={2500}
-                >
-                    {label} được thêm thành công.
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            );
+            toast.success(`${label} thành công`);
+        } else {
+            toast.error(`Lỗi khi thêm ${label}. Vui lòng thử lại.`);
         }
     };
 
     return (
         <Dialog
-            isOpen={addAttributeState} // Sử dụng addAttribute từ Redux để quyết định xem dialog có mở không
+            isOpen={addAttributeState} 
             onClose={onDialogClose}
             onRequestClose={onDialogClose}
+            shouldCloseOnEsc={false}
+            shouldCloseOnOverlayClick={false}
         >
             <h5 className="mb-4">Thêm {label}</h5>
             <FormItem label={`Tên ${label}`}>
                 <Input
-                    value={inputValue} // Gán giá trị input từ state
-                    onChange={onInputChange} // Xử lý sự kiện onChange
+                    value={inputValue}
+                    onChange={onInputChange}
                 />
             </FormItem>
             <div className="text-right mt-6">

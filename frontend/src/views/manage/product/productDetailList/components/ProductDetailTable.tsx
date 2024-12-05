@@ -8,6 +8,7 @@ import Avatar from '@/components/ui/Avatar'
 import { FaPen, FaEye } from 'react-icons/fa'
 import ProducttDetailUpdateConfirmation from './ProducttDetailUpdateConfirmation'
 import ProductDetailDeleteConfirmation from './ProductDetailDeleteConfirmation'
+import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import { FiPackage } from 'react-icons/fi'
 import {
     getProductDetailId,
@@ -35,7 +36,7 @@ type ChildObject = {
     id: number;
     name: string;
 };
- type Image = {
+type Image = {
     id: number;
     code: string;
     url: string;
@@ -49,6 +50,7 @@ type ProductDetail = {
     code: string;
     name: string;
     createdDate: string;
+    product: ChildObject;
     size: ChildObject;
     color: ChildObject;
     brand?: ChildObject;
@@ -94,16 +96,16 @@ const getInventoryStatus = (quantity: number) => {
 };
 
 const ProductDetailColumn = ({ row }: { row: ProductDetail }) => {
-    const avatar = row.images ? (
-        <Avatar src={row.images && row.images[0]?.url} />
+    const avatar = Array.isArray(row.images) && row.images.length > 0 ? (
+        <Avatar size={50} src={row.images && row.images[0]?.url} />
     ) : (
-        <Avatar icon={<FiPackage />} />
+        <Avatar size={50} icon={<FiPackage />} />
     )
 
     return (
         <div className="flex items-center">
             {avatar}
-            <span className={`ml-2 rtl:mr-2 font-semibold`}>{row.name}</span>
+            <span className={`ml-2 rtl:mr-2 font-semibold`}>{row.product?.name +" màu " + row.color?.name || ""}</span>
         </div>
     )
 }
@@ -112,8 +114,7 @@ const ProductDetailColumn = ({ row }: { row: ProductDetail }) => {
 const ProductDetailTable = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
     const dispatch = useAppDispatch()
-    const{ id  } = useParams();
-    const productId = parseInt(id, 10);
+    const { id } = useParams();
     const { pageIndex, pageSize, sort, query, total } = useAppSelector(
         (state) => state.salesProductDetailList.data.tableData
     )
@@ -127,8 +128,8 @@ const ProductDetailTable = () => {
     )
 
     useEffect(() => {
+        dispatch(setProductId(id));
         fetchData()
-        dispatch(setProductId(productId)); 
     }, [pageIndex, pageSize, sort, id])
 
     const tableData = useMemo(
@@ -182,10 +183,14 @@ const ProductDetailTable = () => {
                 header: '#',
                 id: 'index',
                 cell: (props: any) => {
-                    const { pageIndex, pageSize } = props.table.getState().pagination; // Lấy thông tin phân trang
-                    const index = (pageIndex) * pageSize + (props.row.index + 1); // Tính số thứ tự
-                    return <span>{index}</span>; // Hiển thị số thứ tự
-                },
+                    const { pageIndex, pageSize } = useAppSelector(
+                        (state) => state.salesProductDetailList.data.tableData
+                    );
+                    const safePageIndex = pageIndex ?? 0;
+                    const safePageSize = pageSize ?? 10;
+                    const index = (safePageIndex - 1) * safePageSize + (props.row.index + 1); // Tính số thứ tự
+                    return index;
+                }
             },
 
             {
@@ -280,6 +285,7 @@ const ProductDetailTable = () => {
     };
     return (
         <>
+            {data.length > 0 ? (
             <DataTable
                 ref={tableRef}
                 columns={columns}
@@ -296,8 +302,21 @@ const ProductDetailTable = () => {
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
+            ) : (
+                <div className="flex flex-col justify-center items-center h-full">
+                    <DoubleSidedImage
+                        className="max-w-[200px]"
+                        src="/img/others/image-removebg-preview-order-empty.png"
+                        darkModeSrc="/img/others/image-removebg-preview-order-empty.png"
+                    />
+                    <div className="mt-4 text-2xl font-semibold">
+                        Chưa có sản phẩm nào!!!
+                    </div>
+                </div>
+            )
+            } 
             <ProducttDetailUpdateConfirmation />
-            <ProductDetailDeleteConfirmation/>
+            <ProductDetailDeleteConfirmation />
         </>
     )
 }

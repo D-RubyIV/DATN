@@ -136,7 +136,7 @@ const ProductAddConfirmation = ({ setFieldValue, updateOptions }: ProductAddConf
                 };
 
                  setFieldValue('product', newProductOption);
-                 updateOptions('product', newProductOption);
+                 updateOptions('product', newProductOption); 
                  setFieldValue('description', newProductOption.description);
 
                 toast.push(
@@ -167,6 +167,8 @@ const ProductAddConfirmation = ({ setFieldValue, updateOptions }: ProductAddConf
         <Dialog
             isOpen={openDialog}
             onClose={onDialogClose}
+            shouldCloseOnEsc={false}
+            shouldCloseOnOverlayClick={false}
             onRequestClose={onDialogClose}
         >
             <h5 className="mb-4">Thêm nhanh sản phẩm</h5>

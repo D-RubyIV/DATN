@@ -26,7 +26,7 @@ import reducer, {
     getElasticityData,
     getColorData,
     getSizeData,
-    getMaterialData,
+    getMaterialData, 
     useAppDispatch,
     useAppSelector,
 } from './store';
@@ -218,7 +218,7 @@ const ProductDetailForm = forwardRef<FormikProps<any>, ProductFormProps>((props,
                         <FormContainer>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 <div className="lg:col-span-1">
-                                    <OrganizationFields
+                                    <OrganizationFields 
                                         touched={touched}
                                         errors={errors}
                                         values={values}

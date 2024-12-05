@@ -38,8 +38,8 @@ type Options = {
     code: string;
     name: string;
     deleted: boolean;
-    createdDate: string;
-    modifiedDate: string;
+    // createdDate: string;
+    // modifiedDate: string;
 };
 
 
@@ -60,7 +60,7 @@ type InitialData = {
     texture?: Options | null;
     thickness?: Options | null;
     price?: number;
-    quantity?: number;
+    quantity?: number; 
     mass?:number;
     description?:string;
 
@@ -258,7 +258,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
             validationSchema={validationSchema}
             onSubmit={(values, { setSubmitting }) => {
                 onFormSubmit?.(combinations.data, setSubmitting)
-                // console.log(combinations.data)
+                dispatch(setCombinations([])); 
             }}
         >
             {({ values, touched, errors, isSubmitting, setFieldValue }) => {
@@ -282,9 +282,9 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                     }
                     //  else
                     //  {
-                    //     dispatch(setCombinations([])); // Xóa nếu không có thuộc tính nào
+                    //     dispatch(setCombinations([])); 
                     // }
-                }, [values,]);
+                }, [values]);
 
                 const productCombinations = useAppSelector((state) => state.dataDetailedProduct.detailedProduct.data) || [];
 
@@ -342,7 +342,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                                         type="button"
                                         onClick={() => onDiscard?.()}
                                     >
-                                        Quay lại 
+                                        Quay lại  
                                     </Button>
                                     <Button
                                         size="sm"

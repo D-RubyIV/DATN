@@ -1,6 +1,6 @@
-import toast from '@/components/ui/toast'
-import Notification from '@/components/ui/Notification'
+
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import { toast } from 'react-toastify';
 import {
     deleteProductDetail,
     toggleDeleteConfirmation,
@@ -31,26 +31,19 @@ const ProductDetailDeleteConfirmation = () => {
         const success = await deleteProductDetail({ id: selectedProduct })
         if (success) {
         dispatch(getProductDetails(tableData))
-            toast.push( 
-                <Notification
-                    title={'Successfuly Deleted'}
-                    type="success"
-                    duration={2500}
-                >
-                    Product successfuly deleted
-                </Notification>,
-                {
-                    placement: 'top-center',
-                }
-            )
+            toast.success('Cập nhật trạng thái thành công');
+        }else{
+            toast.error('Lỗi cập nhật trạng thái. Vui lòng thử lại.');
         }
     }
-
+ 
     return (
         <ConfirmDialog
             isOpen={dialogOpen}
             type="danger"
             title="Xóa sản phẩm"
+            cancelText='Hủy'
+            confirmText='Xác nhận'
             confirmButtonColor="red-600"
             onClose={onDialogClose}
             onRequestClose={onDialogClose}

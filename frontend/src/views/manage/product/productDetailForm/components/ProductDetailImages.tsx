@@ -15,7 +15,7 @@ type FormModel = {
     images: Image[]
     [key: string]: unknown
 }
-
+ 
 type ImageListProps = {
     images: Image[]
     onImageDelete: (img: Image) => void
@@ -115,11 +115,11 @@ const ProductDetailImages = (props: ProductImagesProps) => {
         if (file) {
             for (const f of file) {
                 if (!allowedFileType.includes(f.type)) {
-                    valid = 'Please upload a .jpeg or .png file!'
+                    valid = 'Vui lòng tải lên tệp .jpeg hoặc .png!'
                 }
 
                 if (f.size >= maxFileSize) {
-                    valid = 'Upload image cannot more then 500kb!'
+                    valid = 'Tải lên hình ảnh không được vượt quá 500KB!'
                 }
             }
         }
@@ -147,11 +147,11 @@ const ProductDetailImages = (props: ProductImagesProps) => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to upload image');
+                throw new Error('Không tải được hình ảnh lên');
             }
 
             const imageUrl = await response.text();
-            const image = {
+            const image = { 
                 id: Date.now(),
                 code: latestFile.name,
                 url: imageUrl,

@@ -132,8 +132,8 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
                     code: newlyAddedAttribute.code,
                     name: newlyAddedAttribute.name,
                     deleted: false,
-                    createdDate: newlyAddedAttribute.createdDate || new Date().toISOString(),
-                    modifiedDate: newlyAddedAttribute.modifiedDate || new Date().toISOString(),
+                    // createdDate: newlyAddedAttribute.createdDate || new Date().toISOString(),
+                    // modifiedDate: newlyAddedAttribute.modifiedDate || new Date().toISOString(),
                 };
 
                 const fieldName = nameAttribute === 'brand' || nameAttribute === 'origin' || nameAttribute === 'style' ||
@@ -179,6 +179,8 @@ const AttributeAddConfirmation = ({ setFieldValue, updateOptions, ...props }: Or
             isOpen={openDialog}
             onClose={onDialogClose}
             onRequestClose={onDialogClose}
+            shouldCloseOnEsc={false}
+            shouldCloseOnOverlayClick={false}
         >
             <h5 className="mb-4">Thêm nhanh {labelAttribute}</h5>
             <FormItem label={`Tên ${labelAttribute}`}>

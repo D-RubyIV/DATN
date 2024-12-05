@@ -33,7 +33,7 @@ const ProductNew = () => {
             );
             return false; // Trả về false nếu có lỗi
         }
-    }
+    } 
 
     const handleFormSubmit = async (
         formData:   DetailedProduct[] , // Có thể là một đối tượng hoặc mảng

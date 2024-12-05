@@ -1,7 +1,7 @@
 import Button from '@/components/ui/Button';
 import Loading from '@/components/shared/Loading'
-import Notification from '@/components/ui/Notification'
-import toast from '@/components/ui/toast'
+
+import { toast } from 'react-toastify';
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import Dialog from '@/components/ui/Dialog';
 import ProductDetailForm, {
@@ -54,27 +54,14 @@ const ProducttDetailUpdateConfirmation = () => {
         const success = await updateProductDetailId(values, values.id)
         setSubmitting(false)
         if (success) {
+            onDialogClose();
             dispatch(getProductDetails(tableData))
-            popNotification('updated')
+            toast.success(`Cập nhật thành công sản phẩm  ${dialogTitle} màu ${selectedProduct?.color?.name} (size ${selectedProduct?.size?.name})`);
+        } else {
+            onDialogClose();
+            toast.error(`Lỗi cập nhật sản phẩm ${dialogTitle} màu ${selectedProduct?.color?.name} (size ${selectedProduct?.size?.name}) . Vui lòng thử lại.`);
         }
     }
-    const popNotification = (keyword: string) => {
-        toast.push(
-            
-            <Notification
-                title={`Successfuly ${keyword}`}
-                type="success"
-                duration={2500}
-            >
-                sử thành công sản phẩm  {keyword}
-            </Notification>,
-            {
-                placement: 'top-center',
-            }
-        )
-        onDialogClose();
-    }
-
 
     const handleDiscard = () => {
         console.log('Hủy bỏ thay đổi');
