@@ -201,7 +201,7 @@ const AddEvent = () => {
                                         asterisk label="Tên đợt giảm giá" invalid={!!errors.name && touched.name} errorMessage={errors.name}
                                     >
                                         <Field type="text" autoComplete="on" name="name" style={{ height: '44px' }}
-                                            placeholder="Tên khách hàng..." component={Input} />
+                                            placeholder="Tên đợt giảm giá..." component={Input} />
                                     </FormItem>
 
                                     <FormItem

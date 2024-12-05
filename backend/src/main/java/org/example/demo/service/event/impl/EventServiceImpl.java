@@ -86,7 +86,7 @@ public class EventServiceImpl implements EventService {
 
         // Chuyển đổi EventDTO thành entity Event
         Event event = EventMapper.toEventEntity(eventDTO);
-
+        System.out.println(event);
         // Xử lý các sản phẩm và thêm vào sự kiện
         if (event.getProducts() != null) {
             List<Product> managedProducts = new ArrayList<>();

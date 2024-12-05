@@ -25,7 +25,7 @@ const validationSchema = Yup.object().shape({
 })
 
 const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
-    const { disableSubmit = false, className, signInUrl = '/sign-in' } = props
+    const { disableSubmit = false, className, signInUrl = '/auth/sign-in' } = props
 
     const [emailSent, setEmailSent] = useState(false)
 

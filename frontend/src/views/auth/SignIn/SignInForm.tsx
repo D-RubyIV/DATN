@@ -33,7 +33,7 @@ const SignInForm = (props: SignInFormProps) => {
     const {
         disableSubmit = false,
         className,
-        forgotPasswordUrl = '/forgot-password',
+        forgotPasswordUrl = '/auth/forgot-password',
         signUpUrl = '/sign-up',
     } = props
 
