@@ -136,6 +136,7 @@ const EventTable = () => {
                 toast.success('Xóa thành công')
                 setData(data.filter(data => data.id !== selectedEventId))
                 setIsOpen(false)
+                fetchEvent(pageIndex, pageSize, query, statusFilter, dateRange)
             } catch (error) {
                 toast.error('Xóa thất bại')
             }
