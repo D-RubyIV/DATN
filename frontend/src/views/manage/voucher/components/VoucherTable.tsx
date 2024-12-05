@@ -169,37 +169,39 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                 accessorKey: 'status',
                 cell: ({ row }) => {
                     const status = row.original.status;
-                    const isGreen = status === 'In progress';
-                    const isRed = status === 'Not started yet';
-                    const isYellow = status === 'Expired';
-
-                    const statusColor = isGreen
-                        ? 'bg-green-600'
-                        : isRed
-                            ? 'bg-red-600'
-                            : isYellow
-                                ? 'bg-yellow-600'
-                                : 'bg-gray-500';
-
-                    const textColor = isGreen || isYellow ? 'text-green-600' : 'text-red-600';
-
+            
+                    let statusColor, textColor, statusText;
+            
+                    if (status === 'In progress') {
+                        statusColor = 'bg-green-600';
+                        textColor = 'text-green-600';
+                        statusText = 'Đang diễn ra';
+                    } else if (status === 'Not started yet') {
+                        statusColor = 'bg-red-600';
+                        textColor = 'text-red-600';
+                        statusText = 'Chưa bắt đầu';
+                    } else if (status === 'Expired') {
+                        statusColor = 'bg-yellow-600';
+                        textColor = 'text-yellow-600';
+                        statusText = 'Đã kết thúc';
+                    } else {
+                        statusColor = 'bg-gray-500';
+                        textColor = 'text-gray-500';
+                        statusText = 'Không xác định';
+                    }
+            
                     return (
                         <span className={`flex items-center font-bold ${textColor}`}>
                             <span
                                 className={`inline-block w-2 h-2 rounded-full mr-2 ${statusColor}`}
                             ></span>
-                            {status === 'Not started yet'
-                                ? 'Chưa bắt đầu'
-                                : status === 'In progress'
-                                    ? 'Đang diễn ra'
-                                    : status === 'Expired'
-                                        ? 'Đã kết thúc'
-                                        : 'Không xác định'}
+                            {statusText}
                         </span>
                     );
                 },
                 size: 100,
             },
+            
             {
                 header: 'Hành động',
                 id: 'action',
