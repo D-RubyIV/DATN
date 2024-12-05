@@ -59,6 +59,7 @@ const AddEvent = () => {
         discountPercent: Yup.number().required('Giá trị giảm là bắt buộc').min(0).max(100),
         startDate: Yup.string().required('Ngày bắt đầu là bắt buộc'),
         endDate: Yup.string().required('Ngày kết thúc là bắt buộc'),
+        // VALIDATE NGAY SAU NHO HON NGAY TRUOC QUAN TITY
     });
 
     useEffect(() => {
@@ -94,28 +95,30 @@ const AddEvent = () => {
             console.log('Ngày bắt đầu (trước khi chuyển đổi):', values.startDate);
             console.log('Ngày kết thúc (trước khi chuyển đổi):', values.endDate);
 
-            const startDate = dayjs(values.startDate, "DD-MM-YYYY HH:mm", true);
-            const endDate = dayjs(values.endDate, "DD-MM-YYYY HH:mm", true);
+            // const startDate = dayjs(values.startDate, "DD-MM-YYYY HH:mm", true);
+            // const endDate = dayjs(values.endDate, "DD-MM-YYYY HH:mm", true);
 
-            if (!startDate.isValid() || !endDate.isValid()) {
-                toast.error("Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
-                setSubmitting(false);
-                return;
-            }
+            // if (!startDate.isValid() || !endDate.isValid()) {
+            //     toast.error("Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
+            //     setSubmitting(false);
+            //     return;
+            // }
 
-            // Chuyển đổi startDate và endDate thành chuỗi đúng định dạng
-            const formattedStartDate = dayjs(startDate).format("DD-MM-YYYYTHH:mm");
-            const formattedEndDate = dayjs(endDate).format("DD-MM-YYYYTHH:mm");
+            // // Chuyển đổi startDate và endDate thành chuỗi đúng định dạng
+            // const formattedStartDate = dayjs(startDate).format("DD-MM-YYYYTHH:mm");
+            // const formattedEndDate = dayjs(endDate).format("DD-MM-YYYYTHH:mm");
 
-            console.log('Ngày bắt đầu (sau khi chuyển đổi):', formattedStartDate); // Log ngày bắt đầu sau khi chuyển đổi
-            console.log('Ngày kết thúc (sau khi chuyển đổi):', formattedEndDate); // Log ngày kết thúc sau khi chuyển đổi
+            // console.log('Ngày bắt đầu (sau khi chuyển đổi):', formattedStartDate); // Log ngày bắt đầu sau khi chuyển đổi
+            // console.log('Ngày kết thúc (sau khi chuyển đổi):', formattedEndDate); // Log ngày kết thúc sau khi chuyển đổi
 
             // Tạo payload gửi lên backend
+             
+
             const formattedPayload = {
                 name: values.name,
                 discountPercent: values.discountPercent,
-                startDate: formattedStartDate,
-                endDate: formattedEndDate,
+                startDate: values.startDate,
+                endDate: values.endDate,
                 productDTOS: productIds.map((id) => ({ id })), // Chỉ gửi ID của các sản phẩm được chọn
             };
 
@@ -191,7 +194,7 @@ const AddEvent = () => {
                                         asterisk label="Tên đợt giảm giá" invalid={!!errors.name && touched.name} errorMessage={errors.name}
                                     >
                                         <Field type="text" autoComplete="on" name="name" style={{ height: '44px' }}
-                                            placeholder="Tên khách hàng..." component={Input} />
+                                            placeholder="Tên đợt giảm giá..." component={Input} />
                                     </FormItem>
 
                                     <FormItem
@@ -201,6 +204,7 @@ const AddEvent = () => {
                                             placeholder="Giá trị giảm(%)..." component={Input} />
                                     </FormItem>
 
+
                                     <FormItem
                                         asterisk
                                         label="Ngày bắt đầu"
@@ -209,33 +213,46 @@ const AddEvent = () => {
                                     >
                                         <Field name="startDate">
                                             {({ field, form }: any) => {
-                                                // Đảm bảo giá trị đã được định dạng chính xác khi khởi tạo
-                                                const formattedValue = field.value
-                                                    ? dayjs(field.value, "DD-MM-YYYY HH:mm").isValid()
-                                                        ? dayjs(field.value, "DD-MM-YYYY HH:mm").toDate()
-                                                        : null
-                                                    : null;
-
                                                 return (
-                                                    <DateTimepicker
-                                                        {...field}
-                                                        value={formattedValue} // Đảm bảo rằng giá trị được định dạng chính xác
-                                                        onChange={(date: Date | null) => {
-                                                            const formattedDate = date ? dayjs(date).format("DD-MM-YYYY HH:mm") : "";
-                                                            form.setFieldValue("startDate", formattedDate);
-                                                            console.log('Ngày đã chọn:', formattedDate); // Log để kiểm tra
-                                                        }}
-                                                        onBlur={() => form.setFieldTouched(field.name, true)} // Đánh dấu là đã được chạm vào khi người dùng click ra ngoài
-                                                    />
+                                                    <DateTimepicker onChange={(el) => {
+                                                        console.log(el)
+                                                        const date = dayjs(el)
+                                                        const formattedDate = date.format('DD-MM-YYYYTHH:mm');
+                                                        console.log(formattedDate)
+                                                        setFieldValue("startDate", formattedDate);
+                                                    }} />
+                
                                                 );
                                             }}
                                         </Field>
-
-
                                     </FormItem>
 
+                                    <FormItem
+                                        asterisk
+                                        label="Ngày kết thúc"
+                                        invalid={!!errors.endDate && touched.endDate}
+                                        errorMessage={errors.endDate}
+                                    >
+                                        <Field name="endDate">
+                                            {({ field, form }: any) => {
+                                                return (
+                                                    <DateTimepicker onChange={(el) => {
+                                                        console.log(el)
+                                                        const date = dayjs(el)
+                                                        const formattedDate = date.format('DD-MM-YYYYTHH:mm');
+                                                        console.log(formattedDate)
+                                                        setFieldValue("endDate", formattedDate);
 
+                                                    }} />
+                                                );
+                                            }}
+                                        </Field>
+                                    </FormItem>
+                           
 
+                      
+
+{/* 
                                     <FormItem
                                         asterisk
                                         label="Ngày kết thúc"
@@ -262,7 +279,7 @@ const AddEvent = () => {
                                                 );
                                             }}
                                         </Field>
-                                    </FormItem>
+                                    </FormItem> */}
 
 
 
