@@ -167,4 +167,14 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     public ResponseEntity<?> unlinkCustomer(@PathVariable Integer id) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.unLinkCustomer(id)));
     }
+
+    @GetMapping(value = "cancel-payment-customer/{id}")
+    public ResponseEntity<?> cancelPayment(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.handle_cancel_payment_online_order(id)));
+    }
+
+    @GetMapping(value = "is-payment-change/{id}")
+    public ResponseEntity<?> onIsPayment(@PathVariable Integer id, @RequestParam(value = "amount") Double amount) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.handle_is_payment_online_order(id, amount)));
+    }
 }

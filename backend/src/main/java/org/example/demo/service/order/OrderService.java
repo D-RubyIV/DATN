@@ -685,6 +685,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return get_discount_of_order_that_time(order) - get_discount_of_order_that_time(order);
     }
 
+    @Transactional
     public void reloadSubTotalOrder(Order order) {
 
         // tổng tiền các sản phẩm(tính cả event)
@@ -829,6 +830,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return order;
     }
 
+    @Transactional
     public void minusProductDetailsQuantity(Order order) {
         List<OrderDetail> orderDetails = order.getOrderDetails();
         for (OrderDetail orderDetail : orderDetails) {
@@ -864,7 +866,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
-
     private void sendEmail(Order order, String note) {
         executorService.submit(() -> {
             try {
@@ -881,7 +882,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         });
     }
 
-    private void rollback_quantity_order(Order order) {
+    @Transactional
+    public void rollback_quantity_order(Order order) {
         List<OrderDetail> orderDetails = order.getOrderDetails().stream().filter(s -> !s.getDeleted()).toList();
         for (OrderDetail orderDetail : orderDetails) {
             int orderQuantity = orderDetail.getQuantity();
@@ -891,7 +893,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
-    private void decreaseQuantityVoucher(Voucher voucher) {
+    @Transactional
+    public void decreaseQuantityVoucher(Voucher voucher) {
         int currentQuantity = voucher.getQuantity();
         if (currentQuantity > 0) {
             voucher.setQuantity(currentQuantity - 1);
@@ -899,13 +902,15 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
-    private void increaseQuantityVoucher(Voucher voucher) {
+    @Transactional
+    public void increaseQuantityVoucher(Voucher voucher) {
         int currentQuantity = voucher.getQuantity();
         voucher.setQuantity(currentQuantity + 1);
         voucherRepository.save(voucher);
     }
 
-    private void auto_fill_best_voucher_for_inStore_order(Order order) {
+    @Transactional
+    public void auto_fill_best_voucher_for_inStore_order(Order order) {
         if (order.getInStore()) {
             Voucher oldVoucher = order.getVoucher();
             Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
@@ -944,6 +949,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
+    @Transactional
     public Order unLinkCustomer(Integer id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         reloadSubTotalOrder(order);
@@ -959,5 +965,33 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         if(order.getStatus() == Status.CANCELED){
             throw new CustomExceptions.CustomBadRequest("Hóa đơn này đã bị hủy trước đó");
         }
+    }
+
+    @Transactional
+    public Order handle_cancel_payment_online_order(Integer id){
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
+
+        Status oldStatus = order.getStatus();
+        if(oldStatus != Status.CANCELED){
+            order.setStatus(Status.CANCELED);
+            historyService.createNewHistoryObject(order, Status.CANCELED, "Khách hàng hủy giao dịch");
+            return orderRepository.save(order);
+        }
+        return order;
+    }
+
+    @Transactional
+    public Order handle_is_payment_online_order(Integer id, Double amount){
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
+        if(!order.getIsPayment()){
+            order.setIsPayment(true);
+            historyService.createNewHistoryObject(order, Status.PENDING, String.format("Khách hàng đã thanh toán %s ", amount));
+            reloadSubTotalOrder(order);
+            order.setTotalPaid(order.getTotal());
+            entityManager.flush();
+            reloadSubTotalOrder(order);
+            return orderRepository.save(order);
+        }
+        return order;
     }
 }
