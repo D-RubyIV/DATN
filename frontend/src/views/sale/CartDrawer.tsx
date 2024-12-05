@@ -132,13 +132,13 @@ const CartDrawer = () => {
                 </div>
                 <div className="text-right mt-6">
                     <Button
-                        className="ltr:mr-2 rtl:ml-2"
+                        className="ltr:mr-2 rtl:ml-2 hover:!bg-gray-300 !rounded-none"
                         variant="plain"
                         onClick={onClose}
                     >
                         Hủy
                     </Button>
-                    <Button variant="solid" onClick={onSubmit}>
+                    <Button variant="solid" className={'bg-white !text-black !border-black border !rounded-none hover:!bg-gray-300'} onClick={onSubmit}>
                         Xác nhận
                     </Button>
                 </div>

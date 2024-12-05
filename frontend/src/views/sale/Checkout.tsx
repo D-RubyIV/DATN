@@ -273,10 +273,6 @@ const Checkout = () => {
         }
     }, [formValues])
 
-    useEffect(() => {
-
-    }, [paymentMethod])
-
     const customHandleSubmit = async (data: VoucherFormValues) => {
         event?.preventDefault()
         // Giả sử bạn có logic kiểm tra mã giảm giá với API hoặc điều kiện khác
@@ -417,6 +413,7 @@ const Checkout = () => {
 
 
     useEffect(() => {
+        console.log("----------------")
         setValuesFormRecipient('recipientName', (selectedCart as CartResponseDTO)?.recipientName ?? '')
         setValuesFormRecipient('email', (selectedCart as CartResponseDTO)?.email ?? '')
         setValuesFormRecipient('phone', (selectedCart as CartResponseDTO)?.phone ?? '')
@@ -437,6 +434,7 @@ const Checkout = () => {
     }, [selectedCart])
 
     useEffect(() => {
+        console.log("++++++++++++++++")
         console.log(IAddress)
         if (IAddress.iprovince) {
             console.log('Change provine')

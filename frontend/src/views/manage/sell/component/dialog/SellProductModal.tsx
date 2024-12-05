@@ -603,7 +603,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleSizeChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listSize}
                                 ></Select>
                             </div>
@@ -613,7 +613,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     onChange={handleColorChange}
                                     isClearable
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listColor}
                                 ></Select>
                             </div>
@@ -623,7 +623,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleProductChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listProduct}
                                 ></Select>
                             </div>
@@ -632,7 +632,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                 <Select
                                     isClearable
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listTexture}
                                     onChange={handleTextureChange}
                                 ></Select>
@@ -644,7 +644,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                 <Select
                                     isClearable
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listOrigin}
                                     onChange={handleOriginChange}
                                 ></Select>
@@ -656,7 +656,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleCollarChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listCollar}
                                 ></Select>
                             </div>
@@ -666,7 +666,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleSleeveChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listSleeve}
                                 ></Select>
                             </div>
@@ -676,7 +676,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleThicknessChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listThickness}
                                 ></Select>
                             </div>
@@ -686,7 +686,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleElasticityChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listElasticity}
                                 ></Select>
                             </div>
@@ -696,7 +696,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleBrandChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listBrand}
                                 ></Select>
                             </div>
@@ -706,7 +706,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     isClearable
                                     onChange={handleMaterialChange}
                                     size={'sm'}
-                                    placeholder="Please Select"
+                                    placeholder="Vui lòng chọn"
                                     options={listMaterial}
                                 ></Select>
                             </div>

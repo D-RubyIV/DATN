@@ -39,10 +39,10 @@ const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
                 <NumericFormat
                     displayType="text"
                     value={(Math.round((value as number) * 100) / 100).toFixed(
-                        2
+                        0
                     )}
                     prefix={prefix}
-                    suffix={'₫'}
+                    suffix={' ₫'}
                     thousandSeparator={true}
                     allowNegative={false}
                 />

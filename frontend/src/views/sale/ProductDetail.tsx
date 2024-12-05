@@ -180,7 +180,10 @@ const ProductDetail = () => {
                 openNotification('Thêm vào giỏ hàng thành công')
                 getCartDetailInCard()
             }
-
+        }).catch(function(error) {
+            if (error?.response?.data?.error) {
+                openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+            }
         })
     }
 

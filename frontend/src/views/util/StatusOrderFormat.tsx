@@ -7,7 +7,7 @@ const StatusOrderFormat = ({ status }: { status: string }) => {
             <Button
                 size="xs"
                 variant="plain"
-                className={`bg-white ${status === 'PENDING'
+                className={`bg-white bg-opacity-0 ${status === 'PENDING'
                     ? '!text-yellow-500'
                     : status === 'TOSHIP'
                         ? '!text-blue-500'

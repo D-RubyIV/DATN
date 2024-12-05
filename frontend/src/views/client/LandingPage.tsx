@@ -24,7 +24,7 @@ function LandingPage() {
     const Display: React.FC<{ title: string }> = ({ title }) => (
         <div className="absolute bottom-[23%] left-[8%] font-poppins text-white">
             <div className="max-w-[600px]">
-                <h2 className="text-[30px] md:text-pretty unica-one-regular text-white">{title}</h2>
+                <h2 className="text-[30px] md:text-pretty unica-one-regular text-white text-shadow-sm">{title}</h2>
             </div>
             <div>
                 <Link to="/" className="underline underline-offset-2">
