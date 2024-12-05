@@ -33,7 +33,7 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                         </div>
                     </div>
                     <p className="text-lg text-white opacity-80">
-                        Website CANTH là trang thương mại điện tử giúp người mua mua, bán và thanh toán dễ dàng
+                        Website CANTH là một trang thương mại điện tử giúp người mua mua, bán và thanh toán dễ dàng
                     </p>
                 </div>
                 <span className="text-white">

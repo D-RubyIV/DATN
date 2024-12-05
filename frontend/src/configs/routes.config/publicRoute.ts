@@ -20,6 +20,12 @@ const publicRoute: Routes = [
         component: lazy(() => import('@/views/sale/ResetPassword')),
         authority: []
     },
+    // {
+    //     key: 'private',
+    //     path: `/private/forgot-password`,
+    //     component: lazy(() => import('@/views/auth/ForgotPassword/ForgotPasswordForm')),
+    //     authority: []
+    // },
     {
         key: 'cart',
         path: `/cart`,

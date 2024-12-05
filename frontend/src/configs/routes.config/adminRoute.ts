@@ -9,7 +9,6 @@ const adminRoute: Routes = [
         component: lazy(() => import('@/views/manage/statistics/SalesDashboard')),
         authority: []
     },
-    
     {
         key: 'customerManager',
         path: `manage/customer`,

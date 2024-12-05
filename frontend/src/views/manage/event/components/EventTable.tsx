@@ -11,6 +11,7 @@ import Dialog from '@/components/ui/Dialog'
 import { toast } from 'react-toastify'
 import instance from '@/axios/CustomAxios'
 import { OrderTable } from '@/views/manage/order/component/core/OrderTable'
+import * as Yup from 'yup';
 
 type EventListDTO = {
     id: number;
@@ -36,6 +37,9 @@ const EventTable = () => {
     const [dialogIsOpen, setIsOpen] = useState(false)
     const [selectedEventId, setSelectedEventId] = useState<number | null>(null)
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
+
+
+
 
     // api GetAll, Search, Filter Status
     const fetchEvent = async (

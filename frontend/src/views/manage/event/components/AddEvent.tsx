@@ -31,7 +31,7 @@ const AddEvent = () => {
     const initialProductDTOState: ProductDTO = {
         id: '',
         code: '',
-        name: ''
+        name: '',
     }
 
     const initialEventState: EventDTO = {
@@ -43,32 +43,37 @@ const AddEvent = () => {
         endDate: null,
         quantityDiscount: 0,
         status: '',
-        productDTOS: [initialProductDTOState]
+        productDTOS: [initialProductDTOState],
     }
 
-    const navigate = useNavigate()
-    const [product, setProduct] = useState<ProductDTO[]>([]) // Ensure product is an array
-    const [total, setTotal] = useState(0)
-    const [pageIndex, setPageIndex] = useState(1)
-    const [pageSize, setPageSize] = useState(5)
-    const [selectedProducts, setSelectedProducts] = useState<string[]>([])
+    const navigate = useNavigate();
+    const [product, setProduct] = useState<ProductDTO[]>([]); // Ensure product is an array
+    const [total, setTotal] = useState(0);
+    const [pageIndex, setPageIndex] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
-    // Validation schema
-    const validationSchema = Yup.object({
-        name: Yup.string().required('Tên đợt giảm giá là bắt buộc'),
-        discountPercent: Yup.number().required('Giá trị giảm là bắt buộc').min(0).max(100),
-        startDate: Yup.string().required('Ngày bắt đầu là bắt buộc'),
-        endDate: Yup.string().required('Ngày kết thúc là bắt buộc')
-        // VALIDATE NGAY SAU NHO HON NGAY TRUOC QUAN TITY
-    })
-    useEffect(() => {
-        console.log('selectedProducts')
-        console.log(selectedProducts)
-    }, [])
+    const validationSchema = Yup.object().shape({
+        name: Yup.string()
+            .required('Tên đợt giảm giá là bắt buộc')
+            .min(3, 'Tên phải có ít nhất 3 ký tự'),
+        discountPercent: Yup.number()
+            .required('Giá trị giảm là bắt buộc')
+            .min(0, 'Giá trị giảm phải lớn hơn hoặc bằng 0')
+            .max(100, 'Giá trị giảm không được vượt quá 100'),
+        startDate: Yup.date()
+            .required('Ngày bắt đầu là bắt buộc')
+            .typeError('Ngày bắt đầu không hợp lệ'),
+        endDate: Yup.date()
+            .required('Ngày kết thúc là bắt buộc')
+            .typeError('Ngày kết thúc không hợp lệ')
+            .min(Yup.ref('startDate'), 'Ngày kết thúc phải sau ngày bắt đầu'),
+    });
+
 
     useEffect(() => {
-        fetchProductDTO(pageIndex, pageSize)
-    }, [pageIndex, pageSize])
+        fetchProductDTO(pageIndex, pageSize);
+    }, [pageIndex, pageSize]);
 
     // api Product
     const fetchProductDTO = async (pageIndex: number, pageSize: number) => {
@@ -78,26 +83,26 @@ const AddEvent = () => {
                     page: pageIndex,
                     size: pageSize
                 }
-            })
+            });
             // Ensure product is an array
             if (Array.isArray(response.data.content)) {
-                setProduct(response.data.content)
-                setTotal(response.data.totalElements)
+                setProduct(response.data.content);
+                setTotal(response.data.totalElements);
             } else {
-                setProduct([]) // Set empty array if not an array
+                setProduct([]); // Set empty array if not an array
             }
         } catch (error) {
-            console.error('Error fetching products:', error)
+            console.error('Error fetching products:', error);
         }
     }
 
     const handleSubmit = async (values: EventDTO, { resetForm, setSubmitting }: FormikHelpers<EventDTO>) => {
         try {
-            const productIds = selectedProducts
+            const productIds = selectedProducts;
 
             // Log giá trị startDate và endDate trước khi chuyển đổi
-            console.log('Ngày bắt đầu (trước khi chuyển đổi):', values.startDate)
-            console.log('Ngày kết thúc (trước khi chuyển đổi):', values.endDate)
+            console.log('Ngày bắt đầu (trước khi chuyển đổi):', values.startDate);
+            console.log('Ngày kết thúc (trước khi chuyển đổi):', values.endDate);
 
             // const startDate = dayjs(values.startDate, "DD-MM-YYYY HH:mm", true);
             // const endDate = dayjs(values.endDate, "DD-MM-YYYY HH:mm", true);
@@ -150,7 +155,8 @@ const AddEvent = () => {
         } finally {
             setSubmitting(false) // Kết thúc trạng thái submitting
         }
-    }
+    };
+
 
 
     // Thay đổi handleSelectProduct để chỉ lưu ID
@@ -159,24 +165,24 @@ const AddEvent = () => {
             isSelected
                 ? [...prev, product.id] // Chỉ lưu id
                 : prev.filter((id) => id !== product.id) // Loại bỏ id nếu không được chọn
-        )
-    }
+        );
+    };
 
 
     // Kiểm tra sản phẩm đã được chọn chưa:
-    const isSelected = (id: string) => selectedProducts.includes(id)
+    const isSelected = (id: string) => selectedProducts.includes(id);
 
     const handlePreviousPage = () => {
         if (pageIndex > 1) {
-            setPageIndex((prev) => prev - 1)
+            setPageIndex((prev) => prev - 1);
         }
-    }
+    };
 
     const handleNextPage = () => {
         if (pageIndex < Math.ceil(total / pageSize)) {
-            setPageIndex((prev) => prev + 1)
+            setPageIndex((prev) => prev + 1);
         }
-    }
+    };
 
     return (
         <div className={'h-full'}>

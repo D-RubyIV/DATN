@@ -40,12 +40,23 @@ const UpdateEvent = () => {
     const [selectedEvent, setSelectedEvent] = useState<EventDTO>()
 
     // Validation schema
-    const validationSchema = Yup.object({
-        name: Yup.string().required('Tên đợt giảm giá là bắt buộc'),
-        discountPercent: Yup.number().required('Giá trị giảm là bắt buộc').min(0).max(100),
-        startDate: Yup.string().required('Ngày bắt đầu là bắt buộc'),
-        endDate: Yup.string().required('Ngày kết thúc là bắt buộc')
-    })
+    const validationSchema = Yup.object().shape({
+        name: Yup.string()
+            .required('Tên đợt giảm giá là bắt buộc')
+            .min(3, 'Tên phải có ít nhất 3 ký tự'),
+        discountPercent: Yup.number()
+            .required('Giá trị giảm là bắt buộc')
+            .min(0, 'Giá trị giảm phải lớn hơn hoặc bằng 0')
+            .max(100, 'Giá trị giảm không được vượt quá 100'),
+        startDate: Yup.date()
+            .required('Ngày bắt đầu là bắt buộc')
+            .typeError('Ngày bắt đầu không hợp lệ'),
+        endDate: Yup.date()
+            .required('Ngày kết thúc là bắt buộc')
+            .typeError('Ngày kết thúc không hợp lệ')
+            .min(Yup.ref('startDate'), 'Ngày kết thúc phải sau ngày bắt đầu'),
+    });
+
 
     useEffect(() => {
         // lấy dữ liệu event theo id
@@ -67,7 +78,7 @@ const UpdateEvent = () => {
         if (updateEvent) {
             setSelectedProducts(updateEvent.productDTOS.map((product: ProductDTO) => product.id))
         }
-    }, [updateEvent])
+    }, [updateEvent]);
 
     // Lấy danh sách sản phẩm
     const fetchProductDTO = async (pageIndex: number, pageSize: number) => {
@@ -78,9 +89,9 @@ const UpdateEvent = () => {
             setProduct(response.data.content || [])
             setTotal(response.data.totalElements)
         } catch (error) {
-            console.error('Error fetching products:', error)
+            console.error('Error fetching products:', error);
         }
-    }
+    };
 
     // api updateEvent
     const handleSubmit = async (values: EventDTO, { resetForm, setSubmitting }: FormikHelpers<EventDTO>) => {

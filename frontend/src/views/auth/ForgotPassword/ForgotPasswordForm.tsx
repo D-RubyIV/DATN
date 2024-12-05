@@ -4,32 +4,38 @@ import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import Alert from '@/components/ui/Alert'
 import ActionLink from '@/components/shared/ActionLink'
-import { apiForgotPassword } from '@/services/AuthService'
-import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup'
-import type { CommonProps } from '@/@types/common'
-import type { AxiosError } from 'axios'
+import axios from 'axios'
+import { toast, ToastContainer } from 'react-toastify'
 
-interface ForgotPasswordFormProps extends CommonProps {
+interface ForgotPasswordFormProps {
     disableSubmit?: boolean
     signInUrl?: string
 }
 
 type ForgotPasswordFormSchema = {
     email: string
+    verificationCode: string
+    newPassword: string
 }
 
 const validationSchema = Yup.object().shape({
-    email: Yup.string().required('Please enter your email'),
+    email: Yup.string().required('Please enter your email').email('Invalid email address'),
+    verificationCode: Yup.string().when('emailSent', {
+        is: true,
+        then: Yup.string().required('Please enter the verification code'),
+    }),
+    newPassword: Yup.string().when('emailSent', {
+        is: true,
+        then: Yup.string().required('Please enter your new password').min(6, 'Password must be at least 6 characters'),
+    }),
 })
 
-const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
-    const { disableSubmit = false, className, signInUrl = '/sign-in' } = props
-
+const ForgotPasswordForm = ({ disableSubmit = false, signInUrl = '/auth/sign-in' }: ForgotPasswordFormProps) => {
     const [emailSent, setEmailSent] = useState(false)
-
-    const [message, setMessage] = useTimeOutMessage()
+    const [message, setMessage] = useState<string | null>(null)
+    const [showPasswordForm, setShowPasswordForm] = useState(false)
 
     const onSendMail = async (
         values: ForgotPasswordFormSchema,
@@ -37,38 +43,59 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
     ) => {
         setSubmitting(true)
         try {
-            const resp = await apiForgotPassword(values)
-            if (resp.data) {
-                setSubmitting(false)
+            const response = await axios.post('http://localhost:8080/api/v1/users/request-verification-code', {
+                email: values.email,
+            })
+            if (response.status === 200) {
                 setEmailSent(true)
+                setShowPasswordForm(true)
+                toast.success('Mã xác minh đã được gửi đến email của bạn')
             }
-        } catch (errors) {
-            setMessage(
-                (errors as AxiosError<{ message: string }>)?.response?.data
-                    ?.message || (errors as Error).toString()
-            )
-            setSubmitting(false)
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra!'
+            setMessage(errorMessage)
+            toast.error(errorMessage)
         }
+        setSubmitting(false)
+    }
+
+    const onChangePassword = async (
+        values: ForgotPasswordFormSchema,
+        setSubmitting: (isSubmitting: boolean) => void
+    ) => {
+        setSubmitting(true)
+        try {
+            const response = await axios.post('http://localhost:8080/api/v1/users/reset-password/v2', {
+                email: values.email,
+                verificationCode: values.verificationCode,
+                newPassword: values.newPassword,
+            })
+            if (response.status === 200) {
+                toast.success('Mật khẩu của bạn đã được đặt lại thành công')
+            }
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra!'
+            setMessage(errorMessage)
+            toast.error(errorMessage)
+        }
+        setSubmitting(false)
     }
 
     return (
-        <div className={className}>
+        <div className="forgot-password-form">
+            <ToastContainer />
             <div className="mb-6">
                 {emailSent ? (
                     <>
-                        <h3 className="mb-1">Check your email</h3>
+                        <h3 className="mb-1">
+                            Kiểm tra email của bạn</h3>
                         <p>
-                            We have sent a password recovery instruction to your
-                            email
-                        </p>
+                            Chúng tôi đã gửi hướng dẫn khôi phục mật khẩu tới email của bạn</p>
                     </>
                 ) : (
                     <>
-                        <h3 className="mb-1">Forgot Password</h3>
-                        <p>
-                            Please enter your email address to receive a
-                            verification code
-                        </p>
+                        <h3 className="mb-1">Quên mật khẩu</h3>
+                        <p>Vui lòng nhập địa chỉ email của bạn để nhận mã xác minh</p>
                     </>
                 )}
             </div>
@@ -78,26 +105,24 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
                 </Alert>
             )}
             <Formik
-                initialValues={{
-                    email: 'admin@mail.com',
-                }}
+                initialValues={{ email: '', verificationCode: '', newPassword: '' }}
                 validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
-                    if (!disableSubmit) {
+                    if (!emailSent) {
                         onSendMail(values, setSubmitting)
+                    } else if (showPasswordForm) {
+                        onChangePassword(values, setSubmitting)
                     } else {
                         setSubmitting(false)
                     }
                 }}
             >
-                {({ touched, errors, isSubmitting }) => (
+                {({ touched, errors, isSubmitting, setFieldValue }) => (
                     <Form>
                         <FormContainer>
-                            <div className={emailSent ? 'hidden' : ''}>
-                                <FormItem
-                                    invalid={errors.email && touched.email}
-                                    errorMessage={errors.email}
-                                >
+                            {/* Email Field */}
+                            {!emailSent && !showPasswordForm && (
+                                <FormItem invalid={errors.email && touched.email} errorMessage={errors.email}>
                                     <Field
                                         type="email"
                                         autoComplete="off"
@@ -106,18 +131,36 @@ const ForgotPasswordForm = (props: ForgotPasswordFormProps) => {
                                         component={Input}
                                     />
                                 </FormItem>
-                            </div>
-                            <Button
-                                block
-                                loading={isSubmitting}
-                                variant="solid"
-                                type="submit"
-                            >
-                                {emailSent ? 'Resend Email' : 'Send Email'}
+                            )}
+
+                            {/* Verification Code and New Password Fields */}
+                            {showPasswordForm && (
+                                <>
+                                    <FormItem invalid={errors.verificationCode && touched.verificationCode} errorMessage={errors.verificationCode}>
+                                        <Field
+                                            type="text"
+                                            name="verificationCode"
+                                            placeholder="Verification Code"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                    <FormItem invalid={errors.newPassword && touched.newPassword} errorMessage={errors.newPassword}>
+                                        <Field
+                                            type="password"
+                                            name="newPassword"
+                                            placeholder="New Password"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                </>
+                            )}
+
+                            <Button block loading={isSubmitting} variant="solid" type="submit">
+                                {emailSent ? 'Xác nhận' : 'Gửi Email'}
                             </Button>
                             <div className="mt-4 text-center">
-                                <span>Back to </span>
-                                <ActionLink to={signInUrl}>Sign in</ActionLink>
+                                <span>Quay lại </span>
+                                <ActionLink to={signInUrl}>Đăng nhập</ActionLink>
                             </div>
                         </FormContainer>
                     </Form>

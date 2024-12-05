@@ -161,23 +161,19 @@ public class StaffController {
             List<Map<String, String>> result = staffService.importFromExcel(file);
             return ResponseEntity.ok(result);
         } catch (StaffService.CustomException e) {
-//            log.error("Lỗi khi nhập dữ liệu: " + e.getErrorMessages());
             return ResponseEntity.badRequest()
                     .body(e.getErrorMessages().stream()
                             .map(msg -> Map.of("error", msg))
                             .collect(Collectors.toList()));
         } catch (IOException e) {
-//            log.error("Lỗi khi đọc tệp Excel: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonList(Map.of("error", "Vui lòng kiểm tra lại: " + e.getMessage())));
         } catch (Exception e) {
-//            log.error("Lỗi không xác định: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonList(Map.of("error", "Đã xảy ra lỗi không xác định: " + e.getMessage())));
         }
     }
 
-    // API kiểm tra email có tồn tại hay không
     @GetMapping("/check-email")
     public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
         boolean exists = staffService.isEmailExists(email);

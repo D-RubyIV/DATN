@@ -24,8 +24,8 @@ type SignInFormSchema = {
 }
 
 const validationSchema = Yup.object().shape({
-    email: Yup.string().required('Please enter your user name'),
-    password: Yup.string().required('Please enter your password'),
+    email: Yup.string().required('Vui lòng nhập tên người dùng của bạn'),
+    password: Yup.string().required('Vui lòng nhập mật khẩu'),
     rememberMe: Yup.bool(),
 })
 
@@ -33,7 +33,7 @@ const SignInForm = (props: SignInFormProps) => {
     const {
         disableSubmit = false,
         className,
-        forgotPasswordUrl = '/forgot-password',
+        forgotPasswordUrl = '/auth/forgot-password',
         signUpUrl = '/sign-up',
     } = props
 
@@ -72,8 +72,8 @@ const SignInForm = (props: SignInFormProps) => {
             )}
             <Formik
                 initialValues={{
-                    email: 'admin@gmail.com',
-                    password: '123456',
+                    email: '',
+                    password: '',
                     rememberMe: true,
                 }}
                 validationSchema={validationSchema}
@@ -125,7 +125,7 @@ const SignInForm = (props: SignInFormProps) => {
                                     name="rememberMe"
                                     component={Checkbox}
                                 >
-                                    Nhớ mật khẩu
+                                    Ghi nhớ mật khẩu
                                 </Field>
                                 <ActionLink to={forgotPasswordUrl}>
                                     Quên mật khẩu?
@@ -139,7 +139,7 @@ const SignInForm = (props: SignInFormProps) => {
                                 className={`${disableSubmit ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500'}`}
                                 disabled={disableSubmit}
                             >
-                                {isSubmitting ? 'Signing in...' : 'Sign In'}
+                                {isSubmitting ? 'Đăng nhập...' : 'Đăng Nhập'}
                             </Button>
                         </FormContainer>
                     </Form>
