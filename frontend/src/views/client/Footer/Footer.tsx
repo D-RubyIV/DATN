@@ -14,7 +14,6 @@ const BannerImg = {
   backgroundPosition: "bottom",
   backgroundRepeat: "no-repeat",
   backgroundSize: "cover",
-  height: "100%",
   width: "100%",
 };
 
@@ -39,7 +38,7 @@ const FooterLinks = [
 
 const Footer = () => {
   return (
-    <div style={BannerImg} className="text-white footer">
+    <div style={BannerImg} className="text-white footer h-auto">
       <div className="container">
         <div data-aos="zoom-in" className="grid md:grid-cols-3 pb-44 pt-5">
           {/* company details */}

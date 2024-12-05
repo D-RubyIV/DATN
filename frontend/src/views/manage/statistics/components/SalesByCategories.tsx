@@ -29,6 +29,10 @@ const SalesByCategories = () => {
     const dispatch = useAppDispatch();
     const result = useAppSelector((state) => state.statistic.saleByCategoriesData);
 
+    useEffect(() => {
+        console.log(result)
+        console.log(resultData)
+    }, [])
     // Kiểm tra nếu `result` không phải là null hoặc undefined
     const resultData: SalesByCategoriesProps = {
         data: result
@@ -38,7 +42,6 @@ const SalesByCategories = () => {
                 result.countToReceive || 0,
                 result.countDelivered || 0,
                 result.countCancelled || 0,
-                result.countReturned || 0,
             ]
             : [], // Nếu result không có dữ liệu, trả về mảng rỗng
         labels: [
@@ -48,7 +51,6 @@ const SalesByCategories = () => {
             'Đang vận chuyển',
             'Đã hoàn thành',
             'Đã hủy hàng',
-            'Đã trả hàng',
         ],
     };
 
