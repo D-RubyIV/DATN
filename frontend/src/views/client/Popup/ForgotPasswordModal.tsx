@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { SetStateAction, useState } from 'react'
 
 interface ForgotPasswordModalProps {
     isOpen: boolean;
+    setIsOpenLoginModal: React.Dispatch<SetStateAction<boolean>>
+    setIsOpenForgotModal: React.Dispatch<SetStateAction<boolean>>
     onClose: () => void;
 }
 
-const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClose }) => {
+const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen,setIsOpenLoginModal, setIsOpenForgotModal, onClose }) => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -20,6 +22,8 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
         try {
             await new Promise((resolve) => setTimeout(resolve, 1500)); 
             setSuccessMessage('Yêu cầu đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra email của bạn!');
+            setIsOpenForgotModal(false)
+            setIsOpenLoginModal(true)
         } catch (err) {
             setError('Không thể gửi yêu cầu. Vui lòng thử lại.');
         } finally {
@@ -64,14 +68,14 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                             </p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="w-full mt-4">
+                        <form className="w-full mt-4" onSubmit={handleSubmit}>
                             <label htmlFor="email" className="sr-only">
                                 Địa chỉ email
                             </label>
                             <input
+                                required
                                 name="email"
                                 type="email"
-                                required
                                 className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm placeholder:text-gray-400 focus:ring-2 focus:ring-black"
                                 placeholder="Email Address"
                                 value={email}
@@ -92,8 +96,11 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
 
                         <div className="mt-6 text-center text-sm text-slate-600">
                             <button
-                                onClick={onClose}
                                 className="font-medium text-[#4285f4]"
+                                onClick={() => {
+                                    setIsOpenForgotModal(false)
+                                    setIsOpenLoginModal(true)
+                                }}
                             >
                                 Quay lại đăng nhập
                             </button>

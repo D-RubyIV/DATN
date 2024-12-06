@@ -216,7 +216,7 @@ const Navbar = () => {
                             )}
 
                             {/* Auth Modal */}
-                            <AuthModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+                            <AuthModal isOpen={isModalOpen} setIsModalOpen={setIsModalOpen} onClose={() => setIsModalOpen(false)} />
                         </div>
 
                     </div>
