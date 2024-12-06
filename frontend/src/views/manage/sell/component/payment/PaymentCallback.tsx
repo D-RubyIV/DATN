@@ -35,23 +35,23 @@ const PaymentCallback = () => {
     const [selectedOrder, setSelectedOrder] = useState<OrderResponseDTO>()
     const [response_status_code, setResponse_status_code] = useState<string>("")
 
-    const handle_payment_order =  (orderId: string, amount: string) => {
-        instance.get(`/orders/is-payment-change/${orderId}?amount=${amount}`).then(function(response){
+    const handle_payment_order =  async (orderId: string, amount: string) => {
+        await instance.get(`/orders/is-payment-change/${orderId}?amount=${amount}`).then(function(response){
             if(response.status === 200){
                 console.log("Customer cancel order-success")
             }
         })
     }
 
-    const handle_cancel_payment_order =  (orderId: string) => {
-         instance.get(`/orders/cancel-payment-customer/${orderId}`).then(function(response){
+    const handle_cancel_payment_order = async (orderId: string) => {
+         await instance.get(`/orders/cancel-payment-customer/${orderId}`).then(function(response){
             if(response.status === 200){
                 console.log("Customer cancel order-success")
             }
         })
     }
 
-    useEffect(() => {
+    const initData = async () => {
         const params = new URLSearchParams(location.search)
         const transactionId = params.get('vnp_TxnRef') // Mã giao dịch từ VNPay
         const responseCode = params.get('vnp_ResponseCode') // Mã phản hồi từ VNPay
@@ -70,12 +70,12 @@ const PaymentCallback = () => {
             console.log(`Giao dịch thành công với mã giao dịch: ${transactionId} Id Order: ${idOrder}`)
             // Thực hiện logic cho giao dịch thành công
             if(idOrder != null && amount != null){
-                handle_payment_order(idOrder, amount)
+                await handle_payment_order(idOrder, amount)
             }
         } else if (responseCode == '24') {
             console.log('Khách hàng hủy giao dịch hóa đơn: ', idOrder)
             if(idOrder != null){
-                handle_cancel_payment_order(idOrder)
+                await handle_cancel_payment_order(idOrder)
             }
         } else {
             console.log('Giao dịch thất bại.')
@@ -83,14 +83,17 @@ const PaymentCallback = () => {
         }
 
         setIsLoading(true)
-        instance.get(`orders/${idOrder}`).then(function(response) {
+        await instance.get(`orders/${idOrder}`).then(function(response) {
             if (response.status === 200) {
                 setSelectedOrder(response.data)
-                setIsLoading(false)
             }
+        }).finally(function(){
+            setIsLoading(false)
         })
+    }
 
-
+    useEffect(() => {
+        initData();
     }, [location])
 
     const InfoOrder = ({ selectedOrder }: { selectedOrder: OrderResponseDTO }) => {

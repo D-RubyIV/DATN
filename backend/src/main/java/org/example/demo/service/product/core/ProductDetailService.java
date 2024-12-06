@@ -192,7 +192,8 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
                 requestDTO.getStyle(),
                 requestDTO.getMaterial(),
                 requestDTO.getThickness(),
-                requestDTO.getElasticity()
+                requestDTO.getElasticity(),
+                requestDTO.getProduct()
         );
 
         if (existingProductDetail != null) {

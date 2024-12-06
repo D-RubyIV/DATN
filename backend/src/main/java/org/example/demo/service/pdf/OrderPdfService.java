@@ -198,7 +198,7 @@ public class OrderPdfService {
                 String color = s.getProductDetail().getColor().getName();
                 String size = s.getProductDetail().getSize().getName();
 
-                myTable.addCell(String.valueOf(i), tableBodyColor);
+                myTable.addCell(String.valueOf(i + 1), tableBodyColor);
                 myTable.addCell(productName, tableBodyColor);
                 myTable.addCell(color, tableBodyColor);
                 myTable.addCell(size, tableBodyColor);
@@ -223,14 +223,14 @@ public class OrderPdfService {
             myTextClass.addSingleLineText("Đã thanh toán: ", 25, pageHeight - 740, font, 14, Color.BLACK);
             myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotalPaid()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 740, helveticaBold, 14, Color.BLACK);
 
-            myTextClass.addSingleLineText("Tổng thanh toán: ", 25, pageHeight - 760, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 760, helveticaBold, 14, Color.BLACK);
-
-            myTextClass.addSingleLineText("(Phụ phí): ", 25, pageHeight - 780, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 780, helveticaBold, 14, Color.BLACK);
-
-            myTextClass.addSingleLineText("(Hoàn trả): ", 25, pageHeight - 800, font, 14, Color.BLACK);
-            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 800, helveticaBold, 14, Color.BLACK);
+//            myTextClass.addSingleLineText("Tổng thanh toán: ", 25, pageHeight - 760, font, 14, Color.BLACK);
+//            myTextClass.addSingleLineText(CurrencyFormat.format(order.getTotal()) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 760, helveticaBold, 14, Color.BLACK);
+//
+//            myTextClass.addSingleLineText("(Phụ phí): ", 25, pageHeight - 780, font, 14, Color.BLACK);
+//            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getSurcharge(order)) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 780, helveticaBold, 14, Color.BLACK);
+//
+//            myTextClass.addSingleLineText("(Hoàn trả): ", 25, pageHeight - 800, font, 14, Color.BLACK);
+//            myTextClass.addSingleLineText(CurrencyFormat.format(CalculateUtil.getRefund(order)) + " VND", (int) (pageWidth - 25 - textWidth), pageHeight - 800, helveticaBold, 14, Color.BLACK);
 
             Color bottomRectColor = new Color(122, 122, 122);
             contentStream.setNonStrokingColor(bottomRectColor);
@@ -309,7 +309,7 @@ public class OrderPdfService {
             contentStream.fill();
 
 
-            String toAddress = "FPT POLYTECHNIC Kieu Mai, Phúc Diễn, Từ Liêm, Hà Nội";
+            String toAddress = String.format("%s, %s , %s, %s", order.getAddress(), order.getWardName(), order.getDistrictName(), order.getProvinceName());
             myTextClass.addSingleLineText("Đến: " + toAddress, 25, pageHeight - 260, font, 12, Color.BLACK);
 
             String receiveName = order.getRecipientName();

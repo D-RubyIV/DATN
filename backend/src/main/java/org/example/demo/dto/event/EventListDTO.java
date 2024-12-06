@@ -19,6 +19,6 @@ public class EventListDTO {
     private LocalDateTime startDate;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime endDate;
-    private Integer quantityDiscount;
+    private Integer quantityDiscount = 0;
     private String status; //
 }

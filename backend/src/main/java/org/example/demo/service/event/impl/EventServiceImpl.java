@@ -131,6 +131,7 @@ public class EventServiceImpl implements EventService {
         exitstingEvent.setStartDate(eventUpdate.getStartDate());
         exitstingEvent.setEndDate(eventUpdate.getEndDate());
         exitstingEvent.setDiscountCode(exitstingEvent.getDiscountCode());
+        exitstingEvent.setDiscountPercent(eventUpdate.getDiscountPercent());
         exitstingEvent.setQuantityDiscount(eventUpdate.getQuantityDiscount());
 
         // Cập nhật trạng thái sự kiện dựa trên thời gian

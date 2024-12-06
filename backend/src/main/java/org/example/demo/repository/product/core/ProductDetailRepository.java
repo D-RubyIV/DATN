@@ -22,10 +22,10 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     @Query("SELECT p FROM ProductDetail p WHERE  p.size = ?1 AND p.color = ?2 AND p.texture = ?3 " +
             "AND p.origin = ?4 AND p.brand = ?5 AND p.collar = ?6 AND p.sleeve = ?7 " +
-            "AND p.style = ?8 AND p.material = ?9 AND p.thickness = ?10 AND p.elasticity = ?11")
+            "AND p.style = ?8 AND p.material = ?9 AND p.thickness = ?10 AND p.elasticity = ?11  AND p.product = ?12")
     ProductDetail findByAttributes( Size size, Color color, Texture texture,
                                    Origin origin, Brand brand, Collar collar, Sleeve sleeve,
-                                   Style style, Material material, Thickness thickness, Elasticity elasticity);
+                                   Style style, Material material, Thickness thickness, Elasticity elasticity, Product product);
 
     @Query("SELECT p FROM ProductDetail p WHERE p.product.name = ?1 AND p.size = ?2 AND p.color = ?3")
     ProductDetail findByName(String name, Size size, Color color);

@@ -179,15 +179,22 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         else if (newQuantity == 0) {
             updateQuantityStorageIfInStore(quantityInOrder, newQuantity, orderDetail.getProductDetail(), order);
             // nếu đơn này đã thanh toán và là đơn online => thì chỉ xóa mềm
-            if (order.getIsPayment() && order.getType() == Type.ONLINE) {
-                orderDetail.setDeleted(true);
-                orderDetail.setQuantity(0);
-            }
-            // ngược lại xóa vĩnh viễn trưc tiếp
-            else {
-                orderDetailRepository.delete(orderDetail);
-                entityManager.flush();
-            }
+
+//            if (order.getIsPayment() && order.getType() == Type.ONLINE) {
+//                orderDetail.setDeleted(true);
+//                orderDetail.setQuantity(0);
+//            }
+//            // ngược lại xóa vĩnh viễn trưc tiếp
+//            else {
+//                orderDetailRepository.delete(orderDetail);
+//                entityManager.flush();
+//            }
+
+            orderDetailRepository.delete(orderDetail);
+            entityManager.flush();
+
+
+
             // cập nhật lại giá trị
             orderService.reloadSubTotalOrder(orderDetail.getOrder());
             return orderDetail;

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { ChangeEvent, Fragment, useEffect, useState } from 'react'
 import { Badge, Button, Card, Input, Radio, Select } from '@/components/ui'
 import { IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
 import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
@@ -12,6 +12,7 @@ import * as yup from 'yup'
 import { useSaleContext } from '@/views/sale/SaleContext'
 import VoucherModal from './VoucherModal'
 import { useWSContext } from '@/context/WsContext'
+import debounce from 'lodash/debounce'
 
 
 export interface Image {
@@ -149,7 +150,7 @@ type VoucherFormValues = {
 
 type RecipientDTO = {
     recipientName: string,
-    email:string,
+    email: string,
     phone: string,
     address: string,
     provinceId: string,
@@ -183,24 +184,40 @@ const Checkout = () => {
     const navigate = useNavigate()
     const { openNotification } = useToastContext()
     const { setIsOpenCartDrawer } = useSaleContext()
-    const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
-    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
-    const [amount, setAmount] = useState<number>(100000);
+    const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false)
+    const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null)
+    const [amount, setAmount] = useState<number>(100000)
 
-    const { callHaveNewOrder } = useWSContext();
+    const { callHaveNewOrder } = useWSContext()
 
 
     const toggleVoucherModal = () => {
-        setIsVoucherModalOpen(!isVoucherModalOpen);
-    };
+        setIsVoucherModalOpen(!isVoucherModalOpen)
+    }
 
 
     const handleVoucherSelect = (voucher: Voucher) => {
-        setSelectedVoucher(voucher);
-        setValue('voucherCode', voucher.code);
-        toggleVoucherModal();
-        console.log('Phiếu giảm giá đã chọn:', voucher);
-    };
+        setSelectedVoucher(voucher)
+        setValue('voucherCode', voucher.code)
+        toggleVoucherModal()
+        console.log('Phiếu giảm giá đã chọn:', voucher)
+    }
+
+    const checkValidCart = async () => {
+        instance.get(`cart/check-cart-active/${id}`).then(function(response) {
+            if ((response.data as CartResponseDTO).deleted) {
+                localStorage.removeItem('myCartId')
+                window.location.reload()
+            }
+        }).catch(function(error) {
+            console.log(error.response.data.error === 'Order not found')
+            if (error.response.status === 400){
+                localStorage.removeItem('myCartId')
+                window.location.href = "/"
+            }
+        })
+
+    }
 
 
     // SCHEMA
@@ -283,13 +300,13 @@ const Checkout = () => {
             'idCartId': id,
             'voucherCode': data.voucherCode
         }
-        instance.post(`cart/use-voucher`, payload).then(function (response) {
+        instance.post(`cart/use-voucher`, payload).then(function(response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
 
                 openNotification('Sử dụng thành công')
             }
-        }).catch(function (error) {
+        }).catch(function(error) {
             console.log(error)
             openNotification(error.response.data.error)
         })
@@ -317,9 +334,9 @@ const Checkout = () => {
 
                 // Update cart
                 await handleUpdateCart(data)
-                instance.put(`/cart/v2/${id}`, data).then(function (response) {
+                instance.put(`/cart/v2/${id}`, data).then(function(response) {
                     if (response.status === 200 && response.data) {
-                        instance.get(`/orders/convert/${id}`).then(function (response) {
+                        instance.get(`/orders/convert/${id}`).then(function(response) {
                             if (response.status === 200 && response.data) {
                                 getDetailAboutCart()
                                 navigate('/thank')
@@ -353,13 +370,13 @@ const Checkout = () => {
                 districtName: IAddress.idistrict?.DistrictName,
                 wardName: IAddress.iward?.WardName
             }
-            instance.put(`/cart/v2/${id}`, data).then(function (response) {
+            instance.put(`/cart/v2/${id}`, data).then(function(response) {
                 if (response.status === 200 && response.data) {
-                    instance.get(`/orders/convert/${id}`).then(function (response) {
+                    instance.get(`/orders/convert/${id}`).then(function(response) {
                         if (response.status === 200 && response.data) {
                             const idOrder = response.data.id
                             const amount = Math.round((selectedCart as CartResponseDTO).subTotal)
-                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function (response) {
+                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function(response) {
                                 if (response.status === 200 && response.data) {
                                     callHaveNewOrder()
                                     const url = response?.data?.data?.paymentUrl
@@ -375,9 +392,23 @@ const Checkout = () => {
         }
     }
 
+    const debounceFn = debounce(handleDebounceFn, 500)
+
+    function handleDebounceFn(val: string) {
+        console.log(val)
+        if (typeof val === 'string' && (val.length > 1 || val.length === 0)) {
+            setIAddress((prev) => ({ ...prev, address: (val) }))
+            setValuesFormRecipient('address', val)
+
+        }
+    }
+
+    const handleChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
+        debounceFn(e.target.value)
+    }
 
     const handleUpdateCart = async (data: any) => {
-        instance.put(`/cart/v2/${id}`, data).then(function (response) {
+        instance.put(`/cart/v2/${id}`, data).then(function(response) {
             if (response.status === 200 && response.data) {
                 getDetailAboutCart()
             }
@@ -386,10 +417,32 @@ const Checkout = () => {
 
 
     const getDetailAboutCart = async () => {
-        instance.get(`cart/detail/${id}`).then(function (response) {
+        instance.get(`cart/detail/${id}`).then(function(response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
                 setPaymentMethod(response.data.payment)
+
+                const selectedCart = response.data
+
+                console.log('----------------')
+                console.log(selectedCart)
+                setValuesFormRecipient('recipientName', (selectedCart as CartResponseDTO)?.recipientName ?? '')
+                setValuesFormRecipient('email', (selectedCart as CartResponseDTO)?.email ?? '')
+                setValuesFormRecipient('phone', (selectedCart as CartResponseDTO)?.phone ?? '')
+                setValuesFormRecipient('address', (selectedCart as CartResponseDTO)?.address ?? '')
+                setValuesFormRecipient('provinceId', (selectedCart as CartResponseDTO)?.provinceId?.toString() ?? '')
+                setValuesFormRecipient('districtId', (selectedCart as CartResponseDTO)?.districtId?.toString() ?? '')
+                setValuesFormRecipient('wardId', (selectedCart as CartResponseDTO)?.wardId?.toString() ?? '')
+                if ((selectedCart as CartResponseDTO)?.provinceId !== undefined && (selectedCart as CartResponseDTO)?.provinceId !== null) {
+                    const provinceId = (selectedCart as CartResponseDTO)?.provinceId.toString()
+                    handleFindAllDistricts(provinceId)
+                }
+
+                if ((selectedCart as CartResponseDTO)?.districtId !== undefined && (selectedCart as CartResponseDTO)?.districtId !== null) {
+                    const districtId = (selectedCart as CartResponseDTO)?.districtId.toString()
+                    handleFindAllWards(districtId)
+                }
+
 
                 if ((response.data.voucherResponseDTO as VoucherResponseDTO)) {
                     setValue('voucherCode', response.data.voucherResponseDTO.code)
@@ -399,12 +452,13 @@ const Checkout = () => {
     }
 
     useEffect(() => {
-        instance.get(`cart-details/in-cart/${id}`).then(function (response) {
+        checkValidCart()
+        instance.get(`cart-details/in-cart/${id}`).then(function(response) {
             if (response?.data) {
                 setListCartDetailResponseDTO(response?.data)
-
-
             }
+        }).catch(function(error) {
+            console.log(error.response.data.error === 'cart not found')
         })
         handleFindAllProvinces()
         getDetailAboutCart()
@@ -413,28 +467,7 @@ const Checkout = () => {
 
 
     useEffect(() => {
-        console.log("----------------")
-        setValuesFormRecipient('recipientName', (selectedCart as CartResponseDTO)?.recipientName ?? '')
-        setValuesFormRecipient('email', (selectedCart as CartResponseDTO)?.email ?? '')
-        setValuesFormRecipient('phone', (selectedCart as CartResponseDTO)?.phone ?? '')
-        setValuesFormRecipient('address', (selectedCart as CartResponseDTO)?.address ?? '')
-        setValuesFormRecipient('provinceId', (selectedCart as CartResponseDTO)?.provinceId?.toString() ?? '')
-        setValuesFormRecipient('districtId', (selectedCart as CartResponseDTO)?.districtId?.toString() ?? '')
-        setValuesFormRecipient('wardId', (selectedCart as CartResponseDTO)?.wardId?.toString() ?? '')
-        if ((selectedCart as CartResponseDTO)?.provinceId !== undefined && (selectedCart as CartResponseDTO)?.provinceId !== null) {
-            const provinceId = (selectedCart as CartResponseDTO)?.provinceId.toString()
-            handleFindAllDistricts(provinceId)
-        }
-
-        if ((selectedCart as CartResponseDTO)?.districtId !== undefined && (selectedCart as CartResponseDTO)?.districtId !== null) {
-            const districtId = (selectedCart as CartResponseDTO)?.districtId.toString()
-            handleFindAllWards(districtId)
-        }
-
-    }, [selectedCart])
-
-    useEffect(() => {
-        console.log("++++++++++++++++")
+        console.log('++++++++++++++++')
         console.log(IAddress)
         if (IAddress.iprovince) {
             console.log('Change provine')
@@ -614,7 +647,7 @@ const Checkout = () => {
                                         placeholder={'Địa chỉ'}
                                         {...registerFormRecipient('address')}
                                         onChange={(el) => {
-                                            setValuesFormRecipient('address', el.target.value)
+                                            handleChangeAddress(el)
                                         }}
                                     ></Input>
                                     {errorsFormRecipient.address && (
@@ -641,8 +674,12 @@ const Checkout = () => {
                                             value={paymentMethod}
                                             onChange={onChangeMethod}
                                         >
-                                            <Radio value={EPaymentMethod.TRANSFER} checked={selectedCart?.payment === "TRANSFER"}>Thanh toán ngân hàng</Radio>
-                                            <Radio value={EPaymentMethod.CASH} checked={selectedCart?.payment === "CASH"}>Thanh toán khi nhận hàng</Radio>
+                                            <Radio value={EPaymentMethod.TRANSFER}
+                                                   checked={selectedCart?.payment === 'TRANSFER'}>Thanh toán ngân
+                                                hàng</Radio>
+                                            <Radio value={EPaymentMethod.CASH}
+                                                   checked={selectedCart?.payment === 'CASH'}>Thanh toán khi nhận
+                                                hàng</Radio>
                                         </Radio.Group>
                                     </Card>
                                 </div>
@@ -664,7 +701,8 @@ const Checkout = () => {
                                         {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 ? (
                                             listCartDetailResponseDTO.map((item, index) => (
                                                 <Fragment key={index}>
-                                                    <div className="flex justify-between gap-6 border-b border-gray-300 py-6">
+                                                    <div
+                                                        className="flex justify-between gap-6 border-b border-gray-300 py-6">
                                                         {/* Hình ảnh sản phẩm */}
                                                         <div className="flex-shrink-0">
                                                             <Badge content={item?.quantity} maxCount={9999}>
@@ -691,30 +729,35 @@ const Checkout = () => {
                                                             {/* Tên sản phẩm */}
                                                             <div>
                                                                 <p className="font-semibold text-sm">
-                                                                    Sản phẩm: <span className="text-gray-800">{item.productDetailResponseDTO?.name}</span>
+                                                                    Sản phẩm: <span
+                                                                    className="text-gray-800">{item.productDetailResponseDTO?.name}</span>
                                                                 </p>
                                                                 {/* Thuộc tính sản phẩm */}
                                                                 <div className="mt-2 text-sm text-gray-600 space-y-1">
                                                                     <p>
-                                                                        Màu: <span className="text-gray-800">{item.productDetailResponseDTO?.color?.name}</span>
+                                                                        Màu: <span
+                                                                        className="text-gray-800">{item.productDetailResponseDTO?.color?.name}</span>
                                                                     </p>
                                                                     <p>
-                                                                        Size: <span className="text-gray-800">{item.productDetailResponseDTO?.size?.name}</span>
+                                                                        Size: <span
+                                                                        className="text-gray-800">{item.productDetailResponseDTO?.size?.name}</span>
                                                                     </p>
                                                                     <p>
-                                                                        Thương hiệu: <span className="text-gray-800">{item.productDetailResponseDTO?.brand?.name}</span>
+                                                                        Thương hiệu: <span
+                                                                        className="text-gray-800">{item.productDetailResponseDTO?.brand?.name}</span>
                                                                     </p>
                                                                     <p>
-                                                                        Đơn giá:{" "}
-                                                                        <span className={`text-red-600 ${hasSale(item.productDetailResponseDTO) ? "line-through" : ""}`}>
-                                                                            {Math.round(item.productDetailResponseDTO?.price).toLocaleString("vi-VN") + "₫"}
+                                                                        Đơn giá:{' '}
+                                                                        <span
+                                                                            className={`text-red-600 ${hasSale(item.productDetailResponseDTO) ? 'line-through' : ''}`}>
+                                                                            {Math.round(item.productDetailResponseDTO?.price).toLocaleString('vi-VN') + '₫'}
                                                                         </span>
                                                                     </p>
                                                                     {item.productDetailResponseDTO.product.eventDTOList.length > 0 && (
                                                                         <p>
-                                                                            Giá khuyến mãi:{" "}
+                                                                            Giá khuyến mãi:{' '}
                                                                             <span className="text-red-600">
-                                                                                {getFinalPrice(item.productDetailResponseDTO).toLocaleString("vi-VN") + "₫"}
+                                                                                {getFinalPrice(item.productDetailResponseDTO).toLocaleString('vi-VN') + '₫'}
                                                                             </span>
                                                                         </p>
                                                                     )}
@@ -725,7 +768,7 @@ const Checkout = () => {
                                                         <div className="flex justify-between items-center mt-4">
                                                             <div></div>
                                                             <span className="font-semibold text-red-600 text-lg">
-                                                                {Math.round(getFinalPrice(item.productDetailResponseDTO) * item?.quantity).toLocaleString("vi-VN") + "₫"}
+                                                                {Math.round(getFinalPrice(item.productDetailResponseDTO) * item?.quantity).toLocaleString('vi-VN') + '₫'}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -735,7 +778,9 @@ const Checkout = () => {
                                             <Fragment>
                                                 <div className="flex flex-col justify-center items-center h-full">
                                                     <div>
-                                                        <img className="w-28 h-28 object-cover" src="/img/OIP-removebg-preview.png" alt="No product image" />
+                                                        <img className="w-28 h-28 object-cover"
+                                                             src="/img/OIP-removebg-preview.png"
+                                                             alt="No product image" />
                                                     </div>
                                                     <div>
                                                         <span className="font-light text-gray-500">No products in your cart</span>

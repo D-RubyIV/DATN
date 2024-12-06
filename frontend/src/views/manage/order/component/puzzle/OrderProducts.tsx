@@ -59,7 +59,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             return product_detail_quantity > 0
         } else {
             console.log('DON TRUC TUYEN')
-            return product_detail_quantity < order_detail_quantity
+            return product_detail_quantity > order_detail_quantity
         }
     }
 

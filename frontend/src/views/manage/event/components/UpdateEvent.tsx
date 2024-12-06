@@ -9,6 +9,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import * as Yup from 'yup'
 import { Table as AntTable } from 'antd'
+import { useToastContext } from '@/context/ToastContext'
 
 type EventDTO = {
     id: string;
@@ -39,6 +40,7 @@ const UpdateEvent = () => {
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
     const [selectedEvent, setSelectedEvent] = useState<EventDTO>()
 
+    const { openNotification } = useToastContext()
     // Validation schema
     const validationSchema = Yup.object().shape({
         name: Yup.string()
@@ -48,14 +50,9 @@ const UpdateEvent = () => {
             .required('Giá trị giảm là bắt buộc')
             .min(0, 'Giá trị giảm phải lớn hơn hoặc bằng 0')
             .max(100, 'Giá trị giảm không được vượt quá 100'),
-        startDate: Yup.date()
-            .required('Ngày bắt đầu là bắt buộc')
-            .typeError('Ngày bắt đầu không hợp lệ'),
-        endDate: Yup.date()
-            .required('Ngày kết thúc là bắt buộc')
-            .typeError('Ngày kết thúc không hợp lệ')
-            .min(Yup.ref('startDate'), 'Ngày kết thúc phải sau ngày bắt đầu'),
-    });
+        startDate: Yup.string().required('Ngày bắt đầu là bắt buộc'),
+        endDate: Yup.string().required('Ngày kết thúc là bắt buộc')
+    })
 
 
     useEffect(() => {
@@ -78,7 +75,7 @@ const UpdateEvent = () => {
         if (updateEvent) {
             setSelectedProducts(updateEvent.productDTOS.map((product: ProductDTO) => product.id))
         }
-    }, [updateEvent]);
+    }, [updateEvent])
 
     // Lấy danh sách sản phẩm
     const fetchProductDTO = async (pageIndex: number, pageSize: number) => {
@@ -89,14 +86,21 @@ const UpdateEvent = () => {
             setProduct(response.data.content || [])
             setTotal(response.data.totalElements)
         } catch (error) {
-            console.error('Error fetching products:', error);
+            console.error('Error fetching products:', error)
         }
-    };
+    }
 
     // api updateEvent
     const handleSubmit = async (values: EventDTO, { resetForm, setSubmitting }: FormikHelpers<EventDTO>) => {
         try {
             console.log('Received form values:', values)
+
+            if(values.startDate && values.endDate){
+                if(values.startDate > values.endDate){
+                    openNotification("Ngày bắt đầu phải trước ngày kết thúc", 'Thông báo', 'warning', 5000)
+                    return;
+                }
+            }
 
             // Lấy giá trị startDate và endDate ban đầu từ API
             const initialStartDate = updateEvent?.startDate || ''
@@ -133,6 +137,7 @@ const UpdateEvent = () => {
             // Chuẩn bị payload với giá trị ngày chính xác
             const formattedPayload = {
                 ...values,
+                discountPercent: values.discountPercent,
                 startDate: values.startDate, // Sử dụng giá trị mới hoặc cũ
                 endDate: values.endDate, // Sử dụng giá trị mới hoặc cũ
                 productDTOS: selectedProducts.map((id) => ({ id })) // Danh sách sản phẩm
@@ -145,13 +150,13 @@ const UpdateEvent = () => {
 
             if (response.status === 200) {
                 console.log('Update response:', response)
-                toast.success('Cập nhật thành công')
+                openNotification('Cập nhật thành công')
                 resetForm()
                 navigate('/admin/manage/event')
             }
         } catch (error) {
             console.error('Error while updating the event:', error)
-            toast.error('Cập nhật sự kiện thất bại')
+            openNotification('Cập nhật sự kiện thất bại', 'Thông báo', 'warning', 5000)
         } finally {
             setSubmitting(false)
         }
@@ -184,190 +189,190 @@ const UpdateEvent = () => {
 
 
     return (
-       <div className={'h-full'}>
-           <Formik
-               initialValues={{
-                   id: updateEvent?.id,
-                   discountCode: updateEvent?.discountCode,
-                   name: updateEvent?.name,
-                   discountPercent: updateEvent?.discountPercent,
-                   startDate: updateEvent?.startDate,
-                   endDate: updateEvent?.endDate,
-                   quantityDiscount: updateEvent?.quantityDiscount,
-                   status: updateEvent?.status,
-                   productDTOS: []
-               }}
-               validationSchema={validationSchema}
-               enableReinitialize={true}
-               onSubmit={handleSubmit}
-           >
-               {({ initialValues, touched, errors, isSubmitting, setFieldValue, values }) => (
-                   <Form className={'h-full'}>
-                       <h1 className="font-semibold text-xl mb-4 uppercase">Cập nhật đợt giảm giá</h1>
-                       <div className="w-full bg-white p-6 shadow-md rounded-lg h-full">
-                           <div className="lg:flex items-center justify-between mb-4">
-                               <nav className="flex" aria-label="Breadcrumb">
-                                   <ol className="inline-flex items-center space-x-1 md:space-x-3">
-                                       <li>
-                                           <div className="flex items-center">
-                                               <Link to="/" className="text-gray-700 hover:text-blue-600">
-                                                   Trang Chủ
-                                               </Link>
-                                           </div>
-                                       </li>
-                                       <li>
-                                           <div className="flex items-center">
-                                               <span className="mx-2">/</span>
-                                               <Link to="/manage" className="text-gray-700 hover:text-blue-600">
-                                                   Quản Lý
-                                               </Link>
-                                           </div>
-                                       </li>
-                                       <li aria-current="page">
-                                           <div className="flex items-center">
-                                               <span className="mx-2">/</span>
-                                               <span className="text-gray-500">Cập nhật đợt giảm giá</span>
-                                           </div>
-                                       </li>
-                                   </ol>
-                               </nav>
-                           </div>
-                           <div className="flex flex-col lg:flex-row gap-4">
-                               <div className="w-full lg:w-1/3 bg-white rounded-lg">
-                                   <FormContainer>
-                                       <FormItem asterisk label="Tên đợt giảm giá"
-                                                 invalid={!!errors.name && touched.name}
-                                                 errorMessage={errors.name}>
-                                           <Field type="text" name="name" placeholder="Tên đợt giảm giá..."
-                                                  component={Input} />
-                                       </FormItem>
-                                       <FormItem asterisk label="Giá trị giảm(%)"
-                                                 invalid={!!errors.discountPercent && touched.discountPercent}
-                                                 errorMessage={errors.discountPercent}>
-                                           <Field type="number" name="discountPercent" placeholder="Giá trị giảm(%)..."
-                                                  component={Input} />
-                                       </FormItem>
+        <div className={'h-full'}>
+            <Formik
+                initialValues={{
+                    id: updateEvent?.id,
+                    discountCode: updateEvent?.discountCode,
+                    name: updateEvent?.name,
+                    discountPercent: updateEvent?.discountPercent,
+                    startDate: updateEvent?.startDate,
+                    endDate: updateEvent?.endDate,
+                    quantityDiscount: updateEvent?.quantityDiscount,
+                    status: updateEvent?.status,
+                    productDTOS: []
+                }}
+                validationSchema={validationSchema}
+                enableReinitialize={true}
+                onSubmit={handleSubmit}
+            >
+                {({ initialValues, touched, errors, isSubmitting, setFieldValue, values }) => (
+                    <Form className={'h-full'}>
+                        <h1 className="font-semibold text-xl mb-4 uppercase">Cập nhật đợt giảm giá</h1>
+                        <div className="w-full bg-white p-6 shadow-md rounded-lg h-full">
+                            <div className="lg:flex items-center justify-between mb-4">
+                                <nav className="flex" aria-label="Breadcrumb">
+                                    <ol className="inline-flex items-center space-x-1 md:space-x-3">
+                                        <li>
+                                            <div className="flex items-center">
+                                                <Link to="/" className="text-gray-700 hover:text-blue-600">
+                                                    Trang Chủ
+                                                </Link>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div className="flex items-center">
+                                                <span className="mx-2">/</span>
+                                                <Link to="/manage" className="text-gray-700 hover:text-blue-600">
+                                                    Quản Lý
+                                                </Link>
+                                            </div>
+                                        </li>
+                                        <li aria-current="page">
+                                            <div className="flex items-center">
+                                                <span className="mx-2">/</span>
+                                                <span className="text-gray-500">Cập nhật đợt giảm giá</span>
+                                            </div>
+                                        </li>
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div className="flex flex-col lg:flex-row gap-4">
+                                <div className="w-full lg:w-1/3 bg-white rounded-lg">
+                                    <FormContainer>
+                                        <FormItem asterisk label="Tên đợt giảm giá"
+                                                  invalid={!!errors.name && touched.name}
+                                                  errorMessage={errors.name}>
+                                            <Field type="text" name="name" placeholder="Tên đợt giảm giá..."
+                                                   component={Input} />
+                                        </FormItem>
+                                        <FormItem asterisk label="Giá trị giảm(%)"
+                                                  invalid={!!errors.discountPercent && touched.discountPercent}
+                                                  errorMessage={errors.discountPercent}>
+                                            <Field type="number" name="discountPercent" placeholder="Giá trị giảm(%)..."
+                                                   component={Input} />
+                                        </FormItem>
 
 
-                                       <FormItem
-                                           asterisk
-                                           label="Ngày bắt đầu"
-                                           invalid={!!errors.startDate && touched.startDate}
-                                           errorMessage={errors.startDate}
-                                       >
-                                           <Field name="startDate">
-                                               {({ field, form }: any) => {
-                                                   console.log('START DATE: ', updateEvent?.startDate)
-                                                   console.log('DAYJS DATE: ', dayjs(updateEvent?.startDate, 'DD-MM-YYYYTHH:mm').toDate())
-                                                   return (
-                                                       <DateTimepicker
-                                                           inputFormat="DD/MM/YYYY HH:mm"
-                                                           defaultValue={dayjs(updateEvent?.startDate, 'DD-MM-YYYYTHH:mm').toDate()}
-                                                           onChange={(el) => {
-                                                               console.log(el)
-                                                               const date = dayjs(el)
-                                                               const formattedDate = date.format('DD-MM-YYYYTHH:mm')
-                                                               console.log(formattedDate)
-                                                               setFieldValue('startDate', formattedDate)
-                                                           }} />
+                                        <FormItem
+                                            asterisk
+                                            label="Ngày bắt đầu"
+                                            invalid={!!errors.startDate && touched.startDate}
+                                            errorMessage={errors.startDate}
+                                        >
+                                            <Field name="startDate">
+                                                {({ field, form }: any) => {
+                                                    console.log('START DATE: ', updateEvent?.startDate)
+                                                    console.log(values)
+                                                    return (
+                                                        <DateTimepicker
+                                                            inputFormat="DD/MM/YYYY HH:mm"
+                                                            defaultValue={dayjs(updateEvent?.startDate, 'DD-MM-YYYYTHH:mm').toDate()}
+                                                            onChange={(el) => {
+                                                                console.log(el)
+                                                                const date = dayjs(el)
+                                                                const formattedDate = date.format('DD-MM-YYYYTHH:mm')
+                                                                console.log(formattedDate)
+                                                                setFieldValue('startDate', formattedDate)
+                                                            }} />
 
-                                                   )
-                                               }}
-                                           </Field>
-                                       </FormItem>
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
 
-                                       <FormItem
-                                           asterisk
-                                           label="Ngày kết thúc"
-                                           invalid={!!errors.endDate && touched.endDate}
-                                           errorMessage={errors.endDate}
-                                       >
-                                           <Field name="endDate">
-                                               {({ field, form }: any) => {
-
-
-                                                   return (
-                                                       <DateTimepicker
-                                                           inputFormat="DD/MM/YYYY HH:mm"
-                                                           defaultValue={dayjs(updateEvent?.endDate, 'DD-MM-YYYYTHH:mm').toDate()}
-
-                                                           onChange={(el) => {
-                                                               console.log(el)
-                                                               const date = dayjs(el)
-                                                               const formattedDate = date.format('DD-MM-YYYYTHH:mm')
-                                                               console.log(formattedDate)
-                                                               setFieldValue('endDate', formattedDate)
-
-                                                           }} />
-                                                   )
-                                               }}
-                                           </Field>
-                                       </FormItem>
+                                        <FormItem
+                                            asterisk
+                                            label="Ngày kết thúc"
+                                            invalid={!!errors.endDate && touched.endDate}
+                                            errorMessage={errors.endDate}
+                                        >
+                                            <Field name="endDate">
+                                                {({ field, form }: any) => {
 
 
-                                       <FormItem>
-                                           <Button variant="solid" type="submit"
-                                                   style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                                   disabled={isSubmitting}>
-                                               Cập nhật
-                                           </Button>
-                                       </FormItem>
-                                   </FormContainer>
-                               </div>
-                               <div className="w-full lg:w-2/3 bg-white p-6 rounded-lg">
-                                   <h4 className="font-medium text-xl mb-4">Danh sách sản phẩm</h4>
-                                   <table className="table-auto w-full border border-collapse border-gray-300">
-                                       <thead>
-                                       <tr>
-                                           <th className="border px-4 py-2">Chọn</th>
-                                           <th className="border px-4 py-2">Mã sản phẩm</th>
-                                           <th className="border px-4 py-2">Tên sản phẩm</th>
-                                       </tr>
-                                       </thead>
-                                       <tbody>
-                                       {product.map((product) => (
-                                           <tr key={product.id}>
-                                               <td className="border px-4 py-2 text-center">
-                                                   <input
-                                                       type="checkbox"
-                                                       checked={isSelected(product.id)}
-                                                       onChange={(e) =>
-                                                           handleSelectProduct(product, e.target.checked)
-                                                       }
-                                                   />
-                                               </td>
-                                               <td className="border px-4 py-2">{product.code}</td>
-                                               <td className="border px-4 py-2">{product.name}</td>
-                                           </tr>
-                                       ))}
-                                       </tbody>
-                                   </table>
-                                   <div className="flex items-center justify-between mt-4">
-                                       <Button
-                                           type="button"
-                                           disabled={pageIndex === 1}
-                                           onClick={handlePreviousPage}
-                                       >
-                                           Trang trước
-                                       </Button>
-                                       <span>
+                                                    return (
+                                                        <DateTimepicker
+                                                            inputFormat="DD/MM/YYYY HH:mm"
+                                                            defaultValue={dayjs(updateEvent?.endDate, 'DD-MM-YYYYTHH:mm').toDate()}
+
+                                                            onChange={(el) => {
+                                                                console.log(el)
+                                                                const date = dayjs(el)
+                                                                const formattedDate = date.format('DD-MM-YYYYTHH:mm')
+                                                                console.log(formattedDate)
+                                                                setFieldValue('endDate', formattedDate)
+
+                                                            }} />
+                                                    )
+                                                }}
+                                            </Field>
+                                        </FormItem>
+
+
+                                        <FormItem>
+                                            <Button variant="solid" type="submit"
+                                                    style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                                    disabled={isSubmitting}>
+                                                Cập nhật
+                                            </Button>
+                                        </FormItem>
+                                    </FormContainer>
+                                </div>
+                                <div className="w-full lg:w-2/3 bg-white p-6 rounded-lg">
+                                    <h4 className="font-medium text-xl mb-4">Danh sách sản phẩm</h4>
+                                    <table className="table-auto w-full border border-collapse border-gray-300">
+                                        <thead>
+                                        <tr>
+                                            <th className="border px-4 py-2">Chọn</th>
+                                            <th className="border px-4 py-2">Mã sản phẩm</th>
+                                            <th className="border px-4 py-2">Tên sản phẩm</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {product.map((product) => (
+                                            <tr key={product.id}>
+                                                <td className="border px-4 py-2 text-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected(product.id)}
+                                                        onChange={(e) =>
+                                                            handleSelectProduct(product, e.target.checked)
+                                                        }
+                                                    />
+                                                </td>
+                                                <td className="border px-4 py-2">{product.code}</td>
+                                                <td className="border px-4 py-2">{product.name}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                    <div className="flex items-center justify-between mt-4">
+                                        <Button
+                                            type="button"
+                                            disabled={pageIndex === 1}
+                                            onClick={handlePreviousPage}
+                                        >
+                                            Trang trước
+                                        </Button>
+                                        <span>
                                         Trang {pageIndex} / {Math.ceil(total / pageSize)}
                                     </span>
-                                       <Button
-                                           type="button"
-                                           disabled={pageIndex >= Math.ceil(total / pageSize)}
-                                           onClick={handleNextPage}
-                                       >
-                                           Trang sau
-                                       </Button>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </Form>
-               )}
-           </Formik>
-       </div>
+                                        <Button
+                                            type="button"
+                                            disabled={pageIndex >= Math.ceil(total / pageSize)}
+                                            onClick={handleNextPage}
+                                        >
+                                            Trang sau
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Form>
+                )}
+            </Formik>
+        </div>
     )
 }
 

@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import * as Yup from 'yup'
 import instance from '@/axios/CustomAxios'
+import { useToastContext } from '@/context/ToastContext'
 
 type EventDTO = {
     id: string;
@@ -61,13 +62,8 @@ const AddEvent = () => {
             .required('Giá trị giảm là bắt buộc')
             .min(0, 'Giá trị giảm phải lớn hơn hoặc bằng 0')
             .max(100, 'Giá trị giảm không được vượt quá 100'),
-        startDate: Yup.date()
-            .required('Ngày bắt đầu là bắt buộc')
-            .typeError('Ngày bắt đầu không hợp lệ'),
-        endDate: Yup.date()
-            .required('Ngày kết thúc là bắt buộc')
-            .typeError('Ngày kết thúc không hợp lệ')
-            .min(Yup.ref('startDate'), 'Ngày kết thúc phải sau ngày bắt đầu'),
+        startDate: Yup.string().required('Ngày bắt đầu là bắt buộc'),
+        endDate: Yup.string().required('Ngày kết thúc là bắt buộc')
     });
 
 
@@ -95,6 +91,7 @@ const AddEvent = () => {
             console.error('Error fetching products:', error);
         }
     }
+    const { openNotification } = useToastContext()
 
     const handleSubmit = async (values: EventDTO, { resetForm, setSubmitting }: FormikHelpers<EventDTO>) => {
         try {
@@ -104,23 +101,12 @@ const AddEvent = () => {
             console.log('Ngày bắt đầu (trước khi chuyển đổi):', values.startDate);
             console.log('Ngày kết thúc (trước khi chuyển đổi):', values.endDate);
 
-            // const startDate = dayjs(values.startDate, "DD-MM-YYYY HH:mm", true);
-            // const endDate = dayjs(values.endDate, "DD-MM-YYYY HH:mm", true);
-
-            // if (!startDate.isValid() || !endDate.isValid()) {
-            //     toast.error("Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
-            //     setSubmitting(false);
-            //     return;
-            // }
-
-            // // Chuyển đổi startDate và endDate thành chuỗi đúng định dạng
-            // const formattedStartDate = dayjs(startDate).format("DD-MM-YYYYTHH:mm");
-            // const formattedEndDate = dayjs(endDate).format("DD-MM-YYYYTHH:mm");
-
-            // console.log('Ngày bắt đầu (sau khi chuyển đổi):', formattedStartDate); // Log ngày bắt đầu sau khi chuyển đổi
-            // console.log('Ngày kết thúc (sau khi chuyển đổi):', formattedEndDate); // Log ngày kết thúc sau khi chuyển đổi
-
-            // Tạo payload gửi lên backend
+            if(values.startDate && values.endDate){
+                if(values.startDate > values.endDate){
+                    openNotification("Thời gian bắt đầu phải trước thời gian kết thúc", 'Thông báo', 'warning', 5000)
+                    return;
+                }
+            }
 
 
             const formattedPayload = {
@@ -138,7 +124,7 @@ const AddEvent = () => {
             const response = await instance.post('/event/save', formattedPayload)
 
             if (response.status === 200) {
-                toast.success('Lưu thành công')
+                openNotification('Lưu thành công')
                 resetForm()
                 navigate('/admin/manage/event')
             }
@@ -148,7 +134,7 @@ const AddEvent = () => {
             if (error.response) {
                 console.error('Lỗi từ server:', error.response)
                 console.error('Lỗi từ server:', error.response.data)
-                toast.error(`Lỗi khi lưu sự kiện: ${error.response.data.error || error.response.data.message || error.response.data}`)
+                openNotification(`Lỗi khi lưu sự kiện: ${error.response.data.error || error.response.data.message || error.response.data}`, 'Thông báo', 'warning', 5000)
             } else {
                 toast.error('Lỗi khi kết nối với server')
             }
