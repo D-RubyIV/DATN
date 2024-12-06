@@ -375,7 +375,7 @@ const Checkout = () => {
                     instance.get(`/orders/convert/${id}`).then(function(response) {
                         if (response.status === 200 && response.data) {
                             const idOrder = response.data.id
-                            const amount = Math.round((selectedCart as CartResponseDTO).subTotal)
+                            const amount = Math.round((selectedCart as CartResponseDTO).total)
                             instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function(response) {
                                 if (response.status === 200 && response.data) {
                                     callHaveNewOrder()

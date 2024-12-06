@@ -163,7 +163,7 @@ public class CartController {
         if (cart == null) {
             throw new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng");
         } else {
-            return ResponseEntity.ok(cart);
+            return ResponseEntity.ok(cartResponseMapper.toDTO(cart));
         }
     }
 

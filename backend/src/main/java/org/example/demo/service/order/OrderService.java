@@ -682,7 +682,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         reloadSubTotalOrder(order);
         cart.setDeleted(Boolean.TRUE);
         cartRepository.save(cart);
-        sendEmail(result, "Khởi tạo đơn hàng");
+        if(cart.getPayment() == Payment.CASH){
+            sendEmail(result, "Khởi tạo đơn hàng");
+        }
         return result;
     }
 
@@ -996,6 +998,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             order.setTotalPaid(order.getTotal());
             entityManager.flush();
             reloadSubTotalOrder(order);
+            sendEmail(order, "Xác nhận đã thanh toán");
             return orderRepository.save(order);
         }
         return order;
