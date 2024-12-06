@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useEffect, useState } from 'react'
+import React, { ChangeEvent, Fragment, useEffect, useState } from 'react'
 import { Badge, Button, Card, Input, Radio, Select } from '@/components/ui'
 import { IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
 import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
@@ -13,7 +13,10 @@ import { useSaleContext } from '@/views/sale/SaleContext'
 import VoucherModal from './VoucherModal'
 import { useWSContext } from '@/context/WsContext'
 import debounce from 'lodash/debounce'
-
+import Logo from '@/components/template/Logo'
+import { HiUserCircle } from 'react-icons/hi'
+import { useAuthContext } from '@/views/client/auth/AuthContext'
+import './hiddennavbarfooter.css'
 
 export interface Image {
     id: number;
@@ -211,9 +214,9 @@ const Checkout = () => {
             }
         }).catch(function(error) {
             console.log(error.response.data.error === 'Order not found')
-            if (error.response.status === 400){
+            if (error.response.status === 400) {
                 localStorage.removeItem('myCartId')
-                window.location.href = "/"
+                window.location.href = '/'
             }
         })
 
@@ -519,19 +522,30 @@ const Checkout = () => {
         await handleUpdateCart(data)
     }
 
+    const { user, setUser } = useAuthContext()
 
     return (
-        <div className=" bg-white">
-            <Card className={'px-40'}>
-                <form className={'h-full xl:p-20 grid grid-cols-12 gap-4'}>
+        <div className=" bg-white min-h-full">
+            <Card className={'2xl:px-40 px-10 xl:py-10  min-h-full'}>
+                <div className={'flex gap-1 justify-start items-center xl:px-10'}>
+                    <div className={'-ml-4'}>
+                        <Logo style={{ width: 600 }}></Logo>
+                    </div>
+                    <div className="text-black font-semibold text-xl">
+                        Xin chào {user?.username || 'quý khách'}
+                    </div>
+                </div>
+                <form className={'h-full xl:px-10  grid grid-cols-12 gap-4'}>
                     {/*BLOCK 1*/}
-                    <div className={'order-2 md:order-1 h-full col-span-5'}>
+                    <div className={'order-2 md:order-1 h-full col-span-5 flex flex-col justify-between'}>
                         <Fragment>
-                            <div className={'py-2 text-black font-semibold text-[18px]'}>
-                                <p>Thông tin giao hàng</p>
-                            </div>
-                            <div className={'flex flex-col gap-5'}>
-                                <div className={'grid grid-cols-6 gap-4'}>
+
+
+                            <div className={'flex flex-col gap-5 justify-between h-full'}>
+                                <div className={'text-black font-semibold text-xl'}>
+                                    <p>Thông tin giao hàng</p>
+                                </div>
+                                <div className={'grid grid-cols-3 gap-4'}>
                                     <div className={'col-span-3'}>
                                         <p className={' text-black text-[18px] font-semibold'}>Họ và tên</p>
                                         <Input
@@ -577,7 +591,7 @@ const Checkout = () => {
                                 </div>
                                 <div className={'grid grid-cols-3 gap-4'}>
                                     <div>
-                                        <p className={'  text-black text-[18px] font-semibold'}>Tỉnh thành</p>
+                                        <p className={'text-black text-[18px] font-semibold'}>Tỉnh thành</p>
                                         <Select
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
                                             options={provinces}
@@ -690,14 +704,14 @@ const Checkout = () => {
                     {/*BLOCK 2*/}
                     {/* BLOCK 2 */}
                     <div className="order-1 md:order-2 h-full col-span-7">
-                        <div className="py-4 text-black font-semibold text-xl">
+                        <div className="text-black font-semibold text-xl pb-2">
                             Danh sách sản phẩm
                         </div>
-                        <div className="grid border-2 border-gray-300 p-6">
-                            <div className="dark:text-gray-500 bg-white flex flex-col justify-between">
-                                <div>
+                        <div className="grid">
+                            <div className="dark:text-gray-500 bg-white flex flex-col justify-between ">
+                                <div className={'overflow-y-auto'}>
                                     {/* CENTER */}
-                                    <div className="overflow-y-auto">
+                                    <div className="max-h-[500px] h-[500px] px-2">
                                         {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 ? (
                                             listCartDetailResponseDTO.map((item, index) => (
                                                 <Fragment key={index}>
@@ -706,7 +720,7 @@ const Checkout = () => {
                                                         {/* Hình ảnh sản phẩm */}
                                                         <div className="flex-shrink-0">
                                                             <Badge content={item?.quantity} maxCount={9999}>
-                                                                <div className="w-32 h-32">
+                                                                <div className="w-28 h-28">
                                                                     {item.productDetailResponseDTO?.images[0]?.url ? (
                                                                         <img
                                                                             src={item.productDetailResponseDTO.images[0]?.url}
@@ -730,7 +744,7 @@ const Checkout = () => {
                                                             <div>
                                                                 <p className="font-semibold text-sm">
                                                                     Sản phẩm: <span
-                                                                    className="text-gray-800">{item.productDetailResponseDTO?.name}</span>
+                                                                    className="text-gray-800">{item.productDetailResponseDTO?.product?.name}</span>
                                                                 </p>
                                                                 {/* Thuộc tính sản phẩm */}
                                                                 <div className="mt-2 text-sm text-gray-600 space-y-1">

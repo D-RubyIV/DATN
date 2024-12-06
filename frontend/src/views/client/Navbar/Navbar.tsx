@@ -110,7 +110,7 @@ const Navbar = () => {
                                 <li key={data.id}>
                                     <a
                                         href={data.link}
-                                        className="inline-block px-4 duration-200 text-xl hover:underline hover:text-gray-800 underline-offset-4 text-black dark:text-white font-sans font-bold menu-title text-shadow-sm"
+                                        className="inline-block px-4 duration-200 text-[14px] 2xl:text-xl  hover:underline hover:text-gray-800 underline-offset-4 text-black dark:text-white font-sans font-bold menu-title text-shadow-sm"
                                     >
                                         {data.name}
                                     </a>
