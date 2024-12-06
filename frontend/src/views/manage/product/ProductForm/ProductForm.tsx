@@ -170,6 +170,11 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
         materialData,
     } = useAppSelector((state) => state.optionList.options);
 
+    const combine = useAppSelector((state) => state.dataDetailedProduct.detailedProduct.data);
+    useEffect(() => {
+        dispatch(getProductData());
+    }, [combine])
+
     const mapOptions = (items: Option[] | undefined) => {
         return items?.map(item => ({
             label: item.name,
