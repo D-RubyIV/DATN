@@ -985,7 +985,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         if(!order.getIsPayment()){
             order.setIsPayment(true);
-            historyService.createNewHistoryObject(order, Status.PENDING, String.format("Khách hàng đã thanh toán %,.0f ", amount));
+            historyService.createNewHistoryObject(order, Status.PENDING, String.format("Khách hàng đã thanh toán %.0f", amount));
             reloadSubTotalOrder(order);
             order.setTotalPaid(order.getTotal());
             entityManager.flush();
