@@ -292,12 +292,12 @@ const CartDrawer = () => {
                                     })()}
                                 </span>
                             </div>
-                            <Link to={`/checkout/${myCartId}`}>
+                            <a href={`/checkout/${myCartId}`}>
                                 <button
                                     className="bg-black text-white w-full font-thin border border-black font-hm text-xl py-5">Thanh
                                     toán
                                 </button>
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </div>

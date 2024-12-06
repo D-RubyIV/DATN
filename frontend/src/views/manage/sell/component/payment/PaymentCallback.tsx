@@ -162,7 +162,12 @@ const PaymentCallback = () => {
                                     <h1 className="text-2xl font-bold text-indigo-600 mb-4">Quý khách đã hủy giao
                                         dịch</h1>
                                     <InfoOrder selectedOrder={(selectedOrder as OrderResponseDTO)}></InfoOrder>
-                                    <div className={'py-6'}>
+                                    <div className={'py-6 flex gap-10 items-center justify-center'}>
+                                        <Button className={''} variant="solid" onClick={() => {
+                                            window.location.href = "/"
+                                        }}>
+                                            Quay về trang chủ
+                                        </Button>
                                         <Link to={`/user/purchase/${(selectedOrder as OrderResponseDTO)?.code}`}>
                                             <Button className={''} variant="default">
                                                 Xem chi tiết đơn hàng
