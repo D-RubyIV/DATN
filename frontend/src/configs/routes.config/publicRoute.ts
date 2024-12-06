@@ -17,8 +17,8 @@ const publicRoute: Routes = [
     },
     // {
     //     key: 'private',
-    //     path: `/private/forgot-password`,
-    //     component: lazy(() => import('@/views/auth/ForgotPassword/ForgotPasswordForm')),
+    //     path: `/client/forgot-password`,
+    //     component: lazy(() => import('@/views/client/Popup/ForgotPassword')),
     //     authority: []
     // },
     {

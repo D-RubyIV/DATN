@@ -85,14 +85,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             </div>
 
             <div className="mt-7 flex flex-col gap-2">
-              <button className="inline-flex h-10 w-full items-center justify-center gap-2 rounded border border-slate-300 bg-white p-2 text-sm font-medium text-black">
+              <div className="flex items-center justify-center gap-2 mt-2">
                 <img
-                  src="https://www.svgrepo.com/show/475656/google-color.svg"
-                  alt="Google"
-                  className="h-[18px] w-[18px]"
+                  src="https://www.svgrepo.com/show/178887/smile.svg"
+                  alt="Smile Icon"
+                  className="h-[20px] w-[20px]"
                 />
-                Continue with Google
-              </button>
+                <span className="text-sm text-slate-500">
+                  Đừng lo, đăng ký rất dễ mà! 😊
+                </span>
+              </div>
             </div>
 
             <div className="flex w-full items-center gap-2 py-6 text-sm text-slate-600">
@@ -103,7 +105,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
 
             <form onSubmit={handleLogin} className="w-full">
               <label htmlFor="email" className="sr-only">
-                Email address
+                Địa chỉ email
               </label>
               <input
                 name="email"
@@ -115,7 +117,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
                 onChange={(e) => setEmail(e.target.value)}
               />
               <label htmlFor="password" className="sr-only">
-                Password
+                Mật khẩu
               </label>
               <input
                 name="password"
@@ -128,7 +130,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
               />
               <p className="mb-3 mt-2 text-sm text-gray-500">
                 <a href="/forgot-password" className="text-blue-800 hover:text-blue-600">
-                  Reset your password?
+                  Quên mật khẩu?
                 </a>
               </p>
               <button
@@ -143,9 +145,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
             {error && <p className="mt-2 text-red-500">{error}</p>}
 
             <div className="mt-6 text-center text-sm text-slate-600">
-              Don't have an account?{" "}
+              Bạn chưa có tài khoản?{" "}
               <a href="/signup" className="font-medium text-[#4285f4]">
-                Sign up
+                Đăng ký
               </a>
             </div>
           </div>
