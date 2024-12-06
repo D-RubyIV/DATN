@@ -169,7 +169,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Double amount = refundAndChangeStatusDTO.getAmount();
         String tradingCode = refundAndChangeStatusDTO.getTradingCode();
         History history = new History();
-        String note = String.format("Trả lại: %.0f - Mã giao dịch: %s", amount, tradingCode);
+        String note = String.format("Trả lại: %sđ - Mã giao dịch: %s", NumberUtil.formatCurrency(amount), tradingCode);
         history.setNote(note);
         history.setAccount(AuthUtil.getAccount());
         history.setOrder(order);
@@ -428,8 +428,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                     entityFound.setIsPayment(true);
                     entityFound.setTotalPaid(entityFound.getTotal());
                 }
-
             }
+            if(!entityFound.getInStore()){
+                if(entityFound.getVoucher() != null){
+                    decreaseQuantityVoucher(entityFound.getVoucher());
+                }
+            }
+
             log.info("1");
         }
         // CHỜ VẬN CHUYỂN -> CHỜ XÁC NHẬN
@@ -464,6 +469,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         else if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && entityFound.getInStore()) {
             rollback_quantity_order(entityFound);
         }
+
 
         if (oldStatus != newStatus) {
             sendEmail(entityFound, requestDTO.getNote());
@@ -985,7 +991,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         if(!order.getIsPayment()){
             order.setIsPayment(true);
-            historyService.createNewHistoryObject(order, Status.PENDING, String.format("Khách hàng đã thanh toán %.0f", amount));
+            historyService.createNewHistoryObject(order, Status.PENDING, String.format("Khách hàng đã thanh toán %sđ", NumberUtil.formatCurrency(amount)));
             reloadSubTotalOrder(order);
             order.setTotalPaid(order.getTotal());
             entityManager.flush();
