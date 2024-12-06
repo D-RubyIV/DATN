@@ -173,6 +173,18 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
     const combine = useAppSelector((state) => state.dataDetailedProduct.detailedProduct.data);
     useEffect(() => {
         dispatch(getProductData());
+        dispatch(getBrandData());
+        dispatch(getOriginData());
+        dispatch(getStyleData());
+        dispatch(getCollarData());
+        dispatch(getSleeveData());
+        dispatch(getThicknessData());
+        dispatch(getTextureData());
+        dispatch(getElasticityData());
+        dispatch(getColorData());
+        dispatch(getSizeData());
+        dispatch(getMaterialData());
+        console.log("lap lap")
     }, [combine])
 
     const mapOptions = (items: Option[] | undefined) => {
