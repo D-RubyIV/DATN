@@ -1,5 +1,6 @@
 package org.example.demo.repository.product.properties;
 
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Collar;
 import org.example.demo.entity.product.properties.Elasticity;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ElasticityRepository extends JpaRepository<Elasticity, Integer> {
     boolean existsByCodeAndName(String code, String name);
@@ -28,4 +30,12 @@ public interface ElasticityRepository extends JpaRepository<Elasticity, Integer>
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+
+    @Query(value = """
+            SELECT DISTINCT el FROM Elasticity el
+            WHERE el.deleted = false
+            ORDER BY el.createdDate DESC
+            """)
+    List<Elasticity> findAllList();
 }

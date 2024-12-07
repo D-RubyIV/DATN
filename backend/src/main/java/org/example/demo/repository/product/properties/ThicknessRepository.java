@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ThicknessRepository extends JpaRepository<Thickness, Integer> {
     boolean existsByCodeAndName(String code, String name);
@@ -29,5 +30,13 @@ public interface ThicknessRepository extends JpaRepository<Thickness, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+
+    @Query(value = """
+            SELECT DISTINCT t FROM Thickness t
+            WHERE t.deleted = false
+            ORDER BY t.createdDate DESC
+            """)
+    List<Thickness> findAllList();
 
 }

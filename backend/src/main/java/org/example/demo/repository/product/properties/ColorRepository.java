@@ -1,5 +1,6 @@
 package org.example.demo.repository.product.properties;
 
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Collar;
 import org.example.demo.entity.product.properties.Color;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ColorRepository extends JpaRepository<Color, Integer> {
     boolean existsByCodeAndName(String code, String name);
@@ -28,4 +30,12 @@ public interface ColorRepository extends JpaRepository<Color, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+
+    @Query(value = """
+            SELECT DISTINCT c FROM Color c
+            WHERE c.deleted = false
+            ORDER BY c.createdDate DESC
+            """)
+    List<Color> findAllList();
 }

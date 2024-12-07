@@ -44,19 +44,19 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     @Query(value = """
             SELECT DISTINCT pd FROM ProductDetail pd
-            LEFT JOIN FETCH pd.product
-            LEFT JOIN FETCH pd.size
-            LEFT JOIN FETCH pd.color
-            LEFT JOIN FETCH pd.texture
-            LEFT JOIN FETCH pd.origin
-            LEFT JOIN FETCH pd.brand
-            LEFT JOIN FETCH pd.collar
-            LEFT JOIN FETCH pd.sleeve
-            LEFT JOIN FETCH pd.style
-            LEFT JOIN FETCH pd.material
-            LEFT JOIN FETCH pd.thickness
-            LEFT JOIN FETCH pd.elasticity
-            LEFT JOIN FETCH pd.images
+            LEFT JOIN FETCH pd.product 
+            LEFT JOIN FETCH pd.size s
+            LEFT JOIN FETCH pd.color c
+            LEFT JOIN FETCH pd.texture t
+            LEFT JOIN FETCH pd.origin o
+            LEFT JOIN FETCH pd.brand b
+            LEFT JOIN FETCH pd.collar cr
+            LEFT JOIN FETCH pd.sleeve sl
+            LEFT JOIN FETCH pd.style st
+            LEFT JOIN FETCH pd.material m
+            LEFT JOIN FETCH pd.thickness ts
+            LEFT JOIN FETCH pd.elasticity ey
+            LEFT JOIN FETCH pd.images 
             
          
             WHERE 
@@ -80,6 +80,18 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             )
             AND (:createdFrom IS NULL OR pd.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR pd.createdDate <= :createdTo)
+            
+            AND (s.deleted = false)
+            AND (c.deleted = false)
+            AND (t.deleted = false)
+            AND (o.deleted = false)
+            AND (b.deleted = false)
+            AND (cr.deleted = false)
+            AND (sl.deleted = false)
+            AND (st.deleted = false)
+            AND (m.deleted = false)
+            AND (ts.deleted = false)
+            AND (ey.deleted = false)
             ORDER BY pd.createdDate DESC
             """)
     Page<ProductDetail> findAllByProductIdWithQuery(

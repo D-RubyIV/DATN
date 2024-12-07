@@ -142,8 +142,7 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
         code: generateRandomCode(),
         name: label,
         deleted: false,
-        createdDate: new Date().toISOString(),
-        modifiedDate: new Date().toISOString(),
+        
     });
 
     const handleCreate = (inputValue: string, fieldLabel: string, fieldName:string ) => {
@@ -274,37 +273,37 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
                     </FormItem>
                 </div>
                 <div className="col-span-1">
-                    {renderSelectField('color', 'Màu sắc', colors, true, false)} {/* Chọn nhiều màu sắc với closeMenuOnSelect=false */}
+                    {renderSelectField('color', 'Màu sắc', colors, true, false)} 
                 </div>
                 <div className="col-span-1">
-                    {renderSelectField('size', 'Kích thước', sizes, true, false)} {/* Chọn nhiều kích thước với closeMenuOnSelect=false */}
+                    {renderSelectField('size', 'Kích thước', sizes, true, false)} 
                 </div>
             </div>
             <AttributeAddConfirmation
                 setFieldValue={setFieldValue}
                 updateOptions={(field, newOption) => {
                     if (field === 'brand') {
-                        setBrands((prev) => [...prev, { label: newOption.name, value: newOption }]);
+                        setBrands((prev) => [{ label: newOption.name, value: newOption },...prev]);
                     } else if (field === 'origin') {
-                        setOrigins((prev) => [...prev, { label: newOption.name, value: newOption }]);
+                        setOrigins((prev) => [  { label: newOption.name, value: newOption }, ...prev]);
                     } else if (field === 'size') {
-                        setSizes((prev) => [...prev, { label: newOption.name, value: newOption }]);
+                        setSizes((prev) => [  { label: newOption.name, value: newOption },...prev]);
                     } else if (field === 'color') {
-                        setColors((prev) => [...prev, { label: newOption.name, value: newOption }]);
+                        setColors((prev) => [  { label: newOption.name, value: newOption },...prev]);
                     } else if (field === 'style') {
-                        setStyles((prev) => [...prev, { label: newOption.name, value: newOption }]); 
+                        setStyles((prev) => [  { label: newOption.name, value: newOption },...prev]); 
                     } else if (field === 'material') {
-                        setMaterials((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật materials
+                        setMaterials((prev) => [  { label: newOption.name, value: newOption },...prev]);
                     } else if (field === 'collar') {
-                        setCollars((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật collars
+                        setCollars((prev) => [  { label: newOption.name, value: newOption },...prev]);
                     } else if (field === 'sleeve') {
-                        setSleeves((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật sleeves
+                        setSleeves((prev) => [  { label: newOption.name, value: newOption },...prev]); 
                     } else if (field === 'texture') {
-                        setTextures((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật textures
+                        setTextures((prev) => [  { label: newOption.name, value: newOption },...prev]); 
                     } else if (field === 'thickness') {
-                        setThicknesses((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật thicknesses
+                        setThicknesses((prev) => [  { label: newOption.name, value: newOption },...prev]); 
                     } else if (field === 'elasticity') {
-                        setElasticities((prev) => [...prev, { label: newOption.name, value: newOption }]); // Cập nhật elasticities
+                        setElasticities((prev) => [  { label: newOption.name, value: newOption },...prev]); 
                     }
                 }}
                 touched={touched}

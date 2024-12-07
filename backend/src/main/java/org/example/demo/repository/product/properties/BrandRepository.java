@@ -9,9 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface BrandRepository extends JpaRepository<Brand,Integer> {
     boolean existsByCodeAndName(String code, String name);
+
     @Query(value = """
             SELECT DISTINCT b FROM Brand b
             WHERE
@@ -28,4 +30,18 @@ public interface BrandRepository extends JpaRepository<Brand,Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+
+
+    @Query(value = """
+            SELECT DISTINCT b FROM Brand b
+            WHERE b.deleted = false
+            ORDER BY b.createdDate DESC
+            """)
+    List<Brand> findAllList();
+
+
+
+
+
 }

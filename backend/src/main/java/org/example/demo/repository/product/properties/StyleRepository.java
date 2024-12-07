@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface StyleRepository extends JpaRepository<Style, Integer> {
     boolean existsByCodeAndName(String code, String name);
@@ -28,4 +29,10 @@ public interface StyleRepository extends JpaRepository<Style, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+    @Query(value = """
+            SELECT DISTINCT s FROM Style s
+            WHERE s.deleted = false
+            ORDER BY s.createdDate DESC
+            """)
+    List<Style> findAllList();
 }

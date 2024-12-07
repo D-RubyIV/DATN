@@ -4,8 +4,7 @@ import Button from '@/components/ui/Button';
 import Dialog from '@/components/ui/Dialog';
 import { FormItem } from '@/components/ui/Form';
 import Input from '@/components/ui/Input';
-import Notification from '@/components/ui/Notification';
-import toast from '@/components/ui/toast';
+import { toast } from 'react-toastify';;
 import { Product } from '../store';
 import { FormikErrors, FormikTouched } from 'formik';
 import { apiCreateSalesProduct } from '@/services/ProductSalesService';
@@ -136,27 +135,16 @@ const ProductAddConfirmation = ({ setFieldValue, updateOptions }: ProductAddConf
                 };
 
                  setFieldValue('product', newProductOption);
-                 updateOptions('product', newProductOption); 
+                 updateOptions('product', newProductOption);  
                  setFieldValue('description', newProductOption.description);
 
-                toast.push(
-                    <Notification title={`Thêm nhanh sản phẩm`} type="success" duration={2500}>
-                        Thành công thêm sản phẩm {newProductOption.name}.
-                    </Notification>,
-                    { placement: 'top-center' }
-                );
+                toast.success(`Thành công thêm sản phẩm ${newProductOption.name}.`);
             }
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-            toast.push(
-                <Notification title={'Error'} type="danger" duration={2500}>
-                    {errorMessage}
-                </Notification>,
-                { placement: 'top-center' }
-            );
+            const errorMessage = error instanceof Error ? error.message : 'Đã xảy ra lỗi không xác định!!!';
+            toast.error(` ${errorMessage}`);
         } finally {
             setIsAdding(false);
-            // Nếu không muốn reset form, bỏ gọi hàm này
             resetForm();
             dispatch(toggleAddProductConfirmation(false));
         }
@@ -193,7 +181,7 @@ const ProductAddConfirmation = ({ setFieldValue, updateOptions }: ProductAddConf
                     style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
                     variant="solid"
                     onClick={onAdd}
-                    disabled={isAdding} // Vô hiệu hóa nút khi đang thêm
+                    disabled={isAdding} 
                 >
                     Xác nhận
                 </Button>

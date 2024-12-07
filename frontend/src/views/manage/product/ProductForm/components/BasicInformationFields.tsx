@@ -4,7 +4,7 @@ import RichTextEditor from '@/components/shared/RichTextEditor';
 import { FormItem } from '@/components/ui/Form';
 import { Field, FormikErrors, FormikTouched, FieldProps } from 'formik';
 import Select from '@/components/ui/Select';
-import { Option, Product,ProductFromData } from '../store';
+import { Option, Product, ProductFromData } from '../store';
 import { useAppDispatch, useAppSelector } from '../store';
 import { setProductData, toggleAddProductConfirmation, setNameProduct } from '../store';
 import ProductAddConfirmation from './ProductAddConfirmation';
@@ -29,25 +29,36 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
     const dispatch = useAppDispatch();
     const [products, setProducts] = useState(data?.products || []);
 
+
+    useEffect(() => {
+        console.log(products)
+    }, [products])
+
+
     useEffect(() => {
         if (data) {
             setProducts(data.products || []);
+
         }
     }, [data]);
- 
+
     const handleCreate = (inputValue: string) => {
+        dispatch(toggleAddProductConfirmation(true));
         dispatch(setNameProduct(inputValue));
-        dispatch(toggleAddProductConfirmation(true)); 
     };
 
     const updateOptions = (field: string, newOption: Product) => {
         if (field === 'product') {
-              setProducts((prev) => [...prev, { label: newOption.name, value: newOption }]);
+            const productNew = { label: newOption.name, value: newOption }
+            setProducts((prev) => [productNew,...prev]);
         }
     };
 
+
+
     return (
         <AdaptableCard divider className="mb-4">
+ 
             <h5>Thông tin cơ bản</h5>
             <FormItem
                 label="Tên sản phẩm"
@@ -70,7 +81,7 @@ const BasicInformationFields = ({ touched, errors, values, setFieldValue, data }
                                     form.setFieldValue('description', el.value.description)
                                 } else {
                                     form.setFieldValue(field.name, null);
-                                } 
+                                }
                             }}
                             placeholder="Tên sản phẩm..."
                             formatCreateLabel={(inputValue) => `Thêm nhanh "${inputValue}"`}

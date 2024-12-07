@@ -46,7 +46,7 @@ public class OriginService implements IService<Origin, Integer, OriginRequestDTO
         return originRepository.findAll(pageable);
     }
     public List<Origin> findAllList() {
-        return originRepository.findAll();
+        return originRepository.findAllList();
     }
     @Override
     public Origin findById(Integer id) throws BadRequestException { // Đổi từ Material sang Origin

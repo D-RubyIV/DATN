@@ -45,7 +45,7 @@ public class MaterialService implements IService<Material, Integer, MaterialRequ
         return materialRepository.findAll(pageable);
     }
     public List<Material> findAllList() {
-        return materialRepository.findAll();
+        return materialRepository.findAllList();
     }
     @Override
     public Material findById(Integer id) throws BadRequestException { // Đổi từ Image sang Material

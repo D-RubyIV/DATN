@@ -46,7 +46,7 @@ public class ColorService implements IService<Color, Integer, ColorRequestDTO> {
         return colorRepository.findAll(pageable);
     }
     public List<Color> findAllList() {
-        return colorRepository.findAll();
+        return colorRepository.findAllList();
     }
 
     @Override

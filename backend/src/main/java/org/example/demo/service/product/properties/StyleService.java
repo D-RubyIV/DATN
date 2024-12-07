@@ -47,7 +47,7 @@ public class StyleService implements IService<Style, Integer, StyleRequestDTO> {
         return styleRepository.findAll(pageable);
     }
     public List<Style> findAllList() {
-        return styleRepository.findAll();
+        return styleRepository.findAllList();
     }
     @Override
     public Style findById(Integer id) throws BadRequestException { // Đổi từ Sleeve sang Style

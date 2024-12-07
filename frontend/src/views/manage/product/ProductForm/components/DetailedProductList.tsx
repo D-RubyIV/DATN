@@ -9,6 +9,8 @@ import type { DetailedProduct } from '../store';
 import { useAppDispatch } from '@/store';
 import { removeCombination, updateCombination } from '../store';
 import ProductImages from './ProductImages'
+import { NumericFormat, NumericFormatProps } from 'react-number-format'
+
 interface TableMeta {
     updateData: (productCode: string, columnId: keyof DetailedProduct, value: unknown) => void;
 }
@@ -21,34 +23,52 @@ interface DetailedProductListProps {
 
 const { Tr, Th, Td, THead, TBody } = Table;
 
-const formatPrice = (value: number) => {
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-};
+
 
 const EditableCell = ({
     getValue,
     productCode,
     column,
     table,
-    invalid,
-    errorMessage,
 }: CellContext<DetailedProduct, unknown> & {
     productCode: string;
-    invalid: boolean;
-    errorMessage?: string;
 }) => {
     const initialValue = getValue() as string | number;
     const [value, setValue] = useState<string | number>(initialValue);
+    const [isInvalid, setIsInvalid] = useState(false);
+
+    const validateInput = (input: string) => {
+        return /^[0-9]*$/.test(input) || input === '';
+    };
+
+    const handleValueChange = (values: { value: string }) => {
+        const newValue = values.value;
+
+        setValue(newValue);
+
+        if (!validateInput(newValue)) {
+            setIsInvalid(true);
+        } else {
+            setIsInvalid(false);
+        }
+    };
 
     const onBlur = () => {
         const meta = table.options.meta as TableMeta | undefined;
         if (meta) {
             const updatedValue = typeof value === 'number' ? value : value.trim();
-            if (updatedValue !== '' && updatedValue !== undefined) {
-                console.log(`Updating ${column.id} to ${updatedValue} for product ${productCode}`);
-                meta.updateData(productCode, column.accessorKey as keyof DetailedProduct, updatedValue);
+
+            if (!validateInput(updatedValue.toString())) {
+                setIsInvalid(true);
+                setValue('');
             } else {
-                console.warn(`Invalid value for ${column.id} for product ${productCode}:`, updatedValue);
+                setIsInvalid(false);
+                if (updatedValue !== '' && updatedValue !== undefined) {
+                    console.log(`Updating ${column.id} to ${updatedValue} for product ${productCode}`);
+                    meta.updateData(productCode, column.accessorKey as keyof DetailedProduct, updatedValue);
+                } else {
+                    console.warn(`Invalid value for ${column.id} for product ${productCode}:`, updatedValue);
+                }
             }
         }
     };
@@ -59,20 +79,25 @@ const EditableCell = ({
 
     return (
         <div>
-            <Input
-                className={`border-transparent bg-transparent hover:border-gray-300 focus:bg-white ${invalid ? 'border-red-500' : ''}`}
-                size="sm"
-                value={typeof value === 'number' ? formatPrice(value) : value}
-                onChange={e => setValue(typeof value === 'number' ? Number(e.target.value.replace(/\./g, '')) : e.target.value)}
+            <NumericFormat
+                value={value}
+                onValueChange={handleValueChange}
                 onBlur={onBlur}
+                thousandSeparator={false}
+                allowNegative={false} 
+                customInput={Input}
                 aria-label={`Edit ${column.id}`}
+                className={isInvalid ? 'border-red-500' : ''}
             />
-            {invalid && errorMessage && (
-                <span className="text-red-500 text-xs">{errorMessage}</span>
-            )}
+           
         </div>
     );
 };
+
+
+
+
+
 
 const DetailedProductList: React.FC<DetailedProductListProps> = ({ productCombinations, errors, touched }) => {
     const dispatch = useAppDispatch();

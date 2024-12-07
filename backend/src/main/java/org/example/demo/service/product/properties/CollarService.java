@@ -47,7 +47,7 @@ public class CollarService implements IService<Collar, Integer, CollarRequestDTO
         return collarRepository.findAll(pageable);
     }
     public List<Collar> findAllList() {
-        return collarRepository.findAll();
+        return collarRepository.findAllList();
     }
     @Override
     public Collar findById(Integer id) throws BadRequestException { // Đổi từ Brand sang Collar
