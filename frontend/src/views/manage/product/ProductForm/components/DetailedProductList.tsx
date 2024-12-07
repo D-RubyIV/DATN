@@ -16,7 +16,7 @@ interface TableMeta {
 }
 
 interface DetailedProductListProps {
-    productCombinations: DetailedProduct[];
+    productCombinations: DetailedProduct[]; 
     errors: Record<string, any>;
     touched: Record<string, any>;
 }
@@ -43,7 +43,6 @@ const EditableCell = ({
 
     const handleValueChange = (values: { value: string }) => {
         const newValue = values.value;
-
         setValue(newValue);
 
         if (!validateInput(newValue)) {
@@ -56,7 +55,7 @@ const EditableCell = ({
     const onBlur = () => {
         const meta = table.options.meta as TableMeta | undefined;
         if (meta) {
-            const updatedValue = typeof value === 'number' ? value : value.trim();
+            const updatedValue = typeof value === 'string' && !isNaN(Number(value)) ? Number(value) : value;
 
             if (!validateInput(updatedValue.toString())) {
                 setIsInvalid(true);
@@ -84,15 +83,15 @@ const EditableCell = ({
                 onValueChange={handleValueChange}
                 onBlur={onBlur}
                 thousandSeparator={false}
-                allowNegative={false} 
+                allowNegative={false}
                 customInput={Input}
                 aria-label={`Edit ${column.id}`}
                 className={isInvalid ? 'border-red-500' : ''}
             />
-           
         </div>
     );
 };
+
 
 
 
