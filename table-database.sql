@@ -1,4 +1,7 @@
-﻿create table brand
+﻿use final
+GO
+
+create table brand
 (
     deleted      bit,
     id           int identity
