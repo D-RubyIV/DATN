@@ -57,7 +57,12 @@ const AddEvent = () => {
     const validationSchema = Yup.object().shape({
         name: Yup.string()
             .required('Tên đợt giảm giá là bắt buộc')
-            .min(3, 'Tên phải có ít nhất 3 ký tự'),
+            .min(3, 'Tên phải có ít nhất 3 ký tự')
+            .test("phone-unique", "Tên sự kiện đã tồn tại", async (name: string) => {
+                // Gọi API kiểm tra name có trùng không
+                const response = await instance.get(`/event/check-name`, { params: { name } });
+                return !response.data.exists; // API trả về { exists: true: Tồn tại / false: chưa tồn tại }
+            }),
         discountPercent: Yup.number()
             .required('Giá trị giảm là bắt buộc')
             .min(0, 'Giá trị giảm phải lớn hơn hoặc bằng 0')
@@ -101,8 +106,8 @@ const AddEvent = () => {
             console.log('Ngày bắt đầu (trước khi chuyển đổi):', values.startDate);
             console.log('Ngày kết thúc (trước khi chuyển đổi):', values.endDate);
 
-            if(values.startDate && values.endDate){
-                if(values.startDate > values.endDate){
+            if (values.startDate && values.endDate) {
+                if (values.startDate > values.endDate) {
                     openNotification("Thời gian bắt đầu phải trước thời gian kết thúc", 'Thông báo', 'warning', 5000)
                     return;
                 }
@@ -219,7 +224,7 @@ const AddEvent = () => {
                                             errorMessage={errors.name}
                                         >
                                             <Field type="text" autoComplete="on" name="name" style={{ height: '44px' }}
-                                                   placeholder="Tên đợt giảm giá..." component={Input} />
+                                                placeholder="Tên đợt giảm giá..." component={Input} />
                                         </FormItem>
 
                                         <FormItem
@@ -228,8 +233,8 @@ const AddEvent = () => {
                                             errorMessage={errors.discountPercent}
                                         >
                                             <Field type="number" autoComplete="off" name="discountPercent"
-                                                   style={{ height: '44px' }}
-                                                   placeholder="Giá trị giảm(%)..." component={Input} />
+                                                style={{ height: '44px' }}
+                                                placeholder="Giá trị giảm(%)..." component={Input} />
                                         </FormItem>
 
 
@@ -279,15 +284,15 @@ const AddEvent = () => {
 
                                         <FormItem>
                                             <Button className="ltr:mr-2 rtl:ml-2"
-                                                    type="submit"
-                                                    style={{ backgroundColor: '#fff', height: '40px' }}
-                                                    disabled={isSubmitting} onClick={() => resetForm()}>
+                                                type="submit"
+                                                style={{ backgroundColor: '#fff', height: '40px' }}
+                                                disabled={isSubmitting} onClick={() => resetForm()}>
                                                 Tải lại
                                             </Button>
                                             <Button variant="solid"
-                                                    type="submit"
-                                                    style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                                    disabled={isSubmitting}>
+                                                type="submit"
+                                                style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                                disabled={isSubmitting}>
                                                 Thêm mới
                                             </Button>
                                         </FormItem>
@@ -299,28 +304,28 @@ const AddEvent = () => {
                                     <h4 className="font-medium text-xl mb-4">Danh sách sản phẩm</h4>
                                     <table className="table-auto w-full border border-collapse border-gray-300">
                                         <thead>
-                                        <tr>
-                                            <th className="border px-4 py-2">Chọn</th>
-                                            <th className="border px-4 py-2">Mã sản phẩm</th>
-                                            <th className="border px-4 py-2">Tên sản phẩm</th>
-                                        </tr>
+                                            <tr>
+                                                <th className="border px-4 py-2">Chọn</th>
+                                                <th className="border px-4 py-2">Mã sản phẩm</th>
+                                                <th className="border px-4 py-2">Tên sản phẩm</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        {product.map((product) => (
-                                            <tr key={product.id}>
-                                                <td className="border px-4 py-2 text-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected(product.id)}
-                                                        onChange={(e) =>
-                                                            handleSelectProduct(product, e.target.checked)
-                                                        }
-                                                    />
-                                                </td>
-                                                <td className="border px-4 py-2">{product.code}</td>
-                                                <td className="border px-4 py-2">{product.name}</td>
-                                            </tr>
-                                        ))}
+                                            {product.map((product) => (
+                                                <tr key={product.id}>
+                                                    <td className="border px-4 py-2 text-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected(product.id)}
+                                                            onChange={(e) =>
+                                                                handleSelectProduct(product, e.target.checked)
+                                                            }
+                                                        />
+                                                    </td>
+                                                    <td className="border px-4 py-2">{product.code}</td>
+                                                    <td className="border px-4 py-2">{product.name}</td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                     <div className="flex items-center justify-between mt-4">
@@ -332,8 +337,8 @@ const AddEvent = () => {
                                             Trang trước
                                         </Button>
                                         <span>
-                                        Trang {pageIndex} / {Math.ceil(total / pageSize)}
-                                    </span>
+                                            Trang {pageIndex} / {Math.ceil(total / pageSize)}
+                                        </span>
                                         <Button
                                             type="button"
                                             disabled={pageIndex >= Math.ceil(total / pageSize)}

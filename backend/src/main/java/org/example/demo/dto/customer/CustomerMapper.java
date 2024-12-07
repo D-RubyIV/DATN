@@ -115,15 +115,6 @@ public class CustomerMapper {
                     updateEntityAddress(existingAddress, addressDTO);
                 } else {
                     return;
-//                    // Thêm địa chỉ mới nếu không tồn tại
-//                    Address newAddress = toEntityAddress(addressDTO);
-//                    newAddress.setCustomer(customer);
-//                    customer.getAddresses().add(newAddress);
-//                    // ID khách hàng cho địa chỉ mới
-//                    if (newAddress.getCustomer() != null && newAddress.getCustomer().getId() == null) {
-//                        newAddress.getCustomer().setId(customer.getId());
-//                    }
-//                    customer.getAddresses().add(newAddress);
                 }
             }
         }

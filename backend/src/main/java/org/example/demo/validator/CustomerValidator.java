@@ -75,14 +75,6 @@ public class CustomerValidator {
         if (!phone.matches("^[0-9]{10}$")) {
             throw new BadRequestException("Số điện thoại không hợp lệ");
         }
-        // Kiểm tra nếu tồn tại nhiều khách hàng có cùng số điện thoại
-        List<Customer> customers = customerRepository.findCustomerByPhone(phone);
-        for (Customer customer : customers) {
-            // Nếu tìm thấy khách hàng có số điện thoại này mà không phải khách hàng đang cập nhật
-            if (!customer.getId().equals(existingCustomerId)) {
-                throw new BadRequestException("Số điện thoại đã tồn tại");
-            }
-        }
     }
 
     public boolean isEmailExists(String email) {

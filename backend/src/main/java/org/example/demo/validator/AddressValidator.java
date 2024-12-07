@@ -14,16 +14,12 @@ import java.util.List;
 @Component
 public class AddressValidator {
 
-    @Autowired
-    private AddressRepository addressRepository;
-
     public void validateAddress(AddressDTO addressDTO, Integer existingAddressId) throws BadRequestException {
         if (addressDTO == null) {
             throw new BadRequestException("Dữ liệu địa chỉ không để trống");
         }
 
         validateName(addressDTO.getName());
-        validatePhone(addressDTO.getPhone(), existingAddressId);
         validateDetail(addressDTO.getDetail());
     }
 
@@ -43,22 +39,6 @@ public class AddressValidator {
         }
     }
 
-    private void validatePhone(String phone, Integer existingCustomerId) throws BadRequestException {
-        if (!StringUtils.hasText(phone)) {
-            throw new BadRequestException("Số điện thoại không được để trống");
-        }
-        if (!phone.matches("^[0-9]{10}$")) {
-            throw new BadRequestException("Số điện thoại không hợp lệ");
-        }
-        // Kiểm tra nếu tồn tại nhiều khách hàng có cùng số điện thoại
-        List<Address> addresses = addressRepository.findAddressByPhone(phone);
-        for (Address address : addresses) {
-            // Nếu tìm thấy khách hàng có số điện thoại này mà không phải khách hàng đang cập nhật
-            if (!address.getId().equals(existingCustomerId)) {
-                throw new BadRequestException("Số điện thoại đã tồn tại");
-            }
-        }
-    }
 
     private void validateDetail(String detail) throws BadRequestException {
         if (!StringUtils.hasText(detail)) {

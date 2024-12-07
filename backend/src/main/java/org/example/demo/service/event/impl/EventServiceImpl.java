@@ -1,5 +1,6 @@
 package org.example.demo.service.event.impl;
 
+import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.event.EventDTO;
 import org.example.demo.dto.event.EventListDTO;
 import org.example.demo.entity.event.Event;
@@ -8,6 +9,7 @@ import org.example.demo.mapper.event.EventMapper;
 import org.example.demo.repository.event.EventRepository;
 import org.example.demo.repository.product.properties.ProductRepository;
 import org.example.demo.service.event.EventService;
+import org.example.demo.validator.event.EventValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +28,9 @@ public class EventServiceImpl implements EventService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private EventValidator eventValidator;
 
     @Autowired
     private ProductRepository productRepository;
@@ -72,7 +77,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventDTO saveEvent(EventDTO eventDTO) {
+    public EventDTO saveEvent(EventDTO eventDTO) throws BadRequestException {
+        eventValidator.validateName(eventDTO.getName());
         // Tạo mã giảm giá nếu không có
         if (eventDTO.getDiscountCode() == null || eventDTO.getDiscountCode().isEmpty()) {
             String generatedDiscountCode = generateDiscountCode(eventDTO);
@@ -157,6 +163,11 @@ public class EventServiceImpl implements EventService {
         String eventName = eventDTO.getName().toUpperCase().replaceAll("[^A-Z0-9]", ""); // Làm sạch tên
 //        String datePart = eventDTO.getStartDate().toLocalDate().toString().replaceAll("-", ""); // Định dạng ngày dưới dạng YYYYMMDD
         return "GG-" + eventName;
+    }
+
+    // check dupllicate Name
+    public boolean isNameCheck(String name){
+        return eventValidator.isNameExists(name);
     }
 }
 
