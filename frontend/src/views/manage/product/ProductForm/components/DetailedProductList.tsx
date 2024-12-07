@@ -56,16 +56,21 @@ const EditableCell = ({
     const onBlur = () => {
         const meta = table.options.meta as TableMeta | undefined;
         if (meta) {
+            console.log(value)
+            console.log(typeof  value)
             const updatedValue = typeof value === 'number' ? value : value.trim();
 
             if (!validateInput(updatedValue.toString())) {
+                console.log("TH1")
                 setIsInvalid(true);
                 setValue('');
             } else {
+                console.log("TH2")
                 setIsInvalid(false);
                 if (updatedValue !== '' && updatedValue !== undefined) {
+                    console.log("update value: ", updatedValue)
                     console.log(`Updating ${column.id} to ${updatedValue} for product ${productCode}`);
-                    meta.updateData(productCode, column.accessorKey as keyof DetailedProduct, updatedValue);
+                    meta.updateData(productCode, column.accessorKey as keyof DetailedProduct, Number(updatedValue));
                 } else {
                     console.warn(`Invalid value for ${column.id} for product ${productCode}:`, updatedValue);
                 }
