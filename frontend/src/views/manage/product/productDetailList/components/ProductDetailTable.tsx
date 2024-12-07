@@ -195,7 +195,7 @@ const ProductDetailTable = () => {
 
             {
                 header: 'Tên',
-                accessorKey: 'name',
+                accessorKey: 'product__name',
                 cell: (props: any) => {
                     const row = props.row.original
                     return <ProductDetailColumn row={row} />
@@ -203,7 +203,7 @@ const ProductDetailTable = () => {
             },
             {
                 header: 'Màu Sắc',
-                accessorKey: 'color.name',
+                accessorKey: 'color__name',
                 cell: (props: any) => {
                     const row = props.row.original
                     return <span className=" block w-16 h-5 rounded-xl"
@@ -215,7 +215,7 @@ const ProductDetailTable = () => {
             },
             {
                 header: 'Kích Thước',
-                accessorKey: 'size.name',
+                accessorKey: 'size__name',
                 cell: (props: any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.size.name}</span>
@@ -239,13 +239,13 @@ const ProductDetailTable = () => {
             },
             {
                 header: 'Trạng thái',
-                accessorKey: 'status',
+                accessorKey: 'quantity',
                 cell: (props: any) => {
                     const { quantity } = props.row.original;
                     const status = getInventoryStatus(quantity);
 
                     return (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2"> 
                             <Badge className={status.dotClass} />
                             <span
                                 className={`capitalize font-semibold ${status.textClass}`}
@@ -280,9 +280,14 @@ const ProductDetailTable = () => {
 
     const onSort = (sort: OnSortParam) => {
         const newTableData = cloneDeep(tableData);
-        newTableData.sort = sort;
+        newTableData.sort = {
+            order: sort.order,
+            key: (sort.key as string).replace('__', '.') // Thay thế '___' bằng dấu chấm
+        };
         dispatch(setTableData(newTableData));
     };
+
+  
     return (
         <>
             {data.length > 0 ? (

@@ -48,7 +48,7 @@ public class ElasticityService implements IService<Elasticity, Integer, Elastici
         return elasticityRepository.findAll(pageable);
     }
     public List<Elasticity> findAllList() {
-        return elasticityRepository.findAll();
+        return elasticityRepository.findAllList();
     }
 
     @Override

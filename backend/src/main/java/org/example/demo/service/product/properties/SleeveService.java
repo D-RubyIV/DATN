@@ -46,7 +46,7 @@ public class SleeveService implements IService<Sleeve, Integer, SleeveRequestDTO
         return sleeveRepository.findAll(pageable);
     }
     public List<Sleeve> findAllList() {
-        return sleeveRepository.findAll();
+        return sleeveRepository.findAllList();
     }
     @Override
     public Sleeve findById(Integer id) throws BadRequestException { // Đổi từ Size sang Sleeve

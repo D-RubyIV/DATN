@@ -170,8 +170,8 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
         materialData,
     } = useAppSelector((state) => state.optionList.options);
 
-    const combine = useAppSelector((state) => state.dataDetailedProduct.detailedProduct.data);
-    useEffect(() => {
+    const combine = useAppSelector ((state)=>state.dataDetailedProduct.detailedProduct)
+    useEffect(()=>{
         dispatch(getProductData());
         dispatch(getBrandData());
         dispatch(getOriginData());
@@ -184,7 +184,6 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
         dispatch(getColorData());
         dispatch(getSizeData());
         dispatch(getMaterialData());
-        console.log("lap lap")
     }, [combine])
 
     const mapOptions = (items: Option[] | undefined) => {
@@ -297,10 +296,10 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                         const combinations =  generateCombinations(values.color, values.size, values);
                         dispatch(setCombinations(combinations)); // Ghi vào Redux
                     }
-                    //  else
-                    //  {
-                    //     dispatch(setCombinations([])); 
-                    // }
+                     else
+                     {
+                        dispatch(setCombinations([]));
+                    }
                 }, [values]);
 
                 const productCombinations = useAppSelector((state) => state.dataDetailedProduct.detailedProduct.data) || [];

@@ -4,9 +4,11 @@ import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.BrandRequestDTO;
 import org.example.demo.dto.product.response.properties.BrandResponseDTO;
+import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Brand; // Đổi từ Product sang Brand
 import org.example.demo.mapper.product.request.properties.BrandRequestMapper; // Đổi từ ProductRequestMapper sang BrandRequestMapper
 import org.example.demo.mapper.product.response.properties.BrandResponseMapper;
+import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.product.properties.BrandRepository; // Đổi từ ProductRepository sang BrandRepository
 import org.example.demo.service.IService;
 import org.example.demo.util.phah04.PageableObject;
@@ -32,12 +34,15 @@ public class BrandService implements IService<Brand, Integer, BrandRequestDTO> {
     @Autowired
     private BrandResponseMapper brandResponseMapper;
 
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
+
     public Page<Brand> findAll(Pageable pageable) { // Đổi từ Product sang Brand
         return brandRepository.findAll(pageable);
     }
 
     public List<Brand> findAllList() {
-        return brandRepository.findAll();
+        return brandRepository.findAllList();
     }
 
 
@@ -62,7 +67,16 @@ public class BrandService implements IService<Brand, Integer, BrandRequestDTO> {
     @Override
     public Brand delete(Integer id) throws BadRequestException {
         Brand entityFound = findById(id);
+        if (entityFound == null) {
+            throw new BadRequestException("Brand not found");
+        }
+        boolean currentDeletedState = entityFound.getDeleted();
         entityFound.setDeleted(!entityFound.getDeleted());
+        List<ProductDetail> productDetails = productDetailRepository.findByProductId(id);
+        for (ProductDetail detail : productDetails) {
+            detail.setDeleted(!currentDeletedState);
+            productDetailRepository.save(detail);
+        }
         return brandRepository.save(entityFound);
     }
 

@@ -47,7 +47,7 @@ public class SizeService implements IService<Size, Integer, SizeRequestDTO> { //
         return sizeRepository.findAll(pageable);
     }
     public List<Size> findAllList() {
-        return sizeRepository.findAll();
+        return sizeRepository.findAllList();
     }
     @Override
     public Size findById(Integer id) throws BadRequestException { // Đổi từ Origin sang Size

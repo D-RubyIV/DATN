@@ -45,7 +45,7 @@ public class TextureService implements IService<Texture, Integer, TextureRequest
         return textureRepository.findAll(pageable);
     }
     public List<Texture> findAllList() {
-        return textureRepository.findAll();
+        return textureRepository.findAllList();
     }
     @Override
     public Texture findById(Integer id) throws BadRequestException { // Đổi từ Style sang Texture

@@ -44,7 +44,7 @@ public class ThicknessService implements IService<Thickness, Integer, ThicknessR
         return thicknessRepository.findAll(pageable);
     }
     public List<Thickness> findAllList() {
-        return thicknessRepository.findAll();
+        return thicknessRepository.findAllList();
     }
     @Override
     public Thickness findById(Integer id) throws BadRequestException { // Đổi từ Texture sang Thickness

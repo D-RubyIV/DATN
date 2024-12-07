@@ -58,7 +58,7 @@ export type SalesProductDetailListState = {
     selectedProductDetail: string
     tableData: TableQueries
     productDetailList: ProductDetail[]
-     productId: number,
+    productId: number,
 }
 
 type GetSalesProductDetailsRequest = TableQueries 

@@ -50,7 +50,7 @@ public class ProductService implements IService<Product, Integer, ProductRequest
     }
 
     public List<Product> findAllList() {
-        return productRepository.findAll();
+        return productRepository.findAllList();
     }
 
 

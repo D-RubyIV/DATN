@@ -185,7 +185,7 @@ const ProductTable = () => {
             },
             {
                 header: 'Trạng thái',
-                accessorKey: 'status',
+                accessorKey: 'deleted',
                 cell: (props) => {
                     const { quantity } = props.row.original;
                     const status = getInventoryStatus(quantity);
@@ -226,7 +226,10 @@ const ProductTable = () => {
 
     const onSort = (sort: OnSortParam) => {
         const newTableData = cloneDeep(tableData)
-        newTableData.sort = sort
+        newTableData.sort = {
+            order: sort.order,
+            key: (sort.key as string).replace('__', '.') // Thay thế '___' bằng dấu chấm
+        };
         dispatch(setTableData(newTableData))
     }
 

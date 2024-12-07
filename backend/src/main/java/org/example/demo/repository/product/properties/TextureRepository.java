@@ -1,6 +1,7 @@
 package org.example.demo.repository.product.properties;
 
 import org.example.demo.entity.product.properties.Collar;
+import org.example.demo.entity.product.properties.Style;
 import org.example.demo.entity.product.properties.Texture;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface TextureRepository extends JpaRepository<Texture, Integer> {
     boolean existsByCodeAndName(String code, String name);
@@ -28,5 +30,13 @@ public interface TextureRepository extends JpaRepository<Texture, Integer> {
             @Param("createdTo") LocalDateTime createdTo,
             Pageable pageable
     );
+
+
+    @Query(value = """
+            SELECT DISTINCT t FROM Texture t
+            WHERE t.deleted = false
+            ORDER BY t.createdDate DESC
+            """)
+    List<Texture> findAllList();
 
 }
