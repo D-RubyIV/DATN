@@ -47,3 +47,42 @@ export type CartDetailResponseDTO = {
     quantity: number;
     productDetailResponseDTO: ProductDetailResponseDTO
 }
+export interface CartResponseDTO {
+    id: number;
+    code: string;
+    address: string | null;
+    phone: string | null;
+    email: string | null;
+    recipientName: string | null;
+    provinceId: number | null;
+    provinceName: string | null;
+    districtId: number | null;
+    districtName: string | null;
+    wardId: number | null;
+    wardName: string | null;
+    deleted: boolean;
+    status: string; // Hoặc định nghĩa Enum cho các trạng thái
+    type: string; // Hoặc định nghĩa Enum cho các loại
+    payment: string; // Hoặc định nghĩa Enum cho các phương thức thanh toán
+    total: number;
+    deliveryFee: number;
+    discount: number;
+    subTotal: number;
+    customerResponseDTO: CustomerResponseDTO | null;
+    voucherResponseDTO: VoucherResponseDTO | null;
+    cartDetailResponseDTOS: CartDetailResponseDTO[];
+}
+
+export interface CustomerResponseDTO {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+}
+
+export interface VoucherResponseDTO {
+    id: number;
+    code: string;
+    discountValue: number;
+}
+

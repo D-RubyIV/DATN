@@ -163,6 +163,16 @@ public class VoucherController {
     ) {
         return ResponseEntity.ok(voucherService.selectPageActiveAndAbleToUseVoucher(query, typeTicket, customerId,  pageable).map(s -> voucherResponseMapper.toDTO(s)));
     }
+    @GetMapping("/find-voucher")
+    public ResponseEntity<Page<VoucherResponseDTO>> selectPageActive(
+            @PageableDefault(size = 5, page = 0, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(name = "query", required = false, defaultValue = "") String query,
+            @RequestParam(name = "typeTicket", required = false, defaultValue = "") String typeTicket,
+            @RequestParam(name = "customerId", required = false, defaultValue = "") Integer customerId
+    ) {
+        return ResponseEntity.ok(voucherService.selectPageActiveAndAbleToUseVoucher(query, typeTicket, customerId,  pageable).map(s -> voucherResponseMapper.toDTO(s)));
+    }
+
 
 
 }

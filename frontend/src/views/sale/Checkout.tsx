@@ -3,7 +3,7 @@ import { Badge, Button, Card, Input, Radio, Select } from '@/components/ui'
 import { IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
 import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
 import { EPaymentMethod } from '@/views/manage/sell'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
 import { useForm } from 'react-hook-form'
@@ -311,7 +311,7 @@ const Checkout = () => {
             }
         }).catch(function(error) {
             console.log(error)
-            openNotification(error.response.data.error)
+            openNotification(error.response.data.error, "Thông báo", "warning", 5000)
         })
     }
 
@@ -524,29 +524,59 @@ const Checkout = () => {
 
     const { user, setUser } = useAuthContext()
 
+    const Breadcrumb = () => {
+        return (
+            <div className="lg:flex items-center justify-between mb-4">
+                <nav className="flex" aria-label="Breadcrumb">
+                    <ol className="inline-flex items-center space-x-1 md:space-x-3">
+                        <li>
+                            <div className="flex items-center">
+                                <a href="/" className="text-gray-700 hover:text-blue-600">
+                                    Trang Chủ
+                                </a>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="flex items-center">
+                                <span className="mx-2">/</span>
+                                <a href={`/checkout/${id}`} className="text-gray-700 hover:text-blue-600">
+                                    Thanh toán
+                                </a>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        )
+    }
+
     return (
-        <div className=" bg-white min-h-full">
-            <Card className={'2xl:px-40 px-10 xl:py-10  min-h-full'}>
-                <div className={'flex gap-1 justify-start items-center xl:px-10'}>
-                    <div className={'-ml-4'}>
-                        <Logo style={{ width: 600 }}></Logo>
-                    </div>
-                    <div className="text-black font-semibold text-xl">
-                        Xin chào {user?.username || 'quý khách'}
-                    </div>
-                </div>
-                <form className={'h-full xl:px-10  grid grid-cols-12 gap-4'}>
+        <div className="bg-white min-h-full ">
+            <div className={'2xl:px-40 px-10 h-full'}>
+                <form className={'p-20  grid grid-cols-12 gap-12 h-full'}>
                     {/*BLOCK 1*/}
-                    <div className={'order-2 md:order-1 h-full col-span-5 flex flex-col justify-between'}>
+                    <div className={'order-2 md:order-1 h-full col-span-8 flex flex-col justify-start '}>
                         <Fragment>
-
-
-                            <div className={'flex flex-col gap-5 justify-between h-full'}>
-                                <div className={'text-black font-semibold text-xl'}>
-                                    <p>Thông tin giao hàng</p>
+                            <div className={'flex gap-1 justify-start items-center'}>
+                                <div className={'-ml-4'}>
+                                    <Logo style={{ width: 600 }}></Logo>
                                 </div>
-                                <div className={'grid grid-cols-3 gap-4'}>
-                                    <div className={'col-span-3'}>
+                                <div className="text-black font-semibold text-xl">
+                                    Xin chào {user?.username || 'quý khách'}
+                                </div>
+                            </div>
+
+                            <div className={'flex flex-col gap-5'}>
+                                <div>
+                                    <div>
+                                        <Breadcrumb />
+                                    </div>
+                                    <div className={'text-black font-semibold text-xl'}>
+                                        <p>Thông tin giao hàng</p>
+                                    </div>
+                                </div>
+                                <div className={'grid 2xl:grid-cols-3 xl:grid-cols-1 gap-4'}>
+                                    <div className={'col-span-1'}>
                                         <p className={' text-black text-[18px] font-semibold'}>Họ và tên</p>
                                         <Input
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
@@ -560,7 +590,7 @@ const Checkout = () => {
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.recipientName.message}</p>
                                         )}
                                     </div>
-                                    <div className={'col-span-3'}>
+                                    <div className={'col-span-1'}>
                                         <p className={' text-black text-[18px] font-semibold'}>Email</p>
                                         <Input
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
@@ -574,7 +604,7 @@ const Checkout = () => {
                                             <p className="text-red-500 text-sm mt-2">{errorsFormRecipient.recipientName.message}</p>
                                         )}
                                     </div>
-                                    <div className={'col-span-3'}>
+                                    <div className={'col-span-1'}>
                                         <p className={'  text-black text-[18px] font-semibold'}>Số điện thoại</p>
                                         <Input
                                             className={'border-2 rounded-lg shadow-sm border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-400'}
@@ -703,15 +733,13 @@ const Checkout = () => {
 
                     {/*BLOCK 2*/}
                     {/* BLOCK 2 */}
-                    <div className="order-1 md:order-2 h-full col-span-7">
-                        <div className="text-black font-semibold text-xl pb-2">
-                            Danh sách sản phẩm
-                        </div>
+                    <div className="order-1 md:order-2 h-full col-span-4 mt-20">
                         <div className="grid">
-                            <div className="dark:text-gray-500 bg-white flex flex-col justify-between ">
+                            <div
+                                className="dark:text-gray-500 bg-white flex flex-col justify-between ">
                                 <div className={'overflow-y-auto'}>
                                     {/* CENTER */}
-                                    <div className="max-h-[500px] h-[500px] px-2">
+                                    <div className="px-2">
                                         {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 ? (
                                             listCartDetailResponseDTO.map((item, index) => (
                                                 <Fragment key={index}>
@@ -749,8 +777,8 @@ const Checkout = () => {
                                                                 {/* Thuộc tính sản phẩm */}
                                                                 <div className="mt-2 text-sm text-gray-600 space-y-1">
                                                                     <p>
-                                                                        Màu: <span
-                                                                        className="text-gray-800">{item.productDetailResponseDTO?.color?.name}</span>
+                                                                        <span
+                                                                            className="text-gray-800">{item.productDetailResponseDTO?.color?.name}</span>
                                                                     </p>
                                                                     <p>
                                                                         Size: <span
@@ -797,7 +825,7 @@ const Checkout = () => {
                                                              alt="No product image" />
                                                     </div>
                                                     <div>
-                                                        <span className="font-light text-gray-500">No products in your cart</span>
+                                                        <span className="font-light text-gray-500">Không có sản phẩm nào trong giỏ hàng</span>
                                                     </div>
                                                 </div>
                                             </Fragment>
@@ -810,10 +838,10 @@ const Checkout = () => {
                                         Thông tin thanh toán
                                     </div>
                                     <form className="grid grid-cols-12 gap-4 w-full py-4">
-                                        <div className="col-span-10">
+                                        <div className="col-span-8">
                                             <Input
                                                 placeholder="Mã giảm giá"
-                                                className={`border-2 rounded-none border-gray-200 w-full ${errors.voucherCode ? 'border-red-500' : ''}`}
+                                                className={`border-2  rounded-none border-gray-200  ${errors.voucherCode ? 'border-red-500' : ''}`}
                                                 {...register('voucherCode', {
                                                     required: 'Mã giảm giá không hợp lệ',
                                                     minLength: {
@@ -826,13 +854,13 @@ const Checkout = () => {
                                                 <p className="text-red-500 text-sm mt-2">{errors.voucherCode.message}</p>
                                             )}
                                         </div>
-                                        <div className="col-span-2 w-full">
-                                            <Button
-                                                className="w-full border-2 rounded-none border-black text-black"
+                                        <div className="col-span-4">
+                                            <button
+                                                className="border-2 w-full h-[38px] rounded-none border-black text-black"
                                                 onClick={handleSubmit(customHandleSubmit)}
                                             >
                                                 Sử dụng
-                                            </Button>
+                                            </button>
                                         </div>
                                     </form>
 
@@ -844,12 +872,16 @@ const Checkout = () => {
 
                                     {/* Hiển thị voucher đã chọn */}
                                     <div className="mt-4">
-                                        <VoucherModal
-                                            amount={(selectedCart as CartResponseDTO)?.subTotal}
-                                            isVoucherModalOpen={isVoucherModalOpen}
-                                            toggleVoucherModal={toggleVoucherModal}
-                                            onVoucherSelect={handleVoucherSelect}
-                                        />
+                                        {
+                                            isVoucherModalOpen && (
+                                                <VoucherModal
+                                                    setIsVoucherModalOpen={setIsVoucherModalOpen}
+                                                    isVoucherModalOpen={isVoucherModalOpen}
+                                                    toggleVoucherModal={toggleVoucherModal}
+                                                    onVoucherSelect={handleVoucherSelect}
+                                                />
+                                            )
+                                        }
                                     </div>
 
                                     {selectedVoucher && (
@@ -898,7 +930,7 @@ const Checkout = () => {
                         </div>
                     </div>
                 </form>
-            </Card>
+            </div>
         </div>
     )
 }

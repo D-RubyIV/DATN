@@ -1,8 +1,10 @@
-import {ReactNode, createContext, useContext, useState, useEffect} from 'react'
+import { ReactNode, createContext, useContext, useState, useEffect, SetStateAction } from 'react'
 import instance from "@/axios/CustomAxios";
-import {CartDetailResponseDTO} from "@/views/sale/index";
+import { CartDetailResponseDTO, CartResponseDTO } from '@/views/sale/index'
+
 
 type AppContextType = {
+    selectedCart: CartResponseDTO | undefined,
     isOpenCartDrawer: boolean;
     setIsOpenCartDrawer: React.Dispatch<React.SetStateAction<boolean>>;
     myCartId: number | undefined;
@@ -22,14 +24,17 @@ const SaleContext = createContext<AppContextType>({
     listCartDetailResponseDTO: [],
     setListCartDetailResponseDTO: () => {
     },
-    getCartDetailInCard: () => {}
+    getCartDetailInCard: () => {},
+    selectedCart: undefined,
 });
 
 const SaleProvider = ({children}: { children: ReactNode }) => {
     const [isOpenCartDrawer, setIsOpenCartDrawer] = useState<boolean>(false)
     const [myCartId, setMyCartId] = useState<number | undefined>(Number(localStorage.getItem("myCartId")) ?? undefined)
     const [listCartDetailResponseDTO, setListCartDetailResponseDTO] = useState<CartDetailResponseDTO[]>([])
-
+    const [selectedCart, setSelectedCart] = useState<CartResponseDTO>()
+    
+    
     const getCartDetailInCard = () => {
         instance.get(`cart-details/in-cart/${myCartId}`).then(function (response){
             console.log(response)
@@ -62,6 +67,9 @@ const SaleProvider = ({children}: { children: ReactNode }) => {
             localStorage.setItem('myCartId', myCartId.toString());
             instance.get(`/cart/check-cart-active/${myCartId.toString()}`).then(function (response) {
                 console.log(response)
+                if(response.status === 200){
+                    setSelectedCart(response.data)
+                }
 
             }).catch(function (error) {
                 console.log(error);
@@ -73,7 +81,7 @@ const SaleProvider = ({children}: { children: ReactNode }) => {
     }, [myCartId]);
 
     return (
-        <SaleContext.Provider value={{getCartDetailInCard, listCartDetailResponseDTO, setListCartDetailResponseDTO, isOpenCartDrawer, setIsOpenCartDrawer, myCartId, setMyCartId}}>
+        <SaleContext.Provider value={{selectedCart, getCartDetailInCard, listCartDetailResponseDTO, setListCartDetailResponseDTO, isOpenCartDrawer, setIsOpenCartDrawer, myCartId, setMyCartId}}>
             {children}
         </SaleContext.Provider>
     );

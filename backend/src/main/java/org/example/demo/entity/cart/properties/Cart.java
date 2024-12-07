@@ -62,16 +62,16 @@ public class Cart extends BaseEntity {
     private Boolean deleted;
 
     @Column(name = "total")
-    private Double total;
+    private Double total = 0.0;
 
     @Column(name = "delivery_fee")
-    private Double deliveryFee;
+    private Double deliveryFee = 0.0;
 
     @Column(name = "discount")
-    private Double discount;
+    private Double discount = 0.0;
 
     @Column(name = "sub_total")
-    private Double subTotal;
+    private Double subTotal = 0.0;
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)

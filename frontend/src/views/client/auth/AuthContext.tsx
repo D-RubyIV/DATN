@@ -4,9 +4,11 @@ import useAuth from '@/utils/hooks/useAuth'
 
 interface User {
     username: string;
+    customerId: string | null,
 }
 
 interface AuthContextType {
+    id: number | null;
     user: User | null;
     setUser: (user: User | null) => void;
     loading: boolean;
@@ -32,9 +34,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (token) {
             try {
                 const userDetail = await getUserDetail(token); // Lấy thông tin người dùng từ API
+                console.log(userDetail)
                 console.log(userDetail.data.username)
                 setUser({
-                    username: userDetail.data.username
+                    id: userDetail?.data?.id || '', // Giá trị mặc định nếu id bị undefined
+                    username: userDetail?.data?.username || '', // Giá trị mặc định nếu username bị undefined
+                    customerId: userDetail?.data?.customer?.id || '', // Giá trị mặc định nếu username bị undefined
                 });
             } catch (err) {
                 console.error('Failed to get user details:', err);
@@ -57,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Sau khi đăng nhập thành công, gọi getUserDetail để lấy thông tin người dùng
             const userDetail = await getUserDetail(token);
             setUser({
-                username: userDetail.username
+                username: userDetail.username,
             });
         } catch (err) {
             console.error('Login failed:', err);
