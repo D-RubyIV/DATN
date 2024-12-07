@@ -20,9 +20,9 @@ const ThankYouMessage = () => {
                 </p>
             </div>
                 <button className="mt-10 bg-blue-500 text-white py-2 px-6 rounded-full shadow-md hover:bg-blue-600 transition duration-300">
-                    <Link to={"/"}>
+                    <a href={"/"}>
                         Quay lại trang chủ
-                    </Link>
+                    </a>
                 </button>
 
         </div>
