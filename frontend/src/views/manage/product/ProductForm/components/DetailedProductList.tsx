@@ -16,7 +16,7 @@ interface TableMeta {
 }
 
 interface DetailedProductListProps {
-    productCombinations: DetailedProduct[];
+    productCombinations: DetailedProduct[]; 
     errors: Record<string, any>;
     touched: Record<string, any>;
 }
@@ -43,7 +43,6 @@ const EditableCell = ({
 
     const handleValueChange = (values: { value: string }) => {
         const newValue = values.value;
-
         setValue(newValue);
 
         if (!validateInput(newValue)) {
@@ -56,21 +55,16 @@ const EditableCell = ({
     const onBlur = () => {
         const meta = table.options.meta as TableMeta | undefined;
         if (meta) {
-            console.log(value)
-            console.log(typeof  value)
-            const updatedValue = typeof value === 'number' ? value : value.trim();
+            const updatedValue = typeof value === 'string' && !isNaN(Number(value)) ? Number(value) : value;
 
             if (!validateInput(updatedValue.toString())) {
-                console.log("TH1")
                 setIsInvalid(true);
                 setValue('');
             } else {
-                console.log("TH2")
                 setIsInvalid(false);
                 if (updatedValue !== '' && updatedValue !== undefined) {
-                    console.log("update value: ", updatedValue)
                     console.log(`Updating ${column.id} to ${updatedValue} for product ${productCode}`);
-                    meta.updateData(productCode, column.accessorKey as keyof DetailedProduct, Number(updatedValue));
+                    meta.updateData(productCode, column.accessorKey as keyof DetailedProduct, updatedValue);
                 } else {
                     console.warn(`Invalid value for ${column.id} for product ${productCode}:`, updatedValue);
                 }
@@ -89,15 +83,15 @@ const EditableCell = ({
                 onValueChange={handleValueChange}
                 onBlur={onBlur}
                 thousandSeparator={false}
-                allowNegative={false} 
+                allowNegative={false}
                 customInput={Input}
                 aria-label={`Edit ${column.id}`}
                 className={isInvalid ? 'border-red-500' : ''}
             />
-           
         </div>
     );
 };
+
 
 
 
