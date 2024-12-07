@@ -1,5 +1,6 @@
 package org.example.demo.controller.event;
 
+import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.event.EventDTO;
 import org.example.demo.dto.event.EventListDTO;
 import org.example.demo.dto.product.mchien.ProductDTO;
@@ -13,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Map;
 
 
 @RestController
@@ -84,6 +87,12 @@ public class EventController {
         return ResponseEntity.ok(eventService.getById(id));
     }
 
+    @GetMapping("/check-name")
+    public ResponseEntity<Map<String, Boolean>> checkName(@RequestParam String name) {
+        boolean exists = eventService.isNameCheck(name);
+        return ResponseEntity.ok(Collections.singletonMap("exists", exists));
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Integer id) {
         eventService.deleteEvent(id);
@@ -91,7 +100,7 @@ public class EventController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<EventDTO> saveEvent(@RequestBody EventDTO eventDTO) {
+    public ResponseEntity<EventDTO> saveEvent(@RequestBody EventDTO eventDTO) throws BadRequestException {
         EventDTO saved = eventService.saveEvent(eventDTO);
         if (saved == null) {
             return ResponseEntity.badRequest().build();
@@ -102,5 +111,5 @@ public class EventController {
     @PutMapping("/update/{id}")
     public ResponseEntity<EventDTO> updateEvent(@PathVariable Integer id, @RequestBody EventDTO eventDTO) {
         return ResponseEntity.ok(eventService.updateEvent(id, eventDTO));
-    }
+    } // nhnah noà day 
 }

@@ -39,13 +39,23 @@ const UpdateEvent = () => {
     const [pageSize, setPageSize] = useState(5)
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
     const [selectedEvent, setSelectedEvent] = useState<EventDTO>()
+    const [initialContact, setInitialContact] = useState({
+        currentName: '',
+    });
 
     const { openNotification } = useToastContext()
     // Validation schema
     const validationSchema = Yup.object().shape({
         name: Yup.string()
             .required('Tên đợt giảm giá là bắt buộc')
-            .min(3, 'Tên phải có ít nhất 3 ký tự'),
+            .min(3, 'Tên phải có ít nhất 3 ký tự')
+            .test('name-unique', 'Tên sự kiện đã tồn tại', async (name) => {
+                if (name === initialContact.currentName) return true; // Nếu phone không thay đổi, bỏ qua xác thực
+
+                // Gọi API kiểm tra số điện thoại có trùng không
+                const response = await axios.get(`http://localhost:8080/api/v1/event/check-name`, { params: { name } });
+                return !response.data.exists; // Nếu phone đã tồn tại, trả về false
+            }),
         discountPercent: Yup.number()
             .required('Giá trị giảm là bắt buộc')
             .min(0, 'Giá trị giảm phải lớn hơn hoặc bằng 0')
@@ -60,6 +70,9 @@ const UpdateEvent = () => {
         const fetchEventDetails = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/api/v1/event/detail/${id}`)
+                setInitialContact({
+                    currentName: response.data.name
+                })
                 setUpdateEvent(response.data)
                 console.log('Dữ liệu tải lên: ', response.data)
             } catch (error) {
@@ -95,8 +108,8 @@ const UpdateEvent = () => {
         try {
             console.log('Received form values:', values)
 
-            if(values.startDate && values.endDate){
-                if(values.startDate > values.endDate){
+            if (values.startDate && values.endDate) {
+                if (values.startDate > values.endDate) {
                     openNotification("Ngày bắt đầu phải trước ngày kết thúc", 'Thông báo', 'warning', 5000)
                     return;
                 }
@@ -241,16 +254,16 @@ const UpdateEvent = () => {
                                 <div className="w-full lg:w-1/3 bg-white rounded-lg">
                                     <FormContainer>
                                         <FormItem asterisk label="Tên đợt giảm giá"
-                                                  invalid={!!errors.name && touched.name}
-                                                  errorMessage={errors.name}>
+                                            invalid={!!errors.name && touched.name}
+                                            errorMessage={errors.name}>
                                             <Field type="text" name="name" placeholder="Tên đợt giảm giá..."
-                                                   component={Input} />
+                                                component={Input} />
                                         </FormItem>
                                         <FormItem asterisk label="Giá trị giảm(%)"
-                                                  invalid={!!errors.discountPercent && touched.discountPercent}
-                                                  errorMessage={errors.discountPercent}>
+                                            invalid={!!errors.discountPercent && touched.discountPercent}
+                                            errorMessage={errors.discountPercent}>
                                             <Field type="number" name="discountPercent" placeholder="Giá trị giảm(%)..."
-                                                   component={Input} />
+                                                component={Input} />
                                         </FormItem>
 
 
@@ -312,8 +325,8 @@ const UpdateEvent = () => {
 
                                         <FormItem>
                                             <Button variant="solid" type="submit"
-                                                    style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
-                                                    disabled={isSubmitting}>
+                                                style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }}
+                                                disabled={isSubmitting}>
                                                 Cập nhật
                                             </Button>
                                         </FormItem>
@@ -323,28 +336,28 @@ const UpdateEvent = () => {
                                     <h4 className="font-medium text-xl mb-4">Danh sách sản phẩm</h4>
                                     <table className="table-auto w-full border border-collapse border-gray-300">
                                         <thead>
-                                        <tr>
-                                            <th className="border px-4 py-2">Chọn</th>
-                                            <th className="border px-4 py-2">Mã sản phẩm</th>
-                                            <th className="border px-4 py-2">Tên sản phẩm</th>
-                                        </tr>
+                                            <tr>
+                                                <th className="border px-4 py-2">Chọn</th>
+                                                <th className="border px-4 py-2">Mã sản phẩm</th>
+                                                <th className="border px-4 py-2">Tên sản phẩm</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        {product.map((product) => (
-                                            <tr key={product.id}>
-                                                <td className="border px-4 py-2 text-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={isSelected(product.id)}
-                                                        onChange={(e) =>
-                                                            handleSelectProduct(product, e.target.checked)
-                                                        }
-                                                    />
-                                                </td>
-                                                <td className="border px-4 py-2">{product.code}</td>
-                                                <td className="border px-4 py-2">{product.name}</td>
-                                            </tr>
-                                        ))}
+                                            {product.map((product) => (
+                                                <tr key={product.id}>
+                                                    <td className="border px-4 py-2 text-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected(product.id)}
+                                                            onChange={(e) =>
+                                                                handleSelectProduct(product, e.target.checked)
+                                                            }
+                                                        />
+                                                    </td>
+                                                    <td className="border px-4 py-2">{product.code}</td>
+                                                    <td className="border px-4 py-2">{product.name}</td>
+                                                </tr>
+                                            ))}
                                         </tbody>
                                     </table>
                                     <div className="flex items-center justify-between mt-4">
@@ -356,8 +369,8 @@ const UpdateEvent = () => {
                                             Trang trước
                                         </Button>
                                         <span>
-                                        Trang {pageIndex} / {Math.ceil(total / pageSize)}
-                                    </span>
+                                            Trang {pageIndex} / {Math.ceil(total / pageSize)}
+                                        </span>
                                         <Button
                                             type="button"
                                             disabled={pageIndex >= Math.ceil(total / pageSize)}

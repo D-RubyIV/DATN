@@ -1,5 +1,6 @@
 package org.example.demo.service.event;
 
+import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.event.EventDTO;
 import org.example.demo.dto.event.EventListDTO;
 import org.example.demo.repository.product.properties.ProductRepository;
@@ -21,10 +22,12 @@ public interface EventService {
 
     EventDTO getById(Integer id);
 
-    EventDTO saveEvent(EventDTO eventDTO);
+    EventDTO saveEvent(EventDTO eventDTO) throws BadRequestException;
 
     EventDTO updateEvent(Integer id, EventDTO eventDTO);
 
     void deleteEvent(Integer id);
+
+    boolean isNameCheck(String name);
 
 }

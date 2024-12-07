@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -32,4 +33,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     // phah04
     @Query("SELECT e FROM Event e where CURRENT_TIMESTAMP < e.endDate and CURRENT_TIMESTAMP > e.startDate order by e.discountPercent desc ")
     List<Event> findListEventUseValid();
+
+    @Query("SELECT COUNT(e) > 0 FROM Event e WHERE e.name = :name")
+    boolean existsByName(@Param("name") String name);
+
+
 }

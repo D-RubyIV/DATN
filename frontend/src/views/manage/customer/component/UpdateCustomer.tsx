@@ -107,6 +107,7 @@ const UpdateCustomer = () => {
     const [formModes, setFormModes] = useState<string[]>([]);
     const [dialogIsOpen, setIsOpen] = useState(false);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+    const [addresses, setAddresses] = useState<AddressDTO[]>([]);
 
     // State riêng để lưu email và phone ban đầu
     const [initialContact, setInitialContact] = useState({
@@ -228,14 +229,7 @@ const UpdateCustomer = () => {
 
                 phone: Yup.string()
                     .required("Số điện thoại là bắt buộc")
-                    .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ")
-                    .test('phone-unique', 'Số điện thoại đã tồn tại', async (phone) => {
-                        if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
-
-                        // Gọi API kiểm tra số điện thoại có trùng không
-                        const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
-                        return !response.data.exists; // Nếu phone đã tồn tại, trả về false
-                    }),
+                    .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, "Số điện thoại không hợp lệ"),
 
                 province: Yup.string().required('Vui lòng chọn tỉnh/thành phố'),
                 district: Yup.string().required('Vui lòng chọn quận/huyện'),
@@ -394,60 +388,16 @@ const UpdateCustomer = () => {
     };
 
     dayjs.extend(customParseFormat);
-    // const fetchCustomer = async (id: string, currentPage: number) => {
-    //     try {
 
-    //         const response = await axios.get(`http://localhost:8080/api/v1/customer/customer/${id}/addresses`, {
-    //             params: {
-    //                 page: currentPage,
-    //                 size: pageSize
-    //             }
-    //         });
-    //         if (response.status === 200) {
-
-    //             const customerData = response.data;
-
-    //             // Cập nhật tổng số địa chỉ và số trang
-    //             if (customerData.totalAddresses) {
-    //                 setTotalAddresses(customerData.totalAddresses);
-    //                 setTotalPages(Math.ceil(customerData.totalAddresses / pageSize));
-    //             }
-
-    //             // Cập nhật thông tin email và phone của khách hàng
-    //             setInitialContact({
-    //                 currentEmail: customerData.email,
-    //                 currentPhone: customerData.phone,
-    //             });
-    //             // Log giá trị birthDate từ backend
-    //             console.log('Giá trị birthDate từ backend:', customerData.birthDate);
-
-    //             // Chuyển đổi ngày sinh từ 'DD-MM-YYYY' sang 'YYYY-MM-DD' cho frontend
-    //             if (customerData.birthDate) {
-    //                 // Phân tích ngày với định dạng 'DD-MM-YYYY'
-    //                 const parsedDate = dayjs(customerData.birthDate, 'DD-MM-YYYY');
-
-    //                 // Log ngày đã phân tích để kiểm tra
-    //                 console.log('Parsed Date:', parsedDate.format());
-
-    //                 if (parsedDate.isValid()) {
-    //                     // Định dạng lại ngày cho frontend
-    //                     customerData.birthDate = parsedDate.format('YYYY-MM-DD');
-    //                     console.log('Formatted birthDate:', customerData.birthDate); // Log để kiểm tra xem ngày đã định dạng chưa
-    //                 } else {
-    //                     console.error('Ngày sinh không hợp lệ:', customerData.birthDate);
-    //                 }
-    //             }
-
-    //             setUpdateCustomer(customerData);
-    //             console.log('Customer data:', customerData);
-    //             setFormModes(response.data.addressDTOS.map(() => 'edit'));
-    //         } else {
-    //             console.error('Failed to fetch customer data:', response.statusText);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching customer data:', error);
-    //     }
-    // };
+    // Fetch all addresses
+    const fetchAddresses = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/v1/address`);
+            setAddresses(response.data);
+        } catch (error) {
+            console.error("Error fetching addresses:", error);
+        }
+    };
 
     const fetchCustomer = async (id: string, currentPage: number) => {
         try {
@@ -660,7 +610,7 @@ const UpdateCustomer = () => {
             );
             if (response.status === 200) {
                 console.log('Địa chỉ đã được cập nhật thành công:', response.data);
-                // fetchCustomer(updateCustomer.id, currentPage); // Lấy lại dữ liệu khách hàng để cập nhật giao diện
+                fetchAddresses()
             } else {
                 console.error('Cập nhật địa chỉ không thành công:', response.statusText);
             }
@@ -1046,8 +996,8 @@ const UpdateCustomer = () => {
                                                     </FormContainer>
                                                     {/* Dialog xác nhận xóa */}
                                                     <Dialog isOpen={dialogIsOpen} closable={false} onClose={onDialogClose} >
-                                                        <h5 className="mb-4">Xác nhận xóa sự kiện</h5>
-                                                        <p>Bạn có chắc chắn muốn xóa sự kiện này không?</p>
+                                                        <h5 className="mb-4">Xác nhận xóa địa chỉ</h5>
+                                                        <p>Bạn có chắc chắn muốn xóa địa chỉ này không?</p>
                                                         <div className="text-right mt-6">
                                                             <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
                                                                 Hủy
