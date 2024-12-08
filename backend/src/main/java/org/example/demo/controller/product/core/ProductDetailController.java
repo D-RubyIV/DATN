@@ -13,6 +13,7 @@ import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.product.properties.Image;
 import org.example.demo.mapper.event.response.EventResponseMapper;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
+import org.example.demo.mapper.product.response.core.ProductDetailResponseNonEventMapper;
 import org.example.demo.repository.event.EventRepository;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.service.product.core.ProductDetailService;
@@ -54,6 +55,9 @@ public class ProductDetailController {
     @Autowired
     private EventResponseMapper eventResponseMapper;
 
+    @Autowired
+    private ProductDetailResponseNonEventMapper productDetailResponseNonEventMapper;
+
     @GetMapping("")
     public ResponseEntity<Page<ProductDetail>> findAll(Pageable pageable) {
         Page<ProductDetail> productDetails = productDetailService.findAll(pageable);
@@ -90,7 +94,7 @@ public class ProductDetailController {
     }
 
     @PostMapping("findById")
-    public ResponseEntity<ProductDetail> getProductDetailById(
+    public ResponseEntity<?> getProductDetailById(
             @RequestParam(required = false) Integer id
     ) {
         if (id == null) {
@@ -99,7 +103,7 @@ public class ProductDetailController {
 
         try {
             ProductDetail productDetail = productDetailService.findById(id);
-            return new ResponseEntity<>(productDetail, HttpStatus.OK);
+            return new ResponseEntity<>(productDetailResponseNonEventMapper.toDTO(productDetail), HttpStatus.OK);
         } catch (BadRequestException e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }

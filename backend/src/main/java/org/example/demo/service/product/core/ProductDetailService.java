@@ -6,13 +6,16 @@ import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
 import org.example.demo.dto.product.phah04.response.ProductClientResponse;
 import org.example.demo.dto.product.requests.core.ProductDetailRequestDTO;
 import org.example.demo.dto.product.requests.properties.ImageRequestDTO;
+import org.example.demo.dto.product.requests.properties.MaterialRequestDTO;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
 import org.example.demo.entity.product.core.ProductDetail;
-import org.example.demo.entity.product.properties.Brand;
-import org.example.demo.entity.product.properties.Image;
+import org.example.demo.entity.product.properties.*;
 import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.product.request.core.ProductDetailRequestMapper;
+import org.example.demo.mapper.product.request.properties.*;
 import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper;
+import org.example.demo.mapper.product.response.properties.ColorResponseMapper;
+import org.example.demo.mapper.product.response.properties.SizeResponseMapper;
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.product.properties.BrandRepository;
 import org.example.demo.repository.product.properties.ImageRepository;
@@ -49,6 +52,41 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     @Autowired
     private ImageRepository imageRepository;
 
+    @Autowired
+    private SizeRequestMapper sizeRequestMapper;
+
+    @Autowired
+    private ColorRequestMapper colorRequestMapper;
+
+    @Autowired
+    private TextureRequestMapper textureRequestMapper;
+
+    @Autowired
+    private OriginRequestMapper originRequestMapper;
+
+    @Autowired
+    private CollarRequestMapper collarRequestMapper;
+
+    @Autowired
+    private SleeveRequestMapper sleeveRequestMapper;
+
+    @Autowired
+    private MaterialRequestMapper materialRequestMapper;
+
+    @Autowired
+    private ThicknessRequestMapper thicknessRequestMapper;
+
+    @Autowired
+    private StyleRequestMapper styleRequestMapper;
+
+    @Autowired
+    private ElasticityRequestMapper elasticityRequestMapper;
+
+    @Autowired
+    private BrandRequestMapper brandRequestMapper;
+
+    @Autowired
+    private ProductRequestMapper productRequestMapper;
 
     @Override
     public ProductDetail findById(Integer id) throws BadRequestException {
@@ -117,18 +155,28 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         ProductDetail existingProductDetail = productDetailRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("ProductDetail with id " + id + " not found"));
 
+        Size size = sizeRequestMapper.toEntity(requestDTO.getSize());
+        Color color = colorRequestMapper.toEntity(requestDTO.getColor());
+        Texture texture = textureRequestMapper.toEntity(requestDTO.getTexture());
+        Origin origin = originRequestMapper.toEntity(requestDTO.getOrigin());
+        Collar collar = collarRequestMapper.toEntity(requestDTO.getCollar());
+        Sleeve sleeve = sleeveRequestMapper.toEntity(requestDTO.getSleeve());
+        Style style = styleRequestMapper.toEntity(requestDTO.getStyle());
+        Material material = materialRequestMapper.toEntity(requestDTO.getMaterial());
+        Thickness thickness = thicknessRequestMapper.toEntity(requestDTO.getThickness());
+        Elasticity elasticity = elasticityRequestMapper.toEntity(requestDTO.getElasticity());
         // Cập nhật các trường khác trong ProductDetail
         existingProductDetail.setPrice(requestDTO.getPrice());
-        existingProductDetail.setSize(requestDTO.getSize());
-        existingProductDetail.setColor(requestDTO.getColor());
-        existingProductDetail.setTexture(requestDTO.getTexture());
-        existingProductDetail.setOrigin(requestDTO.getOrigin());
-        existingProductDetail.setCollar(requestDTO.getCollar());
-        existingProductDetail.setSleeve(requestDTO.getSleeve());
-        existingProductDetail.setStyle(requestDTO.getStyle());
-        existingProductDetail.setMaterial(requestDTO.getMaterial());
-        existingProductDetail.setThickness(requestDTO.getThickness());
-        existingProductDetail.setElasticity(requestDTO.getElasticity());
+        existingProductDetail.setSize(size);
+        existingProductDetail.setColor(color);
+        existingProductDetail.setTexture(texture);
+        existingProductDetail.setOrigin(origin);
+        existingProductDetail.setCollar(collar);
+        existingProductDetail.setSleeve(sleeve);
+        existingProductDetail.setStyle(style);
+        existingProductDetail.setMaterial(material);
+        existingProductDetail.setThickness(thickness);
+        existingProductDetail.setElasticity(elasticity);
         existingProductDetail.setQuantity(requestDTO.getQuantity());
         existingProductDetail.setMass(requestDTO.getMass());
 
@@ -181,19 +229,33 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     }
 
     private ProductDetail handleProductDetailSave(ProductDetailRequestDTO requestDTO) throws BadRequestException {
+
+        Size size = sizeRequestMapper.toEntity(requestDTO.getSize());
+        Color color = colorRequestMapper.toEntity(requestDTO.getColor());
+        Texture texture = textureRequestMapper.toEntity(requestDTO.getTexture());
+        Origin origin = originRequestMapper.toEntity(requestDTO.getOrigin());
+        Collar collar = collarRequestMapper.toEntity(requestDTO.getCollar());
+        Sleeve sleeve = sleeveRequestMapper.toEntity(requestDTO.getSleeve());
+        Style style = styleRequestMapper.toEntity(requestDTO.getStyle());
+        Material material = materialRequestMapper.toEntity(requestDTO.getMaterial());
+        Thickness thickness = thicknessRequestMapper.toEntity(requestDTO.getThickness());
+        Elasticity elasticity = elasticityRequestMapper.toEntity(requestDTO.getElasticity());
+        Brand brandFound = brandRequestMapper.toEntity(requestDTO.getBrand());
+        Product product = productRequestMapper.toEntity(requestDTO.getProduct());
+
         ProductDetail existingProductDetail = productDetailRepository.findByAttributes(
-                requestDTO.getSize(),
-                requestDTO.getColor(),
-                requestDTO.getTexture(),
-                requestDTO.getOrigin(),
-                requestDTO.getBrand(),
-                requestDTO.getCollar(),
-                requestDTO.getSleeve(),
-                requestDTO.getStyle(),
-                requestDTO.getMaterial(),
-                requestDTO.getThickness(),
-                requestDTO.getElasticity(),
-                requestDTO.getProduct()
+                size,
+                color,
+                texture,
+                origin,
+                brandFound,
+                collar,
+                sleeve,
+                style,
+                material,
+                thickness,
+                elasticity,
+                product
         );
 
         if (existingProductDetail != null) {

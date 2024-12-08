@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class ElasticityRequestDTO {
+    private Integer id;
     private String code;
     private String name;
     private Boolean deleted;

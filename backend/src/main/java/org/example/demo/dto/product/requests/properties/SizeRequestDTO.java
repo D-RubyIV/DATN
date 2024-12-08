@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class SizeRequestDTO {
+    private Integer id;
     private String code;
     private String name;
     private Boolean deleted;}

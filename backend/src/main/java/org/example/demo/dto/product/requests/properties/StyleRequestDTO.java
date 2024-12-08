@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class StyleRequestDTO {
+    private Integer id;
     private String code;
     private String name;
     private Boolean deleted;}
