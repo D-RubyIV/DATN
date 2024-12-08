@@ -239,7 +239,7 @@ const ProductDetailTable = () => {
             },
             {
                 header: 'Trạng thái',
-                accessorKey: 'quantity',
+                accessorKey: 'status',
                 cell: (props: any) => {
                     const { quantity } = props.row.original;
                     const status = getInventoryStatus(quantity);
