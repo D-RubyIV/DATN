@@ -279,7 +279,7 @@ const ProductDetail = () => {
                                     // disabled={!listColorValid.includes(item.code) && listColorValid.length > 0}
                                     onClick={() => handleColorSelect(item)}
                                 >
-                                    {item.name} {item.id}
+                                    {item.name}
                                     {/*<span*/}
                                     {/*    className={`absolute w-[2px] h-full bg-black top-1/2 left-1/2 rotate-45 -translate-x-1/2 -translate-y-1/2 ${!listColorValid.includes(item.code) && listColorValid.length > 0 ? '' : 'hidden'} ${selectedSize?.id === item.id ? 'bg-white' : 'bg-black'}`}>*/}
                                     {/*</span>*/}
@@ -303,7 +303,7 @@ const ProductDetail = () => {
                                     disabled={!listSizeValid.includes(item.code) && listSizeValid.length > 0}
                                     onClick={() => handleSizeSelect(item)}
                                 >
-                                    {item.name} {item.id}
+                                    {item.name}
                                     <span
                                         className={`absolute w-[2px] h-full bg-black top-1/2 left-1/2 rotate-45 -translate-x-1/2 -translate-y-1/2 ${!listSizeValid.includes(item.code) && listSizeValid.length > 0 ? '' : 'hidden'} ${selectedSize?.id === item.id ? 'bg-white' : 'bg-black'}`}>
                                     </span>
