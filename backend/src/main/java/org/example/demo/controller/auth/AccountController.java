@@ -1,6 +1,7 @@
 package org.example.demo.controller.auth;
 
 
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.example.demo.dto.auth.request.ForgotPasswordDTO;
 import org.example.demo.dto.user.RefreshTokenDTO;
 import org.example.demo.dto.user.UserLoginDTO;
 import org.example.demo.dto.user.response.LoginResponse;
+import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.security.Account;
 import org.example.demo.entity.security.TokenRecord;
 import org.example.demo.exception.CustomExceptions;
@@ -19,6 +21,7 @@ import org.example.demo.exception.InvalidPasswordException;
 import org.example.demo.mapper.auth.response.AccountResponseMapper;
 import org.example.demo.model.ResponseObject;
 import org.example.demo.repository.security.AccountRepository;
+import org.example.demo.repository.security.RoleRepository;
 import org.example.demo.service.auth.AccountService;
 import org.example.demo.service.auth.VerificationService;
 import org.example.demo.service.email.EmailService;
@@ -47,11 +50,15 @@ public class AccountController {
     private final AccountRepository accountRepository;
     private final EmailService emailService;
     private final VerificationService verificationService;
+    private final RoleRepository roleRepository;
+    private final EntityManager entityManager;
+
 
     @PostMapping("/register")
     public ResponseEntity<ResponseObject> createUser(
             @Valid @RequestBody AccountRequestDTO accountRequestDTO,
-            BindingResult result
+            BindingResult result,
+            HttpServletRequest request
     ) throws Exception {
         if (result.hasErrors()) {
             List<String> errorMessages = result.getFieldErrors()
@@ -65,12 +72,50 @@ public class AccountController {
                     .message(errorMessages.toString())
                     .build());
         }
-        Account account = accountService.createAccount(accountRequestDTO);
-        return ResponseEntity.ok(ResponseObject.builder()
-                .status(HttpStatus.CREATED)
-                .data(accountResponseMapper.toDTO(account))
-                .message("Đăng ký tài khoản thành công")
-                .build());
+        Account accountCheck = accountRepository.findByUsername(accountRequestDTO.getUsername()).orElse(null);
+        if(accountCheck != null){
+            throw new CustomExceptions.CustomBadRequest("Tài khoản đã tồn tại");
+        }
+        Account accountCreated = accountService.createAccount(accountRequestDTO);
+
+        Role role = roleRepository.findByCode("ROLE_USER").orElse(null);
+        if(role != null){
+            System.out.println("======================0");
+            System.out.println("accountCreated" + accountRequestDTO.getUsername());
+            System.out.println("getPassword" + accountRequestDTO.getPassword());
+            String token  = accountService.authenticate(accountRequestDTO.getUsername(),
+                    accountRequestDTO.getPassword(),role.getId());
+            System.out.println("======================1");
+            String userAgent = request.getHeader("User-Agent");
+            Account account = accountService.getAccountDetailsFromToken(token);
+            System.out.println("======================2");
+            TokenRecord jwtTokenRecord = tokenService.addToken(account, token,isMobileDevice(userAgent));
+            System.out.println("======================3");
+
+            LoginResponse loginResponse = LoginResponse.builder()
+                    .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
+                    .token(jwtTokenRecord.getToken())
+                    .tokenType(jwtTokenRecord.getTokenType())
+                    .refreshToken(jwtTokenRecord.getRefreshToken())
+                    .username(account.getUsername())
+                    .roles(account.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .id(account.getId())
+                    .build();
+            System.out.println("======================4");
+
+
+            return ResponseEntity.ok().body(ResponseObject.builder()
+                    .message("Login successfully")
+                    .data(loginResponse)
+                    .status(HttpStatus.OK)
+                    .build());
+        }
+        else {
+            throw new CustomExceptions.CustomBadRequest("Role Staff not exist");
+        }
+
+
+
     }
 
 

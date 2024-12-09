@@ -38,7 +38,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, setIsModalOpen, onClose }
             } else {
                 const defaultRoleId = 3
                 const response = await registerApi(defaultRoleId, password, email)
+                localStorage.clear()
                 localStorage.setItem('token', response.data.token)
+                localStorage.setItem('ACCESS_TOKEN', response.data.token)
+                localStorage.setItem('REFRESH_TOKEN', response.data.refresh_token)
                 setUser({
                     username: response.data.username
                 })

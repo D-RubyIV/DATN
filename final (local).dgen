@@ -1732,7 +1732,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1</RowsCount>
+          <RowsCount>3</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -1850,7 +1850,8 @@
             <SeedValue>48</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
+            <Expression>ROLE_ADMIN|ROLE_STAFF|ROLE_USER
+</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -1866,10 +1867,10 @@
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>64</SeedValue>
-            <Unique>false</Unique>
+            <SeedValue>48</SeedValue>
+            <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))(\D{1,3}))|((($"FirstNamesMale.txt")|($"FirstNamesFemale.txt")|($"LastNames.txt"))((19[5-9]\d)|(20[0-2]\d)))</Expression>
+            <Expression>ROLE_ADMIN|ROLE_STAFF|ROLE_USER</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
