@@ -14,9 +14,7 @@ import VoucherModal from './VoucherModal'
 import { useWSContext } from '@/context/WsContext'
 import debounce from 'lodash/debounce'
 import Logo from '@/components/template/Logo'
-import { HiUserCircle } from 'react-icons/hi'
 import { useAuthContext } from '@/views/client/auth/AuthContext'
-import './hiddennavbarfooter.css'
 import CloseButton from '@/components/ui/CloseButton'
 
 export interface Image {
@@ -540,9 +538,9 @@ const Checkout = () => {
                         <li>
                             <div className="flex items-center">
                                 <span className="mx-2">/</span>
-                                <a href={`/checkout/${id}`} className="text-gray-700 hover:text-blue-600">
+                                <Link to={`/checkout/${id}`} className="text-gray-700 hover:text-blue-600">
                                     Thanh toán
-                                </a>
+                                </Link>
                             </div>
                         </li>
                     </ol>
@@ -595,7 +593,7 @@ const Checkout = () => {
                     value={getValuesFormRecipient('address') + getValuesFormRecipient('phone').toString() + getValuesFormRecipient('recipientName')}
                     className={'w-full'}
                 >
-                    {myAddress.map((item, index) => (
+                    {myAddress.length > 0 ? myAddress.map((item, index) => (
                         <Radio
                             key={index}
                             value={item.detail + item.phone + item.name}
@@ -621,7 +619,11 @@ const Checkout = () => {
                                 </div>
                             </div>
                         </Radio>
-                    ))}
+                    )) : (
+                        <div className={"py-5 text-center"}>
+                            <p className={'text-[16px] font-semibold'}>Quý khách không có bất kì địa chỉ nào khác</p>
+                        </div>
+                    )}
                 </Radio.Group>
                 <div className={'flex justify-end gap-2'}>
                     <Button size={'sm'} onClick={updateCartAddress}>

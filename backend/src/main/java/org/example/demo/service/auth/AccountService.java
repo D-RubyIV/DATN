@@ -76,10 +76,12 @@ public class AccountService {
     @Transactional
     public Account createAccount(AccountRequestDTO accountRequestDTO) throws DataNotFoundException, PermissionDenyException {
         String email = accountRequestDTO.getUsername();
+        Integer roleDTOID = accountRequestDTO.getRoleId();
+        Role roleFound = roleRepository.findById(roleDTOID).orElseThrow(() -> new CustomExceptions.CustomBadRequest("ROle not found"));
         if (accountRepository.existsByUsername(email)) {
             throw new DataIntegrityViolationException("Email đăng ký đã tồn tại");
         }
-        Role role = roleRepository.findByCode("ROLE_USER")
+        Role role = roleRepository.findById(accountRequestDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
         if(role.getName().toUpperCase().equalsIgnoreCase(Role.ADMIN)) {
             throw new PermissionDenyException("Không được phép đăng ký tài khoản Admin");
@@ -93,7 +95,7 @@ public class AccountService {
                 .status("Active")
                 .build();
 
-        if (role.getName().equalsIgnoreCase(Role.USER)) {
+        if (roleFound.getCode().equalsIgnoreCase("ROLE_STAFF")) {
             Staff staff = new Staff();
             staff.setEmail(email);
             staff.setAccount(account);

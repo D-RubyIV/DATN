@@ -100,7 +100,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, setIsModalOpen, onClose }
                                 <div className="h-px w-full bg-slate-200"></div>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="w-full">
+                            <form onSubmit={handleSubmit} className="w-full text-black">
                                 <label htmlFor="email" className="sr-only">
                                     Địa chỉ email
                                 </label>

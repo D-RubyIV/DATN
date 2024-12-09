@@ -28,4 +28,5 @@ public class Role extends BaseEntity {
     public static String ADMIN = "ADMIN";
     public static String USER = "USER";
     public static String CUSTOMER = "CUSTOMER";
+    public static String STAFF = "STAFF";
 }

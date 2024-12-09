@@ -9,7 +9,7 @@ import { AdminViews, AuthViews, PublicViews } from '@/views'
 import Side from '@/components/layouts/AuthLayout/Side'
 import Navbar from '@/views/client/Navbar/Navbar'
 import Footer from '@/views/client/Footer/Footer'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, lazy, useEffect, useState } from 'react'
 import 'aos/dist/aos.css'
 import SaleProvider from '@/views/sale/SaleContext'
 import CartDrawer from '@/views/sale/CartDrawer'
@@ -29,6 +29,7 @@ import Me from '@/views/sale/profile/Me'
 import { MyOrderTable } from '@/views/sale/profile/order/MyOrderTable'
 import MyOrderDetail from '@/views/sale/profile/order/MyOrderDetail'
 import MyVoucher from '@/views/sale/profile/voucher/MyVoucher'
+import LandingPage from '@/views/client/LandingPage'
 
 type OrderDTO = {
     id: number;
@@ -300,6 +301,7 @@ const RootLayout = () => {
                 }
                 <Route path="/auth/*" element={<SecurityLayout />} />
                 <Route path="/*" element={<PublicLayout />} />
+                <Route path="/" element={<LandingPage/>} />
                 <Route path={'/me'} element={<Me></Me>}>
                     <Route index path={'my-order'} element={<MyOrderTable />}></Route>
                     <Route path={'my-voucher'} element={<MyVoucher />}></Route>

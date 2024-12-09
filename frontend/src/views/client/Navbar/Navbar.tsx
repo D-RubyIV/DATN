@@ -4,9 +4,7 @@ import { useSaleContext } from '@/views/sale/SaleContext'
 import { HiOutlineMenu, HiOutlineShoppingBag, HiUser, HiUserCircle } from 'react-icons/hi'
 import AuthModal from '../Popup/AuthModal'
 import { useAuthContext } from '../auth/AuthContext'
-import { getUserDetail } from '../auth/api'
-import { Link, useNavigate } from 'react-router-dom'
-
+import { Link } from 'react-router-dom'
 
 
 const Menu = [
@@ -23,7 +21,7 @@ const Menu = [
     {
         id: 3,
         name: 'Sản phẩm mới',
-        link: '/new-product'
+        link: '/check-order'
     },
     {
         id: 4,
@@ -48,57 +46,56 @@ const DropdownLinks = [
 ]
 
 
-
-const Navbar = () => {
-    const [dropdownVisible, setDropdownVisible] = useState(false);
-    const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const { user, setUser } = useAuthContext();
+const Navbar = ({ isLandingPage = false }: { isLandingPage?: boolean }) => {
+    const [dropdownVisible, setDropdownVisible] = useState(false)
+    const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext()
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const { user, setUser } = useAuthContext()
 
 
     const handleLoginClick = () => {
-        setIsModalOpen(true);
-    };
+        setIsModalOpen(true)
+    }
 
     const handleLogoutClick = () => {
-        localStorage.clear();
+        localStorage.clear()
         // Reset user state after logout
-        setIsModalOpen(false); // Đóng modal khi đăng xuất
-        setDropdownVisible(false);
-        setUser(null);
-        window.location.href = "/"
-    };
+        setIsModalOpen(false) // Đóng modal khi đăng xuất
+        setDropdownVisible(false)
+        setUser(null)
+        window.location.href = '/'
+    }
 
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            const dropdown = document.getElementById('user-dropdown');
-            const userButton = document.getElementById('user-button');
+            const dropdown = document.getElementById('user-dropdown')
+            const userButton = document.getElementById('user-button')
             if (
                 dropdown &&
                 !dropdown.contains(event.target as Node) &&
                 !userButton?.contains(event.target as Node)
             ) {
-                setDropdownVisible(false);
+                setDropdownVisible(false)
             }
-        };
+        }
 
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside)
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [user]);
-
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [user])
 
 
     return (
-        <div className="relative top-0 shadow text-black dark:text-white duration-200 w-full z-40 navbar">
+        <div
+            className={` top-0 duration-200 w-full z-40 ${isLandingPage ? '!bg-black !bg-opacity-0 fixed !text-white' : 'relative text-black shadow'}`}>
             {/* upper Navbar */}
             <div className=" py-8">
-                <div className="px-[8%] flex justify-between items-center">
+                <div className="px-[2%] flex justify-between items-center">
                     <div>
                         <a href="/"
-                            className="md:text-4xl sm:text-3xl flex gap-2 text-black dark:text-white font-hm font-bold menu-title  text-shadow-sm">
+                           className={`md:text-4xl sm:text-3xl flex gap-2  dark:text-white font-hm font-bold  text-shadow-sm ${isLandingPage ? 'text-white' : 'text-black'}`}>
                             CANTH
                         </a>
                     </div>
@@ -107,12 +104,12 @@ const Navbar = () => {
                         <ul className="sm:flex hidden items-center gap-4">
                             {Menu.map((data) => (
                                 <li key={data.id}>
-                                    <a
-                                        href={data.link}
-                                        className="inline-block px-4 duration-200 text-[14px] 2xl:text-xl  hover:underline hover:text-gray-800 underline-offset-4 text-black dark:text-white font-sans font-bold menu-title text-shadow-sm"
+                                    <Link
+                                        to={data.link}
+                                        className={`inline-block menu-title px-4 duration-200 text-[14px] 2xl:text-xl  hover:underline hover:text-gray-800 underline-offset-4 text-black dark:text-white font-sans font-bold ${isLandingPage ? 'text-white' : 'text-black'} text-shadow-sm`}
                                     >
                                         {data.name}
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                             {/* Simple Dropdown and Links */}
@@ -125,7 +122,7 @@ const Navbar = () => {
                             <ul>
                                 <li className="group relative cursor-pointer">
                                     <a href="#" className="flex items-center">
-                                        <p className={'text-black menu-title'}>
+                                        <p className={`${isLandingPage ? 'text-white' : 'text-black'} menu-title`}>
                                             <HiOutlineMenu size={25} />
                                         </p>
                                         <p>
@@ -140,7 +137,7 @@ const Navbar = () => {
                                                 <li key={data.id}>
                                                     <a
                                                         href={data.link}
-                                                        className="inline-block w-full rounded-md p-2 hover:text-white hover:bg-gray-100 hover:bg-opacity-50 text-black menu-title"
+                                                        className={`inline-block w-full rounded-md p-2 hover:text-white hover:bg-gray-100 hover:bg-opacity-50 ${isLandingPage ? 'text-white' : 'text-black'} menu-title`}
                                                     >
                                                         {data.name}
                                                     </a>
@@ -153,7 +150,7 @@ const Navbar = () => {
                         </div>
 
                         <button
-                            className="text-black menu-title text-shadow-sm"
+                            className={` ${isLandingPage ? 'text-white' : 'text-black'} menu-title text-shadow-sm"`}
                             onClick={() => setIsOpenCartDrawer(!isOpenCartDrawer)}
                         >
                             <HiOutlineShoppingBag size={25} />
@@ -164,7 +161,7 @@ const Navbar = () => {
                                     {/* User Dropdown */}
                                     <button
                                         id="user-button"
-                                        className="menu-title flex items-center gap-2 text-black dark:text-white hover:text-gray-600 transition-colors focus:outline-none"
+                                        className={`menu-title flex items-center gap-2 ${isLandingPage ? 'text-white' : 'text-black'} dark:text-white hover:text-gray-600 transition-colors focus:outline-none`}
                                         onClick={() => setDropdownVisible(!dropdownVisible)}
                                     >
                                         <HiUserCircle size={25} />
@@ -173,7 +170,7 @@ const Navbar = () => {
                                     {dropdownVisible && (
                                         <div
                                             id="user-dropdown"
-                                            className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50"
+                                            className={`absolute bg-white right-0 mt-2 w-56  dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50 ${isLandingPage ? "text-white": "text-black"}`}
                                         >
                                             {/* User Info */}
                                             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
@@ -181,7 +178,7 @@ const Navbar = () => {
                                                     <HiUserCircle className="text-gray-500 dark:text-gray-400"
                                                                   size={30} />
                                                     <div>
-                                                        <p className="text-sm font-medium text-black dark:text-white">
+                                                        <p className="text-sm font-medium text-gray-700 dark:text-white">
                                                             {user.username}
                                                         </p>
                                                     </div>
@@ -189,21 +186,21 @@ const Navbar = () => {
                                             </div>
 
                                             {/* User Actions */}
-                                            <a
-                                                href={`/customer/${user.username}`}
+                                            <Link
+                                                to={`/customer/${user.username}`}
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                                             >
                                                 Thông tin người dùng
-                                            </a>
-                                            <a
-                                                href={`/me/my-order`}
+                                            </Link>
+                                            <Link
+                                                to={`/me/my-order`}
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                                             >
-                                                Đon mua
-                                            </a>
+                                                Đơn hàng đã mua
+                                            </Link>
                                             <button
-                                                onClick={handleLogoutClick}
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-800 rounded-md"
+                                                onClick={handleLogoutClick}
                                             >
                                                 Đăng xuất
                                             </button>
@@ -215,13 +212,15 @@ const Navbar = () => {
                                     className="flex items-center gap-2 hover:text-gray-600 transition-colors text-black "
                                     onClick={handleLoginClick}
                                 >
-                                    <HiUser size={25} className={'menu-title text-black text-shadow-sm'}/>
-                                    <span className="text-sm font-medium text-black menu-title text-shadow-sm">Đăng nhập</span>
+                                    <HiUser size={25} className={'menu-title text-black text-shadow-sm'} />
+                                    <span
+                                        className={`text-sm font-medium  ${isLandingPage ? 'text-white' : 'text-black'} menu-title text-shadow-sm`}>Đăng nhập</span>
                                 </button>
                             )}
 
                             {/* Auth Modal */}
-                            <AuthModal isOpen={isModalOpen} setIsModalOpen={setIsModalOpen} onClose={() => setIsModalOpen(false)} />
+                            <AuthModal isOpen={isModalOpen} setIsModalOpen={setIsModalOpen}
+                                       onClose={() => setIsModalOpen(false)} />
                         </div>
 
                     </div>
@@ -231,7 +230,7 @@ const Navbar = () => {
             <div data-aos="zoom-in" className="flex justify-center">
 
             </div>
-        </div >
+        </div>
     )
 }
 

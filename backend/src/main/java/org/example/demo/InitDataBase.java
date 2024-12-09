@@ -1,9 +1,11 @@
 package org.example.demo;
 
+import com.beust.ah.A;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import org.example.demo.dto.auth.request.AccountRequestDTO;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
+import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.human.staff.Staff;
@@ -11,6 +13,7 @@ import org.example.demo.entity.security.Account;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.exception.PermissionDenyException;
 import org.example.demo.repository.customer.AddressRepository;
+import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.repository.security.RoleRepository;
 import org.example.demo.repository.staff.StaffRepository;
@@ -31,6 +34,8 @@ public class InitDataBase {
     private AccountService accountService;
     @Autowired
     private AddressRepository addressRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Transactional
     @PostConstruct
@@ -94,6 +99,21 @@ public class InitDataBase {
             account.setEnabled(true);
             account.setRoleId(roleRepository.findByCode("ROLE_STAFF").get().getId());
             accountService.createAccount(account);
+        }
+        if(addressRepository.findAddressByPhone("0833487637").isEmpty()){
+            Address address = new Address();
+            address.setCustomer(customerRepository.findByEmail("phah04@gmail.com").orElse(null));
+            address.setName("Phạm Hà Anh");
+            address.setWard("Xã Tống Phan");
+            address.setWardId("220713");
+            address.setDistrict("Huyện Phù Cừ");
+            address.setDistrictId("2194");
+            address.setPhone("0833487637");
+            address.setProvinceId("268");
+            address.setProvince("Tỉnh Hưng Yên");
+            address.setDetail("Thôn 5");
+            address.setDefaultAddress(true);
+            addressRepository.save(address);
         }
     }
 }

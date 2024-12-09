@@ -6,14 +6,14 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import 'swiper/css/scrollbar'
-import './styles.css'
 
 // import required modules
 import { Mousewheel, Pagination, Autoplay } from 'swiper/modules'
 import { Link } from 'react-router-dom'
-import { HiOutlineX, HiOutlineXCircle, HiSearch, HiX } from 'react-icons/hi'
+import { HiOutlineXCircle, HiSearch } from 'react-icons/hi'
 import React, { Fragment, useState } from 'react'
 import { Input } from '@/components/ui'
+import Navbar from '@/views/client/Navbar/Navbar'
 
 // Import Swiper styles
 
@@ -22,7 +22,7 @@ function LandingPage() {
     const [isOpenMenuSearch, setIsOpenMenuSearch] = useState<boolean>(false)
 
     const Display: React.FC<{ title: string }> = ({ title }) => (
-        <div className="absolute bottom-[23%] left-[8%] font-poppins text-white">
+        <div className="absolute bottom-[23%] left-[2%] font-poppins text-white">
             <div className="max-w-[600px]">
                 <h2 className="text-[30px] md:text-pretty unica-one-regular text-white text-shadow-sm">{title}</h2>
             </div>
@@ -48,6 +48,7 @@ function LandingPage() {
 
     return (
         <>
+            <Navbar isLandingPage={true}/>
             <div
                 className={`fixed w-full z-50 transition-all duration-500 bg-white opacity-60 bottom-0 ${isOpenMenuSearch ? '' : ' translate-y-full'}`}>
                 <div className={'!flex !flex-col justify-center p-10 items-center'}>

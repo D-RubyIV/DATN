@@ -29,17 +29,17 @@ const Me = () => {
         <Fragment>
             <CartDrawer></CartDrawer>
             <Navbar></Navbar>
-            <div className={'grid grid-cols-12 w-full h-svh p-5 min-h-[600px] px-[8%] gap-10'}>
-                <div className={'col-span-2'}>
+            <div className={'grid grid-cols-12 w-full h-svh p-5 min-h-[600px] px-[8%] gap-2'}>
+                <div className={'col-span-2 bg-white'}>
                     {menu.map((item, index) => (
                         <div key={index} className={'p-2 hover:bg-gray-300 '}>
-                            <a href={item.url} className={'text-black text-sm'}>
+                            <Link to={item.url} className={'text-black text-[18px]'}>
                                 {item.label}
-                            </a>
+                            </Link>
                         </div>
                     ))}
                 </div>
-                <div className={'col-span-10'}>
+                <div className={'col-span-10 bg-white p-5'}>
                     <Outlet />
                 </div>
             </div>

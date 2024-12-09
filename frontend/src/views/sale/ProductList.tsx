@@ -157,7 +157,7 @@ const ProductList = () => {
 
     return (
         <Fragment>
-            <div className={'grid grid-cols-12 2xl:px-32 md:px-8 py-8 gap-10'}>
+            <div className={'grid grid-cols-12 px-[2%] md:px-8 py-8 gap-10'}>
                 <div className={'col-span-3'}>
                     <div className={'py-5'}>
                         <h3 className={'uppercase'}>Bộ lọc</h3>
@@ -332,22 +332,22 @@ const ProductList = () => {
                                                         />
                                                     )
                                             }
-                                            <div
-                                                className="absolute bottom-0 left-0 right-0 flex flex-row justify-around opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-opacity-50 p-2 w-full">
-                                                <Link to={`/products/${product.productId}`} className="flex-1 mr-1">
-                                                    <Button
-                                                        className=" bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center overflow-hidden">
-                                                        <IoBagHandle />
-                                                    </Button>
-                                                </Link>
+                                            {/*<div*/}
+                                            {/*    className="absolute bottom-0 left-0 right-0 flex flex-row justify-around opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-opacity-50 p-2 w-full">*/}
+                                            {/*    <Link to={`/products/${product.productId}`} className="flex-1 mr-1">*/}
+                                            {/*        <Button*/}
+                                            {/*            className=" bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center overflow-hidden">*/}
+                                            {/*            <IoBagHandle />*/}
+                                            {/*        </Button>*/}
+                                            {/*    </Link>*/}
 
-                                                <Link to={`/products/${product.productId}`} className="flex-1 ml-1">
-                                                    <Button
-                                                        className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
-                                                        <FaEye className="mr-2" />
-                                                    </Button>
-                                                </Link>
-                                            </div>
+                                            {/*    <Link to={`/products/${product.productId}`} className="flex-1 ml-1">*/}
+                                            {/*        <Button*/}
+                                            {/*            className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">*/}
+                                            {/*            <FaEye className="mr-2" />*/}
+                                            {/*        </Button>*/}
+                                            {/*    </Link>*/}
+                                            {/*</div>*/}
                                         </div>
                                         <div className={'flex justify-between text-red-500 text-[12.5px]'}>
                                             <p>+ {product.countColor} màu sắc</p>
