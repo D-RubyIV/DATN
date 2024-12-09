@@ -24,7 +24,7 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
 
-    const customersPerPage = 5;
+    const customersPerPage = 10;
 
     // Fetch customers from API
     useEffect(() => {
@@ -124,23 +124,31 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
                 <p className="text-gray-500">Loading customers...</p>
             ) : (
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-                    <thead className="bg-gray-200">
-                        <tr className="text-left">
-                            <th className="border-b border-gray-300 px-4 py-2">Select</th>
-                            <th className="border-b border-gray-300 px-4 py-2">Name</th>
-                            <th className="border-b border-gray-300 px-4 py-2">Email</th>
-                            <th className="border-b border-gray-300 px-4 py-2">Phone</th>
+                    <thead className="bg-gradient-to-b from-gray-100 to-gray-200 border-b-2 border-gray-300">
+                        <tr>
+                            <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider w-16">
+                                Chọn
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Tên
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Email
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                Số điện thoại
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {filteredCustomers.map((customer) => (
-                            <tr key={customer.id} className="hover:bg-gray-100 transition duration-200">
-                                <td className="border-b border-gray-300 px-4 py-2 text-center">
+                            <tr key={customer.id} className="hover:bg-gray-50 transition duration-200 ease-in-out border-b last:border-b-0 border-gray-200">
+                                <td className="px-4 py-3 text-center">
                                     <input
                                         type="checkbox"
                                         checked={selectedCustomerIdsState.includes(customer.id)}
                                         onChange={() => handleSelectCustomer(customer.id)}
-                                        className="form-checkbox h-5 w-5 text-blue-600"
+                                        className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-400"
                                     />
                                 </td>
                                 <td className="border-b border-gray-300 px-4 py-2">{customer.name || 'N/A'}</td>
@@ -158,19 +166,21 @@ const CustomerTable = ({ onSelectedCustomersChange, selectedCustomerIds }: Custo
                     onClick={() => handlePageChange(currentPage - 1)}
                     className={`cursor-pointer ${currentPage === 1 ? 'text-gray-400' : 'text-blue-600'}`}
                 >
-                    PREV
+                    Trước
                 </div>
 
-                <span>{`Page ${currentPage} of ${totalPages}`}</span>
+                <span>{`Trang ${currentPage} trên ${totalPages}`}</span>
 
                 <div
                     onClick={() => handlePageChange(currentPage + 1)}
                     className={`cursor-pointer ${currentPage === totalPages ? 'text-gray-400' : 'text-blue-600'}`}
                 >
-                    NEXT
+                    Sau
                 </div>
             </div>
         </div>
+
+
     );
 };
 

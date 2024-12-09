@@ -214,27 +214,6 @@ public class VoucherServiceImpl implements VoucherService {
         return voucherSaved;
     }
 
-//    @Override
-//    @Transactional
-//    public Voucher updateVoucher(Integer id, VoucherRequest request) {
-//        Voucher voucherUpdate = voucherRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Voucher not found with ID " + id));
-//        Voucher voucherSaved = voucherConvert.convertRequestToEntity(id, request);
-//        updateStatus(voucherUpdate);
-//        if (voucherSaved.getTypeTicket() == Type.Individual && !request.getCustomers().isEmpty()) {
-//            List<Integer> idCustomers = request.getCustomers();
-//            List<Customer> listCustomers = idCustomers.stream()
-//                    .map(idCustomer -> customerRepository.findById(idCustomer)
-//                            .orElseThrow(() -> new RuntimeException("Customer not found: " + idCustomer)))
-//                    .collect(Collectors.toList());
-//            voucherSaved.setCustomers(listCustomers);
-//            voucherSaved = voucherRepository.save(voucherSaved);
-//        } else {
-//            voucherSaved.setCustomers(Collections.emptyList());
-//            voucherSaved = voucherRepository.save(voucherSaved);
-//        }
-//        return voucherRepository.save(voucherSaved);
-//    }
 
     @Override
     @Transactional

@@ -60,16 +60,42 @@ const VoucherTable = () => {
 
 
 
-
     const exportToExcel = () => {
-        const worksheet = XLSX.utils.json_to_sheet(data);
+        if (data.length === 0) {
+            toast.info('Không có dữ liệu để xuất.');
+            return;
+        }
+    
+        const formattedData = data.map((item, index) => ({
+            Stt: index + 1,                                     // Số thứ tự
+            'Tên': item.name,                                   // Tên
+            'Loại Phiếu': item.typeTicket === 'Individual' ? 'Cá nhân' : 'Mọi người', // Loại phiếu
+            'Số Lượng': item.quantity,                          // Số lượng
+            'Phần Trăm Tối Đa': `${item.maxPercent}%`,          // Phần trăm tối đa
+            'Giá Tối Thiểu': `${item.minAmount.toLocaleString('vi-VN')} ₫`, // Giá tối thiểu
+            'Ngày Bắt Đầu': item.startDate,                     // Ngày bắt đầu
+            'Ngày Kết Thúc': item.endDate,                      // Ngày kết thúc
+            'Trạng Thái': (() => {                              // Trạng thái
+                if (item.status === 'In progress') return 'Đang diễn ra';
+                if (item.status === 'Not started yet') return 'Chưa bắt đầu';
+                if (item.status === 'Expired') return 'Đã kết thúc';
+                return 'Không xác định';
+            })(),
+        }));
+    
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Voucher');
+    
+        // Thêm worksheet vào workbook
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Danh sách Phiếu Giảm Giá');
+    
+        // Ghi file Excel
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-        saveAs(blob, 'Voucher_data.xlsx');
+    
+        saveAs(blob, 'Danh_sach_Phieu_Giam_Gia.xlsx'); // Tên file hiển thị tiếng Việt
     };
-
+    
     // Debounce function for search input
     const debounceFn = debounce((val: string) => {
         setTableData(prevData => ({
@@ -87,8 +113,6 @@ const VoucherTable = () => {
         setTableData(prevData => ({ ...prevData, pageSize, pageIndex: 1 }));
     };
 
-
-
     const handleSort = ({ order, key }: OnSortParam) => {
         setTableData(prevData => {
             const newOrder = (prevData.sort.key === key && prevData.sort.order === 'asc') ? 'desc' : 'asc';
@@ -100,7 +124,6 @@ const VoucherTable = () => {
         });
     };
 
-
     const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>) => {
         setTableData(prevData => ({
             ...prevData,
@@ -110,17 +133,13 @@ const VoucherTable = () => {
         }));
     };
 
-
-
-const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
-    setTableData(prevData => ({
-        ...prevData,
-        typeTicketFilter: e.target.value,
-        pageIndex: 1,
-    }));
-};
-
-
+    const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
+        setTableData(prevData => ({
+            ...prevData,
+            typeTicketFilter: e.target.value,
+            pageIndex: 1,
+        }));
+    };
 
     const columns: ColumnDef<IVoucher>[] = useMemo(
         () => [
@@ -151,10 +170,18 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
             {
                 header: 'Phần Trăm Tối Đa',
                 accessorKey: 'maxPercent',
+                cell: ({ getValue }) => {
+                    const value = getValue() as number;
+                    return `${value}%`;
+                },
             },
             {
-                header: 'Giá Tối Thiếu',
+                header: 'Giá Tối Thiểu',
                 accessorKey: 'minAmount',
+                cell: ({ getValue }) => {
+                    const value = getValue() as number;
+                    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                },
             },
             {
                 header: 'Ngày Bắt Đầu',
@@ -169,9 +196,9 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                 accessorKey: 'status',
                 cell: ({ row }) => {
                     const status = row.original.status;
-            
+
                     let statusColor, textColor, statusText;
-            
+
                     if (status === 'In progress') {
                         statusColor = 'bg-green-600';
                         textColor = 'text-green-600';
@@ -189,7 +216,7 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                         textColor = 'text-gray-500';
                         statusText = 'Không xác định';
                     }
-            
+
                     return (
                         <span className={`flex items-center font-bold ${textColor}`}>
                             <span
@@ -201,7 +228,7 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                 },
                 size: 100,
             },
-            
+
             {
                 header: 'Hành động',
                 id: 'action',
@@ -277,11 +304,6 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                 keyword: searchTerm,
             };
 
-            // if (statusFilter) {
-            //     params.status = statusFilter;
-            // }
-
-
             if (statusFilter) {
                 params.status = statusFilter;
             } else if (typeTicketFilter) {
@@ -289,8 +311,6 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
             } else {
                 params.keyword = query || ''; // Fallback khi cả hai đều trống
             }
-    
-
 
             console.log('Fetching data with params:', params);
 
@@ -375,8 +395,8 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                                     style={{
                                         height: '37px',
                                         marginLeft: '8px',
-                                        padding: '0 12px', // Đảm bảo padding bên trong
-                                        boxSizing: 'border-box', // Đảm bảo chiều rộng chính xác
+                                        padding: '0 12px', 
+                                        boxSizing: 'border-box', 
                                     }}
                                 >
                                     <option value="">Tất cả trạng thái</option>
@@ -392,8 +412,8 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                                     style={{
                                         height: '37px',
                                         marginLeft: '8px',
-                                        padding: '0 12px', // Đảm bảo padding bên trong
-                                        boxSizing: 'border-box', // Đảm bảo chiều rộng chính xác
+                                        padding: '0 12px', 
+                                        boxSizing: 'border-box',
                                     }}
                                 >
                                     <option value="">Tất cả trạng thái</option>
@@ -402,7 +422,6 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                                 </select>
                             </div>
 
-                            {/* Bên phải: Nút và công cụ */}
                             <div className="flex items-center space-x-2 justify-end">
                                 <VoucherTableTool exportToExcel={exportToExcel} />
                             </div>
