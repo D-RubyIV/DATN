@@ -144,6 +144,44 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.findAllByPageWithQuery(query, status, type, inStore, createdFrom, createdTo, pageable).map(s -> orderResponseMapper.toOverViewDTO(s));
     }
 
+
+    public Page<OrderOverviewResponseDTO> findAllMyOverviewByPage(
+            String status,
+            String type,
+            Boolean inStore,
+            LocalDateTime createdFrom,
+            LocalDateTime createdTo,
+            PageableObject pageableObject
+    ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdDate")
+            );
+        }
+
+        Account account = AuthUtil.getAccount();
+        Customer customer = new Customer();
+        if (account != null && account.getCustomer() != null){
+            customer = account.getCustomer();
+        }
+
+        return orderRepository.findAllByPageWithQueryOfMe(query, status, type, inStore, createdFrom, createdTo, customer, pageable).map(s -> orderResponseMapper.toOverViewDTO(s));
+    }
+
+    public CountStatusOrder getMyCountStatusAnyOrder(String type) {
+        Account account = AuthUtil.getAccount();
+        Customer customer = new Customer();
+        if (account != null && account.getCustomer() != null){
+            customer = account.getCustomer();
+        }
+        return orderRepository.getMyCountStatus(type, customer);
+    }
+
     @Override
     public Order findById(Integer id) {
         return orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found"));

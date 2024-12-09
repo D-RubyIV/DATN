@@ -5,6 +5,7 @@ import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
 import org.example.demo.dto.statistic.response.StatisticOverviewSymbol;
 import org.example.demo.dto.statistic.response.TopProductObject;
+import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.product.core.ProductDetail;
@@ -25,6 +26,44 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     Optional<Order> findByCode(String code);
+    @Query(value = """
+            SELECT DISTINCT b FROM Order b
+            LEFT JOIN FETCH b.customer bc
+            LEFT JOIN FETCH b.staff bs
+            LEFT JOIN FETCH b.voucher bv
+            LEFT JOIN FETCH bv.customers
+            WHERE
+            (
+                :query IS NULL OR 
+                LOWER(b.code) LIKE LOWER(CONCAT('%', :query, '%')) OR
+                LOWER(b.phone) LIKE LOWER(CONCAT('%', :query, '%')) OR
+                LOWER(b.customer.name) LIKE LOWER(CONCAT('%', :query, '%')) OR
+                LOWER(b.staff.name) LIKE LOWER(CONCAT('%', :query, '%'))
+            )
+            AND
+            (:status IS NULL OR :status = '' OR LOWER(b.status) LIKE LOWER(:status))
+            AND
+            (:type IS NULL OR LOWER(b.type) LIKE LOWER(CONCAT('%', :type, '%')))
+            AND
+            (:inStore IS NULL OR b.inStore = :inStore)
+            AND
+            (:createdFrom IS NULL OR b.createdDate >= :createdFrom)
+            AND
+            (:createdTo IS NULL OR b.createdDate <= :createdTo)
+            AND 
+            (b.customer = :customer)
+            """)
+    Page<Order> findAllByPageWithQueryOfMe(
+            @Param("query") String query,
+            @Param("status") String status,
+            @Param("type") String type,
+            @Param("inStore") Boolean inStore,
+            @Param("createdFrom") LocalDateTime createdFrom,
+            @Param("createdTo") LocalDateTime createdTo,
+            @Param("customer") Customer customer,
+            Pageable pageable
+    );
+
     @Query(value = """
             SELECT DISTINCT b FROM Order b
             LEFT JOIN FETCH b.customer bc
@@ -71,6 +110,19 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "AND (:type IS NULL OR LOWER(o.type) LIKE LOWER(CONCAT('%', :type, '%')))"
     )
     CountStatusOrder getCountStatus(@Param("type") String type);
+
+    @Query(value = "SELECT new org.example.demo.dto.order.core.response.CountStatusOrder( " +
+                   "COUNT(o), " +  // Đếm tổng số đơn hàng
+                   "SUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END), " +  // Đếm số đơn hàng 'PENDING'
+                   "SUM(CASE WHEN o.status = 'TOSHIP' THEN 1 ELSE 0 END), " +   // Đếm số đơn hàng 'TOSHIP'
+                   "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
+                   "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
+                   "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'CANCELED'
+                   "FROM Order o WHERE o.deleted = false " +
+                   "AND (o.customer = :customer)" +
+                   "AND (:type IS NULL OR LOWER(o.type) LIKE LOWER(CONCAT('%', :type, '%')))"
+    )
+    CountStatusOrder getMyCountStatus(@Param("type") String type, @Param("customer") Customer customer);
 
 
     @Query(value = "select count(od.id) as quantity, o.code as code, o.id as id from Order o left join OrderDetail od on od.order.id = o.id where o.id in :ids group by o.id, o.code")

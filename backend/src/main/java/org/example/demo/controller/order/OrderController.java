@@ -10,10 +10,13 @@ import org.example.demo.dto.order.core.response.OrderResponseDTO;
 import org.example.demo.dto.order.other.RefundAndChangeStatusDTO;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOByCode;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOById;
+import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.security.Account;
 import org.example.demo.mapper.order.core.response.OrderResponseMapper;
 import org.example.demo.model.response.ICountOrderDetailInOrder;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.service.pdf.OrderPdfService;
+import org.example.demo.util.auth.AuthUtil;
 import org.example.demo.util.phah04.PageableObject;
 import org.example.demo.validate.group.GroupCreate;
 import org.example.demo.validate.group.GroupUpdate;
@@ -63,6 +66,29 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
         }
         String query = pageableObject.getQuery();
         return ResponseEntity.ok(orderService.findAllOverviewByPage(status, type, inStore, createdFrom, createdTo, pageableObject));
+    }
+
+    @RequestMapping(value = "me/overview")
+    public ResponseEntity<Page<OrderOverviewResponseDTO>> findAllByPageV3(
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "inStore", required = false) Boolean inStore,
+            @RequestParam(value = "createdFrom", required = false) LocalDateTime createdFrom,
+            @RequestParam(value = "createdTo", required = false) LocalDateTime createdTo,
+            @Valid @RequestBody PageableObject pageableObject,
+            BindingResult bindingResult
+    ) throws BindException {
+        if (bindingResult.hasErrors()) {
+            throw new BindException(bindingResult);
+        }
+        String query = pageableObject.getQuery();
+
+        return ResponseEntity.ok(orderService.findAllMyOverviewByPage(status, type, inStore, createdFrom, createdTo, pageableObject));
+    }
+
+    @GetMapping(value = "me/count-any-status")
+    public ResponseEntity<CountStatusOrder> getMeCountAnyStatus(@RequestParam(value = "type", required = false) String type) {
+        return ResponseEntity.ok(orderService.getMyCountStatusAnyOrder(type));
     }
 
     @Override

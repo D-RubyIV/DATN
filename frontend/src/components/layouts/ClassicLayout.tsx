@@ -25,6 +25,9 @@ import { vi } from 'date-fns/locale'
 import Aos from 'aos'
 import { useHasRole } from '@/utils/permission'
 import PageNotFound from '@/views/404/PageNotFound'
+import Me from '@/views/sale/profile/Me'
+import { MyOrderTable } from '@/views/sale/profile/order/MyOrderTable'
+import MyOrderDetail from '@/views/sale/profile/order/MyOrderDetail'
 
 type OrderDTO = {
     id: number;
@@ -296,6 +299,10 @@ const RootLayout = () => {
             }
             <Route path="/auth/*" element={<SecurityLayout />} />
             <Route path="/*" element={<PublicLayout />} />
+            <Route path={"me"} element={<Me></Me>}>
+                <Route index path={"my-order"} element={<MyOrderTable/>}></Route>
+                <Route path={"my-order/:id"} element={<MyOrderDetail/>}></Route>
+            </Route>
         </Routes>
     )
 }

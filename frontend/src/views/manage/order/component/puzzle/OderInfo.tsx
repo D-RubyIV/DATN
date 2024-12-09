@@ -11,7 +11,7 @@ import IsPaymentFormat from '@/views/util/IsPaymentFormat'
 import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
 import MethodPaymentOrderFormat from '@/views/util/MethodPaymentOrderFormat'
 
-const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
+const OrderInfo = ({ data, hiddenPrint }: { data: OrderResponseDTO, hiddenPrint?: boolean }) => {
     const [viewInvoice, setViewInvoice] = useState<boolean>(false)
 
     const run = async () => {
@@ -58,7 +58,7 @@ const OrderInfo = ({ data }: { data: OrderResponseDTO }) => {
                 <div className='flex gap-3 justify-between'>
                     <h5 className="mb-4">Đơn hàng #{data.code}</h5>
                     <div className=''>
-                        <Button className='me-2' id='btnPrint' size='sm' onClick={() => run()}>In hóa đơn</Button>
+                        <Button className='me-2' id='btnPrint' size='sm' onClick={() => run()} hidden={hiddenPrint}>In hóa đơn</Button>
                         {/*<Button className='' onClick={() => setViewInvoice(true)} id='btnPrint' size='sm'>Xem hóa đơn</Button>*/}
                     </div>
                 </div>

@@ -28,10 +28,11 @@ import { DeleteOutline } from '@mui/icons-material'
 import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
 
 
-const OrderProducts = ({ data, selectObject, fetchData }: {
+const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = false }: {
     data: OrderDetailResponseDTO[],
     selectObject: OrderResponseDTO,
-    fetchData: () => Promise<void>
+    fetchData: () => Promise<void>,
+    unAllowEditProduct?: boolean
 }) => {
     const { Tr, Th, Td, THead, TBody } = Table
 
@@ -188,7 +189,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
         return (
             <div>
                 {
-                    selectObject.status === 'PENDING' ? (
+                    selectObject.status === 'PENDING' && !unAllowEditProduct ? (
                         <div className="flex gap-2">
                             {/*<button><HiPencil size={20}></HiPencil></button>*/}
                             <Button
@@ -237,16 +238,18 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                 return (
                     <div className="flex gap-1 items-center justify-start">
                         {
-                            selectObject.status === 'PENDING' && (<button className="p-2 text-xl" onClick={() => {
-                                handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
-                            }}><HiPlusCircle /></button>)
+                            selectObject.status === 'PENDING' && (
+                                <button hidden={unAllowEditProduct} className="p-2 text-xl" onClick={() => {
+                                    handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
+                                }}><HiPlusCircle /></button>)
                         }
 
                         <label>{props.row.original.quantity} </label>
                         {
-                            selectObject.status === 'PENDING' && (<button className="p-2 text-xl" onClick={() => {
-                                handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
-                            }}><HiMinusCircle /></button>)
+                            selectObject.status === 'PENDING' && (
+                                <button hidden={unAllowEditProduct} className="p-2 text-xl" onClick={() => {
+                                    handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
+                                }}><HiMinusCircle /></button>)
                         }
 
                     </div>
@@ -270,7 +273,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
             cell: (props) => {
                 const row = props.row.original
                 return (
-                    <div className={'flex gap-3 text-red-600'}>
+                    <div className={'flex gap-3 text-red-600'} >
                         <div className={`${hasSaleEvent(row.productDetailResponseDTO) ? 'line-through' : 'hidden'}`}>
                             <PriceAmount amount={row.productDetailResponseDTO.price} />
                         </div>
@@ -431,6 +434,7 @@ const OrderProducts = ({ data, selectObject, fetchData }: {
                             selectObject.status === 'PENDING' && (
                                 <Button block variant="solid" size="sm" className="bg-indigo-500 !w-36"
                                         icon={<HiPlusCircle />}
+                                        hidden={unAllowEditProduct}
                                         onClick={() => setIsOpenProductModal(true)}>
                                     Thêm sản phẩm
                                 </Button>

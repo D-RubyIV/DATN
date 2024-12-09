@@ -27,7 +27,12 @@ const PaymentRow = ({ label, value, isLast, prefix }: PaymentInfoProps) => {
     )
 }
 
-const PaymentSummary = ({selectObject, fetchData,  data }: {selectObject: OrderResponseDTO, fetchData: () => Promise<void> ,  data: PaymentSummaryProps }) => {
+const PaymentSummary = ({ selectObject, fetchData, data, unAllowUseVoucher = false }: {
+    selectObject: OrderResponseDTO,
+    fetchData: () => Promise<void>,
+    data: PaymentSummaryProps,
+    unAllowUseVoucher?: boolean
+}) => {
     return (
         <Card className="h-auto">
             <h5 className="mb-4">Thông tin thanh toán</h5>
@@ -41,14 +46,13 @@ const PaymentSummary = ({selectObject, fetchData,  data }: {selectObject: OrderR
                     </div>
                 )
             } value={data?.deliveryFee} prefix={' + '} />
-            <PaymentRow label={`Khuyến mãi phiếu giảm giá (${selectObject.discountVoucherPercent}%)`} value={data?.discount} prefix={' - '} />
+            <PaymentRow label={`Khuyến mãi phiếu giảm giá (${selectObject.discountVoucherPercent}%)`}
+                        value={data?.discount} prefix={' - '} />
             <PaymentRow label="Tổng thanh toán" value={data?.totalAfterDiscountAndFee} />
-
-            <UseVoucherBox selectedOrder={selectObject} fetchSelectedOrder={fetchData}></UseVoucherBox>
-
-            <SuggestVoucher fetchSelectedOrder={fetchData} selectedOrder={selectObject}></SuggestVoucher>
-
-
+            <div hidden={unAllowUseVoucher}>
+                <UseVoucherBox selectedOrder={selectObject} fetchSelectedOrder={fetchData}></UseVoucherBox>
+                <SuggestVoucher fetchSelectedOrder={fetchData} selectedOrder={selectObject}></SuggestVoucher>
+            </div>
             <HiExternalLink className="text-xl hidden group-hover:block" />
             <hr className="my-5" />
 

@@ -166,7 +166,7 @@ const CustomerInfo = ({ data, fetchSelectedOrder, setIsOpenCustomerModal }: {
                     />
                     <div className="ltr:ml-2 rtl:mr-2">
                         <div className="font-semibold group-hover:text-gray-900 group-hover:dark:text-gray-100">
-                            {customer.name || 'Khách lẻ'}
+                            {customer.email || 'Khách lẻ'}
                         </div>
                     </div>
                 </div>

@@ -179,7 +179,8 @@ const Navbar = () => {
                                             {/* User Info */}
                                             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                                                 <div className="flex items-center gap-3">
-                                                    <HiUserCircle className="text-gray-500 dark:text-gray-400" size={30} />
+                                                    <HiUserCircle className="text-gray-500 dark:text-gray-400"
+                                                                  size={30} />
                                                     <div>
                                                         <p className="text-sm font-medium text-black dark:text-white">
                                                             {user.username}
@@ -194,6 +195,12 @@ const Navbar = () => {
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                                             >
                                                 Thông tin người dùng
+                                            </a>
+                                            <a
+                                                href={`/me/my-order`}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                            >
+                                                Đơn mua
                                             </a>
                                             <button
                                                 onClick={handleLogoutClick}
