@@ -255,7 +255,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 AND s.deleted = FALSE
                 AND b.deleted = FALSE
                 AND pd.deleted = FALSE
-                GROUP BY p.id, p.code, p.name
+                GROUP BY p.id, p.code, p.name, p.createdDate
+                ORDER BY p.createdDate DESC
             """)
     Page<ProductResponseOverDTO> findCustomPage(
             Pageable pageable,

@@ -14,6 +14,7 @@ const ToastProvider = ({ children }: { children: ReactNode }) => {
                 closable
                 title={title ?? "Thông báo"}
                 type={type ?? "success"}
+                className={'z-50'}
                 duration={duration ?? 2000}
             >
                 {message}

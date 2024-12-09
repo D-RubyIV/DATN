@@ -151,7 +151,7 @@ const CartDrawer = () => {
         <Fragment>
             <DialogChangeQuantity />
             <div
-                className={`z-50 fixed border-gray-200 rounded-none h-[100svh] top-0 from-indigo-900 bg-gradient-to-l 2xl:w-3/12 md:w-4/12 transition-all duration-500 block ${isOpenCartDrawer ? 'right-0' : '-right-full'}`}>
+                className={`z-40 fixed border-gray-200 rounded-none h-[100svh] top-0 from-indigo-900 bg-gradient-to-l 2xl:w-3/12 md:w-4/12 transition-all duration-500 block ${isOpenCartDrawer ? 'right-0' : '-right-full'}`}>
                 <div className="grid h-[100svh]">
                     <div
                         className="dark:text-gray-500 bg-white flex flex-col justify-between">
