@@ -414,33 +414,9 @@ export const MyOrderTable = () => {
             <div>
                 <h1 className="font-semibold text-xl text-black mb-4 text-transform: uppercase">Đơn mua của tôi</h1>
             </div>
-            <div className="grid grid-cols-1 gap-2 py-2">
-                <div>
-                    <div className="relative mr-4">
-                        <p className={'font-black'}>Tìm kiếm</p>
-                        <Input
-                            size={'sm'}
-                            ref={inputRef}
-                            placeholder="Tìm kiếm theo mã, tên nhân viên, tên khách hàng ..."
-                            className="lg:w-full"
-                            prefix={<HiOutlineSearch className="text-lg" />}
-                            onChange={handleChange}
-                        />
-                    </div>
-                </div>
-                {/*<div className="relative mr-4">*/}
-                {/*    <p className={'font-black'}>Lọc khoảng ngày</p>*/}
-                {/*    <DatePicker.DatePickerRange*/}
-                {/*        size={'sm'}*/}
-                {/*        placeholder="Chọn khoảng ngày"*/}
-                {/*        value={dateRange}*/}
-                {/*        dateViewCount={2}*/}
-                {/*        onChange={handleRangePickerChange}*/}
-                {/*    />*/}
-                {/*</div>*/}
-            </div>
+
             <div className="py-2">
-                <TabList className="flex justify-evenly gap-4 w-full bg-white pt-3 pb-1">
+                <TabList className="flex justify-evenly gap-4 w-full pt-3 pb-1">
                     {
                         statusBills.map((item, index) => (
                             <TabNav key={index}
@@ -457,7 +433,21 @@ export const MyOrderTable = () => {
                     }
                 </TabList>
             </div>
-
+            <div className="grid grid-cols-1 gap-2 py-2">
+                <div>
+                    <div className="relative mr-4">
+                        <p className={'font-black'}>Tìm kiếm</p>
+                        <Input
+                            size={'sm'}
+                            ref={inputRef}
+                            placeholder="Tìm kiếm theo mã đơn hàng"
+                            className="lg:w-full"
+                            prefix={<HiOutlineSearch className="text-lg" />}
+                            onChange={handleChange}
+                        />
+                    </div>
+                </div>
+            </div>
             <div className="py-4 px-2">
                 <DataTable
                     columns={columns}

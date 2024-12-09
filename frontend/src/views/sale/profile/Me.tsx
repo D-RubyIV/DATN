@@ -1,33 +1,51 @@
 import { Link, Outlet } from 'react-router-dom'
 import Navbar from '@/views/client/Navbar/Navbar'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
+import CartDrawer from '@/views/sale/CartDrawer'
+import Footer from '@/views/client/Footer/Footer'
+import Aos from 'aos'
 
 const Me = () => {
+    useEffect(() => {
+        Aos.init({
+            offset: 100,
+            duration: 800,
+            easing: 'ease-in-sine',
+            delay: 100
+        })
+        Aos.refresh()
+    }, [])
     const menu = [
         {
             'label': 'Đơn mua',
             'url': '/me/my-order'
         },
         {
-            'label': 'Kho voucher',
-            'url': '/me/my-order'
+            'label': 'Kho phiếu giảm giá',
+            'url': '/me/my-voucher'
         }
     ]
     return (
         <Fragment>
+            <CartDrawer></CartDrawer>
             <Navbar></Navbar>
-            <div className={'grid grid-cols-12 w-full h-svh p-5'}>
-                <div className={'col-span-1'}>
+            <div className={'grid grid-cols-12 w-full h-svh p-5 min-h-[600px] px-[8%] gap-10'}>
+                <div className={'col-span-2'}>
                     {menu.map((item, index) => (
-                        <div key={index}>
-                            <a href={item.url}>{item.label}</a>
+                        <div key={index} className={'p-2 hover:bg-gray-300 '}>
+                            <a href={item.url} className={'text-black text-sm'}>
+                                {item.label}
+                            </a>
                         </div>
                     ))}
                 </div>
-                <div className={'col-span-11'}>
+                <div className={'col-span-10'}>
                     <Outlet />
                 </div>
             </div>
+            {/*<div className={'flex'}>*/}
+            {/*    <Footer></Footer>*/}
+            {/*</div>*/}
         </Fragment>
     )
 }

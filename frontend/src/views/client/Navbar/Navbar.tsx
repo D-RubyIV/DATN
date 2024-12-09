@@ -54,7 +54,6 @@ const Navbar = () => {
     const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { user, setUser } = useAuthContext();
-    const navigate = useNavigate();
 
 
     const handleLoginClick = () => {
@@ -93,7 +92,7 @@ const Navbar = () => {
 
 
     return (
-        <div className="relative top-0 shadow text-black dark:text-white duration-200 w-full z-30 navbar">
+        <div className="relative top-0 shadow text-black dark:text-white duration-200 w-full z-40 navbar">
             {/* upper Navbar */}
             <div className=" py-8">
                 <div className="px-[8%] flex justify-between items-center">
@@ -200,7 +199,7 @@ const Navbar = () => {
                                                 href={`/me/my-order`}
                                                 className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                                             >
-                                                Đơn mua
+                                                Đon mua
                                             </a>
                                             <button
                                                 onClick={handleLogoutClick}

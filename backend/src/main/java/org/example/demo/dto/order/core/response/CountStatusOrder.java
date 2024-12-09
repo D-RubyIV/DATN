@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CountStatusOrder {
-    private Long countAll;
-    private Long countPending;
-    private Long countToShip;
-    private Long countToReceive;
-    private Long countDelivered;
-    private Long countCancelled;
+    private Long countAll = 0L;
+    private Long countPending = 0L;
+    private Long countToShip = 0L;
+    private Long countToReceive = 0L;
+    private Long countDelivered = 0L;
+    private Long countCancelled = 0L;
 }

@@ -28,6 +28,7 @@ import PageNotFound from '@/views/404/PageNotFound'
 import Me from '@/views/sale/profile/Me'
 import { MyOrderTable } from '@/views/sale/profile/order/MyOrderTable'
 import MyOrderDetail from '@/views/sale/profile/order/MyOrderDetail'
+import MyVoucher from '@/views/sale/profile/voucher/MyVoucher'
 
 type OrderDTO = {
     id: number;
@@ -121,7 +122,8 @@ const Bell = () => {
                     onOpen={() => getCurrentOrder(countOrder)}
                 >
                     <Dropdown.Item variant="header">
-                        <div className="px-3 text-black text-[16px] !hover:bg-gray-600 font-semibold flex items-center gap-2">
+                        <div
+                            className="px-3 text-black text-[16px] !hover:bg-gray-600 font-semibold flex items-center gap-2">
                             Danh sách đơn hàng chờ xác nhận mới
                         </div>
                     </Dropdown.Item>
@@ -163,7 +165,7 @@ const Bell = () => {
                                         <span className="">Trạng thái: </span>
                                         <span
                                             className={item.status === 'PENDING' ? 'text-yellow-600' : 'text-red-600'}>
-                                            {item.status === "PENDING" ? 'Chờ xác nhận' : 'Không xác định'}
+                                            {item.status === 'PENDING' ? 'Chờ xác nhận' : 'Không xác định'}
                                         </span>
                                   </span>
                             </div>
@@ -261,19 +263,17 @@ const PublicLayout = () => {
         Aos.init({
             offset: 100,
             duration: 800,
-            easing: "ease-in-sine",
-            delay: 100,
-        });
-        Aos.refresh();
-    }, []);
+            easing: 'ease-in-sine',
+            delay: 100
+        })
+        Aos.refresh()
+    }, [])
     return (
         <Fragment>
-            <SaleProvider>
-                <Navbar />
-                <PublicViews />
-                <Footer />
-                <CartDrawer></CartDrawer>
-            </SaleProvider>
+            <Navbar />
+            <PublicViews />
+            <Footer />
+            <CartDrawer></CartDrawer>
         </Fragment>
     )
 }
@@ -293,17 +293,21 @@ const SecurityLayout = () => {
 
 const RootLayout = () => {
     return (
-        <Routes>
-            {
-                useHasRole(["ROLE_ADMIN", 'ROLE_STAFF']) && <Route path="/admin/*" element={<AdminLayout />} />
-            }
-            <Route path="/auth/*" element={<SecurityLayout />} />
-            <Route path="/*" element={<PublicLayout />} />
-            <Route path={"/me"} element={<Me></Me>}>
-                <Route index path={"my-order"} element={<MyOrderTable/>}></Route>
-                <Route path={"my-order/:id"} element={<MyOrderDetail/>}></Route>
-            </Route>
-        </Routes>
+        <SaleProvider>
+            <Routes>
+                {
+                    useHasRole(['ROLE_ADMIN', 'ROLE_STAFF']) && <Route path="/admin/*" element={<AdminLayout />} />
+                }
+                <Route path="/auth/*" element={<SecurityLayout />} />
+                <Route path="/*" element={<PublicLayout />} />
+                <Route path={'/me'} element={<Me></Me>}>
+                    <Route index path={'my-order'} element={<MyOrderTable />}></Route>
+                    <Route path={'my-voucher'} element={<MyVoucher />}></Route>
+                    <Route path={'my-order/:id'} element={<MyOrderDetail />}></Route>
+                </Route>
+            </Routes>
+        </SaleProvider>
+
     )
 }
 
