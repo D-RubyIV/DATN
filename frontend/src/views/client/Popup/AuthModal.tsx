@@ -34,6 +34,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, setIsModalOpen, onClose }
                     username: response.data.username
                 })
                 onClose()
+                window.location.reload();
             } else {
                 const defaultRoleId = 3
                 const response = await registerApi(defaultRoleId, password, email)

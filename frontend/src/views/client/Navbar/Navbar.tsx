@@ -67,7 +67,7 @@ const Navbar = () => {
         setIsModalOpen(false); // Đóng modal khi đăng xuất
         setDropdownVisible(false);
         setUser(null);
-        navigate("/")
+        window.location.href = "/"
     };
 
 

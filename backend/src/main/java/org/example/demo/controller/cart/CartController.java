@@ -156,6 +156,7 @@ public class CartController {
                     cart.setWardName(defaultAddress.getName());
                     cart.setRecipientName(defaultAddress.getName());
                     cart.setPhone(defaultAddress.getPhone());
+                    cart.setEmail(customerFound.getEmail());
                 } catch (Exception ex) {
                     log.error("SET DIA CHI MAC DINH CHO KHACH HANG XAY RA LOI");
                 }
