@@ -114,6 +114,10 @@ const ProductDetail = () => {
         setCurrentImageIndex(index)
     }
 
+    const removeDuplicates = (array: string[]) => {
+        return [...new Set(array)];
+    };
+
     const defaultImage = "https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"
     // ảnh
 
@@ -135,26 +139,33 @@ const ProductDetail = () => {
         }).format(price)
     }
 
+    useEffect(() => {
+        console.log("selectedColor CODE: " + selectedColor?.code)
+        console.log("selectedColor ID: " + selectedColor?.id)
+    }, [selectedColor])
+
+    useEffect(() => {
+        console.log("selectedSize CODE: " + selectedSize?.code)
+        console.log("selectedSize ID: " + selectedSize?.id)
+    }, [selectedSize])
+
 
     const handleSizeSelect = (size: Size) => {
         setSelectedSize(size)
-        setSelectedColor(null) // Reset color khi chọn size mới
-
-        // Lọc lại danh sách màu sắc dựa trên kích thước đã chọn
-        const filteredColors = listProductDetail
+        const filteredColors = removeDuplicates(listProductDetail
             .filter((item) => item.size.id === size.id)
-            .map((item) => item.color.code)
-        setListColorValid([...new Set(filteredColors)])
+            .map((item) => item.color.code))
+        setListColorValid(filteredColors)
     }
 
     const handleColorSelect = (color: Color) => {
         setSelectedColor(color)
-
-        // Lọc lại danh sách kích thước dựa trên màu đã chọn
-        const filteredSizes = listProductDetail
+        const filteredSizes = removeDuplicates(listProductDetail
             .filter((item) => item.color.id === color.id)
-            .map((item) => item.size.code)
-        setListSizeValid([...new Set(filteredSizes)])
+            .map((item) => item.size.code))
+        setListSizeValid(filteredSizes)
+        console.log(filteredSizes)
+        setSelectedSize(null)
     }
 
 
@@ -185,6 +196,10 @@ const ProductDetail = () => {
                 openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
             }
         })
+    }
+
+    const isDisableSize = ( ) => {
+        console.log("Ok")
     }
 
     return (
@@ -228,7 +243,7 @@ const ProductDetail = () => {
 
                 <div className="col-span-6">
                     <div>
-                        <p className="font-semibold text-2xl text-black">Áo {product?.name}</p>
+                        <p className="font-semibold text-2xl text-black">{product?.name}</p>
                     </div>
                     <div className={'flex flex-col'}>
                         <p>Mã sản phẩm <span
@@ -261,13 +276,13 @@ const ProductDetail = () => {
                                 <button
                                     key={index}
                                     className={`relative hover:bg-gray-200 p-2 aspect-square w-[60px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${selectedColor?.id === item.id ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
-                                    disabled={!listColorValid.includes(item.code) && listColorValid.length > 0}
+                                    // disabled={!listColorValid.includes(item.code) && listColorValid.length > 0}
                                     onClick={() => handleColorSelect(item)}
                                 >
-                                    {item.name}
-                                    <span
-                                        className={`absolute w-[2px] h-full bg-black top-1/2 left-1/2 rotate-45 -translate-x-1/2 -translate-y-1/2 ${!listColorValid.includes(item.code) && listColorValid.length > 0 ? '' : 'hidden'} ${selectedSize?.id === item.id ? 'bg-white' : 'bg-black'}`}>
-                                    </span>
+                                    {item.name} {item.id}
+                                    {/*<span*/}
+                                    {/*    className={`absolute w-[2px] h-full bg-black top-1/2 left-1/2 rotate-45 -translate-x-1/2 -translate-y-1/2 ${!listColorValid.includes(item.code) && listColorValid.length > 0 ? '' : 'hidden'} ${selectedSize?.id === item.id ? 'bg-white' : 'bg-black'}`}>*/}
+                                    {/*</span>*/}
                                 </button>
 
                             ))}
@@ -285,11 +300,10 @@ const ProductDetail = () => {
                                 <button
                                     key={index}
                                     className={`relative hover:bg-gray-200 p-2 aspect-square w-[60px] text-center hover:outline-black outline-offset-4 hover:outline outline-2 border ${selectedSize?.id === item.id ? '!bg-black text-white outline-black outline' : 'border-black border'}`}
-
                                     disabled={!listSizeValid.includes(item.code) && listSizeValid.length > 0}
                                     onClick={() => handleSizeSelect(item)}
                                 >
-                                    {item.name}
+                                    {item.name} {item.id}
                                     <span
                                         className={`absolute w-[2px] h-full bg-black top-1/2 left-1/2 rotate-45 -translate-x-1/2 -translate-y-1/2 ${!listSizeValid.includes(item.code) && listSizeValid.length > 0 ? '' : 'hidden'} ${selectedSize?.id === item.id ? 'bg-white' : 'bg-black'}`}>
                                     </span>
