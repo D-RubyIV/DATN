@@ -136,11 +136,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 
     @Query(value = """
-        SELECT ROUND(sum(ord.subTotal), 0) as revenue,
+        SELECT ROUND(sum( ord.subTotal), 0) as revenue,
         sum(coalesce(detail.quantity, 0)) as quantity,
         CONCAT(DAY(ord.createdDate), '/', MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
         FROM Order ord
-        LEFT JOIN OrderDetail detail ON ord.id = detail.order.id
+         JOIN OrderDetail detail ON ord.id = detail.order.id
         WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
         GROUP BY YEAR(ord.createdDate), MONTH(ord.createdDate), DAY(ord.createdDate)
         ORDER BY YEAR(ord.createdDate), MONTH(ord.createdDate), DAY(ord.createdDate)
@@ -148,11 +148,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<StatisticOverviewSymbol> findAllStatisticByDay(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query(value = """
-        SELECT ROUND(sum(ord.subTotal), 0) as revenue,
+        SELECT ROUND(sum( ord.subTotal), 0) as revenue,
         sum(coalesce(detail.quantity, 0)) as quantity,
         CONCAT(MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
         FROM Order ord
-        LEFT JOIN OrderDetail detail ON ord.id = detail.order.id
+         JOIN OrderDetail detail ON ord.id = detail.order.id
         WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
         GROUP BY YEAR(ord.createdDate), MONTH(ord.createdDate)
         ORDER BY YEAR(ord.createdDate), MONTH(ord.createdDate)
@@ -160,11 +160,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<StatisticOverviewSymbol> findAllStatisticByMonth(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query(value = """
-        SELECT ROUND(sum(ord.subTotal), 0) as revenue,
+        SELECT ROUND(sum( ord.subTotal), 0) as revenue,
         sum(coalesce(detail.quantity, 0)) as quantity,
         YEAR(ord.createdDate) as symbol
         FROM Order ord
-        LEFT JOIN OrderDetail detail ON ord.id = detail.order.id
+         JOIN OrderDetail detail ON ord.id = detail.order.id
         WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
         GROUP BY YEAR(ord.createdDate)
         ORDER BY YEAR(ord.createdDate)

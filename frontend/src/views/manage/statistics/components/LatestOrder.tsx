@@ -153,6 +153,13 @@ const columns = [
             return <span>{row.customerName ?? 'Khách lẻ'}</span>
         }
     }),
+    columnHelper.accessor('subTotal', {
+        header: 'Doanh số',
+        cell: (props) => {
+            const row = props.row.original
+            return <span>{(Math.round(row.subTotal * 100) / 100).toFixed(0) + "đ"}</span>
+        }
+    }),
     columnHelper.accessor('total', {
         header: 'Thành tiền',
         cell: (props) => {
