@@ -32,7 +32,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>5</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -205,7 +205,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>5</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -378,7 +378,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>5</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -551,7 +551,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>5</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -724,7 +724,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>5</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -856,7 +856,7 @@
             <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
             <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
             <MinDate>2024-11-11T00:00:00</MinDate>
-            <MaxDate>2024-11-30T00:00:00</MaxDate>
+            <MaxDate>2025-11-19T00:00:00+07:00</MaxDate>
             <IsRandomizeDate>true</IsRandomizeDate>
             <IsRandomizeTime>true</IsRandomizeTime>
             <MinFraction>0</MinFraction>
@@ -894,7 +894,7 @@
             <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
             <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
             <MinDate>1970-01-01T00:00:00</MinDate>
-            <MaxDate>2024-11-10T00:00:00</MaxDate>
+            <MaxDate>2025-11-10T00:00:00</MaxDate>
             <IsRandomizeDate>true</IsRandomizeDate>
             <IsRandomizeTime>true</IsRandomizeTime>
             <MinFraction>0</MinFraction>
@@ -1173,7 +1173,7 @@
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>28</SeedValue>
             <IsLoop>true</IsLoop>
-            <Unique>false</Unique>
+            <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <FileName>D:\imageLink.txt</FileName>
             <TrimLeft>false</TrimLeft>
@@ -1194,7 +1194,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>5</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -1367,7 +1367,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>5</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -1732,7 +1732,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -2042,7 +2042,7 @@
             <SeedValue>65</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>S|M|L|XL|2XL|3XL|4XL|5XL</Expression>
+            <Expression>S|M|XL|2XL|3XL|4XL|5XL</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2751,7 +2751,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>2</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -2812,7 +2812,7 @@
             <SeedValue>85</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>5|10|15|20|30</Expression>
+            <Expression>5|10</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>Reg Exp</GeneratorName>
@@ -2828,18 +2828,17 @@
             <NullProportion>10</NullProportion>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:int">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>65</SeedValue>
-            <MinValue>100000</MinValue>
-            <MaxValue>1000000</MaxValue>
+            <Increment xsi:type="xsd:decimal">50000</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
+            <SeedValue>82</SeedValue>
+            <MinValue>50000</MinValue>
+            <MaxValue>100000</MaxValue>
             <UseDefault>false</UseDefault>
             <DefaultValue />
           </GeneratorOptions>
           <GeneratorType>SqlIntegerGenerator</GeneratorType>
-          <GeneratorName>Product Quantity</GeneratorName>
-          <GeneratorDescription>9, 24, 89, 35, ...</GeneratorDescription>
-          <GeneratorCategory>Product</GeneratorCategory>
+          <GeneratorName>int</GeneratorName>
+          <GeneratorDescription>fill with 32-bit signed integer values</GeneratorDescription>
           <Length>4</Length>
           <Precision>10</Precision>
         </Column>
@@ -3049,7 +3048,7 @@
             <SeedValue>85</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Giảm giá 30% tối đa 100k|Giảm giá 20% tối đa 50k|Giảm giá 15% tối đa 30k|Giảm giá 10% tối đa 20k</Expression>
+            <Expression>Giảm giá 5% đơn tối thiểu 50k|Giảm giá 10% đơn tối thiểu 100k</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -3103,7 +3102,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -3861,7 +3860,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -4195,7 +4194,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -4614,7 +4613,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -5169,7 +5168,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -5851,7 +5850,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -6185,7 +6184,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -6450,7 +6449,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -6648,7 +6647,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -6937,7 +6936,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>1</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>

@@ -299,7 +299,7 @@ const RootLayout = () => {
             }
             <Route path="/auth/*" element={<SecurityLayout />} />
             <Route path="/*" element={<PublicLayout />} />
-            <Route path={"me"} element={<Me></Me>}>
+            <Route path={"/me"} element={<Me></Me>}>
                 <Route index path={"my-order"} element={<MyOrderTable/>}></Route>
                 <Route path={"my-order/:id"} element={<MyOrderDetail/>}></Route>
             </Route>

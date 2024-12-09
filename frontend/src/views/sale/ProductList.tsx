@@ -61,7 +61,7 @@ const ProductList = () => {
     const handlePageChange = (newPage: number) => {
         setCurrentPage(newPage)
     }
-    const [currentPage, setCurrentPage] = useState<number>(0)
+    const [currentPage, setCurrentPage] = useState<number>(1)
     const [totalElement, setTotalElement] = useState(0)
 
     const [listProduct, setListProduct] = useState<Product[]>([])
@@ -85,7 +85,7 @@ const ProductList = () => {
     // Hùng
 
     const initDataProduct = async () => {
-        const response = await instance.get(`/productDetails/abc?colorCodes=${param.colorCodes}&sizeCodes=${param.sizeCodes}&minPrice=${param.minPrice}&maxPrice=${param.maxPrice}&page=${currentPage}&size=${pageSize}`)
+        const response = await instance.get(`/productDetails/abc?colorCodes=${param.colorCodes}&sizeCodes=${param.sizeCodes}&minPrice=${param.minPrice}&maxPrice=${param.maxPrice}&page=${currentPage-1}&size=${pageSize}`)
         setListProduct(response?.data?.content)
         setTotalElement(response?.data?.totalElements)
     }
@@ -388,7 +388,7 @@ const ProductList = () => {
             </div>
             <div className="flex items-center justify-center pb-10">
                 <Pagination
-                    currentPage={currentPage + 1} // Trực tiếp sử dụng currentPage mà không cần +1
+                    currentPage={currentPage}
                     pageSize={pageSize}
                     total={totalElement}
                     onChange={handlePageChange}

@@ -174,7 +174,7 @@ public class CartController {
     public ResponseEntity<?> checkCartActive(@PathVariable Integer id) {
         Cart cart = cartRepository.findByIdAndDeleted(id, false);
         Account account = AuthUtil.getAccount();
-        if (account != null) {
+        if (account != null && cart != null) {
             Customer customer = account.getCustomer();
             if (customer != null) {
                 cart.setCustomer(customer);
