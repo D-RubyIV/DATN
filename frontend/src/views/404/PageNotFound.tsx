@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./hiddennavbarfooter.css"
+// import "./hiddennavbarfooter.css"
 const PageNotFound = () => {
     const navigate = useNavigate();
 

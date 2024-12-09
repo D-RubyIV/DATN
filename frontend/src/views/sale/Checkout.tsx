@@ -635,7 +635,7 @@ const Checkout = () => {
     }
 
     return (
-        <div className="bg-white min-h-full ">
+        <div className="bg-white ">
             {
                 isOpenSelectAddressModal && (
                     <div className={'fixed top-0 left-0 bg-gray-500 bg-opacity-30 w-screen h-screen z-[40]'}>
@@ -661,15 +661,12 @@ const Checkout = () => {
                     </div>
                 )
             }
-            <div className={'2xl:px-40 px-10 h-full'}>
-                <form className={'p-20  grid grid-cols-12 gap-12 h-full'}>
+            <div className={'px-[2%] h-full'}>
+                <form className={'py-10 grid grid-cols-12 gap-12 h-full'}>
                     {/*BLOCK 1*/}
                     <div className={'order-2 md:order-1 h-full col-span-8 flex flex-col justify-start '}>
                         <Fragment>
                             <div className={'flex gap-1 justify-start items-center'}>
-                                <div className={'-ml-4'}>
-                                    <Logo style={{ width: 600 }}></Logo>
-                                </div>
                                 <div className="text-black font-semibold text-xl">
                                     Xin chào {user?.username || 'quý khách'}
                                 </div>
@@ -853,13 +850,13 @@ const Checkout = () => {
 
                     {/*BLOCK 2*/}
                     {/* BLOCK 2 */}
-                    <div className="order-1 md:order-2 h-full col-span-4 mt-20">
+                    <div className="order-1 md:order-2 h-full col-span-4">
                         <div className="grid">
                             <div
                                 className="dark:text-gray-500 bg-white flex flex-col justify-between ">
                                 <div className={'overflow-y-auto'}>
                                     {/* CENTER */}
-                                    <div className="px-2">
+                                    <div className="px-2 max-h-[800px]">
                                         {Array.isArray(listCartDetailResponseDTO) && listCartDetailResponseDTO.length > 0 ? (
                                             listCartDetailResponseDTO.map((item, index) => (
                                                 <Fragment key={index}>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-import './hiddennavbarfooter.css'
 import { Navigate, useNavigate } from "react-router-dom";
 
 

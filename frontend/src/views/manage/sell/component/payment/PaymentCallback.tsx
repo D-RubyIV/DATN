@@ -3,8 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { Loading } from '@/components/shared'
 import { Button } from '@/components/ui'
 import instance from '@/axios/CustomAxios'
-import './hiddennavbarfooter.css'
 import StatusOrderFormat from '@/views/util/StatusOrderFormat'
+import Logo from '@/components/template/Logo'
 
 type OrderResponseDTO = {
     id: number;
@@ -130,10 +130,9 @@ const PaymentCallback = () => {
     return (
         <Loading loading={isLoading} type={'cover'}>
             <div className="p-8 w-full text-center flex flex-col items-center justify-center h-svh">
-
                 <div className="shadow-md bg-white rounded-md p-10 text-sm">
-                    <div>
-                        <p className={'text-3xl text-shadow-ms font-semibold text-black mb-10'}>CANTH</p>
+                    <div className={'flex justify-center'}>
+                        <Logo/>
                     </div>
                     {
                         response_status_code === '00' ? (
@@ -148,7 +147,7 @@ const PaymentCallback = () => {
                                     }}>
                                         Quay về trang chủ
                                     </Button>
-                                    <Link to={`/user/purchase/${(selectedOrder as OrderResponseDTO)?.code}`}>
+                                    <Link to={`/me/my-order/${(selectedOrder as OrderResponseDTO)?.id}`}>
                                         <Button className={''} variant="default">
                                             Xem chi tiết đơn hàng
                                         </Button>
@@ -159,20 +158,14 @@ const PaymentCallback = () => {
                         ) : response_status_code === '24' ?
                             (
                                 <div>
-                                    <h1 className="text-2xl font-bold text-indigo-600 mb-4">Quý khách đã hủy giao
+                                    <h1 className="text-2xl font-bold text-gray-600 mb-4 min-w-[500px]">Quý khách đã hủy giao
                                         dịch</h1>
-                                    <InfoOrder selectedOrder={(selectedOrder as OrderResponseDTO)}></InfoOrder>
                                     <div className={'py-6 flex gap-10 items-center justify-center'}>
-                                        <Button className={''} variant="solid" onClick={() => {
+                                        <Button className={''} onClick={() => {
                                             window.location.href = "/"
                                         }}>
                                             Quay về trang chủ
                                         </Button>
-                                        <Link to={`/user/purchase/${(selectedOrder as OrderResponseDTO)?.code}`}>
-                                            <Button className={''} variant="default">
-                                                Xem chi tiết đơn hàng
-                                            </Button>
-                                        </Link>
                                     </div>
                                 </div>
                             )

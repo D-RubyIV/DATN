@@ -1014,16 +1014,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Transactional
-    public Order handle_cancel_payment_online_order(Integer id){
+    public void handle_cancel_payment_online_order(Integer id){
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
-
-        Status oldStatus = order.getStatus();
-        if(oldStatus != Status.CANCELED){
-            order.setStatus(Status.CANCELED);
-            historyService.createNewHistoryObject(order, Status.CANCELED, "Khách hàng hủy giao dịch");
-            return orderRepository.save(order);
-        }
-        return order;
+        orderRepository.delete(order);
     }
 
     @Transactional

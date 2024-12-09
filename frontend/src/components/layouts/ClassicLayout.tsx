@@ -30,6 +30,8 @@ import { MyOrderTable } from '@/views/sale/profile/order/MyOrderTable'
 import MyOrderDetail from '@/views/sale/profile/order/MyOrderDetail'
 import MyVoucher from '@/views/sale/profile/voucher/MyVoucher'
 import LandingPage from '@/views/client/LandingPage'
+import PaymentCallback from '@/views/manage/sell/component/payment/PaymentCallback'
+import ResetPassword from '@/views/sale/ResetPassword'
 
 type OrderDTO = {
     id: number;
@@ -302,6 +304,9 @@ const RootLayout = () => {
                 <Route path="/auth/*" element={<SecurityLayout />} />
                 <Route path="/*" element={<PublicLayout />} />
                 <Route path="/" element={<LandingPage/>} />
+                <Route path="/" element={<LandingPage/>} />
+                <Route path="/payment/callback" element={<PaymentCallback/>} />
+                <Route path="/private/reset-password" element={<ResetPassword/>} />
                 <Route path={'/me'} element={<Me></Me>}>
                     <Route index path={'my-order'} element={<MyOrderTable />}></Route>
                     <Route path={'my-voucher'} element={<MyVoucher />}></Route>

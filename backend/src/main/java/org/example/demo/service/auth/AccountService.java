@@ -34,6 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,9 +84,9 @@ public class AccountService {
         }
         Role role = roleRepository.findById(accountRequestDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS)));
-        if(role.getName().toUpperCase().equalsIgnoreCase(Role.ADMIN)) {
-            throw new PermissionDenyException("Không được phép đăng ký tài khoản Admin");
-        }
+//        if(role.getName().toUpperCase().equalsIgnoreCase(Role.ADMIN)) {
+//            throw new PermissionDenyException("Không được phép đăng ký tài khoản Admin");
+//        }
         Account account = Account.builder()
                 .username(email)
                 .password(accountRequestDTO.getPassword() != null ? passwordEncoder.encode(accountRequestDTO.getPassword()) : null)
@@ -95,10 +96,12 @@ public class AccountService {
                 .status("Active")
                 .build();
 
-        if (roleFound.getCode().equalsIgnoreCase("ROLE_STAFF")) {
+        if (roleFound.getCode().equalsIgnoreCase("ROLE_STAFF") || roleFound.getCode().equalsIgnoreCase("ROLE_ADMIN")) {
             Staff staff = new Staff();
             staff.setEmail(email);
             staff.setAccount(account);
+            staff.setGender(true);
+            staff.setBirthDay(LocalDate.now().minusYears(20));
             account.setStaff(staff);
             staffRepository.save(staff);
         } else {

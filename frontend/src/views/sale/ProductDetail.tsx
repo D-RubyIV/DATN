@@ -189,7 +189,7 @@ const ProductDetail = () => {
 
     return (
 
-        <div className='px-28 mt-10'>
+        <div className='px-[2%] mt-10'>
             <div className="flex justify-start gap-10 mb-5">
                 <div className="col-span-6 border border-black p-10">
 

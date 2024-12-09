@@ -40,7 +40,7 @@ const CheckOrderView = () => {
         <Fragment>
             {/* Wrapper with background */}
             <div
-                className="relative flex flex-col items-center justify-center h-screen"
+                className="relative flex flex-col items-center justify-center min-h-[600px]"
             >
                 {/* Main Background */}
                 <div className="absolute top-0 left-0 w-full h-full -z-10">
@@ -52,7 +52,7 @@ const CheckOrderView = () => {
                 </div>
                 {/* Nội dung chính */}
                 <div className="z-10 flex flex-col items-center gap-10">
-                    <h3 className="text-8xl font-extrabold text-gray-800 mb-10 tracking-wide drop-shadow-lg text-center uppercase">
+                    <h3 className="text-xl font-extrabold text-gray-800 mb-10 tracking-wide drop-shadow-lg text-center uppercase">
                         Tìm kiếm đơn hàng của bạn
                     </h3>
                     <Formik

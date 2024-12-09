@@ -29,7 +29,7 @@ const Me = () => {
         <Fragment>
             <CartDrawer></CartDrawer>
             <Navbar></Navbar>
-            <div className={'grid grid-cols-12 w-full h-svh p-5 min-h-[600px] px-[8%] gap-2'}>
+            <div className={'grid grid-cols-12 w-full h-svh p-5 min-h-[600px] px-[2%] gap-2'}>
                 <div className={'col-span-2 bg-white'}>
                     {menu.map((item, index) => (
                         <div key={index} className={'p-2 hover:bg-gray-300 '}>

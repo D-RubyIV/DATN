@@ -22,7 +22,7 @@ function LandingPage() {
     const [isOpenMenuSearch, setIsOpenMenuSearch] = useState<boolean>(false)
 
     const Display: React.FC<{ title: string }> = ({ title }) => (
-        <div className="absolute bottom-[23%] left-[2%] font-poppins text-white">
+        <div className="absolute bottom-[13%] left-[2%] font-poppins text-white">
             <div className="max-w-[600px]">
                 <h2 className="text-[30px] md:text-pretty unica-one-regular text-white text-shadow-sm">{title}</h2>
             </div>

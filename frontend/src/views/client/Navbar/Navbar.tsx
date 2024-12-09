@@ -5,6 +5,8 @@ import { HiOutlineMenu, HiOutlineShoppingBag, HiUser, HiUserCircle } from 'react
 import AuthModal from '../Popup/AuthModal'
 import { useAuthContext } from '../auth/AuthContext'
 import { Link } from 'react-router-dom'
+import Logo from '@/components/template/Logo'
+import CartDrawer from '@/views/sale/CartDrawer'
 
 
 const Menu = [
@@ -20,7 +22,7 @@ const Menu = [
     },
     {
         id: 3,
-        name: 'Sản phẩm mới',
+        name: 'Tra cứu đơn hàng',
         link: '/check-order'
     },
     {
@@ -89,14 +91,15 @@ const Navbar = ({ isLandingPage = false }: { isLandingPage?: boolean }) => {
 
     return (
         <div
-            className={` top-0 duration-200 w-full z-40 ${isLandingPage ? '!bg-black !bg-opacity-0 fixed !text-white' : 'relative text-black shadow'}`}>
+            className={` top-0 duration-200 w-full z-30 ${isLandingPage ? '!bg-black !bg-opacity-0 fixed !text-white' : 'relative text-black shadow'}`}>
             {/* upper Navbar */}
+            <CartDrawer></CartDrawer>
             <div className=" py-8">
                 <div className="px-[2%] flex justify-between items-center">
                     <div>
                         <a href="/"
                            className={`md:text-4xl sm:text-3xl flex gap-2  dark:text-white font-hm font-bold  text-shadow-sm ${isLandingPage ? 'text-white' : 'text-black'}`}>
-                            CANTH
+                            <Logo/>
                         </a>
                     </div>
 

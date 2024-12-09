@@ -9,12 +9,12 @@ const publicRoute: Routes = [
         component: lazy(() => import('@/views/404/PageNotFound')),
         authority: []
     },
-    {
-        key: 'private',
-        path: `/private/reset-password`,
-        component: lazy(() => import('@/views/sale/ResetPassword')),
-        authority: []
-    },
+    // {
+    //     key: 'private',
+    //     path: `/private/reset-password`,
+    //     component: lazy(() => import('@/views/sale/ResetPassword')),
+    //     authority: []
+    // },
     // {
     //     key: 'private',
     //     path: `/client/forgot-password`,
@@ -107,15 +107,6 @@ const publicRoute: Routes = [
         path: '/checkout/:id',
         component: lazy(() => import('@/views/sale/Checkout')),
         authority: []
-    },
-    {
-        key: 'payment',
-        path: `/payment/callback`,
-        component: lazy(
-            () =>
-                import('@/views/manage/sell/component/payment/PaymentCallback'),
-        ),
-        authority: [],
     },
     {
         key: 'profile',
