@@ -34,11 +34,20 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
     @Query("""
             SELECT pd FROM ProductDetail pd
-            JOIN FETCH pd.size pds
-            JOIN FETCH pd.color pdc
             WHERE pd.deleted = false
-            AND pds.deleted = false
-            AND pdc.deleted = false
+            AND pd.size.deleted = false
+            AND pd.color.deleted = false
+            AND pd.collar.deleted = false
+            AND pd.elasticity.deleted = false
+            AND pd.material.deleted = false
+            AND pd.brand.deleted = false
+            AND pd.origin.deleted = false
+            AND pd.sleeve.deleted = false
+            AND pd.product.deleted = false
+            AND pd.thickness.deleted = false
+            AND pd.style.deleted = false
+            AND pd.texture.deleted = false
+            AND pd.product.id = :id
             """)
     List<ProductDetail> findAllByProductId(Integer id);
 
