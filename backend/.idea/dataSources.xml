@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="final1@localhost" uuid="b442e581-a7ce-4659-8e79-ce951eae8a4a">
+    <data-source source="LOCAL" name="final@localhost [3]" uuid="b442e581-a7ce-4659-8e79-ce951eae8a4a">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>

@@ -1,6 +1,6 @@
 import React, { ChangeEvent, Fragment, useEffect, useState } from 'react'
 import { Badge, Button, Card, Input, Radio, Select } from '@/components/ui'
-import { IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
+import { AddressResponse, IAddress, IDistrict, IProvince, IWard } from '@/@types/address'
 import { fetchFindAllDistricts, fetchFindAllProvinces, fetchFindAllWards } from '@/services/AddressService'
 import { EPaymentMethod } from '@/views/manage/sell'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -17,6 +17,7 @@ import Logo from '@/components/template/Logo'
 import { HiUserCircle } from 'react-icons/hi'
 import { useAuthContext } from '@/views/client/auth/AuthContext'
 import './hiddennavbarfooter.css'
+import CloseButton from '@/components/ui/CloseButton'
 
 export interface Image {
     id: number;
@@ -190,7 +191,7 @@ const Checkout = () => {
     const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false)
     const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null)
     const [amount, setAmount] = useState<number>(100000)
-
+    const [isOpenSelectAddressModal, setIsOpenSelectAddressModal] = useState<boolean>(false)
     const { callHaveNewOrder } = useWSContext()
 
 
@@ -311,7 +312,7 @@ const Checkout = () => {
             }
         }).catch(function(error) {
             console.log(error)
-            openNotification(error.response.data.error, "Thông báo", "warning", 5000)
+            openNotification(error.response.data.error, 'Thông báo', 'warning', 5000)
         })
     }
 
@@ -550,8 +551,114 @@ const Checkout = () => {
         )
     }
 
+    const MyAddressModal = () => {
+        const [myAddress, setMyAddress] = useState<AddressResponse[]>([])
+        const [selectedAddressId, setSelectedAddressId] = useState<string>('')
+
+        const getMyAddress = async () => {
+            instance.get('/address/my-address').then(function(response) {
+                console.log(response)
+                if (response.status === 200) {
+                    console.log('MY ADDRESS')
+                    console.log(response.data)
+                    setMyAddress(response.data)
+                }
+            })
+        }
+        useEffect(() => {
+            getMyAddress()
+        }, [])
+
+        useEffect(() => {
+            const defaultAddress = myAddress.find(s => s.isDefault)
+            if (defaultAddress) {
+                console.log('DEFALUT ADDRESS ID', defaultAddress?.id)
+                setSelectedAddressId(defaultAddress?.id.toString())
+            }
+        }, [myAddress])
+
+        const updateCartAddress = async () => {
+            if (selectedAddressId) {
+                await instance.get(`/cart/edit-my-address/${id}?addressId=${selectedAddressId}`).then(function(response) {
+                    if (response.status === 200) {
+                        openNotification('Cập nhật thành công')
+                        getDetailAboutCart()
+                        setIsOpenSelectAddressModal(false)
+                    }
+                })
+            }
+        }
+        return (
+            <div>
+                <Radio.Group
+                    vertical
+                    value={getValuesFormRecipient('address') + getValuesFormRecipient('phone').toString() + getValuesFormRecipient('recipientName')}
+                    className={'w-full'}
+                >
+                    {myAddress.map((item, index) => (
+                        <Radio
+                            key={index}
+                            value={item.detail + item.phone + item.name}
+                            onClick={() => setSelectedAddressId(item.id.toString())}
+                        >
+                            <div>
+                                <div>
+                                    <span className={'text-black'}>{item.name}</span>
+                                    | {item.phone}
+                                </div>
+                                <div>
+                                    {item.detail}, {item.ward}, {item.district}, {item.province}
+                                </div>
+                                <div>
+                                    {
+                                        item.isDefault && (
+                                            <p className={'text-[12px] text-blue-600 py-1'}>
+                                                Địa chỉ mặc định
+                                            </p>
+                                        )
+                                    }
+
+                                </div>
+                            </div>
+                        </Radio>
+                    ))}
+                </Radio.Group>
+                <div className={'flex justify-end gap-2'}>
+                    <Button size={'sm'} onClick={updateCartAddress}>
+                        Xác nhận
+                    </Button>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="bg-white min-h-full ">
+            {
+                isOpenSelectAddressModal && (
+                    <div className={'fixed top-0 left-0 bg-gray-500 bg-opacity-30 w-screen h-screen z-[40]'}>
+                        <div
+                            className={'fixed top-1/2 left-1/2 w-3/6 bg-white -translate-x-1/2 -translate-y-1/2 z-50 shadow-2xl rounded'}>
+                            <div className={'p-5'}>
+                                <div className={'flex justify-between'}>
+                                    <div>
+                                        <p className={'font-semibold text-[16px] text-black'}>Địa chỉ của tôi</p>
+                                    </div>
+                                    <div>
+                                        <CloseButton
+                                            className={'text-xl'}
+                                            onClick={() => setIsOpenSelectAddressModal(false)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={'p-3'}>
+                                    <MyAddressModal />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
             <div className={'2xl:px-40 px-10 h-full'}>
                 <form className={'p-20  grid grid-cols-12 gap-12 h-full'}>
                     {/*BLOCK 1*/}
@@ -571,8 +678,19 @@ const Checkout = () => {
                                     <div>
                                         <Breadcrumb />
                                     </div>
-                                    <div className={'text-black font-semibold text-xl'}>
-                                        <p>Thông tin giao hàng</p>
+                                    <div className={'flex justify-between items-center'}>
+                                        <div className={'text-black font-semibold text-xl'}>
+                                            <p>Thông tin giao hàng</p>
+                                        </div>
+                                        <div>
+                                            <button
+                                                type={'button'}
+                                                className={'p-2 border border-gray-300'}
+                                                onClick={() => setIsOpenSelectAddressModal(true)}
+                                            >
+                                                Chọn địa chỉ
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className={'grid 2xl:grid-cols-3 xl:grid-cols-1 gap-4'}>

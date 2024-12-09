@@ -2,7 +2,6 @@ package org.example.demo.controller.customer;
 
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.customer.AddressDTO;
-import org.example.demo.entity.human.customer.Address;
 import org.example.demo.service.customer.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,5 +49,10 @@ public class AddressController {
     public ResponseEntity<Void> delete(@PathVariable int id) throws BadRequestException {
         addressService.deleteAddress(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/my-address")
+    public ResponseEntity<?> getMyAddress(){
+        return ResponseEntity.ok(addressService.getMyAddressDTO());
     }
 }

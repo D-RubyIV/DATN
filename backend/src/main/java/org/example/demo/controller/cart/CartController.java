@@ -2,6 +2,7 @@ package org.example.demo.controller.cart;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.math3.analysis.function.Add;
 import org.example.demo.dto.cart.request.CartRequestDTO;
 import org.example.demo.dto.cart.request.CartRequestDTOV2;
 import org.example.demo.dto.cart.request.UseCartVoucherDTO;
@@ -21,6 +22,8 @@ import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.cart.CartService;
 import org.example.demo.service.cart.CartServiceV2;
+import org.example.demo.service.customer.AddressService;
+import org.example.demo.service.customer.CustomerService;
 import org.example.demo.service.fee.FeeService;
 import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.auth.AuthUtil;
@@ -30,7 +33,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author PHAH04
@@ -64,6 +70,12 @@ public class CartController {
 
     @Autowired
     private CustomerRepository customerRepository;
+
+    @Autowired
+    private AddressService addressService;
+
+    @Autowired
+    private CustomerService customerService;
 
     @GetMapping("/{idCustomer}")
     public List<CartResponseDTO> getListCart(@PathVariable Integer idCustomer) {
@@ -160,6 +172,33 @@ public class CartController {
     @GetMapping("check-cart-active/{id}")
     public ResponseEntity<?> checkCartActive(@PathVariable Integer id) {
         Cart cart = cartRepository.findByIdAndDeleted(id, false);
+        Account account = AuthUtil.getAccount();
+        if (account != null) {
+            Customer customer = account.getCustomer();
+            if (customer != null) {
+                cart.setCustomer(customer);
+                log.info("CUSTOMER: " + customer.getEmail());
+                Address defaultAddress = getDefaultAddress(customer.getId());
+                if (defaultAddress != null) {
+                    log.info("CÓ ĐỊA CHỈ MẶC ĐỊNH");
+                    try {
+                        cart.setAddress(defaultAddress.getDetail());
+                        cart.setDistrictId(Integer.valueOf(defaultAddress.getDistrictId()));
+                        cart.setProvinceId(Integer.valueOf(defaultAddress.getProvinceId()));
+                        cart.setWardId(defaultAddress.getWardId());
+                        cart.setProvinceName(defaultAddress.getProvince());
+                        cart.setDistrictName(defaultAddress.getDistrict());
+                        cart.setWardName(defaultAddress.getName());
+                        cart.setRecipientName(defaultAddress.getName());
+                        cart.setPhone(defaultAddress.getPhone());
+                    } catch (Exception ex) {
+                        log.error("SET DIA CHI MAC DINH CHO KHACH HANG XAY RA LOI");
+                    }
+                } else {
+                    log.info("KHÔNG CÓ ĐỊA CHỈ MẶC ĐỊNH");
+                }
+            }
+        }
         if (cart == null) {
             throw new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng");
         } else {
@@ -195,6 +234,37 @@ public class CartController {
         cartFound = cartRepository.save(cartFound);
         cartServiceV2.reloadSubTotalOrder(cartFound);
         return ResponseEntity.ok(cartResponseMapper.toDTO(cartFound));
+    }
+
+    @GetMapping("/edit-my-address/{cartId}")
+    public ResponseEntity<?> updateMyAddress(@PathVariable Integer cartId, @RequestParam(value = "addressId") Integer addressId) {
+        log.info("CART ID"+ cartId);
+        log.info("ADDRESS ID"+ addressId);
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Cart not found"));
+        List<Address> list = new ArrayList<>();
+        Account account = AuthUtil.getAccount();
+        if (account != null) {
+            Customer customer = account.getCustomer();
+            if (customer != null) {
+                list = addressService.getMyAddress();
+                Optional<Address> addressFound = list.stream().filter(s -> Objects.equals(s.getId(), addressId)).findFirst();
+                if (addressFound.isPresent()) {
+                    Address selectedAddress = addressFound.get();
+                    cart.setAddress(selectedAddress.getDetail());
+                    cart.setDistrictName(selectedAddress.getDistrict());
+                    cart.setDistrictId(Integer.valueOf(selectedAddress.getDistrictId()));
+                    cart.setProvinceName(selectedAddress.getProvince());
+                    cart.setProvinceId(Integer.valueOf(selectedAddress.getProvinceId()));
+                    cart.setWardName(selectedAddress.getWard());
+                    cart.setWardId(selectedAddress.getWardId());
+                    cart.setRecipientName(selectedAddress.getName());
+                    cart.setPhone(selectedAddress.getPhone());
+                    cart.setEmail(customer.getEmail());
+                    cartRepository.save(cart);
+                }
+            }
+        }
+        return ResponseEntity.ok("Ok");
     }
 }
 

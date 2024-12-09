@@ -4,8 +4,11 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.customer.AddressDTO;
 import org.example.demo.dto.customer.CustomerMapper;
 import org.example.demo.entity.human.customer.Address;
+import org.example.demo.entity.human.customer.Customer;
+import org.example.demo.entity.security.Account;
 import org.example.demo.repository.customer.AddressRepository;
 import org.example.demo.service.customer.AddressService;
+import org.example.demo.util.auth.AuthUtil;
 import org.example.demo.validator.AddressValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,5 +68,24 @@ public class AddressServiceImpl implements AddressService {
         }
 
         addressRepository.delete(address);
+    }
+
+    @Override
+    public List<AddressDTO> getMyAddressDTO() {
+        List<Address> list = getMyAddress();
+        return list.stream().map(CustomerMapper::toAddressDTO).toList();
+    }
+
+    @Override
+    public List<Address> getMyAddress() {
+        List<Address> list = new ArrayList<>();
+        Account account = AuthUtil.getAccount();
+        if (account != null){
+            Customer customer = account.getCustomer();
+            if(customer != null){
+                list = addressRepository.findByCustomerId(customer.getId());
+            }
+        }
+        return list;
     }
 }

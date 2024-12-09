@@ -22,3 +22,17 @@ export interface IAddress {
     iward?: IWard,
     address?: string
 }
+export type AddressResponse = {
+    id: number;
+    name: string;
+    phone: string;
+    provinceId: number;
+    province: string;
+    districtId: number;
+    district: string;
+    wardId: string;
+    ward: string;
+    detail: string;
+    isDefault: boolean;
+    createdDate: string; // Use `string` if the date is in ISO format, or `Date` if parsed
+};

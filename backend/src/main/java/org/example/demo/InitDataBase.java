@@ -4,11 +4,13 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import org.example.demo.dto.auth.request.AccountRequestDTO;
 import org.example.demo.dto.staff.request.StaffRequestDTO;
+import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.security.Account;
 import org.example.demo.exception.DataNotFoundException;
 import org.example.demo.exception.PermissionDenyException;
+import org.example.demo.repository.customer.AddressRepository;
 import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.repository.security.RoleRepository;
 import org.example.demo.repository.staff.StaffRepository;
@@ -27,6 +29,8 @@ public class InitDataBase {
     private RoleRepository roleRepository;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Transactional
     @PostConstruct
@@ -61,6 +65,23 @@ public class InitDataBase {
         if (accountRepository.findByUsername("user@gmail.com").isEmpty()){
             AccountRequestDTO account = new AccountRequestDTO();
             account.setUsername("user@gmail.com");
+            account.setPassword("123456");
+            account.setEnabled(true);
+            account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
+            accountService.createAccount(account);
+        }
+        if (accountRepository.findByUsername("phah04@gmail.com").isEmpty()){
+            AccountRequestDTO account = new AccountRequestDTO();
+            account.setUsername("phah04@gmail.com");
+            account.setPassword("123456");
+            account.setEnabled(true);
+            account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
+            accountService.createAccount(account);
+        }
+
+        if (accountRepository.findByUsername("haanhhy01f@gmail.com").isEmpty()){
+            AccountRequestDTO account = new AccountRequestDTO();
+            account.setUsername("haanhhy01f@gmail.com");
             account.setPassword("123456");
             account.setEnabled(true);
             account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
