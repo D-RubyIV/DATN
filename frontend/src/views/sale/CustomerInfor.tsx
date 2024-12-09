@@ -13,6 +13,7 @@ import { Pagination } from 'antd';
 import Dialog from '@/components/ui/Dialog'
 
 
+
 type CustomerDTO = {
   id: string;
   code: string;
@@ -610,7 +611,6 @@ const CustomerInfor = () => {
 
   return (
     <div>
-
       <Formik
         initialValues={updateCustomer}
         validationSchema={validationSchema}
@@ -620,6 +620,7 @@ const CustomerInfor = () => {
         {({ values, setFieldValue, touched, errors, resetForm, isSubmitting, setFieldTouched }) => (
           <Form>
             <div className='w-full bg-white p-6 shadow-md rounded-lg'>
+              <h1 className="text-center font-semibold text-2xl mb-4 uppercase">Cập nhật khách hàng</h1>
               <div className="flex flex-col lg:flex-row gap-4">
                 <div className="w-full lg:w-1/3 bg-white p-6 shadow-md rounded-lg">
                   <h4 className="font-medium text-xl mb-4">Thông tin khách hàng</h4>
@@ -731,7 +732,8 @@ const CustomerInfor = () => {
                 </div>
 
                 <div className="w-full lg:w-2/3 bg-white p-6 shadow-md rounded-lg">
-                  <h4 className="font-medium text-xl"> Địa chỉ</h4>
+
+                  <h4 className="font-medium text-xl">Thông tin địa chỉ</h4>
                   <FieldArray name="addressDTOS">
                     {({ remove, unshift }) => (
                       <div>
@@ -787,7 +789,6 @@ const CustomerInfor = () => {
                                       style={{ height: '44px' }}
                                       placeholder="Nhập số điện thoại..."
                                       component={Input}
-
                                     />
                                   </FormItem>
                                 </div>
@@ -811,7 +812,7 @@ const CustomerInfor = () => {
 
                                         return (
                                           <Select
-                                            value={provinces.find(prov => prov.NameExtension[1] === field.value) || null}
+                                            value={provinces.find(prov => prov.NameExtension[1] === field.value)}
                                             placeholder="Chọn tỉnh/thành phố..."
                                             getOptionLabel={(option: Province) => option.NameExtension[1]}
                                             getOptionValue={(option: Province) => String(option.ProvinceID)}
@@ -844,7 +845,7 @@ const CustomerInfor = () => {
                                         return (
                                           <Select
                                             isDisabled={!address.province}
-                                            value={districts.find(prov => prov.DistrictName === field.value) || null}
+                                            value={districts.find(prov => prov.DistrictName === field.value)}
                                             placeholder="Chọn quận/huyện..."
                                             getOptionLabel={(option: District) => option.DistrictName}
                                             getOptionValue={(option: District) => String(option.DistrictID)}
@@ -878,7 +879,7 @@ const CustomerInfor = () => {
 
                                           <Select
                                             isDisabled={!address.district}
-                                            value={wards.find(prov => prov.WardName === field.value) || null}
+                                            value={wards.find(prov => prov.WardName === field.value)}
                                             placeholder="Chọn xã/phường/thị trấn..."
                                             getOptionLabel={(option: Ward) => option.WardName}
                                             getOptionValue={(option: Ward) => String(option.WardCode)}
@@ -951,13 +952,13 @@ const CustomerInfor = () => {
                             </FormContainer>
                             {/* Dialog xác nhận xóa */}
                             <Dialog isOpen={dialogIsOpen} closable={false} onClose={onDialogClose} >
-                              <h5 className="mb-4">Xác nhận xóa sự kiện</h5>
-                              <p>Bạn có chắc chắn muốn xóa sự kiện này không?</p>
+                              <h5 className="mb-4">Xác nhận xóa địa chỉ</h5>
+                              <p>Bạn có chắc chắn muốn xóa địa chỉ này không?</p>
                               <div className="text-right mt-6">
                                 <Button className="ltr:mr-2 rtl:ml-2" variant="plain" onClick={onDialogClose}>
                                   Hủy
                                 </Button>
-                                <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} type='submit' onClick={() => handleDelete(address.id, index, remove)}>
+                                <Button variant="solid" style={{ backgroundColor: 'rgb(79, 70, 229)', height: '40px' }} type='submit' onClick={() => handleDelete(address.id, index, remove, address)}>
                                   Xác nhận
                                 </Button>
                               </div>
