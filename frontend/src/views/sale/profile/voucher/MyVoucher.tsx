@@ -25,7 +25,7 @@ const MyVoucher = () => {
     const { user } = useAuthContext();
     const [data, setData] = useState<VoucherDTO[]>([])
 
-    function copyToClipboard(code : string) {
+    function copyToClipboard(code: string) {
         navigator.clipboard.writeText(code).then(() => {
             toast('Mã đã được sao chép: ' + code);
         }).catch(err => {
@@ -63,13 +63,13 @@ const MyVoucher = () => {
                                 </div>
 
                                 <div className={'flex-1 px-3 py-2 relative'}>
-                                    <div className={'inline-block bg-[#ee4d2d] text-white text-xs px-1.5 py-0.5 rounded-sm mb-1'}>
-                                        Giảm giá
+                                    <div className={'inline-block bg-[#ee4d2d] text-white text-xs px-1.5 py-1 rounded-sm mb-1'}>
+                                        {item.code}
                                     </div>
 
-                                    <div className={'text-gray-800 font-medium text-sm mb-1'}>
-                                        Giảm {item.maxPercent}%  <br></br>
-                                        Đơn tối thiểu {item.minAmount.toLocaleString('vi')}đ
+                                    <div className={'text-gray-800 font-medium text-base mb-1'}>
+                                        Giảm: {item.maxPercent}%  <br></br>
+                                        Đơn tối thiểu: <span className="text-blue-600 font-semibold text-lg"> {item.minAmount.toLocaleString('vi')} vnđ</span>
                                     </div>
 
 

@@ -444,7 +444,7 @@ export const MyOrderTable = () => {
                             className="lg:w-full"
                             prefix={<HiOutlineSearch className="text-lg" />}
                             onChange={handleChange}
-                        />
+                        />  
                     </div>
                 </div>
             </div>
