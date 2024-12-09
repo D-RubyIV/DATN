@@ -93,7 +93,7 @@ const Navbar = () => {
 
 
     return (
-        <div className="relative top-0 shadow text-black dark:text-white duration-200 w-full z-40 navbar">
+        <div className="relative top-0 shadow text-black dark:text-white duration-200 w-full z-30 navbar">
             {/* upper Navbar */}
             <div className=" py-8">
                 <div className="px-[8%] flex justify-between items-center">

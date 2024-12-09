@@ -190,6 +190,10 @@ public class CartServiceV2 {
         feeDTO.setService_type_id(2);
         feeDTO.setFrom_district_id(3440); // quận Nam Từ Liêm
 
+        Integer totalHeight = cart.getCartDetails().stream()
+                .map(s -> s.getProductDetail().getMass() * s.getQuantity()) // Tính toán khối lượng nhân với số lượng
+                .reduce(0, Integer::sum); // Tính tổng (giá trị ban đầu là 0)
+
         if (cart.getDistrictId() != null && cart.getProvinceId() != null) {
             System.out.println("DISTRICT: " + cart.getDistrictId());
             System.out.println("PROVINCE: " + cart.getProvinceId());
@@ -199,7 +203,7 @@ public class CartServiceV2 {
 
             feeDTO.setHeight(2);
             feeDTO.setLength(2);
-            feeDTO.setWeight(2);
+            feeDTO.setWeight(totalHeight);
             feeDTO.setWidth(2);
 
             feeDTO.setInsurance_value(0);

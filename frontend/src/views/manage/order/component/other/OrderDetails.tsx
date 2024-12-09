@@ -11,7 +11,7 @@ import OrderInfo from '../puzzle/OderInfo'
 import { Input, Radio, Tooltip } from '@/components/ui'
 import instance from '@/axios/CustomAxios'
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal'
-import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
+import { OrderAddressResponseDTOS, OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import { PaymentSummaryProps } from '@/@types/payment'
 import { FiPackage } from 'react-icons/fi'
 import dayjs from 'dayjs'
@@ -94,6 +94,25 @@ const CustomerInfo = ({ data, fetchData }: { data: OrderResponseDTO, fetchData: 
 
     const customer = data?.customerResponseDTO || {}
 
+    const handleChangeAddress = async (val: OrderAddressResponseDTOS) => {
+        console.log(val)
+        const payload = {
+            'provinceId': val.provinceId,
+            'provinceName': val.province,
+            'districtId': val.districtId,
+            'districtName': val.district,
+            'wardId': val.wardId,
+            'wardName': val.ward,
+            'address': val.detail,
+            'recipientName': val.name,
+            'phone': val.phone
+        }
+        await instance.put(`/orders/${data.id}`, payload).then(function(response) {
+            console.log(response)
+            fetchData()
+        })
+    }
+
     return (
         <Card className={`mb-5 max-h-[420px] h-auto`}>
             {isOpenEditAddress && <AddressModal selectedOrder={data} onCloseModal={setIsOpenEditAddress}
@@ -159,7 +178,7 @@ const CustomerInfo = ({ data, fetchData }: { data: OrderResponseDTO, fetchData: 
                                     <Radio.Group vertical>
                                         {data.customerResponseDTO?.addressResponseDTOS?.length ? (
                                             data.customerResponseDTO.addressResponseDTOS.map((item, index) => (
-                                                <Radio value={item.id} key={index} disabled={data.status !== "PENDING"}>
+                                                <Radio value={item.id} key={index} disabled={data.status !== "PENDING"} onClick={() => handleChangeAddress(item)}>
                                                     {item.phone} - {item.detail}
                                                 </Radio>
                                             ))
