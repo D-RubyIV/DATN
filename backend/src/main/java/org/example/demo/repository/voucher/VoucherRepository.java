@@ -1,10 +1,7 @@
 package org.example.demo.repository.voucher;
 
-import org.example.demo.dto.voucher.response.VoucherResponseDTO;
-import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
-import org.example.demo.entity.human.staff.Staff;
+
 import org.example.demo.entity.voucher.core.Voucher;
-import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.model.response.VoucherResponse;
 import org.springframework.data.domain.Page;
@@ -16,7 +13,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,61 +64,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
             """, nativeQuery = true)
     List<VoucherResponse> getAllVouchersWithCustomers(@Param("idCustomer") Integer id, @Param("req") VoucherRequest request);
 
-//    @Query(value = """
-//                SELECT
-//                    ROW_NUMBER() OVER (ORDER BY v.created_date DESC) AS indexs,
-//                    STRING_AGG(CAST(c.name AS VARCHAR(MAX)), ', ') AS customerNames,  -- Chuỗi tên khách hàng
-//                    STRING_AGG(CAST(vc.customer_id AS VARCHAR(MAX)), ',') AS customerIds, -- Chuỗi ID khách hàng
-//                    v.id AS id,
-//                    v.code AS code,
-//                    v.name AS name,
-//                    v.type_ticket AS typeTicket,
-//                    v.quantity AS quantity,
-//                    v.start_date AS startDate,
-//                    v.end_date AS endDate,
-//                    v.max_percent AS maxPercent,
-//                    v.min_amount AS minAmount,
-//                    v.status AS status
-//                FROM voucher v
-//                LEFT JOIN voucher_customer vc ON v.id = vc.voucher_id
-//                LEFT JOIN customer c ON vc.customer_id = c.id
-//                WHERE v.id = :id
-//                GROUP BY
-//                    v.id,
-//                    v.code,
-//                    v.name,
-//                    v.type_ticket,
-//                    v.quantity,
-//                    v.start_date,
-//                    v.end_date,
-//                    v.max_percent,
-//                    v.min_amount,
-//                    v.status,
-//                    v.created_date
-//            """, nativeQuery = true)
-//    Optional<VoucherResponseV2DTO> findVoucherById(Integer id);
-
-
-//    @Query("""
-//            SELECT new org.example.demo.dto.voucher.response.VoucherResponseV2DTO(
-//                ROW_NUMBER() OVER (ORDER BY v.createdDate DESC),
-//                v.id,
-//                v.name,
-//                v.code,
-//                v.startDate,
-//                v.endDate,
-//                v.status,
-//                v.quantity,
-//                v.maxPercent,
-//                v.minAmount,
-//                v.typeTicket,
-//                (SELECT STRING_AGG(c.name, ', ') FROM Customer c JOIN VoucherCustomer vc ON vc.customerId = c.id WHERE vc.voucherId = v.id),
-//                (SELECT STRING_AGG(vc.customerId, ', ') FROM VoucherCustomer vc WHERE vc.voucherId = v.id)
-//            )
-//            FROM Voucher v
-//            WHERE v.id = :id
-//            """)
-//    Optional<VoucherResponseV2DTO> findVoucherById(@Param("id") Integer id);
 
     @Query(value = """
             SELECT 
@@ -141,7 +82,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
             WHERE (:#{#req.name} IS NULL OR :#{#req.name} = '' 
                    OR v.name LIKE '%' + :#{#req.name} + '%' 
                    OR v.code LIKE '%' + :#{#req.name} + '%')
-            AND (:#{#req.deleted} IS NULL OR v.deleted = :#{#req.deleted})
             AND (:#{#req.status} IS NULL OR v.status = :#{#req.status})
             """,
             countQuery = """
@@ -150,16 +90,14 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
                     WHERE (:#{#req.name} IS NULL OR :#{#req.name} = '' 
                            OR v.name LIKE '%' + :#{#req.name} + '%' 
                            OR v.code LIKE '%' + :#{#req.name} + '%')
-                    AND (:#{#req.deleted} IS NULL OR v.deleted = :#{#req.deleted})
                     AND (:#{#req.status} IS NULL OR v.status = :#{#req.status})
                     """,
             nativeQuery = true)
     Page<VoucherResponse> getAllVoucher(@Param("req") VoucherRequest request, Pageable pageable);
 
-/// CAI NAY VOI DB THÔI
     @Query("""
                 SELECT v FROM Voucher v
-                WHERE v.deleted = false AND
+                WHERE
                       (:keyword IS NULL OR 
                        v.name LIKE %:keyword% OR 
                        v.code LIKE %:keyword%) 

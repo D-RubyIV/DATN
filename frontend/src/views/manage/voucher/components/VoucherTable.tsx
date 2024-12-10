@@ -25,6 +25,7 @@ type IVoucher = {
     startDate: Date
     endDate: Date
     status: string
+    deleted: false
 }
 
 const VoucherTable = () => {
@@ -112,13 +113,13 @@ const VoucherTable = () => {
 
 
 
-const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
-    setTableData(prevData => ({
-        ...prevData,
-        typeTicketFilter: e.target.value,
-        pageIndex: 1,
-    }));
-};
+    const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
+        setTableData(prevData => ({
+            ...prevData,
+            typeTicketFilter: e.target.value,
+            pageIndex: 1,
+        }));
+    };
 
 
 
@@ -204,16 +205,15 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                 header: 'Hành động',
                 id: 'action',
                 cell: ({ row }: CellContext<IVoucher, unknown>) => {
-                    const { id, status } = row.original;
-                    const isActive = status === 'Active';
+                    const { id, deleted } = row.original;
 
                     return (
                         <div className="flex items-center space-x-1">
-                            <Tooltip title="Xoá Phiếu Giảm Giá">
+                            <Tooltip title={deleted ? 'Kích hoạt lại' : 'Xoá Phiếu Giảm Giá'}>
                                 <Switcher
                                     color="green-500"
-                                    checked={isActive}
-                                    onChange={() => softDelete(id)}
+                                    checked={deleted}
+                                    onChange={() => softDelete(id, !deleted)}
                                     unCheckedContent={<RiMoonClearLine />}
                                     checkedContent={<RiSunLine />}
                                     className="text-sm"
@@ -229,16 +229,24 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
                     );
                 },
                 size: 100,
-            },
+            }
+
         ],
         [],
     )
 
-    const softDelete = async (id: number) => {
+    const softDelete = async (id: number, softDelete: boolean) => {
         try {
-            const response = await instance.put(`/voucher/delete/${id}`);
+            const response = await instance.put(`/voucher/delete/${id}`, {
+                softDelete
+            });
+
             if (response.status === 200) {
-                toast.success('Xoá thành công');
+                if (!softDelete) {
+                    toast.success('Kích hoạt lại phiếu giảm giá thành công');
+                } else {
+                    toast.success('Xoá phiếu giảm giá thành công');
+                }
                 fetchData();
             } else {
                 toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
@@ -287,7 +295,7 @@ const handleFilterChange2 = (e: ChangeEvent<HTMLSelectElement>) => {
             } else {
                 params.keyword = query || ''; // Fallback khi cả hai đều trống
             }
-    
+
 
 
             console.log('Fetching data with params:', params);

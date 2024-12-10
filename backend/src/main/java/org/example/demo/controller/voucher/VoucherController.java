@@ -25,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -134,15 +135,27 @@ public class VoucherController {
         }
     }
 
+//    @PutMapping("/delete/{id}")
+//    public ResponseEntity<?> deleteVoucher(@PathVariable Integer id) {
+//        try {
+//            voucherService.deleteVoucher(id);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body("Delete voucher successfully");
+//    }
+
     @PutMapping("/delete/{id}")
-    public ResponseEntity<?> deleteVoucher(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteVoucher(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
+        Boolean softDelete = body.get("softDelete");
         try {
-            voucherService.deleteVoucher(id);
+            voucherService.softDeleteVoucher(id, softDelete);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body("Delete voucher successfully");
     }
+
 
     @GetMapping("/better-voucher")
     public ResponseEntity<?> findBetterVoucher(@RequestParam("amount") BigDecimal amount) {

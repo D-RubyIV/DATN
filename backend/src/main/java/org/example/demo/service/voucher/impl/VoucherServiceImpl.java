@@ -10,7 +10,6 @@ import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.entity.voucher.enums.Type;
-import org.example.demo.exception.CustomExceptions;
 import org.example.demo.infrastructure.common.AutoGenCode;
 import org.example.demo.infrastructure.common.PageableObject;
 import org.example.demo.infrastructure.converted.VoucherConvert;
@@ -290,6 +289,8 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
 
+
+
     @Override
     public List<Voucher> findBetterVoucher(BigDecimal amount) {
         Sort sort;
@@ -329,6 +330,20 @@ public class VoucherServiceImpl implements VoucherService {
 
     public List<Voucher> getSortedVouchers(Sort sort) {
         return voucherRepository.findSortAmountVouchers(sort);
+    }
+
+
+    @Override
+    @Transactional
+    public void softDeleteVoucher(Integer id, Boolean softDelete) throws Exception {
+        Optional<Voucher> voucherOptional = voucherRepository.findById(id);
+        if (voucherOptional.isPresent()) {
+            Voucher voucher = voucherOptional.get();
+            voucher.setDeleted(softDelete);
+            voucherRepository.save(voucher);
+        } else {
+            throw new Exception("Voucher not found");
+        }
     }
 
     @Override
