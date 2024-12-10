@@ -1,6 +1,5 @@
 backend/target
-./backend/target
-/backend/target
-/backend/idea
-/frontend/.vite
-/frontend/node_modules
+backend/uploads
+backend/idea
+frontend/.vite
+frontend/node_modules
