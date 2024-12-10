@@ -157,7 +157,14 @@ const columns = [
         header: 'Doanh số',
         cell: (props) => {
             const row = props.row.original
-            return <span>{(Math.round(row.subTotal * 100) / 100).toFixed(0) + "đ"}</span>
+            return (
+                <NumericFormat
+                    displayType="text"
+                    value={(Math.round(row.subTotal * 100) / 100).toFixed(0)}
+                    suffix={'đ'}
+                    thousandSeparator={true}
+                />
+            )
         }
     }),
     columnHelper.accessor('total', {

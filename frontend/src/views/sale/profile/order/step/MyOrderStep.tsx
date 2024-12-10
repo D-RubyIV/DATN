@@ -128,8 +128,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         {
             'status': 'PENDING',
             'messages': [
-                'Đã xác nhận đơn hàng',
-                'Khách muốn hủy đơn'
+                'Tôi muốn hủy đơn'
             ]
         },
         {
@@ -199,7 +198,6 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         if (currentStatus === 'PENDING') {
             return (
                 <div className="flex gap-2">
-
                     <Button
                         block
                         variant="default"
@@ -238,7 +236,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         return (
             <div>
                 <div className="mb-4">
-                    <div className="">
+                    <div className=""  hidden={currentStatus !== 'PENDING'}>
                         <div className="mt-4">
                             {answers && answers.length > 0 ? (
                                 <Radio.Group vertical value={getValues('note')}>
@@ -269,7 +267,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
                     </div>
                     <div className="col-span-4"
-                         hidden={currentStatus === 'DELIVERED' || currentStatus === 'CANCELED'}>
+                         hidden={currentStatus !== 'PENDING'}>
                         <Input
                             placeholder="Nhập nội dung"
                             {...register('note')}

@@ -719,6 +719,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Order result = orderRepository.save(order);
         reloadSubTotalOrder(order);
         cart.setDeleted(Boolean.TRUE);
+
+        if(cart.getPayment() == Payment.CASH){
+            cart.setDeleted(Boolean.TRUE);
+        }
+
         cartRepository.save(cart);
         if(cart.getPayment() == Payment.CASH){
             sendEmail(result, "Khởi tạo đơn hàng");

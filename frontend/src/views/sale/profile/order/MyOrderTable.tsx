@@ -546,15 +546,15 @@ export const MyOrderTable = () => {
                 <h1 className="font-semibold text-xl text-black mb-4 text-transform: uppercase">Đơn mua của tôi</h1>
             </div>
 
-            <div className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4">Chi Tiết Đơn Hàng</h1>
+            {/*<div className="container mx-auto p-4">*/}
+            {/*    <h1 className="text-2xl font-bold mb-4">Chi Tiết Đơn Hàng</h1>*/}
 
-                <OrderStatusTimeline
-                    billHistory={billHistory}
-                    bill={bill}
-                    onActionClick={handleOrderAction}
-                />
-            </div>
+            {/*    <OrderStatusTimeline*/}
+            {/*        billHistory={billHistory}*/}
+            {/*        bill={bill}*/}
+            {/*        onActionClick={handleOrderAction}*/}
+            {/*    />*/}
+            {/*</div>*/}
 
             <div className="py-2">
                 <TabList className="flex justify-evenly gap-4 w-full pt-3 pb-1">

@@ -177,25 +177,34 @@ const ProductDetail = () => {
             )
             setSelectedProductDetail(productDetail ?? null)
         }
+        else{
+            setSelectedProductDetail(null)
+        }
     }, [selectedColor, selectedSize, listProductDetail])
 
     const handleAddToCart = async () => {
-        const dataRequest = {
-            'cartId': myCartId,
-            'productDetailId': selectedProductDetail?.id,
-            'quantity': quantity
+        if(!selectedProductDetail?.id){
+            openNotification("Vui lòng chọn biến thể phù hợp", "Thông báo", "warning", 5000)
         }
-        instance.post('/cart-details/create', dataRequest).then(function (response) {
-            console.log(response)
-            if (response.status === 200) {
-                openNotification('Thêm vào giỏ hàng thành công')
-                getCartDetailInCard()
+        else{
+            const dataRequest = {
+                'cartId': myCartId,
+                'productDetailId': selectedProductDetail?.id,
+                'quantity': quantity
             }
-        }).catch(function(error) {
-            if (error?.response?.data?.error) {
-                openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
-            }
-        })
+            instance.post('/cart-details/create', dataRequest).then(function (response) {
+                console.log(response)
+                if (response.status === 200) {
+                    openNotification('Thêm vào giỏ hàng thành công')
+                    getCartDetailInCard()
+                }
+            }).catch(function(error) {
+                if (error?.response?.data?.error) {
+                    openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                }
+            })
+        }
+
     }
 
     const isDisableSize = ( ) => {

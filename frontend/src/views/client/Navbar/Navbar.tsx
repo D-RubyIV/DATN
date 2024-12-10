@@ -201,6 +201,12 @@ const Navbar = ({ isLandingPage = false }: { isLandingPage?: boolean }) => {
                                             >
                                                 Đơn hàng đã mua
                                             </Link>
+                                            <Link
+                                                to={`/me/my-voucher`}
+                                                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                                            >
+                                                Kho phiếu giảm giá
+                                            </Link>
                                             <button
                                                 className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-800 rounded-md"
                                                 onClick={handleLogoutClick}

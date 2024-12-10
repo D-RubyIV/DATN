@@ -36,7 +36,7 @@ const PaymentCallback = () => {
     const [response_status_code, setResponse_status_code] = useState<string>("")
 
     const handle_payment_order =  async (orderId: string, amount: string) => {
-        await instance.get(`/orders/is-payment-change/${orderId}?amount=${amount}`).then(function(response){
+        await instance.get(`/orders/is-payment-change/${orderId}?amount=${Number(amount) / 100}`).then(function(response){
             if(response.status === 200){
                 console.log("Customer cancel order-success")
             }

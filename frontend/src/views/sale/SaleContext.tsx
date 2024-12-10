@@ -61,6 +61,7 @@ const SaleProvider = ({children}: { children: ReactNode }) => {
 
     useEffect(() => {
         if (myCartId === undefined || myCartId === 0) {
+            console.log("Xóa cart id ở context")
             localStorage.removeItem('myCartId'); // Xóa nếu `myCartId` là undefined
             createNewCart();
         } else {

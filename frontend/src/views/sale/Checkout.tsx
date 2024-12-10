@@ -209,12 +209,15 @@ const Checkout = () => {
         instance.get(`cart/check-cart-active/${id}`).then(function(response) {
             if ((response.data as CartResponseDTO).deleted) {
                 localStorage.removeItem('myCartId')
+                console.log("Xóa cart id ở check-cart-activ")
+
                 window.location.reload()
             }
         }).catch(function(error) {
             console.log(error.response.data.error === 'Order not found')
             if (error.response.status === 400) {
                 localStorage.removeItem('myCartId')
+                console.log("Xóa cart id ở check Order")
                 window.location.href = '/'
             }
         })
@@ -343,6 +346,7 @@ const Checkout = () => {
                                 getDetailAboutCart()
                                 navigate('/thank')
                                 callHaveNewOrder()
+                                console.log("Xóa cart id ở convert")
                                 localStorage.removeItem('myCartId')
                             }
                         })
