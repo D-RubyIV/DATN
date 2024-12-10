@@ -21,7 +21,29 @@ import Navbar from '@/views/client/Navbar/Navbar'
 function LandingPage() {
     const [isOpenMenuSearch, setIsOpenMenuSearch] = useState<boolean>(false)
     const [query, setQuery] = useState<string>('')
-    const nevigate = useNavigate()
+    const navigate = useNavigate()
+    const [error, setError] = useState<string | null>(null);
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setQuery(value);
+
+        // Validate input (ví dụ: không để trống hoặc không có ký tự đặc biệt)
+        if (!value.trim()) {
+            setError("Từ khóa không được để trống.");
+        } else {
+            setError(null);
+        }
+    };
+
+    const handleSearch = () => {
+        if (!query.trim()) {
+            setError("Vui lòng nhập từ khóa.");
+            return;
+        }
+        // Điều hướng nếu hợp lệ
+        navigate(`/products-search?key=${query}`);
+    };
 
     const Display: React.FC<{ title: string }> = ({ title }) => (
         <div className="absolute bottom-[13%] left-[2%] font-poppins text-white">
@@ -63,19 +85,15 @@ function LandingPage() {
                             suffix={
                                 <Fragment>
                                     <button
-                                        onClick={() => {
-                                            nevigate(`/products-search?key=${query}`)
-                                        }}
+                                        onClick={handleSearch}
                                     >
                                         <HiSearch size={25}></HiSearch>
                                     </button>
                                 </Fragment>
                             }
-                            onChange={(el) => {
-                                setQuery(el.target.value)
-                            }}
-
+                            onChange={handleInputChange}
                         ></Input>
+                        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
                     </div>
                     <div className={''}>
                         <button

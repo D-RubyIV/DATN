@@ -20,14 +20,14 @@ const ProductSearch = () => {
 
     useEffect(() => {
         key && setQuery(key)
-        key && handleFetchProduct()
+        handleFetchProduct()
     }, [key])
 
     const onPaginationChange = (val: number) => {
         setCurrentPage(val)
     }
 
-    const handleFetchProduct = async () => {
+    const handleFetchProduct = () => {
         instance.get(`/productDetails/abc?page=${currentPage - 1}&size=${pageSize}&query=${key}`).then(function(response) {
             console.log(response)
             if (response.status === 200) {
