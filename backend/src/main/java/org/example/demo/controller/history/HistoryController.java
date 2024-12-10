@@ -23,4 +23,10 @@ public class HistoryController {
         return ResponseEntity.ok(historyRepository.findAllByOrderId(id));
     }
 
+    @GetMapping("/timeline/{id}")
+    public ResponseEntity<?> findAllByTimelineId(@PathVariable Integer id) {
+        return ResponseEntity.ok(historyResponseMapper.toDTO(historyRepository.findById(id).orElse(null)));
+    }
+
+
 }
