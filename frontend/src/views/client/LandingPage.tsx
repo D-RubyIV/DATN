@@ -24,14 +24,15 @@ function LandingPage() {
     const Display: React.FC<{ title: string }> = ({ title }) => (
         <div className="absolute bottom-[13%] left-[2%] font-poppins text-white">
             <div className="max-w-[600px]">
-                <h2 className="text-[30px] md:text-pretty unica-one-regular text-white text-shadow-sm">{title}</h2>
+                <h2 className="text-[30px] md:text-pretty unica-one-regular text-white text-shadow-sm  font-uniqlo">{title}</h2>
             </div>
             <div>
                 <Link to="/" className="underline underline-offset-2">
                     Hãy tìm kiếm sở thích của bạn
                 </Link>
             </div>
-            <div className={`fixed bottom-[20px] left-1/2 -translate-x-1/2 -translate-y-1/2 ${isOpenMenuSearch ? "hidden": ""}`}>
+            <div
+                className={`fixed bottom-[20px] left-1/2 ${isOpenMenuSearch ? 'hidden' : ''}`}>
                 <button
                     className={'p-5 bg-white rounded-full text-black'}
                     onClick={() => setIsOpenMenuSearch(!isOpenMenuSearch)}
@@ -48,7 +49,7 @@ function LandingPage() {
 
     return (
         <>
-            <Navbar isLandingPage={true}/>
+            <Navbar isLandingPage={true} />
             <div
                 className={`fixed w-full z-50 transition-all duration-500 bg-white opacity-60 bottom-0 ${isOpenMenuSearch ? '' : ' translate-y-full'}`}>
                 <div className={'!flex !flex-col justify-center p-10 items-center'}>

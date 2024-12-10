@@ -114,6 +114,12 @@ const publicRoute: Routes = [
         component: lazy(() => import('@/views/client/Profile/MyProfile')),
         authority: []
     },
+    {
+        key: 'products',
+        path: '/products-search',
+        component: lazy(() => import('@/views/sale/ProductSearch')),
+        authority: []
+    },
 ]
 
 export default publicRoute

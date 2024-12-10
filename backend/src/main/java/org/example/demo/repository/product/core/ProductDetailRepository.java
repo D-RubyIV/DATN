@@ -255,6 +255,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 AND s.deleted = FALSE
                 AND b.deleted = FALSE
                 AND pd.deleted = FALSE
+                AND (:query IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 GROUP BY p.id, p.code, p.name, p.createdDate
                 ORDER BY p.createdDate DESC
             """)
@@ -264,7 +265,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             @Param("colorCodes") List<String> colorCodes,
             @Param("brandCodes") List<String> brandCodes,
             @Param("minPrice") Double minPrice,
-            @Param("maxPrice") Double maxPrice
+            @Param("maxPrice") Double maxPrice,
+            @Param("query") String query
     );
 
     @Query(

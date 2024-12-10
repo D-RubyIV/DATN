@@ -355,13 +355,14 @@ public class ProductDetailController {
             @RequestParam(value = "sizeCodes", required = false) List<String> sizeCodes,
             @RequestParam(value = "brandCodes", required = false) List<String> brandCodes,
             @RequestParam(value = "minPrice", required = false) Double minPrice,
-            @RequestParam(value = "maxPrice", required = false) Double maxPrice
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "query", required = false) String query
     ) {
 
         colorCodes = Optional.ofNullable(colorCodes).filter(codes -> !codes.isEmpty()).orElse(null);
         sizeCodes = Optional.ofNullable(sizeCodes).filter(codes -> !codes.isEmpty()).orElse(null);
 
-        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes, brandCodes, minPrice, maxPrice);
+        Page<ProductResponseOverDTO> page = productDetailRepository.findCustomPage(pageable, sizeCodes, colorCodes, brandCodes, minPrice, maxPrice, query);
         List<ProductResponseOverDTO> productList = page.getContent();
         List<Integer> productIds = productList.stream().map(ProductResponseOverDTO::getProductId).toList();
         List<Event> events = eventRepository.findListEventUseValid();

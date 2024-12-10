@@ -96,8 +96,8 @@ const RecommendProduct: React.FC = () => {
   }
 
   return (
-    <div className="max-w-screen-xl mx-auto p-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-5">
+    <div className="mx-auto p-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 mt-5">
         {products.map((product) => (
           <div
             key={product.productId}
@@ -126,24 +126,24 @@ const RecommendProduct: React.FC = () => {
                 />
               )}
 
-              <div
-                className="absolute bottom-0 left-0 right-0 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-opacity-50 p-2 w-full">
-                {/* Button 1 */}
-                <Link to={`/products/${product.productId}`} className="flex items-center justify-center px-2">
-                  <Button
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
-                    <IoBagHandle />
-                  </Button>
-                </Link>
+              {/*<div*/}
+              {/*  className="absolute bottom-0 left-0 right-0 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-opacity-50 p-2 w-full">*/}
+              {/*  /!* Button 1 *!/*/}
+              {/*  <Link to={`/products/${product.productId}`} className="flex items-center justify-center px-2">*/}
+              {/*    <Button*/}
+              {/*      className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">*/}
+              {/*      <IoBagHandle />*/}
+              {/*    </Button>*/}
+              {/*  </Link>*/}
 
-                {/* Button 2 */}
-                <Link to={`/products/${product.productId}`} className="flex items-center justify-center px-2">
-                  <Button
-                    className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">
-                    <FaEye className="mr-2" />
-                  </Button>
-                </Link>
-              </div>
+              {/*  /!* Button 2 *!/*/}
+              {/*  <Link to={`/products/${product.productId}`} className="flex items-center justify-center px-2">*/}
+              {/*    <Button*/}
+              {/*      className="bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold py-2 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-200 flex items-center justify-center">*/}
+              {/*      <FaEye className="mr-2" />*/}
+              {/*    </Button>*/}
+              {/*  </Link>*/}
+              {/*</div>*/}
             </div>
 
             <div className={'flex justify-between text-gray-500 text-[15px] mt-3'}>
