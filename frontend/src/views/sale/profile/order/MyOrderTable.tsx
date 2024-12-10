@@ -16,6 +16,7 @@ import { vi } from 'date-fns/locale'
 import TypeOrderFormat from '@/views/util/TypeOrderFormat'
 import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
 import OrderStatusTimeline from './OrderStatusTimeline'
+import { message } from 'antd'
 
 
 type BadgeType =
@@ -96,10 +97,11 @@ interface BillHistory {
 }
 
 enum Status {
+    PLACED = "PLACED",
     PENDING = "PENDING",
-    TOSHIP = "TOSHIP", 
+    TOSHIP = "TOSHIP",
     TORECEIVE = "TORECEIVE",
-    DELIVERED = "DELIVERED", 
+    DELIVERED = "DELIVERED",
     CANCELED = "CANCELED"
 }
 
@@ -463,57 +465,81 @@ export const MyOrderTable = () => {
 
     }
     const [billHistory, setBillHistory] = useState<BillHistory[]>([]);
-    const [bill, setBill] = useState<{ status: Status }>({ status: Status.PENDING });
+    const [bill, setBill] = useState<{ status: Status }>({ status: Status.PLACED });
     const [isLoading, setIsLoading] = useState(true);
 
-    // Function to handle order cancellation or confirmation
-    const handleOrderAction = (isCancel: boolean) => {
+
+    const handleOrderAction = async (isCancel: boolean) => {
         const actionText = isCancel ? 'Hủy đơn hàng' : 'Xác nhận đơn hàng';
-
-        // Implement your API call here for cancellation or confirmation
-        console.log(actionText);
-        message.success(actionText);
+    
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/history/action', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    isCancel,
+                    billId: billHistory[0]?.id,
+                }),
+            });
+    
+            if (response.ok) {
+                message.success(`${actionText} thành công!`);
+                // Làm mới lịch sử đơn hàng
+                fetchBillHistory();
+            } else {
+                const errorData = await response.json();
+                message.error(errorData.message || 'Thao tác không thành công');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            message.error('Đã có lỗi xảy ra khi thực hiện thao tác');
+        }
     };
-
+    
     // Fetch bill history
-    useEffect(() => {
-        const fetchBillHistory = async () => {
-            try {
-                setIsLoading(true);
-                const response = await fetch('http://localhost:8080/api/v1/history/timeline/1');
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch bill history');
-                }
-
-                const data = await response.json();
-
-                // Map the API response to our BillHistory structure
-                const mappedHistory: BillHistory[] = [{
+    const fetchBillHistory = async () => {
+        try {
+            setIsLoading(true);
+            const response = await fetch('http://localhost:8080/api/v1/history/timeline/1');
+    
+            if (!response.ok) {
+                throw new Error('Không thể tải thông tin đơn hàng');
+            }
+    
+            const data = await response.json();
+    
+            // Ánh xạ API response sang BillHistory
+            const mappedHistory: BillHistory[] = [
+                {
                     id: data.id,
-                    status: data.status, // Assuming the status matches our enum
-                    note: data.note,
+                    status: data.status,
+                    note: data.note || '',
                     createdDate: data.createdDate,
                     updatedDate: data.updatedDate,
-                    account: data.account
-                }];
-
-                setBillHistory(mappedHistory);
-                setBill({ status: data.status });
-            } catch (error) {
-                console.error('Error fetching bill history:', error);
-                message.error('Không thể tải thông tin đơn hàng');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
+                    account: data.account,
+                },
+            ];
+    
+            setBillHistory(mappedHistory);
+            setBill({ status: data.status });
+        } catch (error) {
+            console.error('Error fetching bill history:', error);
+            message.error('Không thể tải thông tin đơn hàng');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    useEffect(() => {
         fetchBillHistory();
     }, []);
-
+    
     if (isLoading) {
         return <div>Đang tải...</div>;
     }
+
     return (
         <>
             <div>
@@ -526,7 +552,7 @@ export const MyOrderTable = () => {
                 <OrderStatusTimeline
                     billHistory={billHistory}
                     bill={bill}
-                    showModal={handleOrderAction}
+                    onActionClick={handleOrderAction}
                 />
             </div>
 

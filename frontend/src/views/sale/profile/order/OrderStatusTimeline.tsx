@@ -1,11 +1,215 @@
-import React from 'react';
-import { FaRegFileAlt, FaShippingFast, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import { Button, Timeline } from 'antd';
+// import React from 'react';
+// import { FaRegFileAlt, FaShippingFast, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+
+// enum Status {
+//   PENDING = "PENDING",
+//   TOSHIP = "TOSHIP",
+//   TORECEIVE = "TORECEIVE", 
+//   DELIVERED = "DELIVERED",
+//   CANCELED = "CANCELED"
+// }
+
+// interface BillHistory {
+//   id: number;
+//   status: Status;
+//   note: string;
+//   createdDate: string;
+//   updatedDate?: string;
+// }
+
+// interface Bill {
+//   status: Status;
+// }
+
+// interface Props {
+//   billHistory: BillHistory[];
+//   bill: Bill;
+//   onActionClick: (isCancel: boolean) => void;
+// }
+
+// const OrderStatusTimeline: React.FC<Props> = ({ billHistory, bill, onActionClick }) => {
+//   // Status configuration with more descriptive details
+//   const STATUS_CONFIG = {
+//     [Status.PENDING]: {
+//       text: 'Chờ xác nhận',
+//       color: 'bg-orange-500',
+//       textColor: 'text-orange-500',
+//       icon: FaRegFileAlt,
+//       description: 'Đơn hàng đang chờ được xác nhận'
+//     },
+//     [Status.TOSHIP]: {
+//       text: 'Chờ giao hàng',
+//       color: 'bg-blue-800',
+//       textColor: 'text-blue-800',
+//       icon: FaShippingFast,
+//       description: 'Đơn hàng đang được chuẩn bị'
+//     },
+//     [Status.TORECEIVE]: {
+//       text: 'Đang giao hàng',
+//       color: 'bg-blue-500',
+//       textColor: 'text-blue-500',
+//       icon: FaShippingFast,
+//       description: 'Đơn hàng đang trên đường giao'
+//     },
+//     [Status.DELIVERED]: {
+//       text: 'Hoàn thành',
+//       color: 'bg-green-500',
+//       textColor: 'text-green-500',
+//       icon: FaCheckCircle,
+//       description: 'Đơn hàng đã được giao thành công'
+//     },
+//     [Status.CANCELED]: {
+//       text: 'Đã hủy',
+//       color: 'bg-red-500',
+//       textColor: 'text-red-500',
+//       icon: FaTimesCircle,
+//       description: 'Đơn hàng đã bị hủy'
+//     }
+//   };
+
+//   // Generate full timeline with all statuses
+//   const generateFullTimeline = () => {
+//     const statusOrder = [
+//       Status.PENDING, 
+//       Status.TOSHIP, 
+//       Status.TORECEIVE, 
+//       Status.DELIVERED, 
+//       Status.CANCELED
+//     ];
+
+//     return statusOrder.map(status => {
+//       const matchedHistory = billHistory.find(item => item.status === status);
+//       const config = STATUS_CONFIG[status];
+
+//       return {
+//         status,
+//         ...config,
+//         date: matchedHistory?.createdDate || null,
+//         note: matchedHistory?.note || null,
+//         isPassed: billHistory.some(h => h.status === status)
+//       };
+//     });
+//   };
+
+//   const fullTimeline = generateFullTimeline();
+//   const currentStatusIndex = fullTimeline.findIndex(item => item.status === bill.status);
+
+//   return (
+//     <div className="container mx-auto px-4 py-8 max-w-4xl">
+//       {/* Status Timeline */}
+//       <div className="relative mb-8">
+//         <div className="flex justify-between items-center">
+//           {fullTimeline.map((item, index) => {
+//             const Icon = item.icon;
+//             const isPassed = index <= currentStatusIndex;
+//             const isActive = index === currentStatusIndex;
+
+//             return (
+//               <div 
+//                 key={item.status} 
+//                 className="flex flex-col items-center relative w-1/5 group"
+//               >
+//                 {/* Status Dot */}
+//                 <div 
+//                   className={`
+//                     w-16 h-16 rounded-full flex items-center justify-center 
+//                     transition-all duration-300 ease-in-out
+//                     ${isPassed ? item.color : 'bg-gray-200'}
+//                     text-white mb-2 shadow-md
+//                     ${isActive ? 'scale-110 ring-4 ring-opacity-50 ' + item.color : ''}
+//                   `}
+//                 >
+//                   <Icon className="w-8 h-8" />
+//                 </div>
+                
+//                 {/* Status Text */}
+//                 <div className="text-center">
+//                   <div 
+//                     className={`
+//                       text-sm font-semibold 
+//                       ${isPassed ? item.textColor : 'text-gray-400'}
+//                       transition-colors duration-300
+//                     `}
+//                   >
+//                     {item.text}
+//                   </div>
+                  
+//                   {item.date && isPassed && (
+//                     <div className="text-xs text-gray-500 mt-1">
+//                       {new Date(item.date).toLocaleString('vi-VN', {
+//                         hour: '2-digit',
+//                         minute: '2-digit',
+//                         day: '2-digit',
+//                         month: '2-digit',
+//                         year: 'numeric'
+//                       })}
+//                     </div>
+//                   )}
+//                 </div>
+
+//                 {/* Connecting Line */}
+//                 {index < fullTimeline.length - 1 && (
+//                   <div 
+//                     className={`
+//                       absolute top-8 left-full w-full h-1 -z-10
+//                       transition-colors duration-300
+//                       ${isPassed ? 'bg-green-500' : 'bg-gray-300'}
+//                     `} 
+//                     style={{ width: 'calc(100% + 2rem)' }}
+//                   />
+//                 )}
+//               </div>
+//             );
+//           })}
+//         </div>
+//       </div>
+
+//       {/* Status Description */}
+//       <div className="bg-gray-100 p-4 rounded-lg text-center mb-4">
+//         {fullTimeline[currentStatusIndex].description}
+//         {fullTimeline[currentStatusIndex].note && (
+//           <p className="text-sm text-gray-600 mt-2">
+//             Ghi chú: {fullTimeline[currentStatusIndex].note}
+//           </p>
+//         )}
+//       </div>
+
+//       {/* Action Buttons */}
+//       <div className="flex justify-end space-x-4">
+//         {bill.status !== Status.DELIVERED && bill.status !== Status.CANCELED && (
+//           <>
+//             {bill.status === Status.PENDING && (
+//               <button 
+//                 onClick={() => onActionClick(true)}
+//                 className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+//               >
+//                 Hủy đơn
+//               </button>
+//             )}
+//             <button 
+//               onClick={() => onActionClick(false)}
+//               className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+//             >
+//               {bill.status === Status.PENDING ? 'Xác nhận' : 'Hoàn thành'}
+//             </button>
+//           </>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default OrderStatusTimeline;
+
+import React, { useState, useEffect } from 'react';
+import { message } from 'antd';
+import { FaRegFileAlt, FaShippingFast, FaCheckCircle, FaTimesCircle, FaClipboardList } from 'react-icons/fa';
 
 enum Status {
+  PLACED = "PLACED",     // Newly added status
   PENDING = "PENDING",
   TOSHIP = "TOSHIP",
-  TORECEIVE = "TORECEIVE",
+  TORECEIVE = "TORECEIVE", 
   DELIVERED = "DELIVERED",
   CANCELED = "CANCELED"
 }
@@ -13,28 +217,11 @@ enum Status {
 interface Account {
   id: number;
   username: string;
-  staff?: {
-    code: string;
-    name: string;
-    email: string;
-    phone: string;
-  };
   customer?: {
     id: number;
-    code: string;
     name: string;
-    email: string;
     phone: string;
-    addressResponseDTOS: Array<{
-      id: number;
-      phone: string;
-      name: string;
-      province: string;
-      district: string;
-      ward: string;
-      detail: string;
-      defaultAddress: boolean;
-    }>;
+    email: string;
   };
 }
 
@@ -54,181 +241,182 @@ interface Bill {
 interface Props {
   billHistory: BillHistory[];
   bill: Bill;
-  showModal: (isCancel: boolean) => void;
+  onActionClick: (isCancel: boolean) => void;
 }
 
-const OrderStatusTimeline: React.FC<Props> = ({ billHistory, bill, showModal }) => {
-  // Helper function to map status to display text and color
-  const getStatusDetails = (status: Status) => {
-    switch (status) {
-      case Status.PENDING:
-        return {
-          text: 'Chờ xác nhận',
-          color: '#FFA500',
-          icon: <FaRegFileAlt />
-        };
-      case Status.TOSHIP:
-        return {
-          text: 'Chờ giao hàng',
-          color: '#024FA0',
-          icon: <FaShippingFast />
-        };
-      case Status.TORECEIVE:
-        return {
-          text: 'Đang giao hàng',
-          color: '#1E90FF',
-          icon: <FaShippingFast />
-        };
-      case Status.DELIVERED:
-        return {
-          text: 'Hoàn thành',
-          color: '#50B846',
-          icon: <FaCheckCircle />
-        };
-      case Status.CANCELED:
-        return {
-          text: 'Đã hủy',
-          color: '#9C281C',
-          icon: <FaTimesCircle />
-        };
-      default:
-        return {
-          text: 'Không xác định',
-          color: '#808080',
-          icon: null
-        };
+const OrderStatusTimeline: React.FC<Props> = ({ billHistory, bill, onActionClick }) => {
+
+  
+  const STATUS_CONFIG = {
+    [Status.PLACED]: {
+      text: 'Đơn hàng đã đặt',
+      color: 'bg-purple-500',
+      textColor: 'text-purple-500',
+      icon: FaClipboardList,
+      description: 'Đơn hàng đã được tạo và chờ xử lý'
+    },
+    [Status.PENDING]: {
+      text: 'Chờ xác nhận',
+      color: 'bg-orange-500',
+      textColor: 'text-orange-500',
+      icon: FaRegFileAlt,
+      description: 'Đơn hàng đang chờ được xác nhận'
+    },
+    [Status.TOSHIP]: {
+      text: 'Chờ giao hàng',
+      color: 'bg-blue-800',
+      textColor: 'text-blue-800',
+      icon: FaShippingFast,
+      description: 'Đơn hàng đang được chuẩn bị'
+    },
+    [Status.TORECEIVE]: {
+      text: 'Đang giao hàng',
+      color: 'bg-blue-500',
+      textColor: 'text-blue-500',
+      icon: FaShippingFast,
+      description: 'Đơn hàng đang trên đường giao'
+    },
+    [Status.DELIVERED]: {
+      text: 'Hoàn thành',
+      color: 'bg-green-500',
+      textColor: 'text-green-500',
+      icon: FaCheckCircle,
+      description: 'Đơn hàng đã được giao thành công'
+    },
+    [Status.CANCELED]: {
+      text: 'Đã hủy',
+      color: 'bg-red-500',
+      textColor: 'text-red-500',
+      icon: FaTimesCircle,
+      description: 'Đơn hàng đã bị hủy'
     }
   };
 
-  // Ensure the timeline includes all status stages
+  // Generate full timeline with all statuses
   const generateFullTimeline = () => {
-    const statuses = [
-      Status.PENDING,
-      Status.TOSHIP,
-      Status.TORECEIVE,
-      Status.DELIVERED,
+    const statusOrder = [
+      Status.PLACED,    // Added new status first in the order
+      Status.PENDING, 
+      Status.TOSHIP, 
+      Status.TORECEIVE, 
+      Status.DELIVERED, 
       Status.CANCELED
     ];
 
-    return statuses.map(status => {
-      // Find the matching history item for this status
+    return statusOrder.map(status => {
       const matchedHistory = billHistory.find(item => item.status === status);
-
-      const { text, color, icon } = getStatusDetails(status);
+      const config = STATUS_CONFIG[status];
 
       return {
         status,
-        text,
-        color,
-        icon,
+        ...config,
         date: matchedHistory?.createdDate || null,
-        note: matchedHistory?.note || null
+        note: matchedHistory?.note || null,
+        isPassed: billHistory.some(h => h.status === status)
       };
     });
   };
 
   const fullTimeline = generateFullTimeline();
+  const currentStatusIndex = fullTimeline.findIndex(item => item.status === bill.status);
 
   return (
-    // <div className="container overflow-x-auto mb-3">
-    //     <Timeline mode="left" style={{ height: '500px' }}>
-    //         {fullTimeline.map((item, index) => (
-    //             <Timeline.Item
-    //                 key={index}
-    //                 dot={item.icon}
-    //                 color={item.color}
-    //             >
-    //                 <h6 className="mt-2">{item.text}</h6>
-    //                 {item.date && (
-    //                     <div>
-    //                         Ngày: {new Date(item.date).toLocaleString()}
-    //                         {item.note && (
-    //                             <>
-    //                                 <br />
-    //                                 Ghi chú: {item.note}
-    //                             </>
-    //                         )}
-    //                     </div>
-    //                 )}
-    //             </Timeline.Item>
-    //         ))}
-    //     </Timeline>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Status Timeline */}
+      <div className="relative mb-8">
+        <div className="flex justify-between items-center">
+          {fullTimeline.map((item, index) => {
+            const Icon = item.icon;
+            const isPassed = index <= currentStatusIndex;
+            const isActive = index === currentStatusIndex;
 
-    //     <div className="d-flex">
-    //         <div className="flex-grow-1">
-    //             {bill.status !== Status.DELIVERED && (
-    //                 <>
-    //                     {bill.status === Status.PENDING && (
-    //                         <Button 
-    //                             type="primary" 
-    //                             danger 
-    //                             className="me-1" 
-    //                             onClick={() => showModal(true)}
-    //                         >
-    //                             Hủy đơn
-    //                         </Button>
-    //                     )}
-    //                     {bill.status !== Status.CANCELED && (
-    //                         <Button 
-    //                             type="primary" 
-    //                             onClick={() => showModal(false)}
-    //                         >
-    //                             {bill.status === Status.PENDING ? 'Xác nhận' : 'Hoàn thành'}
-    //                         </Button>
-    //                     )}
-    //                 </>
-    //             )}
-    //         </div>
-    //     </div>
-    // </div>
-    <div className="container mx-auto px-4 py-8">
-    <div className="relative">
-      <div className="flex justify-between items-center">
-        {fullTimeline.map((item, index) => (
-          <div key={index} className="flex flex-col items-center relative w-1/5">
-            <div
-              className={`w-14 h-14 rounded-full flex items-center justify-center
-                ${item.status === Status.CANCELED ? 'bg-gray-200' : 'bg-green-500'}
-                text-white mb-2`}
-            >
-              {item.icon}
-            </div>
-            
-            <div className="text-center">
-              <div className="text-sm font-medium">{item.text}</div>
-              {item.date && (
-                <div className="text-xs text-gray-500 mt-1">
-                  {new Date(item.date).toLocaleString('vi-VN', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                  })}
+            return (
+              <div 
+                key={item.status} 
+                className="flex flex-col items-center relative w-1/6 group"
+              >
+                {/* Status Dot */}
+                <div 
+                  className={`
+                    w-16 h-16 rounded-full flex items-center justify-center 
+                    transition-all duration-300 ease-in-out
+                    ${isPassed ? item.color : 'bg-gray-200'}
+                    text-white mb-2 shadow-md
+                    ${isActive ? 'scale-110 ring-4 ring-opacity-50 ' + item.color : ''}
+                  `}
+                >
+                  <Icon className="w-8 h-8" />
                 </div>
-              )}
-            </div>
+                
+                {/* Status Text */}
+                <div className="text-center">
+                  <div 
+                    className={`
+                      text-sm font-semibold 
+                      ${isPassed ? item.textColor : 'text-gray-400'}
+                      transition-colors duration-300
+                    `}
+                  >
+                    {item.text}
+                  </div>
+                  
+                  {item.date && isPassed && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      {/* Assuming the date is in the format "HH:mm DD-MM-YYYY" */}
+                      {item.date}
+                    </div>
+                  )}
+                </div>
 
-            {index < fullTimeline.length - 1 && (
-              <div className="absolute top-7 left-full w-full h-[2px] bg-green-500 -z-10" 
-                   style={{ width: 'calc(100% - 1rem)' }}
-              />
+                {/* Connecting Line */}
+                {index < fullTimeline.length - 1 && (
+                  <div 
+                    className={`
+                      absolute top-8 left-full w-full h-1 -z-10
+                      transition-colors duration-300
+                      ${isPassed ? 'bg-green-500' : 'bg-gray-300'}
+                    `} 
+                    style={{ width: 'calc(100% + 2rem)' }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Status Description */}
+      <div className="bg-gray-100 p-4 rounded-lg text-center mb-4">
+        {fullTimeline[currentStatusIndex].description}
+        {fullTimeline[currentStatusIndex].note && (
+          <p className="text-sm text-gray-600 mt-2">
+            Mã đơn hàng: {fullTimeline[currentStatusIndex].note}
+          </p>
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-end space-x-4">
+        {bill.status !== Status.DELIVERED && bill.status !== Status.CANCELED && (
+          <>
+            {bill.status === Status.PLACED && (
+              <button 
+                onClick={() => onActionClick(true)}
+                className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Hủy đơn
+              </button>
             )}
-          </div>
-        ))}
+            <button 
+              onClick={() => onActionClick(false)}
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              {bill.status === Status.PLACED ? 'Xác nhận' : 'Hoàn thành'}
+            </button>
+          </>
+        )}
       </div>
     </div>
-{/* 
-    <div className="mt-8 text-gray-600 text-sm">
-      Người bán đã gửi hàng. Bạn sẽ nhận được sản phẩm dự kiến vào 30-09-2020.
-    </div> */}
-
-    <div className="mt-4 flex justify-end">
-      <button className="bg-red-500 text-white px-6 py-2 rounded-md">
-        Đã Nhận Hàng
-      </button>
-    </div>
-  </div>
   );
 };
 
