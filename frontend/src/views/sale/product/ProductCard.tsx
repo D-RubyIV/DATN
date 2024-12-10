@@ -1,13 +1,12 @@
 import { Fragment, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui'
 import { ProductSaleCardDTO } from '@/@types/sale'
 
 
-
 const ProductCard = ({ product }: { product: ProductSaleCardDTO }) => {
     const [hoveredProductId, setHoveredProductId] = useState<number | null>(null)
-
+    const nevigate = useNavigate()
     return (
         <Fragment>
 
@@ -95,10 +94,12 @@ const ProductCard = ({ product }: { product: ProductSaleCardDTO }) => {
 
                 </div>
                 <div>
-                    <Link to={`/products/${product.productId}`}>
-                        <Button className={'w-full !rounded-none !border !border-black !text-black font-'}>Thêm vào giỏ
-                            hàng</Button>
-                    </Link>
+                    <Button
+                        className={'w-full !rounded-none !border !border-black !text-black'}
+                        onClick={() => {
+                            nevigate(`/products/${product.productId}`)
+                        }}>Thêm vào giỏ
+                        hàng</Button>
                 </div>
             </div>
         </Fragment>

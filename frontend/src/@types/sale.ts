@@ -1,3 +1,9 @@
+interface Event {
+    id: number;
+    name: string;
+}
+
+
 export type ProductSaleCardDTO = {
     productId: number;
     productCode: string;

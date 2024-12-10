@@ -7,6 +7,7 @@ import { Color, Product, ProductDetailResponseDTO, Size } from '@/views/sale/ind
 import { useToastContext } from '@/context/ToastContext'
 import ProductInfo from '../client/Cart/ProductInfo'
 import RecommendProduct from './RecommendProduct'
+import ScrollToTop from '@/views/util/ScrollToTop'
 
 
 const ProductDetail = () => {
@@ -474,6 +475,7 @@ const ProductDetail = () => {
                     <RecommendProduct />
                 </div>
             </div>
+            <ScrollToTop></ScrollToTop>
 
         </div>
     )

@@ -15,7 +15,7 @@ import SaleProvider from '@/views/sale/SaleContext'
 import CartDrawer from '@/views/sale/CartDrawer'
 import { useWSContext } from '@/context/WsContext'
 import { Badge, Button } from '@/components/ui'
-import { HiOutlineBell} from 'react-icons/hi'
+import { HiOutlineBell } from 'react-icons/hi'
 import Dropdown from '../ui/Dropdown'
 import { useToastContext } from '@/context/ToastContext'
 import instance from '@/axios/CustomAxios'
@@ -301,10 +301,10 @@ const RootLayout = () => {
                 }
                 <Route path="/auth/*" element={<SecurityLayout />} />
                 <Route path="/*" element={<PublicLayout />} />
-                <Route path="/" element={<LandingPage/>} />
-                <Route path="/" element={<LandingPage/>} />
-                <Route path="/payment/callback" element={<PaymentCallback/>} />
-                <Route path="/private/reset-password" element={<ResetPassword/>} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/payment/callback" element={<PaymentCallback />} />
+                <Route path="/private/reset-password" element={<ResetPassword />} />
                 <Route path={'/me'} element={<Me></Me>}>
                     <Route index path={'my-order'} element={<MyOrderTable />}></Route>
                     <Route path={'my-voucher'} element={<MyVoucher />}></Route>
