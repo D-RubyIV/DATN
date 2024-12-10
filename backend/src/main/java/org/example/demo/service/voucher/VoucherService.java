@@ -1,6 +1,7 @@
 package org.example.demo.service.voucher;
 
 
+import jakarta.transaction.Transactional;
 import org.example.demo.dto.voucher.response.VoucherResponseDTO;
 import org.example.demo.dto.voucher.response.VoucherResponseV2DTO;
 import org.example.demo.entity.voucher.core.Voucher;
@@ -48,11 +49,14 @@ public interface VoucherService {
 
     void deleteVoucher(Integer id);
 
+
     List<Voucher> findBetterVoucher(BigDecimal amount);
 
     List<Voucher> findListAbleToUseVoucher(BigDecimal amount);
 
     List<Voucher> getSortedVouchers(Sort sort);
+
+    void softDeleteVoucher(Integer id, Boolean softDelete) throws Exception;
 
     Page<Voucher> selectPageActiveAndAbleToUseVoucher(String query, String type, Integer customerId, Pageable pageable);
 
