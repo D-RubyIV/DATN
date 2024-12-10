@@ -23,6 +23,7 @@ public interface MaterialRepository extends JpaRepository<Material, Integer> {
             AND (:createdFrom IS NULL OR m.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR m.createdDate <= :createdTo)
             GROUP BY m
+            ORDER BY m.createdDate DESC
             """)
     Page<Material> findAllByPageWithQuery(
             @Param("query") String query,

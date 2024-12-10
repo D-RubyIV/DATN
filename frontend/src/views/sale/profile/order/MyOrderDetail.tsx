@@ -80,7 +80,7 @@ const MyOrderDetail = () => {
                     <div className="md:col-span-4">
                         {selectObject !== undefined && <OrderInfo data={selectObject} hiddenPrint={true}></OrderInfo>}
                         {selectObject !== undefined &&
-                            <CustomerInfo unAllowEditAddress={true} data={selectObject}
+                            <CustomerInfo unAllowEditAddress={false} data={selectObject}
                                           fetchData={fetchData}></CustomerInfo>}
                         {selectObject !== undefined &&
                             <PaymentSummary unAllowUseVoucher={true} data={paymentSummaryProp} selectObject={selectObject}

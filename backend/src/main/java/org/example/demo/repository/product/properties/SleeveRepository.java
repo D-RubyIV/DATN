@@ -23,6 +23,8 @@ public interface SleeveRepository extends JpaRepository<Sleeve, Integer> {
             AND (:createdFrom IS NULL OR s.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR s.createdDate <= :createdTo)
             GROUP BY s
+            ORDER BY s.createdDate DESC
+            
             """)
     Page<Sleeve> findAllByPageWithQuery(
             @Param("query") String query,

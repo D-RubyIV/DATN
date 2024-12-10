@@ -22,6 +22,8 @@ public interface StyleRepository extends JpaRepository<Style, Integer> {
             AND (:createdFrom IS NULL OR s.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR s.createdDate <= :createdTo)
             GROUP BY s
+            ORDER BY s.createdDate DESC
+            
             """)
     Page<Style> findAllByPageWithQuery(
             @Param("query") String query,

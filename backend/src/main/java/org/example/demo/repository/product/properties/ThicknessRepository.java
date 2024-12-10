@@ -23,6 +23,7 @@ public interface ThicknessRepository extends JpaRepository<Thickness, Integer> {
             AND (:createdFrom IS NULL OR t.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR t.createdDate <= :createdTo)
             GROUP BY t
+            ORDER BY t.createdDate DESC
             """)
     Page<Thickness> findAllByPageWithQuery(
             @Param("query") String query,

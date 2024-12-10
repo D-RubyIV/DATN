@@ -23,6 +23,8 @@ public interface OriginRepository extends JpaRepository<Origin, Integer> {
             AND (:createdFrom IS NULL OR o.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR o.createdDate <= :createdTo)
             GROUP BY o
+            ORDER BY o.createdDate DESC
+            
             """)
     Page<Origin> findAllByPageWithQuery(
             @Param("query") String query,

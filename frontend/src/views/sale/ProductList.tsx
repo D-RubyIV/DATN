@@ -157,7 +157,7 @@ const ProductList = () => {
 
     return (
         <Fragment>
-            <div className={'grid grid-cols-12 px-[2%] md:px-8 py-8 gap-10'}>
+            <div className={'grid grid-cols-12 px-[4%]  py-8 gap-10'}>
                 <div className={'col-span-3'}>
                     <div className={'py-5'}>
                         <h3 className={'uppercase'}>Bộ lọc</h3>

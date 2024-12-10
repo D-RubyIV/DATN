@@ -23,6 +23,7 @@ public interface BrandRepository extends JpaRepository<Brand,Integer> {
             AND (:createdFrom IS NULL OR b.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR b.createdDate <= :createdTo)
             GROUP BY b
+            ORDER BY b.createdDate DESC
             """)
     Page<Brand> findAllByPageWithQuery(
             @Param("query") String query,

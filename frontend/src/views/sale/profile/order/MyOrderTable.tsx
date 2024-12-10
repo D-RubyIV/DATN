@@ -503,13 +503,13 @@ export const MyOrderTable = () => {
         try {
             setIsLoading(true);
             const response = await fetch('http://localhost:8080/api/v1/history/timeline/1');
-    
+
             if (!response.ok) {
                 throw new Error('Không thể tải thông tin đơn hàng');
             }
-    
+
             const data = await response.json();
-    
+
             // Ánh xạ API response sang BillHistory
             const mappedHistory: BillHistory[] = [
                 {
@@ -521,12 +521,12 @@ export const MyOrderTable = () => {
                     account: data.account,
                 },
             ];
-    
+
             setBillHistory(mappedHistory);
             setBill({ status: data.status });
         } catch (error) {
             console.error('Error fetching bill history:', error);
-            message.error('Không thể tải thông tin đơn hàng');
+            // message.error('Không thể tải thông tin đơn hàng');
         } finally {
             setIsLoading(false);
         }

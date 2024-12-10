@@ -23,6 +23,8 @@ public interface SizeRepository extends JpaRepository<Size, Integer> {
             AND (:createdFrom IS NULL OR s.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR s.createdDate <= :createdTo)
             GROUP BY s
+            ORDER BY s.createdDate DESC
+            
             """)
     Page<Size> findAllByPageWithQuery(
             @Param("query") String query,

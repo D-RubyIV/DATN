@@ -30,7 +30,7 @@ function BlackFriday() {
   return (
     <div className="bg-white text-white font-sans">
       {/* Container với chiều rộng lớn hơn */}
-      <div className="container mx-auto px-72 mt-0 max-w-full"> {/* max-w-full để mở rộng hết */}
+      <div className="container mx-auto px-[4%] mt-0 max-w-full"> {/* max-w-full để mở rộng hết */}
 
         <div className="flex flex-wrap bg-gray-50 p-4 space-x-4">
           {/* Phần bên trái (SlideShow) */}

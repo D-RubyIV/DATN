@@ -22,6 +22,7 @@ public interface CollarRepository extends JpaRepository<Collar, Integer> {
             AND (:createdFrom IS NULL OR c.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR c.createdDate <= :createdTo)
             GROUP BY c
+            ORDER BY c.createdDate DESC
             """)
     Page<Collar> findAllByPageWithQuery(
             @Param("query") String query,

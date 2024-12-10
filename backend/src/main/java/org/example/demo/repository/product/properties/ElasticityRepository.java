@@ -23,6 +23,8 @@ public interface ElasticityRepository extends JpaRepository<Elasticity, Integer>
             AND (:createdFrom IS NULL OR e.createdDate >= :createdFrom)
             AND (:createdTo IS NULL OR e.createdDate <= :createdTo)
             GROUP BY e
+            ORDER BY e.createdDate DESC
+            
             """)
     Page<Elasticity> findAllByPageWithQuery(
             @Param("query") String query,

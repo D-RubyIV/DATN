@@ -38,7 +38,7 @@ const SlideShow = () => {
     };
 
     return (
-        <div className="relative h-[700px] w-full overflow-hidden">
+        <div className="relative h-[460px] w-full overflow-hidden">
             {/* Hình ảnh */}
             <div className="absolute inset-0">
                 <img
