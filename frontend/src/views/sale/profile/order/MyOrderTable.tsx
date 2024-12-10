@@ -471,7 +471,7 @@ export const MyOrderTable = () => {
 
     const handleOrderAction = async (isCancel: boolean) => {
         const actionText = isCancel ? 'Hủy đơn hàng' : 'Xác nhận đơn hàng';
-    
+
         try {
             const response = await fetch('http://localhost:8080/api/v1/history/action', {
                 method: 'POST',
@@ -483,7 +483,7 @@ export const MyOrderTable = () => {
                     billId: billHistory[0]?.id,
                 }),
             });
-    
+
             if (response.ok) {
                 message.success(`${actionText} thành công!`);
                 // Làm mới lịch sử đơn hàng
@@ -497,19 +497,19 @@ export const MyOrderTable = () => {
             message.error('Đã có lỗi xảy ra khi thực hiện thao tác');
         }
     };
-    
+
     // Fetch bill history
     const fetchBillHistory = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('http://localhost:8080/api/v1/history/timeline/1');
-    
+            const response = await fetch(`http://localhost:8080/api/v1/history/timeline/2`);
+
             if (!response.ok) {
                 throw new Error('Không thể tải thông tin đơn hàng');
             }
-    
+
             const data = await response.json();
-    
+
             // Ánh xạ API response sang BillHistory
             const mappedHistory: BillHistory[] = [
                 {
@@ -521,7 +521,7 @@ export const MyOrderTable = () => {
                     account: data.account,
                 },
             ];
-    
+
             setBillHistory(mappedHistory);
             setBill({ status: data.status });
         } catch (error) {
@@ -531,11 +531,11 @@ export const MyOrderTable = () => {
             setIsLoading(false);
         }
     };
-    
+
     useEffect(() => {
         fetchBillHistory();
     }, []);
-    
+
     if (isLoading) {
         return <div>Đang tải...</div>;
     }
@@ -546,15 +546,15 @@ export const MyOrderTable = () => {
                 <h1 className="font-semibold text-xl text-black mb-4 text-transform: uppercase">Đơn mua của tôi</h1>
             </div>
 
-            {/*<div className="container mx-auto p-4">*/}
-            {/*    <h1 className="text-2xl font-bold mb-4">Chi Tiết Đơn Hàng</h1>*/}
+            <div className="container mx-auto p-4">
+                <h1 className="text-2xl font-bold mb-4">Chi Tiết Đơn Hàng</h1>
 
-            {/*    <OrderStatusTimeline*/}
-            {/*        billHistory={billHistory}*/}
-            {/*        bill={bill}*/}
-            {/*        onActionClick={handleOrderAction}*/}
-            {/*    />*/}
-            {/*</div>*/}
+                <OrderStatusTimeline
+                    billHistory={billHistory}
+                    bill={bill}
+                    onActionClick={handleOrderAction}
+                />
+            </div>
 
             <div className="py-2">
                 <TabList className="flex justify-evenly gap-4 w-full pt-3 pb-1">
