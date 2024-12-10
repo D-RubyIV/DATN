@@ -134,7 +134,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
                                             type="text"
                                             autoComplete="off"
                                             name="name"
-                                            placeholder="Name"
+                                            placeholder="Tên phiếu giảm giá"
                                             component={Input}
                                             className="w-full"
                                         />
@@ -149,7 +149,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
                                                 type="text"
                                                 autoComplete="off"
                                                 name="code"
-                                                placeholder="Code"
+                                                placeholder="Mã phiếu giảm giá"
                                                 component={Input}
                                                 className="w-full"
                                             />
@@ -186,7 +186,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
                                                 type="number"
                                                 autoComplete="off"
                                                 name="maxPercent"
-                                                placeholder="Max Percent"
+                                                placeholder="Phần trăm giảm giá tối đa"
                                                 component={Input}
                                                 className="w-full pr-12"
                                             />
@@ -205,7 +205,7 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
                                             type="number"
                                             autoComplete="off"
                                             name="minAmount"
-                                            placeholder="Min Amount"
+                                            placeholder="Giá tối thiểu"
                                             component={Input}
                                             className="w-full pr-12"
                                         />

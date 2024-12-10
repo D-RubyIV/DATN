@@ -38,7 +38,8 @@ const VoucherUpdate = () => {
             try {
                 const response = await instance.get(`/voucher/${id}`);
                 const { countOrders } = response.data;
-                toast.success(`Số lượt sử dụng: ${countOrders}`);
+                toast.success(`Số lượt sử dụng: ${countOrders ?? 0}`);
+
 
                 const voucherData = response.data;
 
