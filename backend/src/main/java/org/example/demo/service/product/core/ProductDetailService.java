@@ -1,6 +1,8 @@
 package org.example.demo.service.product.core;
 
+import com.google.zxing.WriterException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
 import org.example.demo.dto.product.phah04.response.ProductClientResponse;
@@ -20,13 +22,17 @@ import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.product.properties.BrandRepository;
 import org.example.demo.repository.product.properties.ImageRepository;
 import org.example.demo.service.IService;
+import org.example.demo.util.FileUploadUtil;
 import org.example.demo.util.phah04.PageableObject;
+import org.example.demo.util.qr.QRUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +40,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ProductDetailService implements IService<ProductDetail, Integer, ProductDetailRequestDTO> {
 
@@ -217,11 +224,19 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
 
 
     @Transactional
-    public List<ProductDetail> saveAll(List<ProductDetailRequestDTO> requestDTOs) throws BadRequestException {
+    public List<ProductDetail> saveAll(List<ProductDetailRequestDTO> requestDTOs) throws IOException {
         List<ProductDetail> savedProductDetails = new ArrayList<>();
 
         for (ProductDetailRequestDTO requestDTO : requestDTOs) {
             ProductDetail savedProductDetail = handleProductDetailSave(requestDTO);
+
+            try{
+                BufferedImage bufferedImage = QRUtil.generateQRCodeWithoutBorder(savedProductDetail.getCode(), 200, 200);
+                FileUploadUtil.saveProductQR(savedProductDetail.getCode(), bufferedImage);
+            }catch (Exception ex){
+                log.error("Lu file error");
+            }
+
             savedProductDetails.add(savedProductDetail);
         }
 
@@ -273,7 +288,6 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
             List<Image> images = createImagesFromDTO(requestDTO.getImages());
             entityMapped.setImages(images);
         }
-
         return productDetailRepository.save(entityMapped);
     }
 

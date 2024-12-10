@@ -137,8 +137,8 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchData(); 
+    }, []); 
 
     const fetchData = () => {
         dispatch(getProductData());
@@ -294,7 +294,7 @@ const ProductForm = forwardRef<FormikProps<any>, ProductFormProps>((props, ref) 
                         values.elasticity
                     ) {
                         const combinations =  generateCombinations(values.color, values.size, values);
-                        dispatch(setCombinations(combinations)); // Ghi vào Redux
+                        dispatch(setCombinations(combinations)); 
                     }
                      else
                      {

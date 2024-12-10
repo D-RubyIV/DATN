@@ -225,6 +225,7 @@ function _DataTable<T>(
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+
         manualPagination: true,
         manualSorting: true,
         onSortingChange: (sorter) => {

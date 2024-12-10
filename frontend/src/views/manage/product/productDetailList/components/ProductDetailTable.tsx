@@ -29,6 +29,7 @@ import type {
     OnSortParam,
     ColumnDef,
 } from '@/components/shared/DataTable'
+import { Row } from '@tanstack/react-table';
 type ChildObject = {
     code: string;
     createdDate: string;
@@ -105,11 +106,10 @@ const ProductDetailColumn = ({ row }: { row: ProductDetail }) => {
     return (
         <div className="flex items-center">
             {avatar}
-            <span className={`ml-2 rtl:mr-2 font-semibold`}>{row.product?.name +" màu " + row.color?.name || ""}</span>
+            <span className={`ml-2 rtl:mr-2 font-semibold`}>{row.product?.name + " màu " + row.color?.name || ""}</span>
         </div>
     )
 }
-
 
 const ProductDetailTable = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
@@ -176,6 +176,10 @@ const ProductDetailTable = () => {
             </div>
         )
     }
+
+
+
+
 
     const columns: ColumnDef<ProductDetail>[] = useMemo(
         () => [
@@ -245,7 +249,7 @@ const ProductDetailTable = () => {
                     const status = getInventoryStatus(quantity);
 
                     return (
-                        <div className="flex items-center gap-2"> 
+                        <div className="flex items-center gap-2">
                             <Badge className={status.dotClass} />
                             <span
                                 className={`capitalize font-semibold ${status.textClass}`}
@@ -287,26 +291,44 @@ const ProductDetailTable = () => {
         dispatch(setTableData(newTableData));
     };
 
-  
+    const handleIndeterminateCheckBoxChange = (checked: boolean, rows: Row<ProductDetail>[]) => {
+        console.log('Indeterminate checkbox changed:', checked, rows);
+
+        // Chuyển đổi các row thành mảng ProductDetail nếu cần
+        const productDetails = rows.map(row => row.original);
+
+        // Bây giờ bạn có thể sử dụng productDetails để xử lý logic của mình
+        console.log('Converted ProductDetails:', productDetails);
+    };
+    const handleCheckBoxChange = (checked: boolean, row: ProductDetail) => {
+            console.log('Checkbox changed:', checked, row);
+    };
+
+
+
     return (
         <>
             {data.length > 0 ? (
-            <DataTable
-                ref={tableRef}
-                columns={columns}
-                data={data}
-                skeletonAvatarColumns={[0]}
-                skeletonAvatarProps={{ className: 'rounded-md' }}
-                loading={loading}
-                pagingData={{
-                    total: tableData.total as number,
-                    pageIndex: tableData.pageIndex as number,
-                    pageSize: tableData.pageSize as number,
-                }}
-                onPaginationChange={onPaginationChange}
-                onSelectChange={onSelectChange}
-                onSort={onSort}
-            />
+                <DataTable
+                    ref={tableRef}
+                    columns={columns}
+                    data={data}
+                    skeletonAvatarColumns={[0]}
+                    skeletonAvatarProps={{ className: 'rounded-md' }}
+                    loading={loading}
+                    pagingData={{
+                        total: tableData.total as number,
+                        pageIndex: tableData.pageIndex as number,
+                        pageSize: tableData.pageSize as number,
+                    }}
+                    onPaginationChange={onPaginationChange}
+                    onSelectChange={onSelectChange}
+                    onSort={onSort}
+                    selectable
+                    onIndeterminateCheckBoxChange={handleIndeterminateCheckBoxChange}
+
+                    onCheckBoxChange={handleCheckBoxChange}
+                />
             ) : (
                 <div className="flex flex-col justify-center items-center h-full">
                     <DoubleSidedImage

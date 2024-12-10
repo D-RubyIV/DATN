@@ -22,7 +22,7 @@ const ProductNew = () => {
             console.error('Error adding products:', error);
             toast.push(
                 <Notification
-                    title={'Error'}
+                    title={'Error'} 
                     duration={2500}
                 >
                     Không thể thêm sản phẩm. Vui lòng thử lại.
