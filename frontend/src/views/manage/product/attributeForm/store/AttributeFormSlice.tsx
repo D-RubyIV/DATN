@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios';
 import type { TableQueries } from '@/@types/common'
-
+import * as XLSX from 'xlsx';
 export type Attribute = {
     id: number;
     code: string;
@@ -49,6 +48,36 @@ export const getAttributes = createAsyncThunk<GetSalesAttributesResponse, GetAtt
     }
 );
  
+
+
+
+export const exportToExcel = (attributesList: Attribute[],lable:string) => {
+    // Chuyển dữ liệu sản phẩm thành một mảng các đối tượng để xuất, bao gồm STT
+    const data = attributesList.map((attribute, index) => ({
+        'STT': index + 1,  // Thêm cột số thứ tự
+        'Mẫ': attribute.code,
+        'Tên': attribute.name,
+        'Ngày Tạo': attribute.createdDate,
+        'Trạng thái': getStatus(attribute.deleted),
+    }));
+
+    // Tạo workbook và worksheet từ dữ liệu
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Product Details');
+
+    // Xuất file Excel
+    XLSX.writeFile(workbook, `DANH_SACH_${lable}.xlsx`);
+};
+
+
+const getStatus = (deleted?: boolean): string => {
+    if (deleted === undefined || deleted === true) {
+        return 'Dừng hoạt động';
+    } else {
+        return 'Đang hoạt động';
+    } 
+};
 
 
 export const deleteAttribute = async <T, U extends Record<string, unknown>>(

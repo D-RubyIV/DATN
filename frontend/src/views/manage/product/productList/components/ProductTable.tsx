@@ -111,9 +111,11 @@ const ProductTable = () => {
 
  
     const fetchData = () => {
-        dispatch(getProducts({ pageIndex, pageSize, sort, query, filterData }))
+        dispatch(getProducts({ pageIndex, pageSize, sort, query, filterData, fetchAll:false }))
 
     }
+
+  
 
     const ActionColumn = ({ row }: { row: Product }) => {
         const dispatch = useAppDispatch()

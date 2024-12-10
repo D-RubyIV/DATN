@@ -31,6 +31,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -116,6 +117,8 @@ public class ProductDetailController {
             return ResponseEntity.ok(savedProducts);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -200,7 +203,7 @@ public class ProductDetailController {
         try {
             List<ProductDetail> savedProductDetails = productDetailService.saveAll(requestDTOList);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedProductDetails);
-        } catch (BadRequestException e) {
+        } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }

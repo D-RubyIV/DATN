@@ -180,7 +180,18 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
                     const filteredSelectedOptions = isMulti
                         ? selectedOptions.filter((option): option is { label: string; value: Option } => option !== null)
                         : selectedOptions.length > 0 ? selectedOptions[0] : null;
+                    const defaultValue = (name !== 'color' && name !== 'size' && options.length > 0)
+                        ? options[0]
+                        : undefined;
 
+
+
+                    useEffect(() => {
+                        if (filteredSelectedOptions === null && defaultValue) {
+                            form.setFieldValue(name, isMulti ? [defaultValue.value] : defaultValue.value);
+                        }
+                        console.log("moi chon")
+                    }, [filteredSelectedOptions, defaultValue, form, name, isMulti, data]);
                     return (
                         <Select
                             isClearable
@@ -194,7 +205,7 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
                             field={field}
                             form={form}
                             options={options}
-                            value={filteredSelectedOptions}
+                            value={filteredSelectedOptions || defaultValue}
                             onChange={(newOptions) => {
                                 if (isMulti) {
                                     const newValue = (newOptions as { label: string; value: Option }[]).map(option => option.value);
