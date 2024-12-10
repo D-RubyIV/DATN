@@ -3,7 +3,7 @@ import instance from '@/axios/CustomAxios'
 import { ProductSaleCardDTO } from '@/@types/sale'
 import ProductCard from '@/views/sale/product/ProductCard'
 import { Button, Pagination } from '@/components/ui'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Input } from '@/components/ui/Input'
 import { HiSearch } from 'react-icons/hi'
 
@@ -39,12 +39,13 @@ const ProductSearch = () => {
 
 
     return (
-        <div className={'px-[2%] py-10'}>
-            <div className={'flex justify-center items-center pb-10'}>
+        <div className={'px-[2%] py-10 h-screen'}>
+            <div className={'flex justify-center items-center pb-5'}>
                 <div className={'flex flex-col justify-center text-center'}>
                     <p className={'font-semibold text-3xl text-black'}>Tìm kiếm</p>
-                    <p className={'text-sm'}>Có <span className={'text-black'}>{totalElements} sản phẩm</span> cho tìm
-                        kiếm</p>
+                    <p className={'text-sm'}>
+                        Có <span className={'text-black'}>{totalElements} sản phẩm</span> cho tìm kiếm
+                    </p>
                 </div>
             </div>
             <Fragment>

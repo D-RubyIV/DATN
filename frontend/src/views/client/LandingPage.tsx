@@ -9,7 +9,7 @@ import 'swiper/css/scrollbar'
 
 // import required modules
 import { Mousewheel, Pagination, Autoplay } from 'swiper/modules'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { HiOutlineXCircle, HiSearch } from 'react-icons/hi'
 import React, { Fragment, useState } from 'react'
 import { Input } from '@/components/ui'
@@ -20,6 +20,8 @@ import Navbar from '@/views/client/Navbar/Navbar'
 
 function LandingPage() {
     const [isOpenMenuSearch, setIsOpenMenuSearch] = useState<boolean>(false)
+    const [query, setQuery] = useState<string>('')
+    const nevigate = useNavigate()
 
     const Display: React.FC<{ title: string }> = ({ title }) => (
         <div className="absolute bottom-[13%] left-[2%] font-poppins text-white">
@@ -32,7 +34,7 @@ function LandingPage() {
                 </Link>
             </div>
             <div
-                className={`fixed bottom-[20px] left-1/2 ${isOpenMenuSearch ? 'hidden' : ''}`}>
+                className={`fixed bottom-[20px] left-1/2 -translate-x-1/2 ${isOpenMenuSearch ? 'hidden' : ''}`}>
                 <button
                     className={'p-5 bg-white rounded-full text-black'}
                     onClick={() => setIsOpenMenuSearch(!isOpenMenuSearch)}
@@ -51,25 +53,35 @@ function LandingPage() {
         <>
             <Navbar isLandingPage={true} />
             <div
-                className={`fixed w-full z-50 transition-all duration-500 bg-white opacity-60 bottom-0 ${isOpenMenuSearch ? '' : ' translate-y-full'}`}>
+                className={`fixed w-full z-50 transition-all duration-500 bg-white opacity-80 bottom-0 ${isOpenMenuSearch ? '' : ' translate-y-full'}`}>
                 <div className={'!flex !flex-col justify-center p-10 items-center'}>
-                    <div className={'w-3/5'}>
+                    <div className={'2xl:w-2/5 w-3/5'}>
                         <Input
                             className={'border-black border-2 !bg-white !opacity-100 text-black !rounded-none'}
                             placeholder={'Vui lòng nhập từ khóa'}
+                            value={query}
                             suffix={
                                 <Fragment>
-                                    <button>
+                                    <button
+                                        onClick={() => {
+                                            nevigate(`/products-search?key=${query}`)
+                                        }}
+                                    >
                                         <HiSearch size={25}></HiSearch>
                                     </button>
                                 </Fragment>
                             }
+                            onChange={(el) => {
+                                setQuery(el.target.value)
+                            }}
+
                         ></Input>
                     </div>
                     <div className={''}>
                         <button
                             className={'p-5 bg-white rounded-full text-black'}
                             onClick={() => setIsOpenMenuSearch(!isOpenMenuSearch)}
+
                         >
                             <HiOutlineXCircle
                                 className={''}
