@@ -52,11 +52,11 @@ interface Voucher {
 }
 
 const VoucherModal = ({
-                          onVoucherSelect,
-                          isVoucherModalOpen,
-                          setIsVoucherModalOpen,
-                          toggleVoucherModal
-                      }: {
+    onVoucherSelect,
+    isVoucherModalOpen,
+    setIsVoucherModalOpen,
+    toggleVoucherModal
+}: {
     onVoucherSelect: (voucher: Voucher) => void;
     isVoucherModalOpen: boolean;
     setIsVoucherModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -135,39 +135,48 @@ const VoucherModal = ({
                         data.length > 0 ? (
                             <div className={'flex flex-col gap-2'}>
                                 {data.map((item, index) => (
-                                    <div key={index} className={'border border-dashed p-2 border-black rounded'}>
-                                        <div className={'flex justify-between gap-2'}>
-                                            <div className={'flex justify-start gap-2'}>
-                                                <div>
-                                                    <div
-                                                        className={`${item.typeTicket === 'Everybody' ? '' : 'text-yellow-600'}`}>
-                                                        <HiOutlineTicket size={25} /></div>
-                                                </div>
-                                                <div>
-                                                    {item.code} - {item.name}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <span>Còn lại: {item.quantity}</span>
+                                    <div key={index} className={'flex h-40 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer'}>
+                                        <div className={'w-24 bg-[#ee4d2d] flex items-center justify-center'}>
+                                            <div className={'text-white'}>
+                                                <HiOutlineTicket size={32} />
                                             </div>
                                         </div>
-                                        <div>
-                                            <span>Đơn hàng tối thiểu: <span
-                                                className={'text-red-600'}>{item.minAmount.toLocaleString('vi')}đ</span></span>
-                                        </div>
-                                        <div className={'flex justify-between'}>
-                                            <div className={'flex justify-start gap-1'}>
-                                                <span>Giảm(%): {item.maxPercent} </span>
-                                                <span>~</span>
-                                                <p className={'text-red-600'}>{Math.round(item.maxPercent / 100 * (selectedCart as CartResponseDTO)?.subTotal).toLocaleString('vi') + 'đ'}</p>
+
+                                        <div className={'flex-1 px-3 py-2 relative border-gray-300 border'}>
+                                            <div className={'inline-block bg-[#ee4d2d] text-white text-xs px-1.5 py-1 rounded-sm mb-1'}>
+                                                {item.code}
                                             </div>
-                                            <div>
+
+                                            <div className={'text-gray-800 font-medium text-base mb-1'}>
+                                                Giảm: {item.maxPercent}%  <br></br>
+                                                Đơn tối thiểu: <span className="text-blue-600 font-semibold text-lg"> {item.minAmount.toLocaleString('vi')} vnđ</span>
+                                            </div>
+
+
+                                            <div className={'flex items-center gap-1 text-xs'}>
+                                                <span className={'text-gray-400'}>- HSD: {item.endDate}</span>
+                                            </div>
+
+
+                                            <div className={'text-[#0055AA] text-xs mt-1'}>
+                                                Chi tiết {'>>'}
+                                            </div>
+
+                                            <div className="absolute inset-0 flex items-center justify-end mr-2">
                                                 <button
                                                     type={'button'}
-                                                    className={'border-black border p-1 text-[12px] font-semibold'}
+                                                    className={'border-black border p-1 text-[20px] font-semibold'}
                                                     onClick={() => onVoucherSelect(item)}
-                                                >Chọn
+                                                >
+                                                    Chọn
                                                 </button>
+                                            </div>
+
+
+                                            <div className={'absolute -left-[6px] top-0 h-full flex flex-col justify-between py-1'}>
+                                                {[...Array(6)].map((_, i) => (
+                                                    <div key={i} className={'w-3 h-3 rounded-full bg-gray-100'}></div>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
@@ -182,9 +191,10 @@ const VoucherModal = ({
                         )
                     }
                     <div className={'flex justify-center'}>
-                    <Pagination
+                        <Pagination
                             total={totalElements}
                             currentPage={tableData.pageIndex}
+                            pageSize={tableData.pageSize}
                             onChange={(el) => {
                                 handlePaginationChange(el)
                             }}

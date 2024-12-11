@@ -478,7 +478,7 @@ export const MyOrderTable = () => {
 
     const handleOrderAction = async (isCancel: boolean) => {
         const actionText = isCancel ? 'Hủy đơn hàng' : 'Xác nhận đơn hàng';
-    
+
         try {
             const response = await fetch('http://localhost:8080/api/v1/history/action', {
                 method: 'POST',
@@ -490,7 +490,7 @@ export const MyOrderTable = () => {
                     billId: billHistory[0]?.id,
                 }),
             });
-    
+
             if (response.ok) {
                 message.success(`${actionText} thành công!`);
                 // Làm mới lịch sử đơn hàng
@@ -504,12 +504,12 @@ export const MyOrderTable = () => {
             message.error('Đã có lỗi xảy ra khi thực hiện thao tác');
         }
     };
-    
+
     // Fetch bill history
     const fetchBillHistory = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('http://localhost:8080/api/v1/history/timeline/1');
+            const response = await fetch(`http://localhost:8080/api/v1/history/timeline/2`);
 
             if (!response.ok) {
                 throw new Error('Không thể tải thông tin đơn hàng');
@@ -533,16 +533,16 @@ export const MyOrderTable = () => {
             setBill({ status: data.status });
         } catch (error) {
             console.error('Error fetching bill history:', error);
-            // message.error('Không thể tải thông tin đơn hàng');
+            message.error('Không thể tải thông tin đơn hàng');
         } finally {
             setIsLoading(false);
         }
     };
-    
+
     useEffect(() => {
         fetchBillHistory();
     }, []);
-    
+
     if (isLoading) {
         return <div>Đang tải...</div>;
     }
