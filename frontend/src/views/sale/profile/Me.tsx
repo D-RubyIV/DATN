@@ -31,7 +31,7 @@ const Me = () => {
         <Fragment>
             <CartDrawer></CartDrawer>
             <Navbar></Navbar>
-            <div className={"grid grid-cols-12 w-full h-auto min-h-[800px] gap-2 p-5"}>
+            <div className={"grid grid-cols-12 w-full h-auto gap-2"}>
                 <div className={"col-span-2 bg-white flex flex-col gap-4"}>
                     {menu.map((item, index) => (
                         <div
@@ -46,11 +46,13 @@ const Me = () => {
                         </div>
                     ))}
                 </div>
-                <div className={"col-span-10 bg-white p-5"}>
+                <div className={"col-span-10 bg-white p-5 min-h-svh"}>
                     <Outlet />
                 </div>
             </div>
-            <Footer/>
+            <div>
+                <Footer/>
+            </div>
         </Fragment>
     )
 }

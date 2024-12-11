@@ -260,6 +260,13 @@ export const MyOrderTable = () => {
             )
         },
         {
+            header: 'Mã',
+            accessorKey: 'code',
+            cell: (props) => (
+                <p>{props.row.original.code}</p>
+            )
+        },
+        {
             header: 'Tổng giá trị',
             accessorKey: 'subTotal',
             cell: (props) => (

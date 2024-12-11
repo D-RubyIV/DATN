@@ -4,6 +4,7 @@ import instance from "@/axios/CustomAxios";
 import { OrderResponseDTO } from "@/@types/order";
 import { Avatar, Steps } from "@/components/ui";
 import { FiPackage } from "react-icons/fi";
+import StatusOrderFormat from '@/views/util/StatusOrderFormat'
 
 const InvoiceSearchResult = () => {
     const { codeOrder } = useParams();
@@ -40,8 +41,7 @@ const InvoiceSearchResult = () => {
 
             </div>
             <div className="p-10 grid grid-cols-12 gap-8 bg-gray-200 border ">
-
-                <div className="col-span-3 bg-white shadow-lg p-5 rounded-lg">
+                <div className="col-span-4 bg-white shadow-lg p-5 rounded-lg">
                     <h3 className="text-2xl font-bold text-gray-800 mb-5">
                         Lịch sử đơn hàng
                     </h3>
@@ -53,7 +53,7 @@ const InvoiceSearchResult = () => {
                             {orderResponseDTO.historyResponseDTOS.map((item, index) => (
                                 <Steps.Item
                                     key={index}
-                                    title={item.status}
+                                    title={<StatusOrderFormat status={item.status}/>}
                                     description={item.note}
                                 />
                             ))}
@@ -74,12 +74,11 @@ const InvoiceSearchResult = () => {
                             <strong>Hình thức thanh toán:</strong>{" "}
                             {orderResponseDTO?.payment === "CASH" ? "Tiền mặt" : "Chuyển khoản"}
                         </p>
-                        <p><strong>Trạng thái đơn hàng:</strong> {orderResponseDTO?.status}</p>
                     </div>
                 </div>
 
                 {/* Thông tin thanh toán */}
-                <div className="col-span-3 bg-white shadow-lg p-5 rounded-lg">
+                <div className="col-span-4 bg-white shadow-lg p-5 rounded-lg">
                     <h3 className="text-2xl font-bold text-gray-800 mb-5">
                         Thông tin thanh toán
                     </h3>
