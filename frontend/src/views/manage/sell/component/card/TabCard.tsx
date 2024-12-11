@@ -20,6 +20,7 @@ import { useSellContext } from '@/views/manage/sell/context/SellContext'
 import { ConfirmDialog } from '@/components/shared'
 import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
 import History from '@/views/manage/order/component/puzzle/History'
+import StatusOrderFormat from '@/views/util/StatusOrderFormat'
 
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
@@ -185,19 +186,24 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             <label>
                                 Danh sách sản phẩm - Đơn hàng {selectedOrder?.code}
                             </label>
+                            <label>
+                                {
+                                    selectedOrder?.status && <StatusOrderFormat status={selectedOrder?.status}/>
+                                }
+                            </label>
                         </div>
-                        <div className="flex gap-4">
+                        <div className="flex gap-4" >
                             <Button
                                 variant="default"
                                 icon={<HiQrcode />}
+                                hidden={selectedOrder?.status !== 'PENDING'}
                                 onClick={() => setIsScanning(true)}
                             >Quét mã QR</Button>
                             <Button
                                 size="sm"
                                 variant="solid"
-                                style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                                className="flex items-center justify-center gap-2 button-bg-important"
                                 icon={<HiPlusCircle />}
+                                hidden={selectedOrder?.status !== 'PENDING'}
                                 onClick={() => {
                                     setIsOpenProductModal(true)
                                 }}
@@ -275,9 +281,10 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             ) : (<div></div>)
                         }
                     </div>
-                    <div>
+                    <div hidden={selectedOrder?.status !== 'PENDING'}>
                         <Button
                             block
+
                             size="sm"
                             variant="solid"
                             style={{ backgroundColor: 'rgb(79, 70, 229)' }}

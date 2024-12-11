@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.demo.dto.order.properties.request.AllowOverrideOrderDetailRequestDTO;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
 import org.example.demo.entity.order.core.Order;
+import org.example.demo.entity.order.enums.Status;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
@@ -62,7 +63,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     public OrderDetail delete(Integer integer) {
         OrderDetail orderDetail = findById(integer);
         ProductDetail productDetail = orderDetail.getProductDetail();
-        productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
+        if (orderDetail.getOrder().getStatus() != Status.CANCELED){
+            productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
+        }
         productDetailRepository.save(productDetail);
         orderDetailRepository.delete(orderDetail);
         entityManager.flush();

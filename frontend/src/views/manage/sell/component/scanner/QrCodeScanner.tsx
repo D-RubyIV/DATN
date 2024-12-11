@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Html5QrcodeScanner } from 'html5-qrcode'
 import { useToastContext } from '@/context/ToastContext'
 import { OrderResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
-import { Button, Notification, toast } from '@/components/ui'
 import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
 import { ConfirmDialog } from '@/components/shared'
-import SellProductTable from '@/views/manage/sell/component/table/SellProductTable'
 
 type IProps = {
     isScanning: boolean;

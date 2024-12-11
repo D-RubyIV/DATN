@@ -130,6 +130,7 @@ const CustomerInfo = ({ data, fetchSelectedOrder, setIsOpenCustomerModal }: {
                             size="sm"
                             variant="default"
                             icon={<HiArrowsExpand />}
+                            hidden={data.status !== 'PENDING'}
                             onClick={() => setIsOpenCustomerModal(true)}
                         >Chọn
                         </Button>
@@ -138,9 +139,8 @@ const CustomerInfo = ({ data, fetchSelectedOrder, setIsOpenCustomerModal }: {
                         <Button
                             size="sm"
                             variant="solid"
-                            style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                            className="flex items-center justify-center gap-2 button-bg-important"
                             icon={<HiPlusCircle />}
+                            hidden={data.status !== 'PENDING'}
                             onClick={() => setIsOpenCreateCustomerModal(true)}
                         >Thêm mới</Button>
                     </div>
@@ -172,13 +172,15 @@ const CustomerInfo = ({ data, fetchSelectedOrder, setIsOpenCustomerModal }: {
                 </div>
                 {
                     data?.customerResponseDTO && (
-                        <Tooltip title={'Hủy gán'} className={'text-black'}>
-                            <Button
-                                variant={'plain'}
-                                icon={<HiOutlineBackspace size={25} />}
-                                onClick={() => openUnLinkCustomerConfirm(data?.id)}
-                            />
-                        </Tooltip>
+                        <div hidden={data.status !== 'PENDING'}>
+                            <Tooltip title={'Hủy gán'} className={'text-black'} >
+                                <Button
+                                    variant={'plain'}
+                                    icon={<HiOutlineBackspace size={25} />}
+                                    onClick={() => openUnLinkCustomerConfirm(data?.id)}
+                                />
+                            </Tooltip>
+                        </div>
                     )
                 }
             </div>

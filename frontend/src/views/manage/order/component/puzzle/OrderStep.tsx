@@ -189,7 +189,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                 if (error?.response?.data?.error) {
                     openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
                 }
-            }).finally(function(){
+            }).finally(function() {
                 setIsLoadingComponent(false)
             })
         })
@@ -212,13 +212,22 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                                     Trả lại tiền và chuyển sang chờ vận chuyển
                                 </Button>
                             )
-                            : (
-                                <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto"
-                                        icon={<HiOutlineTruck />}
-                                        onClick={handleSubmit(async () => submitChangeStatus('TOSHIP'))}>
-                                    Chuyển trạng thái chờ vận chuyển
-                                </Button>
-                            )
+                            : selectObject.type === 'ONLINE' ? (
+                                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto"
+                                            disabled={selectObject.orderDetailResponseDTOS.length === 0}
+                                            icon={<HiOutlineTruck />}
+                                            onClick={handleSubmit(async () => submitChangeStatus('TOSHIP'))}>
+                                        Chuyển trạng thái chờ vận chuyển
+                                    </Button>
+                                ) :
+                                (
+                                    <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto"
+                                            disabled={selectObject.orderDetailResponseDTOS.length === 0}
+                                            icon={<HiOutlineCash />}
+                                            onClick={handleSubmit(async () => submitChangeStatus('DELIVERED'))}>
+                                        Xác nhận giao hàng
+                                    </Button>
+                                )
                     }
                     {
                         selectObject.isPayment ?

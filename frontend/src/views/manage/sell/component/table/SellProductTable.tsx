@@ -1,8 +1,8 @@
-import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, Fragment, useEffect, useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Avatar, Button, Dialog, Input, Notification, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
-import { HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
+import { HiLockClosed, HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
@@ -41,8 +41,8 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
     const handleUpdateQuantity = async (id: number, quantity: number) => {
         await instance.get(`/order-details/quantity/update/${id}?quantity=${quantity}`)
             .then(function(response) {
-                if(response.status === 200){
-                    openNotification("Thay đổi thành công")
+                if (response.status === 200) {
+                    openNotification('Thay đổi thành công')
                     fetchData()
                 }
             })
@@ -101,16 +101,18 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     return (
                         <div className="flex gap-1 items-center justify-start">
                             {
-                                (<button className="p-2 text-xl" onClick={() => {
-                                    handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
-                                }}><HiPlusCircle /></button>)
+                                (<button className="p-2 text-xl" hidden={selectedOrder.status !== 'PENDING'}
+                                         onClick={() => {
+                                             handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
+                                         }}><HiPlusCircle /></button>)
                             }
 
                             <label>{props.row.original.quantity} </label>
                             {
-                                (<button className="p-2 text-xl" onClick={() => {
-                                    handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
-                                }}><HiMinusCircle /></button>)
+                                (<button className="p-2 text-xl" hidden={selectedOrder.status !== 'PENDING'}
+                                         onClick={() => {
+                                             handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
+                                         }}><HiMinusCircle /></button>)
                             }
 
                         </div>
@@ -180,20 +182,33 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                     const row = props.row.original as OrderDetailResponseDTO
                     return (
                         <div className={'flex gap-4'}>
-                            <Button
-                                icon={<HiPencil />}
-                                variant="plain"
-                                onClick={() => {
-                                    setSelectedOrderDetail(row)
-                                    setIsOpenEditQuantity(true)
-                                    document.body.style.overflow = 'hidden'
-                                }}
-                            ></Button>
-                            <Button
-                                icon={<DeleteOutline />}
-                                variant="plain"
-                                onClick={() => openDeleteConfirm(row.id)}
-                            ></Button>
+                            {
+                                selectedOrder.status === 'PENDING' ?
+                                    (
+                                        <Fragment>
+                                            <Button
+                                                icon={<HiPencil />}
+                                                variant="plain"
+                                                onClick={() => {
+                                                    setSelectedOrderDetail(row)
+                                                    setIsOpenEditQuantity(true)
+                                                    document.body.style.overflow = 'hidden'
+                                                }}
+                                            ></Button>
+                                            <Button
+                                                icon={<DeleteOutline />}
+                                                variant="plain"
+                                                onClick={() => openDeleteConfirm(row.id)}
+                                            ></Button>
+                                        </Fragment>
+                                    ) :
+                                    (
+                                        <Button
+                                            icon={<HiLockClosed />}
+                                            variant="plain"
+                                        ></Button>
+                                    )
+                            }
                         </div>
                     )
                 }
@@ -229,7 +244,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         return (
             <NumericFormat
                 displayType="text"
-                value={(Math.round(amount * 100) / 100).toFixed(2)}
+                value={(Math.round(amount * 100) / 100).toFixed(0)}
                 suffix={'₫'}
                 thousandSeparator={true}
                 className={className} // Áp dụng className
@@ -410,7 +425,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 onSelectChange={handleSelectChange}
                 onSort={handleSort}
             />
-            <EditQuantityDialog/>
+            <EditQuantityDialog />
         </div>
     )
 }
