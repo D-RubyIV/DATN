@@ -26,6 +26,7 @@ import java.util.Optional;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     Optional<Order> findByCode(String code);
+
     @Query(value = """
             SELECT DISTINCT b FROM Order b
             LEFT JOIN FETCH b.customer bc
@@ -100,14 +101,14 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     );
 
     @Query(value = "SELECT new org.example.demo.dto.order.core.response.CountStatusOrder( " +
-            "COUNT(o), " +  // Đếm tổng số đơn hàng
-            "SUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END), " +  // Đếm số đơn hàng 'PENDING'
-            "SUM(CASE WHEN o.status = 'TOSHIP' THEN 1 ELSE 0 END), " +   // Đếm số đơn hàng 'TOSHIP'
-            "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
-            "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
-            "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'CANCELED'
-            "FROM Order o WHERE o.deleted = false " +
-            "AND (:type IS NULL OR LOWER(o.type) LIKE LOWER(CONCAT('%', :type, '%')))"
+                   "COUNT(o), " +  // Đếm tổng số đơn hàng
+                   "SUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END), " +  // Đếm số đơn hàng 'PENDING'
+                   "SUM(CASE WHEN o.status = 'TOSHIP' THEN 1 ELSE 0 END), " +   // Đếm số đơn hàng 'TOSHIP'
+                   "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
+                   "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
+                   "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'CANCELED'
+                   "FROM Order o WHERE o.deleted = false " +
+                   "AND (:type IS NULL OR LOWER(o.type) LIKE LOWER(CONCAT('%', :type, '%')))"
     )
     CountStatusOrder getCountStatus(@Param("type") String type);
 
@@ -136,60 +137,90 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 
     @Query(value = """
-        SELECT ROUND(sum( ord.subTotal), 0) as revenue,
-        sum(coalesce(detail.quantity, 0)) as quantity,
-        CONCAT(DAY(ord.createdDate), '/', MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
-        FROM Order ord
-         JOIN OrderDetail detail ON ord.id = detail.order.id
-        WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
-        GROUP BY YEAR(ord.createdDate), MONTH(ord.createdDate), DAY(ord.createdDate)
-        ORDER BY YEAR(ord.createdDate), MONTH(ord.createdDate), DAY(ord.createdDate)
-        """)
-    List<StatisticOverviewSymbol> findAllStatisticByDay(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+                SELECT 
+                    ROUND(SUM(ord.subTotal), 0) AS revenue,
+                    SUM(detail.quantity) AS quantity,
+                    CONCAT(DAY(ord.createdDate), '/', MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) AS symbol
+                FROM Order ord
+                JOIN (
+                    SELECT 
+                        odtl.order.id AS order_id, 
+                        SUM(odtl.quantity) AS quantity
+                    FROM OrderDetail odtl
+                    GROUP BY odtl.order.id
+                ) detail ON detail.order_id = ord.id
+                WHERE ord.createdDate BETWEEN :from AND :to 
+                  AND ord.status = :status
+                GROUP BY 
+                    YEAR(ord.createdDate), 
+                    MONTH(ord.createdDate), 
+                    DAY(ord.createdDate)
+                ORDER BY 
+                    YEAR(ord.createdDate), 
+                    MONTH(ord.createdDate), 
+                    DAY(ord.createdDate)
+            """)
+    List<StatisticOverviewSymbol> findAllStatisticByDay(
+            @Param("status") Status status,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
+
 
     @Query(value = """
-        SELECT ROUND(sum( ord.subTotal), 0) as revenue,
-        sum(coalesce(detail.quantity, 0)) as quantity,
-        CONCAT(MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
-        FROM Order ord
-         JOIN OrderDetail detail ON ord.id = detail.order.id
-        WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
-        GROUP BY YEAR(ord.createdDate), MONTH(ord.createdDate)
-        ORDER BY YEAR(ord.createdDate), MONTH(ord.createdDate)
-        """)
+            SELECT ROUND(sum( ord.subTotal), 0) as revenue,
+            sum(coalesce(detail.quantity, 0)) as quantity,
+            CONCAT(MONTH(ord.createdDate), '/', YEAR(ord.createdDate)) as symbol
+            FROM Order ord
+            JOIN (
+                SELECT 
+                    odtl.order.id AS order_id, 
+                    SUM(odtl.quantity) AS quantity
+                FROM OrderDetail odtl
+                GROUP BY odtl.order.id
+            ) detail ON detail.order_id = ord.id
+            WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
+            GROUP BY YEAR(ord.createdDate), MONTH(ord.createdDate)
+            ORDER BY YEAR(ord.createdDate), MONTH(ord.createdDate)
+            """)
     List<StatisticOverviewSymbol> findAllStatisticByMonth(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
     @Query(value = """
-        SELECT ROUND(sum( ord.subTotal), 0) as revenue,
-        sum(coalesce(detail.quantity, 0)) as quantity,
-        YEAR(ord.createdDate) as symbol
-        FROM Order ord
-         JOIN OrderDetail detail ON ord.id = detail.order.id
-        WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
-        GROUP BY YEAR(ord.createdDate)
-        ORDER BY YEAR(ord.createdDate)
-        """)
+            SELECT ROUND(sum( ord.subTotal), 0) as revenue,
+            sum(coalesce(detail.quantity, 0)) as quantity,
+            YEAR(ord.createdDate) as symbol
+            FROM Order ord
+            JOIN (
+                SELECT 
+                    odtl.order.id AS order_id, 
+                    SUM(odtl.quantity) AS quantity
+                FROM OrderDetail odtl
+                GROUP BY odtl.order.id
+            ) detail ON detail.order_id = ord.id
+            WHERE ord.createdDate BETWEEN :from AND :to AND ord.status = :status
+            GROUP BY YEAR(ord.createdDate)
+            ORDER BY YEAR(ord.createdDate)
+            """)
     List<StatisticOverviewSymbol> findAllStatisticByYear(@Param("status") Status status, @Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
 
     @Query(value = """
-        SELECT p.id as id,
-        p.code as code,
-        p.code as image,
-        p.name as name,
-        sum(od.quantity) as sold
-        FROM Product p
-        JOIN ProductDetail pd ON p.id = pd.product.id
-        JOIN OrderDetail od ON pd.id = od.productDetail.id
-        JOIN Order o on o.id = od.order.id
-        WHERE o.status = 'DELIVERED'
-        GROUP BY p.id, p.code, p.name
-        ORDER BY SUM(od.quantity) DESC
-        """)
+            SELECT p.id as id,
+            p.code as code,
+            p.code as image,
+            p.name as name,
+            sum(od.quantity) as sold
+            FROM Product p
+            JOIN ProductDetail pd ON p.id = pd.product.id
+            JOIN OrderDetail od ON pd.id = od.productDetail.id
+            JOIN Order o on o.id = od.order.id
+            WHERE o.status = 'DELIVERED'
+            GROUP BY p.id, p.code, p.name
+            ORDER BY SUM(od.quantity) DESC
+            """)
     Page<TopProductObject> findAllTopProduct(Pageable pageable);
 
     int countByVoucherId(Integer voucherId);
-
 
 
 }

@@ -168,7 +168,7 @@ const columns = [
         }
     }),
     columnHelper.accessor('total', {
-        header: 'Thành tiền',
+        header: 'Cần TT',
         cell: (props) => {
             const { total } = props.row.original
             return (

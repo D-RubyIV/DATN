@@ -42,7 +42,7 @@ const SalesReport = () => {
         } else {
             updatedSeries.push({
                 name: 'Doanh số',
-                data: Array.isArray(listOverViewChart) ?listOverViewChart.map(s => Number((s.revenue / 2).toFixed(0))) : []
+                data: Array.isArray(listOverViewChart) ?listOverViewChart.map(s => Number((s.revenue).toFixed(0))) : []
             });
         }
 
