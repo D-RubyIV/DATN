@@ -15,9 +15,9 @@ public class EventListDTO {
     private String discountCode;
     private String name; // tên sự kiện
     private Integer discountPercent; // phần trăm giảm giá
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "HH:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = "HH:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime endDate;
     private Integer quantityDiscount = 0;
     private String status; //

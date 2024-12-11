@@ -23,10 +23,10 @@ public class EventDTO {
 
     private Integer discountPercent; // phần trăm giảm giá
 
-    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
+    @JsonFormat(pattern = "HH:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime startDate;
 
-    @JsonFormat(pattern = "dd-MM-yyyy'T'HH:mm")
+    @JsonFormat(pattern = "HH:mm dd-MM-yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDateTime endDate;
 
     private Integer quantityDiscount; // so luong phai tinh dua tren san pham dc chon

@@ -172,14 +172,14 @@ const EventTable = () => {
             header: 'Ngày bắt đầu',
             accessorKey: 'startDate',
             cell: ({ row }: CellContext<EventListDTO, unknown>) => {
-                return format(new Date(row.original.startDate), 'dd/MM/yyyy HH:mm')
+                return <p>{row.original.startDate}</p>
             }
         },
         {
             header: 'Ngày kết thúc',
             accessorKey: 'endDate',
             cell: ({ row }: CellContext<EventListDTO, unknown>) => {
-                return format(new Date(row.original.endDate), 'dd/MM/yyyy HH:mm')
+                return <p>{row.original.endDate}</p>
             }
         },
         {

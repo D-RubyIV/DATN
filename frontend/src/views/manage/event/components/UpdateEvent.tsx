@@ -39,6 +39,7 @@ const UpdateEvent = () => {
     const [pageSize, setPageSize] = useState(5)
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
     const [selectedEvent, setSelectedEvent] = useState<EventDTO>()
+    const [startDateValue, setStartDateValue] = useState()
     const [initialContact, setInitialContact] = useState({
         currentName: '',
     });
@@ -107,9 +108,10 @@ const UpdateEvent = () => {
     const handleSubmit = async (values: EventDTO, { resetForm, setSubmitting }: FormikHelpers<EventDTO>) => {
         try {
             console.log('Received form values:', values)
-
+            console.log("SUBMIT DATE START: ", values.startDate )
+            console.log("SUBMIT DATE END: ", values.endDate)
             if (values.startDate && values.endDate) {
-                if (values.startDate > values.endDate) {
+                if (dayjs(values.startDate, "HH:mm DD-MM-YYYY").toDate() > dayjs(values.endDate, "HH:mm DD-MM-YYYY").toDate() ) {
                     openNotification("Ngày bắt đầu phải trước ngày kết thúc", 'Thông báo', 'warning', 5000)
                     return;
                 }
@@ -274,23 +276,31 @@ const UpdateEvent = () => {
                                             errorMessage={errors.startDate}
                                         >
                                             <Field name="startDate">
-                                                {({ field, form }: any) => {
-                                                    console.log('START DATE: ', updateEvent?.startDate)
-                                                    console.log(values)
+                                                {() => {
+                                                    if (!updateEvent?.startDate) {
+                                                        return null;  // Or any fallback UI if startDate is not available
+                                                    }
+
+                                                    console.log('START DATE: ', updateEvent?.startDate);
+                                                    const aa = '14:49 03-12-2024';
+                                                    const bb = updateEvent?.startDate;
+                                                    console.log(aa === bb);
+
+                                                    // If startDate is a Date or valid string, you can use dayjs without format:
+                                                    // Parse directly without calling toString() if it's a string in the correct format:
+                                                    const convertedDate = dayjs(bb, "HH:mm DD-MM-YYYY").toDate();
+
                                                     return (
                                                         <DateTimepicker
                                                             inputFormat="DD/MM/YYYY HH:mm"
-                                                            defaultValue={dayjs(updateEvent?.startDate, 'DD-MM-YYYYTHH:mm').toDate()}
+                                                            defaultValue={convertedDate}
                                                             onChange={(el) => {
-                                                                console.log(el)
-                                                                const date = dayjs(el)
-                                                                const formattedDate = date.format('DD-MM-YYYYTHH:mm')
-                                                                console.log(formattedDate)
-                                                                setFieldValue('startDate', formattedDate)
-                                                            }} />
-
-                                                    )
+                                                                setFieldValue('startDate', dayjs(el).format('HH:mm DD-MM-YYYY'))
+                                                            }}
+                                                        />
+                                                    );
                                                 }}
+
                                             </Field>
                                         </FormItem>
 
@@ -301,23 +311,29 @@ const UpdateEvent = () => {
                                             errorMessage={errors.endDate}
                                         >
                                             <Field name="endDate">
-                                                {({ field, form }: any) => {
+                                                {() => {
+                                                    if (!updateEvent?.endDate) {
+                                                        return null;  // Or any fallback UI if startDate is not available
+                                                    }
 
+                                                    console.log('END DATE: ', updateEvent?.endDate);
+                                                    const aa = '14:49 03-12-2024';
+                                                    const bb = updateEvent?.endDate;
+                                                    console.log(aa === bb);
+
+                                                    // If startDate is a Date or valid string, you can use dayjs without format:
+                                                    // Parse directly without calling toString() if it's a string in the correct format:
+                                                    const convertedDate = dayjs(bb, "HH:mm DD-MM-YYYY").toDate();
 
                                                     return (
                                                         <DateTimepicker
                                                             inputFormat="DD/MM/YYYY HH:mm"
-                                                            defaultValue={dayjs(updateEvent?.endDate, 'DD-MM-YYYYTHH:mm').toDate()}
-
+                                                            defaultValue={convertedDate}
                                                             onChange={(el) => {
-                                                                console.log(el)
-                                                                const date = dayjs(el)
-                                                                const formattedDate = date.format('DD-MM-YYYYTHH:mm')
-                                                                console.log(formattedDate)
-                                                                setFieldValue('endDate', formattedDate)
-
-                                                            }} />
-                                                    )
+                                                                setFieldValue('endDate', dayjs(el).format('HH:mm DD-MM-YYYY'))
+                                                            }}
+                                                        />
+                                                    );
                                                 }}
                                             </Field>
                                         </FormItem>

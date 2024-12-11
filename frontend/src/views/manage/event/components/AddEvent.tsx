@@ -107,8 +107,8 @@ const AddEvent = () => {
             console.log('Ngày kết thúc (trước khi chuyển đổi):', values.endDate);
 
             if (values.startDate && values.endDate) {
-                if (values.startDate > values.endDate) {
-                    openNotification("Thời gian bắt đầu phải trước thời gian kết thúc", 'Thông báo', 'warning', 5000)
+                if (dayjs(values.startDate, "HH:mm DD-MM-YYYY").toDate() > dayjs(values.endDate, "HH:mm DD-MM-YYYY").toDate() ) {
+                    openNotification("Ngày bắt đầu phải trước ngày kết thúc", 'Thông báo', 'warning', 5000)
                     return;
                 }
             }
@@ -250,7 +250,7 @@ const AddEvent = () => {
                                                         <DateTimepicker onChange={(el) => {
                                                             console.log(el)
                                                             const date = dayjs(el)
-                                                            const formattedDate = date.format('DD-MM-YYYYTHH:mm')
+                                                            const formattedDate = date.format('HH:mm DD-MM-YYYY')
                                                             console.log(formattedDate)
                                                             setFieldValue('startDate', formattedDate)
                                                         }} />
@@ -272,7 +272,7 @@ const AddEvent = () => {
                                                         <DateTimepicker onChange={(el) => {
                                                             console.log(el)
                                                             const date = dayjs(el)
-                                                            const formattedDate = date.format('DD-MM-YYYYTHH:mm')
+                                                            const formattedDate = date.format('HH:mm DD-MM-YYYY')
                                                             console.log(formattedDate)
                                                             setFieldValue('endDate', formattedDate)
 
