@@ -5,6 +5,7 @@ type BaseEntity = {
     code: string;
     name: string;
     deleted: boolean;
+    description: string;
 };
 
 type Event = {

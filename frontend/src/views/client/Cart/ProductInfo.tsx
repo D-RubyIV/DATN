@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Typography, Box } from '@mui/material';
 
-function TabPanel({ children, value, index, ...other }) {
+interface TabPanelProps {
+  children?: React.ReactNode;
+  value: number;
+  index: number;
+}
+
+
+function TabPanel({ children, value, index, ...other }: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -19,10 +26,22 @@ function TabPanel({ children, value, index, ...other }) {
   );
 }
 
-export default function ProductInfo() {
+interface ProductInfoProps {
+  productDescription: string | undefined;
+  reviews: string;
+  returnPolicy: string;
+  warrantyPolicy: string;
+}
+
+const ProductInfo: React.FC<ProductInfoProps> = ({
+  productDescription,
+  reviews,
+  returnPolicy,
+  warrantyPolicy,
+}) => {
   const [tabIndex, setTabIndex] = useState(0);
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabIndex(newValue);
   };
 
@@ -36,29 +55,19 @@ export default function ProductInfo() {
       </Tabs>
 
       <TabPanel value={tabIndex} index={0}>
-        {/* Nội dung Mô tả */}
-        Áo khoác gió CANTH công nghệ Smart-Tech, cản gió, chống thấm nước, mũ liền, có thể gấp gọn EWCW007 <br/>
-        ▪️ Được thiết kế theo đúng form chuẩn của nam giới Việt Nam<br/>
-        ▪️ Phiên bản sử dụng công nghệ chống nước HYPER-TEX mới nhất 2024 <br/>
-
-        📌 THÔNG TIN CHI TIẾT<br/>
-        * Chất liệu: 100% polyester<br/>
-        * Phom: Slim-fit, bo gấu có điều chỉnh<br/>
-        * Xuất xứ: Việt Nam<br/>
-        * Size: S - M - L - XL<br/>
+        {productDescription}
       </TabPanel>
       <TabPanel value={tabIndex} index={1}>
-        {/* Nội dung Đánh giá */}
-        Đánh giá từ khách hàng đã mua sản phẩm.
+        {reviews}
       </TabPanel>
       <TabPanel value={tabIndex} index={2}>
-        {/* Nội dung Chính sách đổi trả */}
-        Chính sách đổi trả áp dụng trong vòng 7 ngày khi sản phẩm còn nguyên tem mác.
+        {returnPolicy}
       </TabPanel>
       <TabPanel value={tabIndex} index={3}>
-        {/* Nội dung Chính sách bảo hành */}
-        Sản phẩm được bảo hành tại tất cả các cửa hàng CANTH.
+        {warrantyPolicy}
       </TabPanel>
     </div>
   );
-}
+};
+
+export default ProductInfo;

@@ -177,16 +177,16 @@ const ProductDetail = () => {
             )
             setSelectedProductDetail(productDetail ?? null)
         }
-        else{
+        else {
             setSelectedProductDetail(null)
         }
     }, [selectedColor, selectedSize, listProductDetail])
 
     const handleAddToCart = async () => {
-        if(!selectedProductDetail?.id){
+        if (!selectedProductDetail?.id) {
             openNotification("Vui lòng chọn biến thể phù hợp", "Thông báo", "warning", 5000)
         }
-        else{
+        else {
             const dataRequest = {
                 'cartId': myCartId,
                 'productDetailId': selectedProductDetail?.id,
@@ -198,7 +198,7 @@ const ProductDetail = () => {
                     openNotification('Thêm vào giỏ hàng thành công')
                     getCartDetailInCard()
                 }
-            }).catch(function(error) {
+            }).catch(function (error) {
                 if (error?.response?.data?.error) {
                     openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
                 }
@@ -207,7 +207,7 @@ const ProductDetail = () => {
 
     }
 
-    const isDisableSize = ( ) => {
+    const isDisableSize = () => {
         console.log("Ok")
     }
 
@@ -463,11 +463,18 @@ const ProductDetail = () => {
 
                 </div>
             </div>
-
+            {/* 
             <div className="flex justify-start gap-10 mt-5 ">
                 <ProductInfo />
+            </div> */}
+            <div className="flex justify-start gap-10 mt-5">
+                <ProductInfo
+                    productDescription={product?.description}
+                    reviews="Đánh giá từ khách hàng đã mua sản phẩm."
+                    returnPolicy="Chính sách đổi trả áp dụng trong vòng 7 ngày khi sản phẩm còn nguyên tem mác."
+                    warrantyPolicy="Sản phẩm được bảo hành tại tất cả các cửa hàng CANTH."
+                />
             </div>
-
             <div className="flex flex-col justify-center items-center mt-4 mb-4">
                 <h1 className="text-2xl font-bold mb-4">Có thể bạn sẽ thích</h1>
                 <div className="w-full">

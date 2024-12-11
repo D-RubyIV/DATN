@@ -16,8 +16,8 @@ services:
       /opt/mssql/bin/sqlservr &
          
       echo '>>>>>>>>>> SQL Server is ready - executing init script <<<<<<<<<<';
-      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/init-database.sql;
-      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/table-database.sql;
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/init-database.sql &&
+      /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/table-database.sql &&
       /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ComplexP@ssw0rd' -C -d master -i /tmp/extra-database.sql;
 
       sleep infinity;
@@ -42,9 +42,10 @@ services:
 
     ports:
       - 8080:8080
-    # environment:
-    #   SPRING_DATASOURCE_URL: jdbc:sqlserver://database:1433;databaseName=final;encrypt=true;trustServerCertificate=true;
-    #   SPRING_DATASOURCE_PASSWORD: ComplexP@ssw0rd
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://database:1433;databaseName=final;encrypt=true;trustServerCertificate=true;
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: ComplexP@ssw0rd
     depends_on:
       database:
         condition: service_healthy
