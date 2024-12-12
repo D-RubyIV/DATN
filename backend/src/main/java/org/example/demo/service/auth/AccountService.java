@@ -1,15 +1,12 @@
 package org.example.demo.service.auth;
 
-import jakarta.validation.Valid;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.example.demo.components.JwtTokenUtils;
 import org.example.demo.components.LocalizationUtils;
 import org.example.demo.dto.auth.request.AccountRequestDTO;
 import org.example.demo.dto.auth.request.ChangePasswordRequest;
 import org.example.demo.dto.auth.request.ResetPasswordRequest;
-import org.example.demo.dto.customer.request.CustomerRequestDTO;
-import org.example.demo.dto.staff.request.StaffRequestDTO;
-import org.example.demo.dto.user.UserLoginDTO;
 import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.security.Account;
 import org.example.demo.entity.security.TokenRecord;
@@ -24,15 +21,16 @@ import org.example.demo.repository.security.AccountRepository;
 import org.example.demo.repository.security.RoleRepository;
 import org.example.demo.repository.security.TokenRepository;
 import org.example.demo.repository.staff.StaffRepository;
+import org.example.demo.service.email.EmailService;
 import org.example.demo.util.MessageKeys;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.token.Token;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -52,6 +50,7 @@ public class AccountService {
     private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
     private final LocalizationUtils localizationUtils;
+    private final EmailService emailService;
 
     public static String generateCustomerCode(String email) {
         if (email == null || !email.contains("@")) {
@@ -113,6 +112,23 @@ public class AccountService {
             customer.setDeleted(false);
             account.setCustomer(customer);
             customerRepository.save(customer);
+        }
+
+        try {
+            Context context = new Context();
+            context.setVariable("username", account.getUsername());
+            context.setVariable("websiteUrl", "http://localhost:5173/");
+
+            emailService.sendHtmlEmail(
+                    "hungit23@gmail.com",
+                    account.getUsername(),
+                    "Đăng ký thành công",
+                    "registration-success",
+                    context
+            );
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            // Xử lý lỗi gửi email
         }
         return accountRepository.save(account);
     }
