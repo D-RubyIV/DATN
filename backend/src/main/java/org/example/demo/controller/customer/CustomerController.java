@@ -35,6 +35,13 @@ public class CustomerController {
         return ResponseEntity.ok(customerDTOS);
     }
 
+    @GetMapping("/search-active")
+    public ResponseEntity<Page<CustomerListDTO>> getActiveCustomersSearch(@RequestParam(defaultValue = "") String query, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<CustomerListDTO> customerDTOS = customerService.searchActiveCustomer(query, pageable);
+        return ResponseEntity.ok(customerDTOS);
+    }
+
     @GetMapping
     public ResponseEntity<Page<CustomerListDTO>> getCustomers(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size, @RequestParam(required = false) String status) {
         Pageable pageable = PageRequest.of(page - 1, size);

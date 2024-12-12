@@ -49,6 +49,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public Page<CustomerListDTO> searchActiveCustomer(String searchTerm, Pageable pageable) {
+        return customerRepository.searchActive(searchTerm, pageable)
+                .map(CustomerMapper::toCustomerListDTO);
+    }
+
+    @Override
     public Page<CustomerListDTO> getAllCustomers(String status, Pageable pageable) {
         if (status != null && !status.isEmpty()) {
             return customerRepository.findByStatus(status, pageable)

@@ -1022,7 +1022,12 @@ const Checkout = () => {
                                             className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.subTotal?.toLocaleString('vi') ?? 'n/a'}₫</span>
                                     </div>
                                     <div className="py-2 flex justify-between">
-                                        <span>Phí vận chuyển:</span>
+                                        <div className={'flex gap-2'}>
+                                            <p>Phí vận chuyển</p>
+                                            <img
+                                                src={'https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Blue-Orange-350x88.png'}
+                                                width={'60px'} />
+                                        </div>
                                         <span
                                             className="text-red-500 font-semibold">+ {(selectedCart as CartResponseDTO)?.deliveryFee?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>

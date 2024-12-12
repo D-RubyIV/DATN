@@ -20,13 +20,22 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
             """, nativeQuery = true)
     List<Customer> getAllCustomer();
 
+    @Query("""
+           SELECT c FROM Customer c WHERE 
+           (LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR 
+           LOWER(c.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR 
+           LOWER(c.code) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR 
+           LOWER(c.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND 
+           c.deleted = false AND lower(c.status) like 'active'
+           """)
+    Page<Customer>searchActive(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     // Tim kiem theo name, email, phone
     @Query("SELECT c FROM Customer c WHERE " +
-            "LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(c.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(c.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%'))"  )
-
+           "LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "LOWER(c.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "LOWER(c.code) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+           "LOWER(c.phone) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Customer> search(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     // Loc theo status

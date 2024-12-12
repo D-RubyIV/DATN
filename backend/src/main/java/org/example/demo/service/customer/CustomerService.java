@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface CustomerService {
 
     Page<CustomerListDTO> search(String searchTerm, Pageable pageable);
+    Page<CustomerListDTO> searchActiveCustomer(String searchTerm, Pageable pageable);
 
     Page<CustomerListDTO> getAllCustomers(String status, Pageable pageable);
 

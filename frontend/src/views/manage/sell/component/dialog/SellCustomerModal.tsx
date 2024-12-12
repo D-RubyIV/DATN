@@ -144,7 +144,7 @@ const SellCustomerModal = ({ setIsOpenCustomerModal, selectOrder, fetchData }: {
 
     const fetchDataProduct = async () => {
         setLoading(true)
-        const response = await instance.get('/customer', {
+        const response = await instance.get('/customer/search-active', {
             params: queryParam
         });
         setData(response.data.content)
