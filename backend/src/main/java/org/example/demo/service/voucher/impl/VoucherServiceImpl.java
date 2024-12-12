@@ -1,5 +1,6 @@
 package org.example.demo.service.voucher.impl;
 
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
@@ -19,10 +20,13 @@ import org.example.demo.model.response.VoucherResponse;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.order.OrderRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
+import org.example.demo.service.email.EmailService;
 import org.example.demo.service.voucher.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,6 +44,9 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Autowired
     private VoucherResponseMapper voucherResponseMapper;
+
+    @Autowired
+    private EmailService emailService;
 
     @Autowired
     private EntityManager entityManager;
@@ -208,9 +215,34 @@ public class VoucherServiceImpl implements VoucherService {
                     .collect(Collectors.toList());
             voucherSaved.setCustomers(listCustomers);
             voucherSaved = voucherRepository.save(voucherSaved);
+
+            sendVoucherEmailToCustomers(listCustomers, voucherSaved);
         }
 
         return voucherSaved;
+    }
+
+    private void sendVoucherEmailToCustomers(List<Customer> customers, Voucher voucher) {
+        for (Customer customer : customers) {
+            try {
+                Context context = new Context();
+                context.setVariable("customerName", customer.getName());
+                context.setVariable("voucherCode", voucher.getCode());
+                context.setVariable("voucherDescription", voucher.getMinAmount());
+                context.setVariable("validUntil", voucher.getEndDate());
+
+                emailService.sendHtmlEmail(
+                        "hungit2301@gmail.com",
+                        customer.getEmail(),
+                        "Bạn đã nhận được Voucher",
+                        "voucher-notification",
+                        context
+                );
+            } catch (MessagingException e) {
+                e.printStackTrace();
+                // Xử lý lỗi gửi email
+            }
+        }
     }
 
 

@@ -3,11 +3,14 @@ package org.example.demo.service.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.util.List;
 
@@ -18,6 +21,9 @@ public class EmailService {
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
+
+    @Autowired
+    private TemplateEngine templateEngine;
 
     public void send(String from, List<String> to, String subject, String text) {
 
@@ -33,6 +39,22 @@ public class EmailService {
         message.setText(text);
         mailSender.send(message);
     }
+
+    public void sendHtmlEmail(String from, String to, String subject, String templateName, Context context) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        // Render template HTML
+        String htmlContent = templateEngine.process(templateName, context);
+
+        helper.setFrom(from);
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); // Đặt nội dung là HTML
+
+        mailSender.send(message);
+    }
+
 
     public void sendWithAttach(String from, String to, String subject, String text, String attachName,
                                InputStreamSource inputStream) throws MessagingException {

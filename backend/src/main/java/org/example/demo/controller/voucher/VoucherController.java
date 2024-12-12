@@ -114,14 +114,6 @@ public class VoucherController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Add voucher successfully");
     }
 
-//    @PutMapping("/update/{id}")
-//    public ResponseEntity<?> updateVoucher(@PathVariable Integer id, @RequestBody VoucherRequest request) {
-//        Voucher updateVoucher = voucherService.updateVoucher(id, request);
-//        if (updateVoucher == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Voucher not found");
-//        }
-//        return ResponseEntity.status(HttpStatus.OK).body(updateVoucher);
-//    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateVoucher(@PathVariable Integer id, @RequestBody VoucherRequest request) {
