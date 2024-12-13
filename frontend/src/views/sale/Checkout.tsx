@@ -16,6 +16,7 @@ import debounce from 'lodash/debounce'
 import Logo from '@/components/template/Logo'
 import { useAuthContext } from '@/views/client/auth/AuthContext'
 import CloseButton from '@/components/ui/CloseButton'
+import ConfirmModal from './ConfirmModal'
 
 export interface Image {
     id: number;
@@ -191,6 +192,11 @@ const Checkout = () => {
     const [amount, setAmount] = useState<number>(100000)
     const [isOpenSelectAddressModal, setIsOpenSelectAddressModal] = useState<boolean>(false)
     const { callHaveNewOrder } = useWSContext()
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleConfirmOrder = async () => {
+        setIsModalOpen(true);
+    };
 
 
     const toggleVoucherModal = () => {
@@ -206,14 +212,14 @@ const Checkout = () => {
     }
 
     const checkValidCart = async () => {
-        instance.get(`cart/check-cart-active/${id}`).then(function(response) {
+        instance.get(`cart/check-cart-active/${id}`).then(function (response) {
             if ((response.data as CartResponseDTO).deleted) {
                 localStorage.removeItem('myCartId')
                 console.log("Xóa cart id ở check-cart-activ")
 
                 window.location.reload()
             }
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error.response.data.error === 'Order not found')
             if (error.response.status === 400) {
                 localStorage.removeItem('myCartId')
@@ -305,21 +311,22 @@ const Checkout = () => {
             'idCartId': id,
             'voucherCode': data.voucherCode
         }
-        instance.post(`cart/use-voucher`, payload).then(function(response) {
+        instance.post(`cart/use-voucher`, payload).then(function (response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
 
                 openNotification('Sử dụng thành công')
             }
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error)
             openNotification(error.response.data.error, 'Thông báo', 'warning', 5000)
         })
     }
 
-// DUNG CLOSE CO MAY CAI LAM DO TAT DI QUEN K BIET CAI NAO
+    // DUNG CLOSE CO MAY CAI LAM DO TAT DI QUEN K BIET CAI NAO
 
     const handleConfirmCart = async () => {
+        setIsModalOpen(false);
         if (paymentMethod === 'CASH') {
             try {
                 const data = {
@@ -339,9 +346,9 @@ const Checkout = () => {
 
                 // Update cart
                 await handleUpdateCart(data)
-                instance.put(`/cart/v2/${id}`, data).then(function(response) {
+                instance.put(`/cart/v2/${id}`, data).then(function (response) {
                     if (response.status === 200 && response.data) {
-                        instance.get(`/orders/convert/${id}`).then(function(response) {
+                        instance.get(`/orders/convert/${id}`).then(function (response) {
                             if (response.status === 200 && response.data) {
                                 getDetailAboutCart()
                                 navigate('/thank')
@@ -376,13 +383,13 @@ const Checkout = () => {
                 districtName: IAddress.idistrict?.DistrictName,
                 wardName: IAddress.iward?.WardName
             }
-            instance.put(`/cart/v2/${id}`, data).then(function(response) {
+            instance.put(`/cart/v2/${id}`, data).then(function (response) {
                 if (response.status === 200 && response.data) {
-                    instance.get(`/orders/convert/${id}`).then(function(response) {
+                    instance.get(`/orders/convert/${id}`).then(function (response) {
                         if (response.status === 200 && response.data) {
                             const idOrder = response.data.id
                             const amount = Math.round((selectedCart as CartResponseDTO).total)
-                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function(response) {
+                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function (response) {
                                 if (response.status === 200 && response.data) {
                                     callHaveNewOrder()
                                     const url = response?.data?.data?.paymentUrl
@@ -414,7 +421,7 @@ const Checkout = () => {
     }
 
     const handleUpdateCart = async (data: any) => {
-        instance.put(`/cart/v2/${id}`, data).then(function(response) {
+        instance.put(`/cart/v2/${id}`, data).then(function (response) {
             if (response.status === 200 && response.data) {
                 getDetailAboutCart()
             }
@@ -423,7 +430,7 @@ const Checkout = () => {
 
 
     const getDetailAboutCart = async () => {
-        instance.get(`cart/detail/${id}`).then(function(response) {
+        instance.get(`cart/detail/${id}`).then(function (response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
                 setPaymentMethod(response.data.payment)
@@ -459,11 +466,11 @@ const Checkout = () => {
 
     useEffect(() => {
         checkValidCart()
-        instance.get(`cart-details/in-cart/${id}`).then(function(response) {
+        instance.get(`cart-details/in-cart/${id}`).then(function (response) {
             if (response?.data) {
                 setListCartDetailResponseDTO(response?.data)
             }
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log(error.response.data.error === 'cart not found')
         })
         handleFindAllProvinces()
@@ -558,7 +565,7 @@ const Checkout = () => {
         const [selectedAddressId, setSelectedAddressId] = useState<string>('')
 
         const getMyAddress = async () => {
-            instance.get('/address/my-address').then(function(response) {
+            instance.get('/address/my-address').then(function (response) {
                 console.log(response)
                 if (response.status === 200) {
                     console.log('MY ADDRESS')
@@ -581,7 +588,7 @@ const Checkout = () => {
 
         const updateCartAddress = async () => {
             if (selectedAddressId) {
-                await instance.get(`/cart/edit-my-address/${id}?addressId=${selectedAddressId}`).then(function(response) {
+                await instance.get(`/cart/edit-my-address/${id}?addressId=${selectedAddressId}`).then(function (response) {
                     if (response.status === 200) {
                         openNotification('Cập nhật thành công')
                         getDetailAboutCart()
@@ -840,10 +847,10 @@ const Checkout = () => {
                                             onChange={onChangeMethod}
                                         >
                                             <Radio value={EPaymentMethod.TRANSFER}
-                                                   checked={selectedCart?.payment === 'TRANSFER'}>Thanh toán ngân
+                                                checked={selectedCart?.payment === 'TRANSFER'}>Thanh toán ngân
                                                 hàng</Radio>
                                             <Radio value={EPaymentMethod.CASH}
-                                                   checked={selectedCart?.payment === 'CASH'}>Thanh toán khi nhận
+                                                checked={selectedCart?.payment === 'CASH'}>Thanh toán khi nhận
                                                 hàng</Radio>
                                         </Radio.Group>
                                     </Card>
@@ -893,7 +900,7 @@ const Checkout = () => {
                                                             <div>
                                                                 <p className="font-semibold text-sm">
                                                                     Sản phẩm: <span
-                                                                    className="text-gray-800">{item.productDetailResponseDTO?.product?.name}</span>
+                                                                        className="text-gray-800">{item.productDetailResponseDTO?.product?.name}</span>
                                                                 </p>
                                                                 {/* Thuộc tính sản phẩm */}
                                                                 <div className="mt-2 text-sm text-gray-600 space-y-1">
@@ -903,11 +910,11 @@ const Checkout = () => {
                                                                     </p>
                                                                     <p>
                                                                         Size: <span
-                                                                        className="text-gray-800">{item.productDetailResponseDTO?.size?.name}</span>
+                                                                            className="text-gray-800">{item.productDetailResponseDTO?.size?.name}</span>
                                                                     </p>
                                                                     <p>
                                                                         Thương hiệu: <span
-                                                                        className="text-gray-800">{item.productDetailResponseDTO?.brand?.name}</span>
+                                                                            className="text-gray-800">{item.productDetailResponseDTO?.brand?.name}</span>
                                                                     </p>
                                                                     <p>
                                                                         Đơn giá:{' '}
@@ -942,8 +949,8 @@ const Checkout = () => {
                                                 <div className="flex flex-col justify-center items-center h-full">
                                                     <div>
                                                         <img className="w-28 h-28 object-cover"
-                                                             src="/img/OIP-removebg-preview.png"
-                                                             alt="No product image" />
+                                                            src="/img/OIP-removebg-preview.png"
+                                                            alt="No product image" />
                                                     </div>
                                                     <div>
                                                         <span className="font-light text-gray-500">Không có sản phẩm nào trong giỏ hàng</span>
@@ -987,7 +994,7 @@ const Checkout = () => {
 
                                     {/* Dòng "Xem thêm mã giảm giá" */}
                                     <div className="text-sm text-blue-600 cursor-pointer mt-2"
-                                         onClick={toggleVoucherModal}>
+                                        onClick={toggleVoucherModal}>
                                         Xem thêm mã giảm giá
                                     </div>
 
@@ -1041,13 +1048,27 @@ const Checkout = () => {
                                         <span
                                             className="text-red-500 font-semibold">{(selectedCart as CartResponseDTO)?.total?.toLocaleString('vi') ?? '0'}₫</span>
                                     </div>
-                                    <button
-                                        className="bg-black w-full py-2 font-thin rounded-none text-white"
-                                        onClick={handleSubmitFormRecipient(handleConfirmCart)}
-                                    >
-                                        <p className=" ">Xác nhận đơn hàng</p>
-                                    </button>
-
+                                    <>
+                                        <ConfirmModal
+                                            isOpen={isModalOpen}
+                                            onClose={() => setIsModalOpen(false)}
+                                            onConfirm={() => {
+                                                handleSubmitFormRecipient(handleConfirmCart)();
+                                                setIsModalOpen(false);
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="bg-black w-full py-2 font-thin rounded-none text-white"
+                                            onClick={() => {
+                                                handleSubmitFormRecipient(() => {
+                                                    setIsModalOpen(true);
+                                                })()
+                                            }}
+                                        >
+                                            Xác nhận đơn hàng
+                                        </button>
+                                    </>
 
                                 </div>
 
