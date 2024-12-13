@@ -204,4 +204,9 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     public ResponseEntity<?> onIsPayment(@PathVariable Integer id, @RequestParam(value = "amount") Double amount) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.handle_is_payment_online_order(id, amount)));
     }
+
+    @PostMapping(value = "required-cancel-online-payment-order/{id}")
+    public ResponseEntity<?> requiredCancelOnlinePaymentOrder(@PathVariable Integer id, @RequestBody HistoryRequestDTO requestDTO) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.required_cancel_online_payment_order(id, requestDTO)));
+    }
 }

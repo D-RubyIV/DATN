@@ -24,6 +24,7 @@ export enum EOrderStatusEnums {
     TORECEIVE = "TORECEIVE",
     DELIVERED = "DELIVERED",
     CANCELED = "CANCELED",
+    REQUESTED = "REQUESTED"
 }
 
 
@@ -38,7 +39,7 @@ export type StatusBill = {
     badge: string
 }
 
-export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED"
+export type EOrderStatus = "PENDING" | "TOSHIP" | "TORECEIVE" | "DELIVERED" | "CANCELED" | "REQUESTED"
 
 export type EOrderType = 'INSTORE' | 'ONLINE'; // Add more types if needed
 

@@ -123,12 +123,21 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         }
     }
     const [currentStatus, setCurrentStatus] = useState<EOrderStatus>(selectObject.status)
+    const [endHistoryStatus, setEndHistoryStatus] = useState<EOrderStatus | undefined>()
+    useEffect(() => {
+        const historyLength = selectObject.historyResponseDTOS.length
+        setEndHistoryStatus(historyLength > 0
+            ? selectObject.historyResponseDTOS[historyLength - 1]?.status
+            : undefined)
+    }, [selectObject])
 
     const exampleAnswers: ExampleAnswers[] = [
         {
             'status': 'PENDING',
             'messages': [
-                'Tôi muốn hủy đơn'
+                'Tôi thay đổi ý',
+                'Tôi muốn hủy đơn',
+                "Tôi muốn mua sản phẩm khác",
             ]
         },
         {
@@ -142,6 +151,12 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             'status': 'TORECEIVE',
             'messages': [
                 'Xác nhận hoàn thành đơn hàng'
+            ]
+        },
+        {
+            'status': 'REQUESTED',
+            'messages': [
+                'Tôi muốn gỡ bó yêu cầu hủy'
             ]
         }
     ]
@@ -194,19 +209,71 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         })
     }
 
+    const submitRequiredCancel = async (status: EOrderStatus) => {
+        const data = {
+            'status': status,
+            'note': getValues('note')
+        }
+        await sleepLoading(500).then(async () => {
+            instance.post(`/orders/required-cancel-online-payment-order/${selectObject.id}`, data).then(function(response) {
+                setIsLoadingComponent(true)
+                if (response.status === 200) {
+                    openNotification('Tạo yêu cầu thành công')
+                }
+                fetchData()
+                setNoteValue('note', '')
+            }).catch(function(error) {
+                console.log('-----')
+                console.log(error.response)
+                if (error?.response?.data?.error) {
+                    openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                }
+            }).finally(function() {
+                setIsLoadingComponent(false)
+            })
+        })
+    }
+
     const ActionButton = () => {
-        if (currentStatus === 'PENDING') {
+        if (endHistoryStatus === 'PENDING') {
+            return (
+                <div className="flex gap-2">
+                    {
+                        selectObject.isPayment ?
+                            (
+                                <Button
+                                    block
+                                    variant="default"
+                                    size="sm"
+                                    className="bg-indigo-500"
+                                    icon={<HiOutlineHand />}
+                                    onClick={handleSubmit(async () => submitRequiredCancel('REQUESTED'))}>Yêu cầu hủy và hoàn tiền
+                                </Button>
+                            ) :
+                            (
+                                <Button
+                                    block
+                                        variant="default"
+                                        size="sm"
+                                        className="bg-indigo-500 !w-32"
+                                        icon={<HiOutlineHand />}
+                                        onClick={handleSubmit(async () => submitChangeStatus('CANCELED'))}>Hủy đơn hàng
+                                </Button>
+                            )
+                    }
+                </div>
+            )
+        } else if (endHistoryStatus === 'REQUESTED') {
             return (
                 <div className="flex gap-2">
                     <Button
                         block
                         variant="default"
                         size="sm"
-                        className="bg-indigo-500 !w-32"
+                        className="bg-indigo-500 "
                         icon={<HiOutlineHand />}
-                        onClick={handleSubmit(async () => submitChangeStatus('CANCELED'))}>Hủy đơn
-                        hàng</Button>
-
+                        onClick={handleSubmit(async () => submitChangeStatus('PENDING'))}>Hủy bỏ yêu cầu hủy
+                    </Button>
                 </div>
             )
         } else if (currentStatus === 'TOSHIP') {
@@ -231,12 +298,12 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
     }
 
     const ChangeForPending = () => {
-        const answers = exampleAnswers.find(s => s.status === selectObject.status)?.messages
+        const answers = exampleAnswers.find(s => s.status === endHistoryStatus)?.messages
 
         return (
             <div>
                 <div className="mb-4">
-                    <div className=""  hidden={currentStatus !== 'PENDING'}>
+                    <div className="" hidden={endHistoryStatus !== 'PENDING' && endHistoryStatus !== "REQUESTED"}>
                         <div className="mt-4">
                             {answers && answers.length > 0 ? (
                                 <Radio.Group vertical value={getValues('note')}>
@@ -267,7 +334,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
                     </div>
                     <div className="col-span-4"
-                         hidden={currentStatus !== 'PENDING'}>
+                         hidden={endHistoryStatus !== 'PENDING'}>
                         <Input
                             placeholder="Nhập nội dung"
                             {...register('note')}
@@ -303,6 +370,8 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             return 'Đã giao hàng'
         } else if (st === EOrderStatusEnums.CANCELED) {
             return 'Đã hủy'
+        } else if (st === EOrderStatusEnums.REQUESTED) {
+            return 'Yêu cầu hủy'
         } else {
             return 'Không xác định'
         }
