@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .invoice-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .invoice-content {
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="invoice-title">
+    <span th:text="${invoiceTitle}">Invoice Title</span>
+</div>
+<div class="invoice-content">
+    <p>Customer Name: <span th:text="${customerName}"></span></p>
+    <p>Invoice Date: <span th:text="${invoiceDate}"></span></p>
+    <p>Total Amount: <span th:text="${totalAmount}"></span></p>
+</div>
+</body>
+</html>
