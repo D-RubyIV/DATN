@@ -14,7 +14,7 @@ import { HiLockClosed, HiMinus, HiMinusCircle, HiPencil, HiPlusCircle, HiViewLis
 import {
     OrderResponseDTO,
     OrderDetailResponseDTO,
-    OrderProductDetail
+    OrderProductDetail, EOrderStatus
 } from '@/@types/order'
 import History from './History'
 import { ConfirmDialog } from '@/components/shared'
@@ -40,14 +40,22 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
     const { openNotification } = useToastContext()
     const [selectedOrderDetail, setSelectedOrderDetail] = useState<OrderDetailResponseDTO>()
     const [isOpenEditQuantity, setIsOpenEditQuantity] = useState<boolean>(false)
+    const [endHistoryStatus, setEndHistoryStatus] = useState<EOrderStatus | undefined>()
+
 
     const { setIsLoadingComponent } = useLoadingContext()
     const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
 
     const hasSaleEvent = (item: OrderProductDetail) => {
         return item.product.eventDTOList.length > 0
-
     }
+
+    useEffect(() => {
+        const historyLength = selectObject.historyResponseDTOS.length
+        setEndHistoryStatus(historyLength > 0
+            ? selectObject.historyResponseDTOS[historyLength - 1]?.status
+            : undefined)
+    }, [selectObject])
 
     const availableQuantityProvide = (item: OrderDetailResponseDTO) => {
         const order_detail_quantity = item.quantity
@@ -197,7 +205,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
         return (
             <div>
                 {
-                    selectObject.status === 'PENDING' && !unAllowEditProduct ? (
+                    selectObject.status === 'PENDING' && !unAllowEditProduct && endHistoryStatus === "PENDING" ? (
                         <div className="flex gap-2">
                             {/*<button><HiPencil size={20}></HiPencil></button>*/}
                             <Button
@@ -247,15 +255,14 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                     <div className="flex gap-1 items-center justify-start">
                         {
                             selectObject.status === 'PENDING' && (
-                                <button hidden={unAllowEditProduct} className="p-2 text-xl" onClick={() => {
+                                <button hidden={unAllowEditProduct || endHistoryStatus !== "PENDING"} className="p-2 text-xl" onClick={() => {
                                     handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
                                 }}><HiPlusCircle /></button>)
                         }
-
-                        <label>{props.row.original.quantity} </label>
+                        <p>{props.row.original.quantity} </p>
                         {
                             selectObject.status === 'PENDING' && (
-                                <button hidden={unAllowEditProduct} className="p-2 text-xl" onClick={() => {
+                                <button hidden={unAllowEditProduct || endHistoryStatus !== "PENDING"} className="p-2 text-xl" onClick={() => {
                                     handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
                                 }}><HiMinusCircle /></button>)
                         }
@@ -442,7 +449,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                             selectObject.status === 'PENDING' && (
                                 <Button block variant="solid" size="sm" className="bg-indigo-500 !w-36"
                                         icon={<HiPlusCircle />}
-                                        hidden={unAllowEditProduct}
+                                        hidden={selectObject.status !== "PENDING" || endHistoryStatus === "REQUESTED"}
                                         onClick={() => setIsOpenProductModal(true)}>
                                     Thêm sản phẩm
                                 </Button>

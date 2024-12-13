@@ -137,7 +137,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             'messages': [
                 'Tôi thay đổi ý',
                 'Tôi muốn hủy đơn',
-                "Tôi muốn mua sản phẩm khác",
+                'Tôi muốn mua sản phẩm khác'
             ]
         },
         {
@@ -247,17 +247,18 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                                     size="sm"
                                     className="bg-indigo-500"
                                     icon={<HiOutlineHand />}
-                                    onClick={handleSubmit(async () => submitRequiredCancel('REQUESTED'))}>Yêu cầu hủy và hoàn tiền
+                                    onClick={handleSubmit(async () => submitRequiredCancel('REQUESTED'))}>Yêu cầu hủy và
+                                    hoàn tiền
                                 </Button>
                             ) :
                             (
                                 <Button
                                     block
-                                        variant="default"
-                                        size="sm"
-                                        className="bg-indigo-500 !w-32"
-                                        icon={<HiOutlineHand />}
-                                        onClick={handleSubmit(async () => submitChangeStatus('CANCELED'))}>Hủy đơn hàng
+                                    variant="default"
+                                    size="sm"
+                                    className="bg-indigo-500 !w-32"
+                                    icon={<HiOutlineHand />}
+                                    onClick={handleSubmit(async () => submitChangeStatus('CANCELED'))}>Hủy đơn hàng
                                 </Button>
                             )
                     }
@@ -303,7 +304,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         return (
             <div>
                 <div className="mb-4">
-                    <div className="" hidden={endHistoryStatus !== 'PENDING' && endHistoryStatus !== "REQUESTED"}>
+                    <div className="" hidden={selectObject.status !== 'PENDING' && endHistoryStatus !== 'REQUESTED'}>
                         <div className="mt-4">
                             {answers && answers.length > 0 ? (
                                 <Radio.Group vertical value={getValues('note')}>
@@ -333,8 +334,9 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
 
                     </div>
-                    <div className="col-span-4"
-                         hidden={endHistoryStatus !== 'PENDING'}>
+                    <div
+                        className="col-span-4"
+                        hidden={selectObject.status !== 'PENDING' && endHistoryStatus !== 'REQUESTED'}>
                         <Input
                             placeholder="Nhập nội dung"
                             {...register('note')}

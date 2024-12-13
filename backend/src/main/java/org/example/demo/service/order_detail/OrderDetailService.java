@@ -66,6 +66,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         if(order.getStatus() != Status.PENDING){
             throw new CustomExceptions.CustomBadRequest("Hóa đơn này không còn ở trạng thái chờ xác nhận");
         }
+        if(orderService.isRequiredCancelOnlinePaymentOrder(order)){
+            throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
+        }
         ProductDetail productDetail = orderDetail.getProductDetail();
         if (orderDetail.getOrder().getStatus() != Status.CANCELED){
             productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
@@ -107,6 +110,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
             if(ORDER_FOUND.getStatus() != Status.PENDING){
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");
+            }
+            if(orderService.isRequiredCancelOnlinePaymentOrder(ORDER_FOUND)){
+                throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
             }
 
             //================VALIDATE-QUANTITY================//
@@ -153,6 +159,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             if(order_found.getStatus() != Status.PENDING){
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");
             }
+            if(orderService.isRequiredCancelOnlinePaymentOrder(order_found)){
+                throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
+            }
             newOrderDetail.setOrder(order_found);
             // set spct vào hóa đơn chi tiết
             newOrderDetail.setProductDetail(productDetail);
@@ -181,6 +190,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         Order order = orderDetail.getOrder();
         if(order.getStatus() != Status.PENDING){
             throw new CustomExceptions.CustomBadRequest("Hóa đơn này không còn ở trạng thái chờ xác nhận");
+        }
+        if(orderService.isRequiredCancelOnlinePaymentOrder(order)){
+            throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
         }
         orderService.check_validate_non_cancel_order(order);
         // số lương trong kho

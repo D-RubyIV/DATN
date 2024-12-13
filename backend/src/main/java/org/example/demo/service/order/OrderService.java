@@ -202,6 +202,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Transactional
     public Order refund_and_change_status(RefundAndChangeStatusDTO refundAndChangeStatusDTO, int orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
+        List<History> histories = order.getHistories();
+        if(!histories.isEmpty()){
+            History lastHistory = histories.get(histories.size() - 1);
+            if (lastHistory.getStatus() == Status.PENDING){
+                throw new CustomExceptions.CustomBadRequest("Hóa đơn đang ở trạng thái không cho phép hủy và hoàn trả)");
+            }
+        }
         Status oldStatus = order.getStatus();
         Status newStatus = refundAndChangeStatusDTO.getStatus();
         Double amount = refundAndChangeStatusDTO.getAmount();
@@ -455,6 +462,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         log.info("-----------------1");
         if(oldStatus == Status.TOSHIP && newStatus == Status.CANCELED){
             throw new CustomExceptions.CustomBadRequest("Không thể hủy khi đơn hàng đang ở trạng thái xác nhận");
+        }
+        if(oldStatus == Status.CANCELED && newStatus == Status.PENDING){
+            throw new CustomExceptions.CustomBadRequest("Đon hàng đã bị hủy trước đó");
         }
         // HÓA ĐƠN CHỜ -> CHỜ VẬN CHUYỂN
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP) {
@@ -1051,5 +1061,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             return orderRepository.save(order);
         }
         return order;
+    }
+
+    public boolean isRequiredCancelOnlinePaymentOrder(Order order){
+        List<History> histories = order.getHistories();
+        if(!histories.isEmpty()){
+            History lastHistory = histories.get(histories.size() - 1);
+            return lastHistory.getStatus() == Status.REQUESTED;
+        }
+        return false;
     }
 }

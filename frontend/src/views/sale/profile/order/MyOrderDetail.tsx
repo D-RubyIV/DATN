@@ -8,7 +8,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Input, Radio, Tooltip } from '@/components/ui'
 import instance from '@/axios/CustomAxios'
 import AddressModal from '@/views/manage/order/component/puzzle/AddressModal'
-import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
+import { EOrderStatus, OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import { PaymentSummaryProps } from '@/@types/payment'
 import { FiPackage } from 'react-icons/fi'
 import dayjs from 'dayjs'
@@ -62,6 +62,8 @@ const MyOrderDetail = () => {
     }, [selectObject])
 
 
+
+
     return (
         <div>
             <div>
@@ -70,11 +72,13 @@ const MyOrderDetail = () => {
                         <div className="flex flex-col gap-5 2xl:h-full">
                             {selectObject !== undefined &&
                                 <MyOrderStep selectObject={selectObject} fetchData={fetchData}></MyOrderStep>}
-                            {selectObject !== undefined && <OrderProducts
-                                unAllowEditProduct={false}
-                                data={listOrderDetail} fetchData={fetchData}
-                                                                           selectObject={selectObject}></OrderProducts>}
-
+                            {selectObject !== undefined &&
+                                <OrderProducts
+                                    unAllowEditProduct={false}
+                                    data={listOrderDetail}
+                                    fetchData={fetchData}
+                                    selectObject={selectObject}
+                                />}
                         </div>
                     </div>
                     <div className="md:col-span-4">
@@ -83,7 +87,8 @@ const MyOrderDetail = () => {
                             <CustomerInfo unAllowEditAddress={false} data={selectObject}
                                           fetchData={fetchData}></CustomerInfo>}
                         {selectObject !== undefined &&
-                            <PaymentSummary unAllowUseVoucher={true} data={paymentSummaryProp} selectObject={selectObject}
+                            <PaymentSummary unAllowUseVoucher={true} data={paymentSummaryProp}
+                                            selectObject={selectObject}
                                             fetchData={fetchData} />}
                     </div>
                 </div>

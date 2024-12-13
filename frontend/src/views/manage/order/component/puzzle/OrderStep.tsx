@@ -34,6 +34,13 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
     const { setIsLoadingComponent } = useLoadingContext()
     const [isMode, setIsMode] = useState<MODE>()
+    const [endHistoryStatus, setEndHistoryStatus] = useState<EOrderStatus | undefined>()
+    useEffect(() => {
+        const historyLength = selectObject.historyResponseDTOS.length
+        setEndHistoryStatus(historyLength > 0
+            ? selectObject.historyResponseDTOS[historyLength - 1]?.status
+            : undefined)
+    }, [selectObject])
     // Schema xác thực
     const validationSchemaTrade = Yup.object().shape({
         transactionCode: Yup.string()
@@ -144,6 +151,12 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             'messages': [
                 'Xác nhận hoàn thành đơn hàng'
             ]
+        },
+        {
+            'status': 'REQUESTED',
+            'messages': [
+                'Xác nhận hủy và hoàn trả'
+            ]
         }
     ]
 
@@ -196,7 +209,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
     }
 
     const ActionButton = () => {
-        if (currentStatus === 'PENDING') {
+        if (currentStatus === 'PENDING' && endHistoryStatus !== "REQUESTED") {
             return (
                 <div className="flex gap-2">
 
@@ -249,7 +262,18 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
 
                 </div>
             )
-        } else if (currentStatus === 'TOSHIP') {
+        } else if (currentStatus === 'PENDING' && endHistoryStatus === "REQUESTED") {
+            return (
+                <div className="flex gap-2">
+                    <Button block variant="default" size="sm" className="bg-indigo-500"
+                            icon={<HiOutlineHand />}
+                            onClick={handleSubmit(async () => {
+                                setIsMode('FOR_CANCEL')
+                                setIsOpenTradingCodeConfirm(true)
+                            })}>Trả lại tiền và hủy đơn</Button>
+                </div>
+            )
+        }else if (currentStatus === 'TOSHIP') {
             return (
                 <div className="flex gap-2">
                     <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineMap />}
@@ -280,7 +304,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
     }
 
     const ChangeForPending = () => {
-        const answers = exampleAnswers.find(s => s.status === selectObject.status)?.messages
+        const answers = exampleAnswers.find(s => s.status === endHistoryStatus)?.messages
 
         return (
             <div>
@@ -352,6 +376,8 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
             return 'Đã giao hàng'
         } else if (st === EOrderStatusEnums.CANCELED) {
             return 'Đã hủy'
+        } else if (st === EOrderStatusEnums.REQUESTED) {
+            return 'Yêu cầu hủy và hoàn trả'
         } else {
             return 'Không xác định'
         }

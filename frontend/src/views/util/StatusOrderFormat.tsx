@@ -17,6 +17,8 @@ const StatusOrderFormat = ({ status }: { status: string }) => {
                                 ? '!text-purple-500'
                                 : status === 'CANCELED'
                                     ? '!text-red-500'
+                                    : status === 'REQUESTED'
+                                        ? '!text-red-500'
                                     : '!text-gray-500'
                 }`}
             >
@@ -32,6 +34,8 @@ const StatusOrderFormat = ({ status }: { status: string }) => {
                                             ? '!bg-purple-500'
                                             : status === 'CANCELED'
                                                 ? '!bg-red-500'
+                                                : status === 'REQUESTED'
+                                                    ? '!bg-red-500'
                                                 : '!bg-gray-500'
                             }`}></span>
                         <span>
@@ -46,6 +50,8 @@ const StatusOrderFormat = ({ status }: { status: string }) => {
                                                 ? 'Đã hoàn thành'
                                                 : status === 'CANCELED'
                                                     ? 'Đã hủy đơn'
+                                                    : status === 'REQUESTED'
+                                                        ? 'Yêu cầu hủy và hoàn trả'
                                                     : 'Không xác định'}
                             </p>
                         </span>
