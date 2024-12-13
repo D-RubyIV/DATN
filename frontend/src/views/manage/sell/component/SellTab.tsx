@@ -109,8 +109,8 @@ const SellTab = () => {
 
     const handleAddNewTab = async () => {
         const newOrder = await handleCreateNewOrder()
-        if (tabs.length >= 5) {
-            openNotification('Bạn không thể tạo quá 5 đơn hàng.')
+        if (tabs.length >= 10) {
+            openNotification('Bạn không thể tạo quá 5 đơn hàng.', "Thông báo", "warning")
             return
         } else {
             createTab(newOrder.id)
