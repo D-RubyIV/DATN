@@ -71,7 +71,7 @@ const MyOrderDetail = () => {
                             {selectObject !== undefined &&
                                 <MyOrderStep selectObject={selectObject} fetchData={fetchData}></MyOrderStep>}
                             {selectObject !== undefined && <OrderProducts
-                                unAllowEditProduct={true}
+                                unAllowEditProduct={false}
                                 data={listOrderDetail} fetchData={fetchData}
                                                                            selectObject={selectObject}></OrderProducts>}
 

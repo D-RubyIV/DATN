@@ -283,7 +283,7 @@ const ProductList = () => {
                 </div>
                 <div className={'col-span-9'}>
                     <div className={'py-5'}>
-                        <h3 className={'uppercase'}>Sản phẩm nổi bật</h3>
+                        <h3 className={'uppercase'}>Danh sách sản phẩm </h3>
                     </div>
                     <div
                         className={'grid 2xl:grid-cols-5 xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-x-5 gap-y-10 '}>

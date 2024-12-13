@@ -183,7 +183,7 @@ const ProductDetail = () => {
         }
     }, [selectedColor, selectedSize, listProductDetail])
 
-    const handleAddToCart = async () => {
+    const handleAddToCart = async (isRedirect: boolean = false) => {
         if (!selectedProductDetail?.id) {
             openNotification("Vui lòng chọn biến thể phù hợp", "Thông báo", "warning", 5000)
         }
@@ -198,6 +198,9 @@ const ProductDetail = () => {
                 if (response.status === 200) {
                     openNotification('Thêm vào giỏ hàng thành công')
                     getCartDetailInCard()
+                    if(isRedirect){
+                        window.location.href = `/checkout/${myCartId}`
+                    }
                 }
             }).catch(function (error) {
                 if (error?.response?.data?.error) {
@@ -205,7 +208,6 @@ const ProductDetail = () => {
                 }
             })
         }
-
     }
 
     const isDisableSize = () => {
@@ -376,8 +378,7 @@ const ProductDetail = () => {
                         <button
                             className={'px-4 font-semibold bg-red-500 text-white py-2 border border-red-500'}
                             onClick={async () => {
-                                await handleAddToCart();
-                                window.location.href = `/checkout/${myCartId}`
+                                await handleAddToCart(true);
                             }}>
                             Mua ngay
                         </button>

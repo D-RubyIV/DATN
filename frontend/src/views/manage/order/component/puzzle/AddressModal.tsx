@@ -100,14 +100,23 @@ const AddressModal = ({ selectedOrder, onCloseModal, fetchData }: {
         }
         await instance.put(`/orders/${selectedOrder.id}`, data).then(function(response) {
             console.log(response)
+            if(response.status === 200){
+                openNotification('Thay đổi địa chỉ thành công')
+            }
+        }).catch(function(err){
+            console.log("Errorsss")
+            console.log(err)
+            if (err?.response?.status === 400) {
+                openNotification(err.response.data.error, 'Thông báo', 'warning', 1500)
+            }
+        }).finally(function(){
+            onCloseModal(false)
+            if (fetchData) {
+                fetchData()
+            }
+            setIsLoadingComponent(false)
+
         })
-        onCloseModal(false)
-        if (fetchData) {
-            await fetchData()
-        }
-        await sleep(500)
-        setIsLoadingComponent(false)
-        openNotification('Thay đổi địa chỉ thành công')
     }
 
     return (

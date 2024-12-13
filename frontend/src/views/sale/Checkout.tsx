@@ -351,8 +351,9 @@ const Checkout = () => {
                         instance.get(`/orders/convert/${id}`).then(function (response) {
                             if (response.status === 200 && response.data) {
                                 getDetailAboutCart()
-                                navigate('/thank')
                                 callHaveNewOrder()
+                                location.href='/thank'
+
                                 console.log("Xóa cart id ở convert")
                                 localStorage.removeItem('myCartId')
                             }

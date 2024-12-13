@@ -85,7 +85,12 @@ const WsProvider = ({ children }: { children: ReactNode }) => {
     const callHaveNewOrder = () => {
         if (clientRef.current) {
             console.log('++++++++++++++')
-            clientRef.current.publish({ destination: '/app/new-order', body: 'Hello word' })
+            try{
+                clientRef.current.publish({ destination: '/app/new-order', body: 'Hello word' })
+            }
+            catch (error){
+                console.log(error)
+            }
         } else {
             console.log('--------------')
         }

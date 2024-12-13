@@ -378,6 +378,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         // address
         if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())) {
+            if(order.getStatus() != Status.PENDING){
+                throw new CustomExceptions.CustomBadRequest("Không thể thay đổi địa chỉ khi đơn hàng không ở trạng thái chờ xác nhận");
+            }
             String detail = requestDTO.getAddress();
             address += detail;
         }
@@ -450,6 +453,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         log.info("OLD STATUS: " + oldStatus);
         log.info("NEW STATUS: " + newStatus);
         log.info("-----------------1");
+        if(oldStatus == Status.TOSHIP && newStatus == Status.CANCELED){
+            throw new CustomExceptions.CustomBadRequest("Không thể hủy khi đơn hàng đang ở trạng thái xác nhận");
+        }
         // HÓA ĐƠN CHỜ -> CHỜ VẬN CHUYỂN
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP) {
             checkValidateQuantity(entityFound);

@@ -59,6 +59,12 @@ const CustomerInfo = ({ data, fetchSelectedOrder, setIsOpenCustomerModal }: {
         await instance.put(`/orders/${data.id}`, payload).then(function(response) {
             console.log(response)
             fetchSelectedOrder()
+        }).catch(function(err){
+            console.log("Errorsss")
+            console.log(err)
+            if (err?.response?.status === 400) {
+                openNotification(err.response.data.error, 'Thông báo', 'warning', 1500)
+            }
         })
     }
 

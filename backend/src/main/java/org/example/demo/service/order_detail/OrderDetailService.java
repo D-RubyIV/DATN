@@ -62,6 +62,10 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     @Transactional
     public OrderDetail delete(Integer integer) {
         OrderDetail orderDetail = findById(integer);
+        Order order = orderDetail.getOrder();
+        if(order.getStatus() != Status.PENDING){
+            throw new CustomExceptions.CustomBadRequest("Hóa đơn này không còn ở trạng thái chờ xác nhận");
+        }
         ProductDetail productDetail = orderDetail.getProductDetail();
         if (orderDetail.getOrder().getStatus() != Status.CANCELED){
             productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
@@ -101,6 +105,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             int cumulativeQuantity = REQUIRED_QUANTITY + oldOrderDetailQuantity;
             int ABS_RANGE_FROM_CUMULATIVE_AND_REQUIRED = Math.abs(REQUIRED_QUANTITY - cumulativeQuantity);
 
+            if(ORDER_FOUND.getStatus() != Status.PENDING){
+                throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");
+            }
 
             //================VALIDATE-QUANTITY================//
             System.out.println("REQUIRED_QUANTITY" + REQUIRED_QUANTITY);
@@ -142,7 +149,11 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             // set gia trị event trung bình
             newOrderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
             // set hóa đơn vào hóa đơn chi tiết
-            newOrderDetail.setOrder(orderService.findById(requestDTO.getOrderId()));
+            Order order_found = orderService.findById(requestDTO.getOrderId());
+            if(order_found.getStatus() != Status.PENDING){
+                throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");
+            }
+            newOrderDetail.setOrder(order_found);
             // set spct vào hóa đơn chi tiết
             newOrderDetail.setProductDetail(productDetail);
             // lưu lại hóa đơn chi tết
@@ -168,6 +179,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         log.info("ĐÃ TÌM THẤY HÓA ĐƠN");
         // tìm hóa đơn
         Order order = orderDetail.getOrder();
+        if(order.getStatus() != Status.PENDING){
+            throw new CustomExceptions.CustomBadRequest("Hóa đơn này không còn ở trạng thái chờ xác nhận");
+        }
         orderService.check_validate_non_cancel_order(order);
         // số lương trong kho
         int quantityInStorage = orderDetail.getProductDetail().getQuantity();

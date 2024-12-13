@@ -149,8 +149,16 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
         console.log('Confirm')
         setOpenDelete(false)
         await sleepLoading(300)
-        await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function() {
+        await instance.delete(`/order-details/${selectedOrderDetailId}`).then(function(response) {
+            if (response.status === 200) {
+                openNotification('Xóa thành công')
+            }
             fetchData()
+        }).catch(function(err){
+            console.log(err)
+            if (err?.response?.status === 400) {
+                openNotification(err.response.data.error, 'Thông báo', 'warning', 1500)
+            }
         })
     }
 
@@ -173,7 +181,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                 } else {
                     console.log('Error message:', err.message) // Nếu không có phản hồi từ máy chủ
                 }
-                fetchData()
+                // fetchData()
             }).finally(function() {
                 setIsLoadingComponent(false)
             })
