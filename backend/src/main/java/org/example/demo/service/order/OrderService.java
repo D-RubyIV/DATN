@@ -166,7 +166,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
         Account account = AuthUtil.getAccount();
         Customer customer = new Customer();
-        if (account != null && account.getCustomer() != null){
+        if (account != null && account.getCustomer() != null) {
             customer = account.getCustomer();
         }
 
@@ -176,7 +176,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     public CountStatusOrder getMyCountStatusAnyOrder(String type) {
         Account account = AuthUtil.getAccount();
         Customer customer = new Customer();
-        if (account != null && account.getCustomer() != null){
+        if (account != null && account.getCustomer() != null) {
             customer = account.getCustomer();
         }
         return orderRepository.getMyCountStatus(type, customer);
@@ -202,13 +202,13 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Transactional
     public Order refund_and_change_status(RefundAndChangeStatusDTO refundAndChangeStatusDTO, int orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
-        List<History> histories = order.getHistories();
-        if(!histories.isEmpty()){
-            History lastHistory = histories.get(histories.size() - 1);
-            if (lastHistory.getStatus() == Status.PENDING){
-                throw new CustomExceptions.CustomBadRequest("Hóa đơn đang ở trạng thái không cho phép hủy và hoàn trả)");
-            }
-        }
+//        List<History> histories = order.getHistories();
+//        if(!histories.isEmpty()){
+//            History lastHistory = histories.get(histories.size() - 1);
+//            if (lastHistory.getStatus() == Status.PENDING){
+//                throw new CustomExceptions.CustomBadRequest("Hóa đơn đang ở trạng thái không cho phép hủy và hoàn trả)");
+//            }
+//        }
         Status oldStatus = order.getStatus();
         Status newStatus = refundAndChangeStatusDTO.getStatus();
         Double amount = refundAndChangeStatusDTO.getAmount();
@@ -350,6 +350,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Order not found with id: " + id));
         History history = new History();
         history.setOrder(order);
+
+        String oldAddress = order.getAddress().trim() + ", " + order.getWardName().trim() + ", " + order.getDistrictName().trim() + ", " + order.getProvinceName().trim();
+        String newAddress = requestDTO.getAddress().trim() + ", " + requestDTO.getWardName().trim() + ", " + requestDTO.getDistrictName().trim() + ", " + requestDTO.getProvinceName().trim();
+
         String address = "";
         // update customer
         if (requestDTO.getCustomer() != null) {
@@ -385,7 +389,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         // address
         if (requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())) {
-            if(order.getStatus() != Status.PENDING){
+            if (order.getStatus() != Status.PENDING) {
                 throw new CustomExceptions.CustomBadRequest("Không thể thay đổi địa chỉ khi đơn hàng không ở trạng thái chờ xác nhận");
             }
             String detail = requestDTO.getAddress();
@@ -423,6 +427,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         // return order
         reloadSubTotalOrder(order);
+
+        String finalAddress = order.getAddress().trim() + ", " + order.getWardName().trim() + ", " + order.getDistrictName().trim() + ", " + order.getProvinceName().trim();
+        if (((requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())) || (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) || (requestDTO.getDistrictId() != null && !DataUtils.isNullOrEmpty(requestDTO.getDistrictName())) || (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName()))) && !oldAddress.equalsIgnoreCase(finalAddress)) {
+            historyService.createNewHistoryObject(order, order.getStatus(), String.format("Thay đổi địa chỉ từ %s -> %s", oldAddress, finalAddress));
+        }
         return orderRepository.save(order);
     }
 
@@ -460,11 +469,21 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         log.info("OLD STATUS: " + oldStatus);
         log.info("NEW STATUS: " + newStatus);
         log.info("-----------------1");
-        if(oldStatus == Status.TOSHIP && newStatus == Status.CANCELED){
+        if (oldStatus == Status.CANCELED && newStatus == Status.TOSHIP) {
+            throw new CustomExceptions.CustomBadRequest("Không thể chuyển sang chờ vận chuyển do đơn hàng đã bị hủy trước đó");
+        }
+        if (oldStatus == Status.CANCELED && newStatus == Status.CANCELED) {
+            throw new CustomExceptions.CustomBadRequest("Đơn hàng đã bị hủy trước đó");
+        }
+        if (oldStatus == Status.TOSHIP && newStatus == Status.CANCELED) {
             throw new CustomExceptions.CustomBadRequest("Không thể hủy khi đơn hàng đang ở trạng thái xác nhận");
         }
-        if(oldStatus == Status.CANCELED && newStatus == Status.PENDING){
+        if (oldStatus == Status.CANCELED && newStatus == Status.PENDING) {
             throw new CustomExceptions.CustomBadRequest("Đon hàng đã bị hủy trước đó");
+        }
+        boolean isRequiredCancelOnlinePayment = isRequiredCancelOnlinePaymentOrder(entityFound);
+        if (isRequiredCancelOnlinePayment && newStatus == Status.TOSHIP && entityFound.getType() == Type.ONLINE) {
+            throw new CustomExceptions.CustomBadRequest("Đơn hàng đang có yêu cầu hủy và hoàn trả");
         }
         // HÓA ĐƠN CHỜ -> CHỜ VẬN CHUYỂN
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP) {
@@ -483,8 +502,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                     entityFound.setTotalPaid(entityFound.getTotal());
                 }
             }
-            if(!entityFound.getInStore()){
-                if(entityFound.getVoucher() != null){
+            if (!entityFound.getInStore()) {
+                if (entityFound.getVoucher() != null) {
                     decreaseQuantityVoucher(entityFound.getVoucher());
                 }
             }
@@ -499,7 +518,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 rollback_quantity_order(entityFound);
             }
             // ROLLBACK VOUCHER
-            if (entityFound.getVoucher() != null){
+            if (entityFound.getVoucher() != null) {
                 increaseQuantityVoucher(entityFound.getVoucher());
             }
         }
@@ -736,12 +755,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         reloadSubTotalOrder(order);
         cart.setDeleted(Boolean.TRUE);
 
-        if(cart.getPayment() == Payment.CASH){
+        if (cart.getPayment() == Payment.CASH) {
             cart.setDeleted(Boolean.TRUE);
         }
 
         cartRepository.save(cart);
-        if(cart.getPayment() == Payment.CASH){
+        if (cart.getPayment() == Payment.CASH) {
             sendEmail(result, "Khởi tạo đơn hàng");
         }
         return result;
@@ -986,21 +1005,19 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             // NẾU KHÔNG CÓ VOUCHER PHÙ HỢP (KO CÓ VOUCHER NÀO DÙNG ĐƯỢC)
 
             // NẾU CÓ VOUCHER PHÙ HỢP
-            if (bestVoucher != null){
+            if (bestVoucher != null) {
                 log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
                 order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
                 order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
-            }
-            else if(oldVoucher != null){
+            } else if (oldVoucher != null) {
                 // kiem tra dk voucher cu
                 log.info("CÓ VOUCHER CŨ");
-                if(subTotal >= oldVoucher.getMinAmount()){
+                if (subTotal >= oldVoucher.getMinAmount()) {
                     log.info("VOUCHER CŨ VẪN ĐỦ ĐIỀU KIỆN");
                     return;
                 }
                 log.info("VOUCHER CŨ KHÔNG ĐỦ ĐIỀU KIỆN");
-            }
-            else {
+            } else {
                 log.info("BEST VOUCHER NULL");
                 order.setDiscountVoucherPercent(0.0);
                 order.setVoucherMinimumSubtotalRequired(0.0);
@@ -1028,29 +1045,29 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.save(order);
     }
 
-    public void check_validate_non_cancel_order(Order order){
-        if(order.getStatus() == Status.CANCELED){
+    public void check_validate_non_cancel_order(Order order) {
+        if (order.getStatus() == Status.CANCELED) {
             throw new CustomExceptions.CustomBadRequest("Hóa đơn này đã bị hủy trước đó");
         }
     }
 
     @Transactional
-    public Order required_cancel_online_payment_order(Integer id, HistoryRequestDTO requestDTO){
+    public Order required_cancel_online_payment_order(Integer id, HistoryRequestDTO requestDTO) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         historyService.createNewHistoryObject(order, Status.REQUESTED, requestDTO.getNote());
         return order;
     }
 
     @Transactional
-    public void handle_cancel_payment_online_order(Integer id){
+    public void handle_cancel_payment_online_order(Integer id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         orderRepository.delete(order);
     }
 
     @Transactional
-    public Order handle_is_payment_online_order(Integer id, Double amount){
+    public Order handle_is_payment_online_order(Integer id, Double amount) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
-        if(!order.getIsPayment()){
+        if (!order.getIsPayment()) {
             order.setIsPayment(true);
             historyService.createNewHistoryObject(order, Status.PENDING, String.format("Khách hàng đã thanh toán %sđ", NumberUtil.formatCurrency(amount)));
             reloadSubTotalOrder(order);
@@ -1063,9 +1080,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return order;
     }
 
-    public boolean isRequiredCancelOnlinePaymentOrder(Order order){
+    public boolean isRequiredCancelOnlinePaymentOrder(Order order) {
         List<History> histories = order.getHistories();
-        if(!histories.isEmpty()){
+        if (!histories.isEmpty()) {
             History lastHistory = histories.get(histories.size() - 1);
             return lastHistory.getStatus() == Status.REQUESTED;
         }

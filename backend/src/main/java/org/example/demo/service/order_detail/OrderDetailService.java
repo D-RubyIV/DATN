@@ -70,7 +70,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
         }
         ProductDetail productDetail = orderDetail.getProductDetail();
-        if (orderDetail.getOrder().getStatus() != Status.CANCELED){
+        if (orderDetail.getOrder().getStatus() != Status.CANCELED && order.getType() == Type.INSTORE){
             productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
         }
         productDetailRepository.save(productDetail);
