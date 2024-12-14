@@ -1,5 +1,5 @@
 ﻿use final
-GO
+go
 
 create table brand
 (
@@ -124,51 +124,6 @@ create unique index UKt9kjl2b3iqg9sv9xe06fcxcya
     where [code] IS NOT NULL
 go
 
-create table orders
-(
-    customer_id                       int,
-    deleted                           bit,
-    delivery_fee                      float,
-    discount                          float,
-    discount_voucher_percent          float,
-    district_id                       int,
-    id                                int identity
-        primary key,
-    in_store                          bit,
-    is_payment                        bit,
-    province_id                       nvarchar(255),
-    staff_id                          int,
-    sub_total                         float,
-    total                             float,
-    total_paid                        float,
-    voucher_id                        int,
-    voucher_minimum_subtotal_required float,
-    created_date                      datetime2(6),
-    updated_date                      datetime2(6),
-    address                           nvarchar(255),
-    code                              varchar(255),
-    district_name                     nvarchar(255),
-    email                             varchar(255),
-    payment                           varchar(255)
-        check ([payment] = 'TRANSFER' OR [payment] = 'CASH'),
-    phone                             varchar(255),
-    province_name                     nvarchar(255),
-    recipient_name                    nvarchar(255),
-    status                            varchar(255)
-        check ([status] = 'RETURNED' OR [status] = 'CANCELED' OR [status] = 'DELIVERED' OR [status] = 'TORECEIVE' OR
-               [status] = 'TOSHIP' OR [status] = 'PENDING'),
-    type                              varchar(255)
-        check ([type] = 'INSTORE' OR [type] = 'ONLINE'),
-    ward_id                           varchar(255),
-    ward_name                         nvarchar(255)
-)
-go
-
-create unique index UKgt3o4a5bqj59e9y6wakgk926t
-    on orders (code)
-    where [code] IS NOT NULL
-go
-
 create table origin
 (
     deleted      bit,
@@ -183,29 +138,6 @@ go
 
 create unique index UK7e5g3f1j7w3jfye6tninigdro
     on origin (code)
-    where [code] IS NOT NULL
-go
-
-create table payment
-(
-    id           int identity
-        primary key,
-    method       int,
-    order_id     int
-        constraint FKlouu98csyullos9k25tbpk4va
-            references orders,
-    total_money  float,
-    type         bit,
-    created_date datetime2(6),
-    updated_date datetime2(6),
-    code         varchar(255),
-    note         nvarchar(255),
-    trading_code nvarchar(255)
-)
-go
-
-create unique index UKopor0kv54jt58n364jog9bu2i
-    on payment (code)
     where [code] IS NOT NULL
 go
 
@@ -324,25 +256,6 @@ create unique index UKjwt2qo9oj3wd7ribjkymryp8s
     where [account_id] IS NOT NULL
 go
 
-create table history
-(
-    account_id   int
-        constraint FK2mpn4nxqqsu7euii4hwhbjeg8
-            references account,
-    id           int identity
-        primary key,
-    order_id     int
-        constraint FKh67g7uf13wwtr5ar270qti86f
-            references orders,
-    created_date datetime2(6),
-    updated_date datetime2(6),
-    note         nvarchar(255),
-    status       varchar(255)
-        check ([status] = 'RETURNED' OR [status] = 'CANCELED' OR [status] = 'DELIVERED' OR [status] = 'TORECEIVE' OR
-               [status] = 'TOSHIP' OR [status] = 'PENDING')
-)
-go
-
 create unique index UKc36say97xydpmgigg38qv5l2p
     on role (code)
     where [code] IS NOT NULL
@@ -435,22 +348,6 @@ create unique index UKqiy003f5r7e6ey7l5y3apiu76
     where [code] IS NOT NULL
 go
 
-create table sysdiagrams
-(
-    name         sysname not null,
-    principal_id int     not null,
-    diagram_id   int identity
-        primary key,
-    version      int,
-    definition   varbinary(max),
-    constraint UK_principal_name
-        unique (principal_id, name)
-)
-go
-
-exec sp_addextendedproperty 'microsoft_database_tools_support', 1, 'SCHEMA', 'dbo', 'TABLE', 'sysdiagrams'
-go
-
 create table texture
 (
     deleted      bit,
@@ -527,24 +424,6 @@ create table product_detail
     created_date  datetime2(6),
     updated_date  datetime2(6),
     code          varchar(255)
-)
-go
-
-create table order_detail
-(
-    average_discount_event float,
-    deleted                bit,
-    id                     int identity
-        primary key,
-    order_id               int
-        constraint FKrws2q0si6oyd6il8gqe2aennc
-            references orders,
-    product_detail_id      int
-        constraint FK4onmghajt9jh9quh6ed3lipdn
-            references product_detail,
-    quantity               int,
-    created_date           datetime2(6),
-    updated_date           datetime2(6)
 )
 go
 
@@ -665,6 +544,94 @@ go
 
 create unique index UKen0126g6bmglbwsbk87omyu7x
     on cart_detail (code)
+    where [code] IS NOT NULL
+go
+
+create table orders
+(
+    customer_id                       int
+        constraint FK624gtjin3po807j3vix093tlf
+            references customer,
+    deleted                           bit,
+    delivery_fee                      float,
+    discount                          float,
+    discount_voucher_percent          float,
+    district_id                       int,
+    id                                int identity
+        primary key,
+    in_store                          bit,
+    is_payment                        bit,
+    province_id                       nvarchar(255),
+    staff_id                          int
+        constraint FK4ery255787xl56k025fyxrqe9
+            references staff,
+    sub_total                         float,
+    total                             float,
+    total_paid                        float,
+    voucher_id                        int
+        constraint FKrx5vk9ur428660yp19hw98nr2
+            references voucher,
+    voucher_minimum_subtotal_required float,
+    created_date                      datetime2(6),
+    updated_date                      datetime2(6),
+    address                           nvarchar(255),
+    code                              varchar(255),
+    district_name                     nvarchar(255),
+    email                             varchar(255),
+    payment                           varchar(255)
+        check ([payment] = 'TRANSFER' OR [payment] = 'CASH'),
+    phone                             varchar(255),
+    province_name                     nvarchar(255),
+    recipient_name                    nvarchar(255),
+    status                            varchar(255)
+        check ([status] = 'REQUESTED' OR [status] = 'CANCELED' OR [status] = 'DELIVERED' OR [status] = 'TORECEIVE' OR
+               [status] = 'TOSHIP' OR [status] = 'PENDING'),
+    type                              varchar(255)
+        check ([type] = 'INSTORE' OR [type] = 'ONLINE'),
+    ward_id                           varchar(255),
+    ward_name                         nvarchar(255)
+)
+go
+
+create table history
+(
+    account_id   int
+        constraint FK2mpn4nxqqsu7euii4hwhbjeg8
+            references account,
+    id           int identity
+        primary key,
+    order_id     int
+        constraint FKh67g7uf13wwtr5ar270qti86f
+            references orders,
+    created_date datetime2(6),
+    updated_date datetime2(6),
+    note         nvarchar(255),
+    status       varchar(255)
+        check ([status] = 'REQUESTED' OR [status] = 'CANCELED' OR [status] = 'DELIVERED' OR [status] = 'TORECEIVE' OR
+               [status] = 'TOSHIP' OR [status] = 'PENDING')
+)
+go
+
+create table order_detail
+(
+    average_discount_event float,
+    deleted                bit,
+    id                     int identity
+        primary key,
+    order_id               int
+        constraint FKrws2q0si6oyd6il8gqe2aennc
+            references orders,
+    product_detail_id      int
+        constraint FK4onmghajt9jh9quh6ed3lipdn
+            references product_detail,
+    quantity               int,
+    created_date           datetime2(6),
+    updated_date           datetime2(6)
+)
+go
+
+create unique index UKgt3o4a5bqj59e9y6wakgk926t
+    on orders (code)
     where [code] IS NOT NULL
 go
 
