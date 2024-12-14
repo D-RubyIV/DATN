@@ -351,8 +351,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         History history = new History();
         history.setOrder(order);
 
-        String oldAddress = order.getAddress().trim() + ", " + order.getWardName().trim() + ", " + order.getDistrictName().trim() + ", " + order.getProvinceName().trim();
-        String newAddress = requestDTO.getAddress().trim() + ", " + requestDTO.getWardName().trim() + ", " + requestDTO.getDistrictName().trim() + ", " + requestDTO.getProvinceName().trim();
+        String oldAddress = DataUtils.safeToString(order.getAddress()).trim() + ", " + DataUtils.safeToString(order.getWardName()).trim() + ", " + DataUtils.safeToString(order.getDistrictName()).trim() + ", " + DataUtils.safeToString(order.getProvinceName()).trim();
 
         String address = "";
         // update customer
