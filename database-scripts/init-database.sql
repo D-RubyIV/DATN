@@ -1,0 +1,4 @@
+CREATE DATABASE final
+GO
+
+USE final

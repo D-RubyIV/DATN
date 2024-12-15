@@ -111,5 +111,5 @@ public class EventController {
     @PutMapping("/update/{id}")
     public ResponseEntity<EventDTO> updateEvent(@PathVariable Integer id, @RequestBody EventDTO eventDTO) {
         return ResponseEntity.ok(eventService.updateEvent(id, eventDTO));
-    } // nhnah noà day 
+    }
 }
