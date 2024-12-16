@@ -242,8 +242,9 @@ public class CartController {
         Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Cart not found"));
         if(!cartServiceV2.check_valid_product_detail_quantity_in_storage_for_online_order(cart)){
             throw new CustomExceptions.CustomBadRequest("Có sản phẩm nào đó không đủ số lượng đáp ứng");
-        }
-        else{
+        } else if (cart.getCartDetails().isEmpty()) {
+            throw new CustomExceptions.CustomBadRequest("Không thể thanh toán khi chưa có sản phẩm nào trong giỏ hàng");
+        } else{
             return ResponseEntity.ok("ok bayby");
         }
     }
