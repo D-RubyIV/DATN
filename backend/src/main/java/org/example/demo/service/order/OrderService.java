@@ -42,6 +42,7 @@ import org.example.demo.service.IService;
 import org.example.demo.service.email.MailSenderService;
 import org.example.demo.service.fee.FeeService;
 import org.example.demo.service.history.HistoryService;
+import org.example.demo.util.CurrencyFormat;
 import org.example.demo.util.DataUtils;
 import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.auth.AuthUtil;
@@ -50,6 +51,7 @@ import org.example.demo.util.number.NumberUtil;
 import org.example.demo.util.phah04.PageableObject;
 import org.example.demo.util.voucher.VoucherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -121,6 +123,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Autowired
     private VoucherUtil voucherUtil;
+
+    @Value("${custom.subtotal.allow.free.ship}")
+    private Double subTotalAllowFreeShip;
+
+    @Value("${custom.subtotal.allow.maximum}")
+    private Double subTotalAllowMaximum;
 
     public Page<OrderOverviewResponseDTO> findAllOverviewByPage(
             String status,
@@ -890,8 +898,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
 
     public double get_fee_ship_of_order(Order order) {
+        double subTotal = get_subtotal_of_order(order);
+        log.info("[ORDER]SUB TOTAL OF ORDER: " + subTotal);
+        log.info("[ORDER]SUBTOTAL ALLOW FREE SHIP: " + subTotalAllowFreeShip);
+        log.info("[ORDER]ALLOW FREE SHIP: " + (subTotal > subTotalAllowFreeShip));
         try {
-            if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE) {
+            if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE && subTotal < subTotalAllowFreeShip) {
                 CompletableFuture<JsonNode> feeFuture = calculateFee(order.getId());
                 // Chờ kết quả trong trường hợp cần (có thể dùng timeout)
                 JsonNode feeObject = feeFuture.join();

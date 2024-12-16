@@ -220,9 +220,9 @@ public class CartServiceV2 {
         if(subTotal > subTotalAllowMaximum){
             throw new CustomExceptions.CustomBadRequest(String.format("Chỉ cho phép mua tối đa %sđ", CurrencyFormat.format(subTotalAllowMaximum)));
         }
-        log.info("SUB TOTAL OF ORDER: " + subTotal);
-        log.info("SUBTOTAL ALLOW FREE SHIP: " + subTotalAllowFreeShip);
-        log.info("ALLOW FREE SHIP: " + (subTotal > subTotalAllowFreeShip));
+        log.info("[CART]SUB TOTAL OF ORDER: " + subTotal);
+        log.info("[CART]SUBTOTAL ALLOW FREE SHIP: " + subTotalAllowFreeShip);
+        log.info("[CART]ALLOW FREE SHIP: " + (subTotal > subTotalAllowFreeShip));
         try {
             if (cart.getDistrictId() != null && cart.getProvinceId() != null && cart.getType() == Type.ONLINE && subTotal < subTotalAllowFreeShip) {
                 JsonNode feeObject = calculateFee(cart.getId());
