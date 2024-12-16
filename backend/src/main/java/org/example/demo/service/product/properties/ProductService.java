@@ -8,6 +8,7 @@ import org.example.demo.dto.product.requests.properties.ProductRequestDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityResponseDTO;
 import org.example.demo.entity.event.Event;
 import org.example.demo.entity.product.core.ProductDetail;
+import org.example.demo.entity.product.properties.Origin;
 import org.example.demo.entity.product.properties.Product;
 import org.example.demo.mapper.event.EventMapper;
 import org.example.demo.mapper.product.request.properties.ProductRequestMapper;
@@ -39,6 +40,9 @@ public class ProductService implements IService<Product, Integer, ProductRequest
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
+    public List<Product> findAllObject() {
+        return productRepository.findAllObject();
+    }
 
     public Page<ProductDTO> getAllProductDTO(Pageable pageable) {
         return productRepository.findAll(pageable)

@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.ThicknessRequestDTO;
 import org.example.demo.dto.product.response.properties.ThicknessResponseDTO;
+import org.example.demo.entity.product.properties.Texture;
 import org.example.demo.entity.product.properties.Thickness; // Đổi từ Texture sang Thickness
 import org.example.demo.mapper.product.request.properties.ThicknessRequestMapper; // Đổi từ TextureRequestMapper sang ThicknessRequestMapper
 import org.example.demo.mapper.product.response.properties.ThicknessResponseMapper;
@@ -28,6 +29,10 @@ public class ThicknessService implements IService<Thickness, Integer, ThicknessR
     private ThicknessRequestMapper thicknessRequestMapper; // Đổi từ textureRequestMapper sang thicknessRequestMapper
     @Autowired
     private ThicknessResponseMapper thicknessResponseMapper;
+
+    public List<Thickness> findAllObject() {
+        return thicknessRepository.findAllObject();
+    }
 
     public Page<ThicknessResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

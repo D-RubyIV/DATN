@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.StyleRequestDTO;
 import org.example.demo.dto.product.response.properties.SleeveResponseDTO;
 import org.example.demo.dto.product.response.properties.StyleResponseDTO;
+import org.example.demo.entity.product.properties.Sleeve;
 import org.example.demo.entity.product.properties.Style; // Đổi từ Sleeve sang Style
 import org.example.demo.mapper.product.request.properties.StyleRequestMapper; // Đổi từ SleeveRequestMapper sang StyleRequestMapper
 import org.example.demo.mapper.product.response.properties.StyleResponseMapper;
@@ -31,6 +32,9 @@ public class StyleService implements IService<Style, Integer, StyleRequestDTO> {
     @Autowired
     private StyleResponseMapper styleResponseMapper;
 
+    public List<Style> findAllObject() {
+        return styleRepository.findAllObject();
+    }
 
     public Page<StyleResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.SleeveRequestDTO;
 import org.example.demo.dto.product.response.properties.SizeResponseDTO;
 import org.example.demo.dto.product.response.properties.SleeveResponseDTO;
+import org.example.demo.entity.product.properties.Size;
 import org.example.demo.entity.product.properties.Sleeve; // Đổi từ Size sang Sleeve
 import org.example.demo.mapper.product.request.properties.SleeveRequestMapper; // Đổi từ SizeRequestMapper sang SleeveRequestMapper
 import org.example.demo.mapper.product.response.properties.SleeveResponseMapper;
@@ -30,6 +31,9 @@ public class SleeveService implements IService<Sleeve, Integer, SleeveRequestDTO
     @Autowired
     private SleeveResponseMapper  sleeveResponseMapper;
 
+    public List<Sleeve> findAllObject() {
+        return sleeveRepository.findAllObject();
+    }
 
     public Page<SleeveResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

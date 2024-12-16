@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.SizeRequestDTO;
 import org.example.demo.dto.product.response.properties.OriginResponseDTO;
 import org.example.demo.dto.product.response.properties.SizeResponseDTO;
+import org.example.demo.entity.product.properties.Product;
 import org.example.demo.entity.product.properties.Size; // Đổi từ Origin sang Size
 import org.example.demo.mapper.product.request.properties.SizeRequestMapper; // Đổi từ OriginRequestMapper sang SizeRequestMapper
 import org.example.demo.mapper.product.response.properties.SizeResponseMapper;
@@ -31,6 +32,9 @@ public class SizeService implements IService<Size, Integer, SizeRequestDTO> { //
     @Autowired
     private SizeResponseMapper sizeResponseMapper;
 
+    public List<Size> findAllObject() {
+        return sizeRepository.findAllObject();
+    }
 
     public Page<SizeResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

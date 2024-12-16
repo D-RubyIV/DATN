@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.OriginRequestDTO;
 import org.example.demo.dto.product.response.properties.MaterialResponseDTO;
 import org.example.demo.dto.product.response.properties.OriginResponseDTO;
+import org.example.demo.entity.product.properties.Material;
 import org.example.demo.entity.product.properties.Origin; // Đổi từ Material sang Origin
 import org.example.demo.mapper.product.request.properties.OriginRequestMapper; // Đổi từ MaterialRequestMapper sang OriginRequestMapper
 import org.example.demo.mapper.product.response.properties.OriginResponseMapper;
@@ -30,6 +31,10 @@ public class OriginService implements IService<Origin, Integer, OriginRequestDTO
 
     @Autowired
     private OriginResponseMapper originResponseMapper;
+
+    public List<Origin> findAllObject() {
+        return originRepository.findAllObject();
+    }
 
     public Page<OriginResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

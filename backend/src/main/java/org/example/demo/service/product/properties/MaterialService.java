@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.MaterialRequestDTO;
 import org.example.demo.dto.product.response.properties.ImageResponseDTO;
 import org.example.demo.dto.product.response.properties.MaterialResponseDTO;
+import org.example.demo.entity.product.properties.Elasticity;
 import org.example.demo.entity.product.properties.Material; // Đổi từ Image sang Material
 import org.example.demo.mapper.product.request.properties.MaterialRequestMapper; // Đổi từ ImageRequestMapper sang MaterialRequestMapper
 import org.example.demo.mapper.product.response.properties.MaterialResponseMapper;
@@ -29,6 +30,10 @@ public class MaterialService implements IService<Material, Integer, MaterialRequ
     private MaterialRequestMapper materialRequestMapper; // Đổi từ imageRequestMapper sang materialRequestMapper
     @Autowired
     private MaterialResponseMapper materialResponseMapper;
+
+    public List<Material> findAllObject() {
+        return materialRepository.findAllObject();
+    }
 
     public Page<MaterialResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

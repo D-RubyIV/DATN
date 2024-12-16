@@ -45,6 +45,10 @@ public class BrandService implements IService<Brand, Integer, BrandRequestDTO> {
         return brandRepository.findAllList();
     }
 
+    public List<Brand> findAllObject() {
+        return brandRepository.findAllObject();
+    }
+
 
     public Page<BrandResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

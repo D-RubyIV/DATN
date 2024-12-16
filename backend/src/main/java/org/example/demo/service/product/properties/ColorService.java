@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.ColorRequestDTO;
 import org.example.demo.dto.product.response.properties.CollarResponseDTO;
 import org.example.demo.dto.product.response.properties.ColorResponseDTO;
+import org.example.demo.entity.product.properties.Collar;
 import org.example.demo.entity.product.properties.Color; // Đổi từ Collar sang Color
 import org.example.demo.mapper.product.request.properties.ColorRequestMapper; // Đổi từ CollarRequestMapper sang ColorRequestMapper
 import org.example.demo.mapper.product.response.properties.CollarResponseMapper;
@@ -31,6 +32,11 @@ public class ColorService implements IService<Color, Integer, ColorRequestDTO> {
 
     @Autowired
     private ColorResponseMapper colorResponseMapper;
+
+    public List<Color> findAllObject() {
+        return colorRepository.findAllObject();
+    }
+
     public Page<ColorResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,
             LocalDateTime createdTo,

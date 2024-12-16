@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.TextureRequestDTO;
 import org.example.demo.dto.product.response.properties.StyleResponseDTO;
 import org.example.demo.dto.product.response.properties.TextureResponseDTO;
+import org.example.demo.entity.product.properties.Style;
 import org.example.demo.entity.product.properties.Texture; // Đổi từ Style sang Texture
 import org.example.demo.mapper.product.request.properties.TextureRequestMapper; // Đổi từ StyleRequestMapper sang TextureRequestMapper
 import org.example.demo.mapper.product.response.properties.TextureResponseMapper;
@@ -29,6 +30,10 @@ public class TextureService implements IService<Texture, Integer, TextureRequest
     private TextureRequestMapper textureRequestMapper; // Đổi từ styleRequestMapper sang textureRequestMapper
     @Autowired
     private TextureResponseMapper textureResponseMapper;
+
+    public List<Texture> findAllObject() {
+        return textureRepository.findAllObject();
+    }
 
     public Page<TextureResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

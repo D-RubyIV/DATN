@@ -7,6 +7,7 @@ import org.example.demo.dto.product.requests.properties.ElasticityRequestDTO;
 import org.example.demo.dto.product.response.properties.ColorResponseDTO;
 import org.example.demo.dto.product.response.properties.ElasticityResponseDTO;
 import org.example.demo.entity.product.properties.Brand;
+import org.example.demo.entity.product.properties.Color;
 import org.example.demo.entity.product.properties.Elasticity; // Đổi từ Color sang Elasticity
 import org.example.demo.mapper.product.request.properties.ElasticityRequestMapper; // Đổi từ ColorRequestMapper sang ElasticityRequestMapper
 import org.example.demo.mapper.product.response.properties.ElasticityResponseMapper;
@@ -32,6 +33,10 @@ public class ElasticityService implements IService<Elasticity, Integer, Elastici
 
     @Autowired
     private ElasticityResponseMapper elasticityResponseMapper;
+
+    public List<Elasticity> findAllObject() {
+        return elasticityRepository.findAllObject();
+    }
 
     public Page<ElasticityResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,

@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.dto.product.requests.properties.CollarRequestDTO;
 import org.example.demo.dto.product.response.properties.BrandResponseDTO;
 import org.example.demo.dto.product.response.properties.CollarResponseDTO;
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Collar; // Đổi từ Brand sang Collar
 import org.example.demo.mapper.product.request.properties.CollarRequestMapper; // Đổi từ BrandRequestMapper sang CollarRequestMapper
 import org.example.demo.mapper.product.response.properties.CollarResponseMapper;
@@ -31,6 +32,9 @@ public class CollarService implements IService<Collar, Integer, CollarRequestDTO
     @Autowired
     private CollarResponseMapper collarResponseMapper;
 
+    public List<Collar> findAllObject() {
+        return collarRepository.findAllObject();
+    }
 
     public Page<CollarResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,
