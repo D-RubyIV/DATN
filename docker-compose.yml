@@ -15,9 +15,8 @@ services:
       - ./mssql-data:/var/opt/mssql/data
       - ./database-scripts:/database-scripts
     restart: unless-stopped
-    entrypoint: ["/database-scripts/entrypoint.sh"]
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${DB_PASSWORD}", "-Q", "SELECT 1"]
+      test: "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${DB_PASSWORD}' -Q 'SELECT 1' > /dev/null 2>&1"
       interval: 30s
       timeout: 10s
       retries: 5
@@ -26,25 +25,25 @@ services:
       - app-network
 
   backend:
-    build: 
+    build:
       context: .
       dockerfile: docker/be/Dockerfile
     container_name: project-backend
     ports:
       - 8080:8080
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:sqlserver://database:1433;databaseName=final;encrypt=true;trustServerCertificate=true
-      - SPRING_DATASOURCE_USERNAME=sa
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-      - VNPAY_TMN_CODE=${VNPAY_TMN_CODE}
-      - VNPAY_SECRET_KEY=${VNPAY_SECRET_KEY}
-      - VNPAY_RETURN_URL=${VNPAY_RETURN_URL}
-      - JWT_SECRET=${JWT_SECRET}
-      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
-      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-      - EMAIL_USERNAME=${EMAIL_USERNAME}
+      SPRING_DATASOURCE_URL: jdbc:sqlserver://database:1433;databaseName=final;encrypt=true;trustServerCertificate=true
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      VNPAY_TMN_CODE: ${VNPAY_TMN_CODE}
+      VNPAY_SECRET_KEY: ${VNPAY_SECRET_KEY}
+      VNPAY_RETURN_URL: ${VNPAY_RETURN_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
     depends_on:
       database:
         condition: service_healthy
@@ -53,7 +52,7 @@ services:
       - app-network
 
   frontend:
-    build: 
+    build:
       context: .
       dockerfile: docker/fe/Dockerfile
     container_name: project-frontend
