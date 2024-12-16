@@ -38,6 +38,11 @@ public class StyleController {
     @Autowired
     private StyleResponseMapper styleResponseMapper; // Đổi từ sleeveResponseMapper sang styleResponseMapper
 
+    @GetMapping("/style-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(styleService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

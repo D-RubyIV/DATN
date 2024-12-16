@@ -39,6 +39,11 @@ public class MaterialController {
     @Autowired
     private MaterialResponseMapper materialResponseMapper; // Đổi từ imageResponseMapper sang materialResponseMapper
 
+    @GetMapping("/material-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(materialService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

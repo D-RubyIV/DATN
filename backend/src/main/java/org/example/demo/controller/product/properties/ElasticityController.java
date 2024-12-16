@@ -37,6 +37,11 @@ public class ElasticityController {
     @Autowired
     private ElasticityResponseMapper elasticityResponseMapper; // Đổi từ colorResponseMapper sang elasticityResponseMapper
 
+    @GetMapping("/elasticity-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(elasticityService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

@@ -39,6 +39,11 @@ public class ThicknessController {
     @Autowired
     private ThicknessResponseMapper thicknessResponseMapper; // Đổi từ textureResponseMapper sang thicknessResponseMapper
 
+    @GetMapping("/thickness-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(thicknessService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

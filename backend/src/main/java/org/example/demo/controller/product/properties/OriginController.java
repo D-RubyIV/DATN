@@ -42,6 +42,11 @@ public class OriginController {
     @Autowired
     private OriginResponseMapper originResponseMapper; // Đổi từ materialResponseMapper sang originResponseMapper
 
+    @GetMapping("/origin-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(originService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

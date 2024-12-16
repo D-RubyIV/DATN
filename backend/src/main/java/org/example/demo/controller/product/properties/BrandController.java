@@ -40,6 +40,11 @@ public class BrandController {
     @Autowired
     private BrandResponseMapper brandResponseMapper; // Đổi từ productResponseMapper sang brandResponseMapper
 
+    @GetMapping("/brand-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(brandService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

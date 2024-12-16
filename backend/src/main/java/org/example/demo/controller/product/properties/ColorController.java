@@ -39,6 +39,11 @@ public class ColorController {
     @Autowired
     private ColorResponseMapper colorResponseMapper; // Đổi từ collarResponseMapper sang colorResponseMapper
 
+    @GetMapping("/color-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(colorService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

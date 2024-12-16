@@ -39,6 +39,11 @@ public class CollarController {
     @Autowired
     private CollarResponseMapper collarResponseMapper; // Đổi từ brandResponseMapper sang collarResponseMapper
 
+    @GetMapping("/collar-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(collarService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

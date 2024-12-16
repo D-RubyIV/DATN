@@ -39,6 +39,11 @@ public class TextureController {
     @Autowired
     private TextureResponseMapper textureResponseMapper; // Đổi từ styleResponseMapper sang textureResponseMapper
 
+    @GetMapping("/texture-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(textureService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

@@ -43,6 +43,11 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    @GetMapping("/product-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(productService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

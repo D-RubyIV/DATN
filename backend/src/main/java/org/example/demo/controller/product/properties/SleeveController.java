@@ -39,6 +39,11 @@ public class SleeveController {
     @Autowired
     private SleeveResponseMapper sleeveResponseMapper; // Đổi từ sizeResponseMapper sang sleeveResponseMapper
 
+    @GetMapping("/sleeve-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(sleeveService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable

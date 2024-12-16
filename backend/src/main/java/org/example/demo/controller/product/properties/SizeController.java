@@ -39,6 +39,11 @@ public class SizeController {
     @Autowired
     private SizeResponseMapper sizeResponseMapper; // Đổi từ originResponseMapper sang sizeResponseMapper
 
+    @GetMapping("/size-objects")
+    public ResponseEntity<?> findAllObjects() {
+        return ResponseEntity.ok(sizeService.findAllObject());
+    }
+
     @GetMapping("")
     public ResponseEntity<?> findAll(
             @PageableDefault(page = 0, size = 5) Pageable pageable
