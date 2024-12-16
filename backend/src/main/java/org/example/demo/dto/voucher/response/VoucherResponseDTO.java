@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -23,4 +24,5 @@ public class VoucherResponseDTO {
     private String typeTicket;
     private boolean deleted;
     private Integer countOrders;
+    private Date createdDate;
 }

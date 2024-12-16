@@ -95,29 +95,55 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
             nativeQuery = true)
     Page<VoucherResponse> getAllVoucher(@Param("req") VoucherRequest request, Pageable pageable);
 
+//    @Query("""
+//                SELECT v FROM Voucher v
+//                WHERE
+//                      (:keyword IS NULL OR
+//                       v.name LIKE %:keyword% OR
+//                       v.code LIKE %:keyword%)
+//                  AND (:name IS NULL OR v.name LIKE %:name%)
+//                  AND (:code IS NULL OR v.code LIKE %:code%)
+//                  AND (:typeTicket IS NULL OR CAST(v.typeTicket as string) = :typeTicket)
+//                  AND (:quantity IS NULL OR v.quantity = :quantity)
+//                  AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent)
+//                  AND (:minAmount IS NULL OR v.minAmount = :minAmount)
+//                  AND (:status IS NULL OR v.status = :status)
+//            """)
+//    Page<Voucher> searchVoucher(@Param("keyword") String keyword,
+//                                @Param("name") String name,
+//                                @Param("code") String code,
+//                                @Param("typeTicket") String typeTicket,
+//                                @Param("quantity") Integer quantity,
+//                                @Param("maxPercent") Double maxPercent,
+//                                @Param("minAmount") Double minAmount,
+//                                @Param("status") String status,
+//                                Pageable pageable);
+
     @Query("""
-                SELECT v FROM Voucher v
-                WHERE
-                      (:keyword IS NULL OR 
-                       v.name LIKE %:keyword% OR 
-                       v.code LIKE %:keyword%) 
-                  AND (:name IS NULL OR v.name LIKE %:name%) 
-                  AND (:code IS NULL OR v.code LIKE %:code%) 
-                  AND (:typeTicket IS NULL OR CAST(v.typeTicket as string) = :typeTicket) 
-                  AND (:quantity IS NULL OR v.quantity = :quantity) 
-                  AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
-                  AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
-                  AND (:status IS NULL OR v.status = :status)
-            """)
-    Page<Voucher> searchVoucher(@Param("keyword") String keyword,
-                                @Param("name") String name,
-                                @Param("code") String code,
-                                @Param("typeTicket") String typeTicket,
-                                @Param("quantity") Integer quantity,
-                                @Param("maxPercent") Double maxPercent,
-                                @Param("minAmount") Double minAmount,
-                                @Param("status") String status,
-                                Pageable pageable);
+    SELECT v FROM Voucher v
+    WHERE
+          (:keyword IS NULL OR 
+           v.name LIKE %:keyword% OR 
+           v.code LIKE %:keyword%) 
+      AND (:name IS NULL OR v.name LIKE %:name%) 
+      AND (:code IS NULL OR v.code LIKE %:code%) 
+      AND (:typeTicket IS NULL OR CAST(v.typeTicket as string) = :typeTicket) 
+      AND (:quantity IS NULL OR v.quantity = :quantity) 
+      AND (:maxPercent IS NULL OR v.maxPercent = :maxPercent) 
+      AND (:minAmount IS NULL OR v.minAmount = :minAmount) 
+      AND (:status IS NULL OR v.status = :status)
+    ORDER BY v.createdDate DESC
+""")
+    Page<Voucher> searchVoucher(
+            @Param("keyword") String keyword,
+            @Param("name") String name,
+            @Param("code") String code,
+            @Param("typeTicket") String typeTicket,
+            @Param("quantity") Integer quantity,
+            @Param("maxPercent") Double maxPercent,
+            @Param("minAmount") Double minAmount,
+            @Param("status") String status,
+            Pageable pageable);
 
     @Query("""
             SELECT v FROM Voucher v

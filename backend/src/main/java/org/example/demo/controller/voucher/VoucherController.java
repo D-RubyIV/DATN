@@ -54,6 +54,7 @@ public class VoucherController {
         return ResponseEntity.ok(response);
     }
 
+
     @GetMapping("/page")
     public ResponseEntity<Page<VoucherResponseDTO>> searchVoucher(
             @RequestParam(required = false) String keyword,
@@ -69,24 +70,16 @@ public class VoucherController {
             @PageableDefault(size = 5) Pageable pageable) {
 
         if (sort != null && !sort.isEmpty()) {
-            String sortDirection = (order != null && !order.isEmpty()) ? order.toUpperCase() : "ASC";
-            Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-            Sort.Order orderSort = new Sort.Order(direction, sort);
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(orderSort));
+            Sort.Direction direction = (order != null && !order.isEmpty())
+                    ? Sort.Direction.fromString(order.toUpperCase())
+                    : Sort.Direction.ASC;
+            Sort userSort = Sort.by(direction, sort);
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), userSort);
         }
-// do k duoc
-        // /dung nó là string di, toi cx meo biét cast kieu gì string thi k dc
-//        Type ticketType = null;
-//        if (typeTicket != null && !typeTicket.isEmpty()) {
-//            try {
-//                ticketType = Type.valueOf(typeTicket);
-//            } catch (IllegalArgumentException e) {
-//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ticket type.");
-//            }
-//        }
-        // b dịnh cát vè enum à đúng r mà bth enum gán thành Sting xong uppercase lên trước t k dung, ko nó là string luon r , cái ben order toi cx dngf enum dó, nma toi ko cast vè, toi dùng luon string dó
+
         Page<Voucher> result = voucherService.searchVoucher(
                 keyword, name, code, typeTicket, quantity, maxPercent, minAmount, status, pageable);
+
         Page<VoucherResponseDTO> response = result.map(voucherService::getVoucherResponseDTO);
         return ResponseEntity.ok(response);
     }
@@ -166,8 +159,9 @@ public class VoucherController {
             @RequestParam(name = "typeTicket", required = false, defaultValue = "") String typeTicket,
             @RequestParam(name = "customerId", required = false, defaultValue = "") Integer customerId
     ) {
-        return ResponseEntity.ok(voucherService.selectPageActiveAndAbleToUseVoucher(query, typeTicket, customerId,  pageable).map(s -> voucherResponseMapper.toDTO(s)));
+        return ResponseEntity.ok(voucherService.selectPageActiveAndAbleToUseVoucher(query, typeTicket, customerId, pageable).map(s -> voucherResponseMapper.toDTO(s)));
     }
+
     @GetMapping("/find-voucher")
     public ResponseEntity<Page<VoucherResponseDTO>> selectPageActive(
             @PageableDefault(size = 5, page = 0, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
@@ -175,9 +169,8 @@ public class VoucherController {
             @RequestParam(name = "typeTicket", required = false, defaultValue = "") String typeTicket,
             @RequestParam(name = "customerId", required = false, defaultValue = "") Integer customerId
     ) {
-        return ResponseEntity.ok(voucherService.selectPageActiveAndAbleToUseVoucher(query, typeTicket, customerId,  pageable).map(s -> voucherResponseMapper.toDTO(s)));
+        return ResponseEntity.ok(voucherService.selectPageActiveAndAbleToUseVoucher(query, typeTicket, customerId, pageable).map(s -> voucherResponseMapper.toDTO(s)));
     }
-
 
 
 }
