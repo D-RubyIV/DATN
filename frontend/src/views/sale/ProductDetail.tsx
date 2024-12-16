@@ -41,10 +41,10 @@ const ProductDetail = () => {
     const [salePercent, setSalePercent] = useState<number>(0)
 
     useEffect(() => {
+        console.log(product)
         {
-            product && Array.isArray(product.eventDTOList)
-                && product.eventDTOList.length > 0
-                && setSalePercent(product.eventDTOList[0].discountPercent)
+            product && product.nowAverageDiscountPercentEvent
+                && setSalePercent(product.nowAverageDiscountPercentEvent)
         }
     }, [product])
 

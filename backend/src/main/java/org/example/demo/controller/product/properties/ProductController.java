@@ -85,12 +85,12 @@ public class ProductController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductDetailById(@PathVariable Integer id) throws BadRequestException {
+    public ResponseEntity<?> getProductDetailById(@PathVariable Integer id) throws BadRequestException {
         Product product = productService.findById(id);
         if (product == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ProductDetail not found");
         }
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(productResponseMapper.toDTO(product));
     }
     @PutMapping("/update/{id}")
     public ResponseEntity<ProductResponseDTO> updateProduct(
