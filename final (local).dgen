@@ -991,22 +991,8 @@
           <Length>255</Length>
         </Column>
         <Column Name="status">
-          <Checked>true</Checked>
-          <DataType>varchar</DataType>
-          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
-            <AllowEmptyStrings>false</AllowEmptyStrings>
-            <EmptyStringProportion>10</EmptyStringProportion>
-            <AllowNulls>false</AllowNulls>
-            <NullProportion>10</NullProportion>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>19</SeedValue>
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>[A-Z][A-Z][A-Z][A-Z][A-Z]</Expression>
-          </GeneratorOptions>
-          <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
-          <GeneratorName>Reg Exp</GeneratorName>
-          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
+          <Checked>false</Checked>
+          <DataType>nvarchar</DataType>
           <Length>255</Length>
         </Column>
       </Columns>
@@ -1607,8 +1593,8 @@
             <UseOffsetDetails>false</UseOffsetDetails>
             <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
             <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
-            <MinDate>1970-01-01T00:00:00</MinDate>
-            <MaxDate>2024-10-06T00:00:00</MaxDate>
+            <MinDate>2024-01-09T00:00:00+07:00</MinDate>
+            <MaxDate>2024-12-17T00:00:00+07:00</MaxDate>
             <IsRandomizeDate>true</IsRandomizeDate>
             <IsRandomizeTime>true</IsRandomizeTime>
             <MinFraction>0</MinFraction>
@@ -3363,7 +3349,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>20</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>

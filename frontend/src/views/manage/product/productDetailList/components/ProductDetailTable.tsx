@@ -157,7 +157,7 @@ const ProductDetailTable = () => {
             onDelete()
         }
         return (
-            <div className="flex justify-end text-lg">
+            <div className="flex text-lg">
                 <FaEye
                     onClick={onUpdate}
                     size={20}
@@ -261,7 +261,7 @@ const ProductDetailTable = () => {
                 },
             },
             {
-                header: '',
+                header: 'Hành động',
                 id: 'action',
                 cell: (props: any) => <ActionColumn row={props.row.original} />,
             },

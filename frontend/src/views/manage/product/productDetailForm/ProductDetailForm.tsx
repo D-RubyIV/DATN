@@ -30,6 +30,7 @@ import reducer, {
     useAppDispatch,
     useAppSelector,
 } from './store';
+import { useHasRole } from '@/utils/permission'
 
 injectReducer('optionList', reducer);
 
@@ -253,17 +254,20 @@ const ProductDetailForm = forwardRef<FormikProps<any>, ProductFormProps>((props,
                                     >
                                         Quay lại
                                     </Button>
-                                    <Button
-                                        size="sm"
-                                        className="ltr:mr-3 rtl:ml-3"
-                                        loading={isSubmitting}
-                                        // icon={<AiOutlineSave />}
-                                        type="submit"
-                                        variant="solid"
-                                        style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                                    >
-                                        Lưu
-                                    </Button>
+                                    {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
+                                    <div hidden={!useHasRole(["ROLE_ADMIN"])}>
+                                        <Button
+                                            size="sm"
+                                            className="ltr:mr-3 rtl:ml-3"
+                                            loading={isSubmitting}
+                                            // icon={<AiOutlineSave />}
+                                            type="submit"
+                                            variant="solid"
+                                            style={{ backgroundColor: 'rgb(79, 70, 229)' }}
+                                        >
+                                            Lưu
+                                        </Button>
+                                    </div>
                                 </div>
                             </StickyFooter>
                         </FormContainer>

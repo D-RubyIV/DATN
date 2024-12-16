@@ -32,7 +32,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.customerTitle',
         icon: 'groupUser',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['ROLE_ADMIN', 'ROLE_STAFF'],
+        authority: ['ROLE_ADMIN'],
         subMenu: []
     },
     {
@@ -42,7 +42,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.voucherTitle',
         icon: 'ticket',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['ROLE_ADMIN', 'ROLE_STAFF'],
+        authority: ['ROLE_ADMIN'],
         subMenu: []
     },
     {
@@ -62,7 +62,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.staffTitle',
         icon: 'staff',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: ['ROLE_ADMIN', 'ROLE_STAFF'],
+        authority: ['ROLE_ADMIN'],
         subMenu: []
     },
     {

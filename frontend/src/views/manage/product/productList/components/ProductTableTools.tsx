@@ -11,6 +11,7 @@ import {
     useAppSelector,
     getProducts
 } from '../store'
+import { useHasRole } from '@/utils/permission'
 const ProductTableTools = () => {
     const dispatch = useAppDispatch()
 
@@ -33,7 +34,7 @@ const ProductTableTools = () => {
             <div className="flex-grow mb-4 lg:mb-0">
                 <ProductTableSearch />
             </div>
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex">
                 <div
                     className="block lg:inline-block md:mx-2 md:mb-0 mb-4"
                 >
@@ -43,23 +44,24 @@ const ProductTableTools = () => {
 
                 </div>
 
-                <Link
-                    className="block lg:inline-block md:mx-2 md:mb-0 mb-4"
-                    to="/admin/manage/product/product-new"
-
-
-                >
-                    <Button
-                        size='sm'
-                        block
-                        variant="solid"
-                        style={{ backgroundColor: 'rgb(79, 70, 229)' }}
-                        className='flex items-center justify-center gap-2 button-bg-important'
-                        icon={<HiPlusCircle />}
+                <div hidden={!useHasRole(["ROLE_ADMIN"])}>
+                    <Link
+                        className="block lg:inline-block md:mx-2 md:mb-0 mb-4"
+                        to="/admin/manage/product/product-new"
                     >
-                        Thêm Sản Phẩm
-                    </Button>
-                </Link>
+                        <Button
+                            size='sm'
+                            block
+                            variant="solid"
+                            style={{ backgroundColor: 'rgb(79, 70, 229)' }}
+                            className='flex items-center justify-center gap-2 button-bg-important'
+                            icon={<HiPlusCircle />}
+                        >
+                            Thêm Sản Phẩm
+                        </Button>
+                    </Link>
+                </div>
+
             </div>
         </div>
     )
