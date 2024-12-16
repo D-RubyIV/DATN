@@ -5,6 +5,9 @@ import org.example.demo.mapper.product.response.core.ProductDetailResponseMapper
 import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.util.phah04.PageableObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +35,17 @@ public class Phah04ProductDetailController {
             @RequestParam(value = "elasticity", required = false) Integer elasticity,
             @Valid @RequestBody PageableObject pageableObject
     ) {
+        Pageable pageable = pageableObject.toPageRequest();
+        String query = pageableObject.getQuery();
+
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdDate")
+            );
+        }
+
         return ResponseEntity.ok(productDetailRepository.findAllByPageWithQuery(
                 pageableObject.getQuery(),
                 size,
@@ -45,7 +59,7 @@ public class Phah04ProductDetailController {
                 material,
                 thickness,
                 elasticity,
-                pageableObject.toPageRequest()
+                pageable
         ).map(s -> productDetailResponseMapper.toOverviewDTOPhah04(s)));
     }
 
