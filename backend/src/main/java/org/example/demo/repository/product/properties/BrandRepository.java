@@ -42,7 +42,11 @@ public interface BrandRepository extends JpaRepository<Brand,Integer> {
     List<Brand> findAllList();
 
 
-
+    @Query(value = """
+            SELECT DISTINCT b FROM Brand b
+            ORDER BY b.createdDate DESC
+            """)
+    List<Brand> findAllObject();
 
 
 }

@@ -1,5 +1,6 @@
 package org.example.demo.repository.product.properties;
 
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Collar;
 import org.example.demo.entity.product.properties.Style;
 import org.example.demo.entity.product.properties.Texture;
@@ -41,4 +42,9 @@ public interface TextureRepository extends JpaRepository<Texture, Integer> {
             """)
     List<Texture> findAllList();
 
+    @Query(value = """
+            SELECT DISTINCT e FROM Texture e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Texture> findAllObject();
 }

@@ -1,5 +1,6 @@
 package org.example.demo.repository.product.properties;
 
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Collar;
 import org.example.demo.entity.product.properties.Texture;
 import org.example.demo.entity.product.properties.Thickness;
@@ -40,4 +41,9 @@ public interface ThicknessRepository extends JpaRepository<Thickness, Integer> {
             """)
     List<Thickness> findAllList();
 
+    @Query(value = """
+            SELECT DISTINCT e FROM Thickness e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Thickness> findAllObject();
 }

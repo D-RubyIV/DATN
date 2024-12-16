@@ -153,7 +153,8 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             LEFT JOIN FETCH pd.elasticity pde
             WHERE
             (
-                (:query IS NULL OR LOWER(pd.code) LIKE LOWER(CONCAT('%', :query, '%')))
+                (:query IS NULL OR LOWER(pd.code) LIKE LOWER(CONCAT('%', :query, '%'))) OR
+                (:query IS NULL OR LOWER(pd.product.name) LIKE LOWER(CONCAT('%', :query, '%')))
             )
             AND (:size IS NULL OR pd.size.id = :size)
             AND (:color IS NULL OR pd.color.id = :color)
@@ -167,17 +168,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             AND (:thickness IS NULL OR pd.thickness.id = :thickness)
             AND (:elasticity IS NULL OR pd.elasticity.id = :elasticity)
             AND pd.deleted = FALSE
-            AND pdse.deleted = FALSE
-            AND pdcr.deleted = FALSE
-            AND pdpt.deleted = FALSE
-            AND pdt.deleted = FALSE
-            AND pdo.deleted = FALSE
-            AND pdbr.deleted = FALSE
-            AND pdc.deleted = FALSE
-            AND pds.deleted = FALSE
-            AND pdm.deleted = FALSE
-            AND pdth.deleted = FALSE
-            AND pde.deleted = FALSE
             """)
     Page<ProductDetail> findAllByPageWithQuery(
             @Param("query") String query,

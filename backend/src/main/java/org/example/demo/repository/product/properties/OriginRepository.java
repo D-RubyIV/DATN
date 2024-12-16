@@ -38,4 +38,10 @@ public interface OriginRepository extends JpaRepository<Origin, Integer> {
             ORDER BY o.createdDate DESC
             """)
     List<Origin> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Origin e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Origin> findAllObject();
 }

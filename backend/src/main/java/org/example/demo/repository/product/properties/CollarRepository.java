@@ -38,4 +38,10 @@ public interface CollarRepository extends JpaRepository<Collar, Integer> {
             ORDER BY cr.createdDate DESC
             """)
     List<Collar> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Collar e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Collar> findAllObject();
 }

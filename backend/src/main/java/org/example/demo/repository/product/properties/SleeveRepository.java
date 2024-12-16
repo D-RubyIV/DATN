@@ -39,4 +39,10 @@ public interface SleeveRepository extends JpaRepository<Sleeve, Integer> {
             ORDER BY s.createdDate DESC
             """)
     List<Sleeve> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Sleeve e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Sleeve> findAllObject();
 }

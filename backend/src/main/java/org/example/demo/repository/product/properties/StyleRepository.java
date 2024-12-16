@@ -1,5 +1,6 @@
 package org.example.demo.repository.product.properties;
 
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Collar;
 import org.example.demo.entity.product.properties.Style;
 import org.springframework.data.domain.Page;
@@ -37,4 +38,10 @@ public interface StyleRepository extends JpaRepository<Style, Integer> {
             ORDER BY s.createdDate DESC
             """)
     List<Style> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Style e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Style> findAllObject();
 }

@@ -38,4 +38,10 @@ public interface MaterialRepository extends JpaRepository<Material, Integer> {
             ORDER BY m.createdDate DESC
             """)
     List<Material> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Material e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Material> findAllObject();
 }

@@ -39,4 +39,10 @@ public interface SizeRepository extends JpaRepository<Size, Integer> {
             ORDER BY s.createdDate DESC
             """)
     List<Size> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Size e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Size> findAllObject();
 }

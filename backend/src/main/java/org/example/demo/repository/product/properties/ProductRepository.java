@@ -2,6 +2,7 @@ package org.example.demo.repository.product.properties;
 
 import org.example.demo.dto.product.response.properties.ProductWithQuantityDTO;
 import org.example.demo.dto.product.response.properties.ProductWithQuantityResponseDTO;
+import org.example.demo.entity.product.properties.Brand;
 import org.example.demo.entity.product.properties.Origin;
 import org.example.demo.entity.product.properties.Product;
 import org.springframework.data.domain.Page;
@@ -138,6 +139,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             """)
     List<Product> findAllList();
 
+    @Query(value = """
+            SELECT DISTINCT e FROM Product e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Product> findAllObject();
 
 }
 

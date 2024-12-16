@@ -40,4 +40,10 @@ public interface ColorRepository extends JpaRepository<Color, Integer> {
             ORDER BY c.createdDate DESC
             """)
     List<Color> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Color e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Color> findAllObject();
 }

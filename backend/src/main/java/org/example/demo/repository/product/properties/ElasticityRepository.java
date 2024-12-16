@@ -40,4 +40,10 @@ public interface ElasticityRepository extends JpaRepository<Elasticity, Integer>
             ORDER BY el.createdDate DESC
             """)
     List<Elasticity> findAllList();
+
+    @Query(value = """
+            SELECT DISTINCT e FROM Elasticity e
+            ORDER BY e.createdDate DESC
+            """)
+    List<Elasticity> findAllObject();
 }
