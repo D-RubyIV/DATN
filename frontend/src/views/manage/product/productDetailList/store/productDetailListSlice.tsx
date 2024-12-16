@@ -9,7 +9,7 @@ import QRCode from 'qrcode';
 import { saveAs } from 'file-saver';
 type ChildObject = {
     code: string;
-    createdDate: string;
+    createdDate: string; 
     deleted: boolean;
     id: number;
     name: string;
@@ -55,6 +55,20 @@ type GetSalesProductDetailsResponse = {
     totalElements: number
 }
 
+export type FilterQueries = {
+    productId: number,
+    size: string,
+    color: string,
+    style: string,
+    texture: string,
+    origin: string,
+    brand: string,
+    collar: string,
+    sleeve: string,
+    material: string,
+    thickness: string,
+    elasticity: string,
+}
 
 export type SalesProductDetailListState = {
     loading: boolean
@@ -62,33 +76,51 @@ export type SalesProductDetailListState = {
     selectedProductDetail: string
     tableData: TableQueries
     productDetailList: ProductDetail[]
-    productId: number,
+    filterData: FilterQueries,
+    productId: number
 }
 
-type GetSalesProductDetailsRequest = TableQueries 
+type GetSalesProductDetailsRequest = TableQueries & { filterData?: FilterQueries }
+
 type QueryParam  = {
-    createdFrom: string,
-    createdTo: string,
     productId: number, 
 }
+
 export const SLICE_NAME = 'salesProductDetailList'
 export const getProductDetails = createAsyncThunk(
     SLICE_NAME + '/getProductDetails',
     async (data: GetSalesProductDetailsRequest, { getState }) => {
         const state = getState() as { salesProductDetailList: SalesProductDetailListState };
-        const params: QueryParam = {
-            createdFrom: '',
-            createdTo: '',
-            productId: state.salesProductDetailList.data.productId, // Sử dụng productId đã lấy từ state
+
+        const params: FilterQueries = {
+            productId: state.salesProductDetailList.data.productId,
+            size: state.salesProductDetailList.data.filterData.size,
+            color: state.salesProductDetailList.data.filterData.color,
+            style: state.salesProductDetailList.data.filterData.style,
+            texture: state.salesProductDetailList.data.filterData.texture,
+            origin: state.salesProductDetailList.data.filterData.origin,
+            brand: state.salesProductDetailList.data.filterData.brand,
+            collar: state.salesProductDetailList.data.filterData.collar,
+            sleeve: state.salesProductDetailList.data.filterData.sleeve,
+            material: state.salesProductDetailList.data.filterData.material,
+            thickness: state.salesProductDetailList.data.filterData.thickness,
+            elasticity: state.salesProductDetailList.data.filterData.elasticity,
         };
-        const response = await apiGetSalesProductDetails<
-            GetSalesProductDetailsResponse,
-            GetSalesProductDetailsRequest
-        >(data, params);
+
+        const response = await apiGetSalesProductDetails<GetSalesProductDetailsResponse, GetSalesProductDetailsRequest>(
+            data,
+            params
+        );
 
         return response.data;
     }
 );
+
+
+
+
+
+
 
 
 export const deleteProductDetail = async (param: { id: string }) => {
@@ -100,9 +132,8 @@ export const deleteProductDetail = async (param: { id: string }) => {
 }
 
 export const exportToExcel = (productDetailList: ProductDetail[]) => {
-    // Convert product data into an array of objects to export, including serial number and status
     const data = productDetailList.map((product, index) => ({
-        'STT': index + 1,  // Add serial number
+        'STT': index + 1,  
         'Code': product.code,
         'Tên': product.product ? `${product.product.name} màu ${product.color.name} (Size ${product.size.name})` : '',
         'Size': product.size.name,
@@ -123,10 +154,8 @@ export const exportToExcel = (productDetailList: ProductDetail[]) => {
         'Trạng thái': getStatus(product.quantity),
     }));
 
-    // Create a worksheet from the data
     const worksheet = XLSX.utils.json_to_sheet(data, { header: Object.keys(data[0]) });
 
-    // Apply conditional formatting to the "Trạng thái" column
     const statusCol = Object.keys(data[0]).indexOf('Trạng thái');
     if (statusCol >= 0) {
         for (let row = 2; row <= data.length + 1; row++) {
@@ -134,21 +163,19 @@ export const exportToExcel = (productDetailList: ProductDetail[]) => {
             const cell = worksheet[cellAddress];
             if (cell) {
                 if (cell.v === 'Hết hàng') {
-                    cell.s = { fill: { fgColor: { rgb: 'FF0000' } } };  // Red for "Hết hàng"
+                    cell.s = { fill: { fgColor: { rgb: 'FF0000' } } };  
                 } else if (cell.v === 'Sắp hết') {
-                    cell.s = { fill: { fgColor: { rgb: 'FFFF00' } } };  // Yellow for "Sắp hết"
+                    cell.s = { fill: { fgColor: { rgb: 'FFFF00' } } }; 
                 } else if (cell.v === 'Còn hàng') {
-                    cell.s = { fill: { fgColor: { rgb: '00FF00' } } };  // Green for "Còn hàng"
+                    cell.s = { fill: { fgColor: { rgb: '00FF00' } } };  
                 }
             }
         }
     }
 
-    // Create a new workbook and add the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Product Details');
 
-    // Write the Excel file
     XLSX.writeFile(workbook, 'ProductDetails.xlsx');
 };
 
@@ -167,14 +194,13 @@ const getStatus = (quantity?: number): string => {
 
 export const generateQRCode = async (productDetailList: ProductDetail[]) => {
     try {
-        // Lặp qua từng sản phẩm trong danh sách
         for (const productDetail of productDetailList) {
             const data = productDetail.code;
             const filename = 'QR_san_pham_' + productDetail?.product.name + '_màu_' + productDetail?.color.name + '(Size_' + productDetail?.size.name+')' + '.png';
             const qrBase64 = await QRCode.toDataURL(data);
             console.log('Tạo thành công QR cho code:', data);
-
             const byteString = atob(qrBase64.split(',')[1]);
+
             const mimeString = qrBase64.split(',')[0].split(':')[1].split(';')[0];
             const byteArray = new Uint8Array(byteString.length);
             for (let i = 0; i < byteString.length; i++) {
@@ -182,7 +208,6 @@ export const generateQRCode = async (productDetailList: ProductDetail[]) => {
             }
             const blob = new Blob([byteArray], { type: mimeString });
 
-            // Lưu file PNG cho từng sản phẩm
             saveAs(blob, filename);
             console.log('QR code saved as file:', filename);
         }
@@ -199,12 +224,27 @@ export const generateQRCode = async (productDetailList: ProductDetail[]) => {
 export const initialTableData: TableQueries = {
     total: 0,
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: 5,
     query: '',
     sort: {
         order: '',
         key: '',
     },
+}
+
+export const initialQuery: FilterQueries={
+    productId: 55,
+    size: '',
+    color: '',
+    style: '',
+    texture: '',
+    origin: '',
+    brand: '',
+    collar: '',
+    sleeve: '',
+    material: '',
+    thickness: '',
+    elasticity: ''
 }
 
 const initialState: SalesProductDetailListState = {
@@ -213,8 +253,10 @@ const initialState: SalesProductDetailListState = {
     selectedProductDetail: '',
     productDetailList: [],
     tableData: initialTableData,
-    productId:0
+    filterData: initialQuery,
+    productId: 0
 }
+
 
 const productDetailListSlice = createSlice({
     name: `${SLICE_NAME}/state`,
@@ -230,6 +272,10 @@ const productDetailListSlice = createSlice({
         setProductId: (state, action) => {
             state.productId = action.payload
         },
+        setFilterData: (state, action) => {
+            state.filterData = action.payload; // Cập nhật filterData
+        },
+      
         toggleDeleteConfirmation: (state, action) => {
             state.deleteConfirmation = action.payload
         },
@@ -256,6 +302,7 @@ export const {
     setProductId,
     toggleDeleteConfirmation,
     setSelectedProductDetail,
+    setFilterData,
 } = productDetailListSlice.actions
 
 export default productDetailListSlice.reducer

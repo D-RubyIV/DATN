@@ -11,7 +11,7 @@ import {
     toggleAddAttributeConfirmation,
     setLabelAttribute,
 } from '../store';
-import type { Option } from '../store';
+import type { Option } from '../store'; 
 import { components, GroupBase } from 'react-select'
 import type {
     ControlProps,
@@ -156,8 +156,6 @@ const OrganizationFields = ({ touched, errors, values, setFieldValue, data }: Or
         code: generateRandomCode(),
         name: label,
         deleted: false,
-        createdDate: new Date().toISOString(),
-        modifiedDate: new Date().toISOString(),
     });
 
     const handleCreate = (inputValue: string, fieldLabel: string) => {

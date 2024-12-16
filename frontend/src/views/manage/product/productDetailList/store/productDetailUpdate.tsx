@@ -4,7 +4,7 @@ import {
     apiPutSalesProductDetail
 } from '@/services/ProductSalesService'
 
-type Option = {
+export type Option = {
     code: string;
     createdDate: string;
     modifiedDate: string;
@@ -86,6 +86,11 @@ export const updateProductDetailId = async <T, U extends Record<string, unknown>
     const response = await apiPutSalesProductDetail<T, U>(data, param)
     return response.data
 }
+
+
+
+
+
 
 
  

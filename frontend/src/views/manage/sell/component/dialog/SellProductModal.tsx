@@ -689,7 +689,7 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
                                     placeholder="Vui lòng chọn"
                                     options={listElasticity}
                                 ></Select>
-                            </div>
+                            </div> 
                             <div>
                                 <p>Thương hiệu</p>
                                 <Select

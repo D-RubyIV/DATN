@@ -3,7 +3,7 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { toast } from 'react-toastify';
 import {
     deleteProductDetail,
-    toggleDeleteConfirmation,
+    toggleDeleteConfirmation, 
     getProductDetails,
     useAppDispatch, 
     useAppSelector,
@@ -11,7 +11,7 @@ import {
 
 const ProductDetailDeleteConfirmation = () => {
     const dispatch = useAppDispatch()
-    const dialogOpen = useAppSelector(
+    const dialogOpen = useAppSelector( 
         (state) => state.salesProductDetailList.data.deleteConfirmation
     )
     const selectedProduct = useAppSelector(
