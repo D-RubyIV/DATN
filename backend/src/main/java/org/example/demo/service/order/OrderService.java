@@ -427,7 +427,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // return order
         reloadSubTotalOrder(order);
 
-        String finalAddress = order.getAddress().trim() + ", " + order.getWardName().trim() + ", " + order.getDistrictName().trim() + ", " + order.getProvinceName().trim();
+        String finalAddress = DataUtils.safeToString(order.getAddress()).trim() + ", " + DataUtils.safeToString(order.getWardName()).trim() + ", " + DataUtils.safeToString(order.getDistrictName()).trim() + ", " + DataUtils.safeToString(order.getProvinceName()).trim();
         if (((requestDTO.getAddress() != null && !DataUtils.isNullOrEmpty(requestDTO.getAddress())) || (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName())) || (requestDTO.getDistrictId() != null && !DataUtils.isNullOrEmpty(requestDTO.getDistrictName())) || (requestDTO.getProvinceId() != null && !DataUtils.isNullOrEmpty(requestDTO.getProvinceName()))) && !oldAddress.equalsIgnoreCase(finalAddress)) {
             historyService.createNewHistoryObject(order, order.getStatus(), String.format("Thay đổi địa chỉ từ %s -> %s", oldAddress, finalAddress));
         }
