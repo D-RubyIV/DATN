@@ -18,7 +18,8 @@ const CartDrawer = () => {
         listCartDetailResponseDTO,
         myCartId,
         isOpenCartDrawer,
-        setIsOpenCartDrawer
+        setIsOpenCartDrawer,
+        fetchDataMyCart
     } = useSaleContext()
     const { openNotification } = useToastContext()
     const [openChangeQuantityModal, setOpenChangeQuantityModal] = useState<boolean>(false)
@@ -26,7 +27,7 @@ const CartDrawer = () => {
     const [selectedCartDetail, setSelectedCartDetail] = useState<CartDetailResponseDTO>()
     const handleChangeQuantity = async (item: CartDetailResponseDTO, isIncrease: boolean) => {
         const quantity = isIncrease ? item.quantity += 1 : item.quantity -= 1
-        instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
+        await instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
             console.log(response)
             if (response.status === 200) {
                 getCartDetailInCard()
@@ -36,10 +37,11 @@ const CartDrawer = () => {
                 openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
             }
         })
+        await fetchDataMyCart()
     }
 
     const handleChangeQuantityForInput = async (item: CartDetailResponseDTO, quantity) => {
-        instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
+        await instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
             console.log(response)
             if (response.status === 200) {
                 getCartDetailInCard()
@@ -50,14 +52,16 @@ const CartDrawer = () => {
                 openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
             }
         })
+        await fetchDataMyCart()
     }
 
     const handleRemoveItem = async (itemId: number) => {
-        instance.delete(`http://localhost:8080/api/v1/cart-details/remove/${itemId}`).then((response) => {
+        await instance.delete(`http://localhost:8080/api/v1/cart-details/remove/${itemId}`).then((response) => {
             if (response.status === 200) {
                 getCartDetailInCard()
             }
         })
+        await fetchDataMyCart()
     }
 
     const getFinalPrice = (item: CartDetailResponseDTO) => {

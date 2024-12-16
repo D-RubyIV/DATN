@@ -7,6 +7,7 @@ import { useAuthContext } from '../auth/AuthContext'
 import { Link } from 'react-router-dom'
 import Logo from '@/components/template/Logo'
 import CartDrawer from '@/views/sale/CartDrawer'
+import { Badge } from '@/components/ui'
 
 
 const Menu = [
@@ -53,6 +54,7 @@ const Navbar = ({ isLandingPage = false }: { isLandingPage?: boolean }) => {
     const { isOpenCartDrawer, setIsOpenCartDrawer } = useSaleContext()
     const [isModalOpen, setIsModalOpen] = useState(false)
     const { user, setUser } = useAuthContext()
+    const { selectedCart } = useSaleContext();
 
 
     const handleLoginClick = () => {
@@ -99,7 +101,7 @@ const Navbar = ({ isLandingPage = false }: { isLandingPage?: boolean }) => {
                     <div>
                         <a href="/"
                            className={`md:text-4xl sm:text-3xl flex gap-2  dark:text-white font-hm font-bold  text-shadow-sm ${isLandingPage ? 'text-white' : 'text-black'}`}>
-                            <Logo/>
+                            <Logo />
                         </a>
                     </div>
 
@@ -156,7 +158,9 @@ const Navbar = ({ isLandingPage = false }: { isLandingPage?: boolean }) => {
                             className={` ${isLandingPage ? 'text-white' : 'text-black'} menu-title text-shadow-sm"`}
                             onClick={() => setIsOpenCartDrawer(!isOpenCartDrawer)}
                         >
-                            <HiOutlineShoppingBag size={25} />
+                            <Badge content={selectedCart?.cartDetailResponseDTOS.length} maxCount={5}>
+                                <HiOutlineShoppingBag size={25} />
+                            </Badge>
                         </button>
                         <div className="relative">
                             {user ? (
@@ -173,7 +177,7 @@ const Navbar = ({ isLandingPage = false }: { isLandingPage?: boolean }) => {
                                     {dropdownVisible && (
                                         <div
                                             id="user-dropdown"
-                                            className={`absolute bg-white right-0 mt-2 w-56  dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50 ${isLandingPage ? "text-white": "text-black"}`}
+                                            className={`absolute bg-white right-0 mt-2 w-56  dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50 ${isLandingPage ? 'text-white' : 'text-black'}`}
                                         >
                                             {/* User Info */}
                                             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">

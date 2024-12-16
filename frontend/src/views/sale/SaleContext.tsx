@@ -12,6 +12,7 @@ type AppContextType = {
     listCartDetailResponseDTO: CartDetailResponseDTO[],
     setListCartDetailResponseDTO:  React.Dispatch<React.SetStateAction<CartDetailResponseDTO[]>>
     getCartDetailInCard: () => void;
+    fetchDataMyCart: () => Promise<void>;
 };
 
 const SaleContext = createContext<AppContextType>({
@@ -26,6 +27,7 @@ const SaleContext = createContext<AppContextType>({
     },
     getCartDetailInCard: () => {},
     selectedCart: undefined,
+    fetchDataMyCart: async () => {},
 });
 
 const SaleProvider = ({children}: { children: ReactNode }) => {
@@ -42,6 +44,21 @@ const SaleProvider = ({children}: { children: ReactNode }) => {
                 setListCartDetailResponseDTO(response?.data)
             }
         })
+    }
+    const fetchDataMyCart = async () => {
+        if (myCartId === undefined || myCartId === 0) {
+            console.log("Cart không tồn tại")
+        } else {
+            await instance.get(`/cart/check-cart-active/${myCartId.toString()}`).then(function (response) {
+                console.log(response)
+                if(response.status === 200){
+                    setSelectedCart(response.data)
+                }
+
+            }).catch(function (error) {
+                console.log("Lấy dữ liệu cart thất bại")
+            });
+        }
     }
     useEffect(() => {
         if (isOpenCartDrawer) {
@@ -82,7 +99,7 @@ const SaleProvider = ({children}: { children: ReactNode }) => {
     }, [myCartId]);
 
     return (
-        <SaleContext.Provider value={{selectedCart, getCartDetailInCard, listCartDetailResponseDTO, setListCartDetailResponseDTO, isOpenCartDrawer, setIsOpenCartDrawer, myCartId, setMyCartId}}>
+        <SaleContext.Provider value={{selectedCart, getCartDetailInCard, listCartDetailResponseDTO, setListCartDetailResponseDTO, isOpenCartDrawer, setIsOpenCartDrawer, myCartId, setMyCartId, fetchDataMyCart}}>
             {children}
         </SaleContext.Provider>
     );

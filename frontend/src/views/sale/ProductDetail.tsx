@@ -12,7 +12,7 @@ import ScrollToTop from '@/views/util/ScrollToTop'
 
 const ProductDetail = () => {
     const { id } = useParams()
-    const { myCartId, getCartDetailInCard } = useSaleContext()
+    const { myCartId, getCartDetailInCard, fetchDataMyCart } = useSaleContext()
     const [product, setProduct] = useState<Product>()
     const [listProductDetail, setListProductDetail] = useState<ProductDetailResponseDTO[]>([])
     const [listColorValid, setListColorValid] = useState<string[]>([])
@@ -193,7 +193,7 @@ const ProductDetail = () => {
                 'productDetailId': selectedProductDetail?.id,
                 'quantity': quantity
             }
-            instance.post('/cart-details/create', dataRequest).then(function (response) {
+            await instance.post('/cart-details/create', dataRequest).then(function (response) {
                 console.log(response)
                 if (response.status === 200) {
                     openNotification('Thêm vào giỏ hàng thành công')
@@ -208,6 +208,7 @@ const ProductDetail = () => {
                 }
             })
         }
+        await fetchDataMyCart();
     }
 
     const isDisableSize = () => {
