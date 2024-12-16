@@ -259,7 +259,7 @@ const ProductDetail = () => {
                         <p className="font-semibold text-2xl text-black">{product?.name}</p>
                     </div>
                     <div className={'flex flex-col'}>
-                        <p>Mã sản phẩm <span
+                        <p>Mã sản phẩm chi tiết: <span
                             className={'text-black'}>{(selectedProductDetail as ProductDetailResponseDTO)?.code}</span>
                         </p>
                         <div className={'flex gap-2'}>

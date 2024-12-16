@@ -202,7 +202,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
         // nếu số lượng mới lớn hơn trong kho và là mua thêm
         if (!isAvailableQuantityProductDetail(order.getInStore(), orderDetail.getProductDetail(), quantityInOrder, newQuantity)) {
-            throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+            throw new CustomExceptions.CustomBadRequest("#97CGG Không đủ số lượng đáp ứng");
         }
         //nếu số luọng về 0
         else if (newQuantity == 0) {

@@ -3,7 +3,7 @@ import { useSaleContext } from '@/views/sale/SaleContext'
 import CloseButton from '@/components/ui/CloseButton'
 import { HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { CartDetailResponseDTO, Color, ProductDetailResponseDTO, Size } from '@/views/sale/index'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Avatar, Button, Dialog } from '@/components/ui'
 import instance from '@/axios/CustomAxios'
 import { FiPackage } from 'react-icons/fi'
@@ -21,6 +21,7 @@ const CartDrawer = () => {
         setIsOpenCartDrawer,
         fetchDataMyCart
     } = useSaleContext()
+    const navigate = useNavigate();
     const { openNotification } = useToastContext()
     const [openChangeQuantityModal, setOpenChangeQuantityModal] = useState<boolean>(false)
 
@@ -29,29 +30,40 @@ const CartDrawer = () => {
         const quantity = isIncrease ? item.quantity += 1 : item.quantity -= 1
         await instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
             console.log(response)
-            if (response.status === 200) {
-                getCartDetailInCard()
-            }
+
         }).catch(function(error) {
             if (error?.response?.data?.error) {
                 openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
             }
         })
+        getCartDetailInCard()
         await fetchDataMyCart()
+    }
+
+    const onCheckout = () => {
+         instance.get(`http://localhost:8080/api/v1/cart/allow-checkout/${myCartId}`).then(function(response) {
+            console.log(response)
+             console.log("OKKK")
+             navigate(`/checkout/${myCartId}`)
+        }).catch(function(error) {
+            if (error?.response?.data?.error) {
+                openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+            }
+        })
+        fetchDataMyCart()
+
     }
 
     const handleChangeQuantityForInput = async (item: CartDetailResponseDTO, quantity) => {
         await instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
             console.log(response)
-            if (response.status === 200) {
-                getCartDetailInCard()
-                openNotification("Thay đổi thành công")
-            }
+
         }).catch(function(error) {
             if (error?.response?.data?.error) {
                 openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
             }
         })
+        getCartDetailInCard()
         await fetchDataMyCart()
     }
 
@@ -142,7 +154,9 @@ const CartDrawer = () => {
                     >
                         Hủy
                     </Button>
-                    <Button variant="solid" className={'bg-white !text-black !border-black border !rounded-none hover:!bg-gray-300'} onClick={onSubmit}>
+                    <Button variant="solid"
+                            className={'bg-white !text-black !border-black border !rounded-none hover:!bg-gray-300'}
+                            onClick={onSubmit}>
                         Xác nhận
                     </Button>
                 </div>
@@ -205,6 +219,14 @@ const CartDrawer = () => {
                                                             {(item.productDetailResponseDTO as ProductDetailResponseDTO)?.name}
                                                         </h3>
                                                         <p className="text-sm text-gray-700">
+                                                            <span className="font-medium">Mã SPCT: </span>
+                                                            {(item.productDetailResponseDTO as ProductDetailResponseDTO)?.code}
+                                                        </p>
+                                                        <p className="text-sm text-gray-700">
+                                                            <span className="font-medium">Mã SP: </span>
+                                                            {(item.productDetailResponseDTO as ProductDetailResponseDTO)?.product?.code}
+                                                        </p>
+                                                        <p className="text-sm text-gray-700">
                                                             <span className="font-medium">Màu: </span>
                                                             {((item.productDetailResponseDTO as ProductDetailResponseDTO)?.color as Color)?.name}
                                                         </p>
@@ -264,6 +286,11 @@ const CartDrawer = () => {
                                                         <Delete />
                                                     </button>
                                                 </div>
+                                                {
+                                                    item.quantity >= item.productDetailResponseDTO.quantity && (
+                                                        <p className={'text-red-600 text-[14px]'}>Sản phẩm này hiện không đủ số lượng cung cấp thêm</p>
+                                                    )
+                                                }
                                             </div>
                                         </Fragment>
                                     ))
@@ -296,11 +323,11 @@ const CartDrawer = () => {
                                     })()}
                                 </span>
                             </div>
-                            <Link to={`/checkout/${myCartId}`}>
-                                <button
-                                    className="bg-black text-white w-full font-thin border border-black font-hm text-xl py-5">Thanh toán
-                                </button>
-                            </Link>
+                            <button
+                                className="bg-black text-white w-full font-thin border border-black font-hm text-xl py-5"
+                                onClick={onCheckout}>Thanh
+                                toán
+                            </button>
                         </div>
                     </div>
                 </div>

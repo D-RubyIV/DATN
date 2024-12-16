@@ -15,6 +15,7 @@ import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.History;
+import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.security.Account;
 import org.example.demo.entity.voucher.core.Voucher;
@@ -87,7 +88,7 @@ public class CartServiceV2 {
             if (productDetailQuantity >= cartDetail.getQuantity() + request.getQuantity()) {
                 cartDetail.setQuantity(cartDetail.getQuantity() + request.getQuantity());
             } else {
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+                throw new CustomExceptions.CustomBadRequest("#87SDE Không đủ số lượng đáp ứng");
             }
         } else {
             cartDetail = new CartDetail();
@@ -97,7 +98,7 @@ public class CartServiceV2 {
             if (productDetailQuantity >= request.getQuantity()) {
                 cartDetail.setQuantity(request.getQuantity());
             } else {
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+                throw new CustomExceptions.CustomBadRequest("#76DSG Không đủ số lượng đáp ứng");
             }
         }
         CartDetail cartDetailResult = cartDetailRepository.save(cartDetail);
@@ -110,10 +111,10 @@ public class CartServiceV2 {
     public CartDetail updateQuantity(Integer cartId, Integer newQuantity) {
         CartDetail cartDetail = cartDetailRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Cart not found"));
         int quantityInStorage = cartDetail.getProductDetail().getQuantity();
-        int quantityInOrder = cartDetail.getQuantity();
+        int oldQuantity = cartDetail.getQuantity();
 
-        if (newQuantity > quantityInStorage) {
-            throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+        if (newQuantity > oldQuantity && newQuantity > quantityInStorage) {
+            throw new CustomExceptions.CustomBadRequest("#989SD Không đủ số lượng đáp ứng");
         } else if (newQuantity == 0) {
             cartDetailRepository.delete(cartDetail);
             reloadSubTotalOrder(cartDetail.getCart());
@@ -324,5 +325,26 @@ public class CartServiceV2 {
         }
     }
 
+    public boolean check_valid_product_detail_quantity_in_storage_for_online_order(Cart cart) {
+        boolean available = true;
+        List<CartDetail> cartDetails = cart.getCartDetails();
+        for (CartDetail cartDetail : cartDetails) {
+            ProductDetail productDetail = cartDetail.getProductDetail();
+            int order_detail_quantity = cartDetail.getQuantity();
+            int product_detail_quantity = productDetail.getQuantity();
+            if (order_detail_quantity > product_detail_quantity) {
+                available = false;
+            }
+        }
+        return available;
+    }
 
+//    public boolean check_valid_voucher_quantity_in_storage(Cart cart) {
+//        Voucher voucher = cart.getVoucher();
+//        if (voucher == null) {
+//            return true;
+//        } else {
+//            return voucher.getQuantity() > 0;
+//        }
+//    }
 }

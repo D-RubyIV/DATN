@@ -237,6 +237,17 @@ public class CartController {
         return ResponseEntity.ok(cartResponseMapper.toDTO(cartFound));
     }
 
+    @GetMapping("/allow-checkout/{cartId}")
+    public ResponseEntity<?> checkAllowCheckout(@PathVariable Integer cartId){
+        Cart cart = cartRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Cart not found"));
+        if(!cartServiceV2.check_valid_product_detail_quantity_in_storage_for_online_order(cart)){
+            throw new CustomExceptions.CustomBadRequest("Có sản phẩm nào đó không đủ số lượng đáp ứng");
+        }
+        else{
+            return ResponseEntity.ok("ok bayby");
+        }
+    }
+
     @GetMapping("/edit-my-address/{cartId}")
     public ResponseEntity<?> updateMyAddress(@PathVariable Integer cartId, @RequestParam(value = "addressId") Integer addressId) {
         log.info("CART ID"+ cartId);
