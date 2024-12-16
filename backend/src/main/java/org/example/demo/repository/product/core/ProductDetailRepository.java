@@ -367,9 +367,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 AND e.startDate <= CURRENT_TIMESTAMP
                 AND e.endDate >= CURRENT_TIMESTAMP
                 AND p.deleted = FALSE
-                AND c.deleted = FALSE
-                AND s.deleted = FALSE
-                AND b.deleted = FALSE
                 AND pd.deleted = FALSE
                 GROUP BY p.id, p.code, p.name
             """)
