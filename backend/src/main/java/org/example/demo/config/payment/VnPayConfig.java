@@ -1,6 +1,7 @@
 package org.example.demo.config.payment;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.example.demo.util.VNPayUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Slf4j
 @Configuration
 public class VnPayConfig {
     @Getter
@@ -29,6 +31,8 @@ public class VnPayConfig {
 
 
     public Map<String, String> getVNPayConfig(long orderId) {
+        log.info("VNPAY KEY: " + this.secretKey);
+        log.info("VNPAY CODE: " + this.vnp_TmnCode);
         Map<String, String> vnpParamsMap = new HashMap<>();
         vnpParamsMap.put("vnp_Version", this.vnp_Version);
         vnpParamsMap.put("vnp_Command", this.vnp_Command);

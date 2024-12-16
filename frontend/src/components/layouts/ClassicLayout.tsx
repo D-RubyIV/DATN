@@ -157,7 +157,7 @@ const Bell = () => {
                                         <span className="">Phương thức: </span>
                                         <span
                                             className={item.payment === 'CASH' ? 'text-green-600' : 'text-blue-600'}>
-                                            {item.payment === 'CASH' ? 'Thanh toán khi nhận hàng' : 'Đã thanh toán ngân hàng'}
+                                            {item.payment === 'CASH' ? 'Thanh toán khi nhận hàng' : 'Thanh toán ngân hàng'}
                                         </span>
                                     </span>
                             </div>

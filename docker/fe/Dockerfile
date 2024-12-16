@@ -1,12 +1,14 @@
 FROM node:18-alpine
 
 WORKDIR /app
+RUN npm install -g serve
 
-COPY ./frontend/package*.json ./
-RUN npm install
+# Copy the build files
+COPY ./frontend/build /app/build
+COPY ./frontend/public /app/public
 
-COPY ./frontend .
-
+# Expose port 5173
 EXPOSE 5173
 
-CMD ["npm", "run", "dev"]
+# Run the app with serve
+CMD ["serve", "-s", "build", "-l", "5173"]
