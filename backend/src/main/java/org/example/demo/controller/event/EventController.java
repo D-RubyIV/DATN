@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +46,7 @@ public class EventController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size
     ) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdDate"));
         Page<ProductDTO> productDTOS = productService.getAllProductDTO(pageable);
         return ResponseEntity.ok(productDTOS);
     }
