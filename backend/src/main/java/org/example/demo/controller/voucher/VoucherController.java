@@ -74,6 +74,13 @@ public class VoucherController {
             Sort.Order orderSort = new Sort.Order(direction, sort);
             pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(orderSort));
         }
+        else{
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdDate")
+            );
+        }
 // do k duoc
         // /dung nó là string di, toi cx meo biét cast kieu gì string thi k dc
 //        Type ticketType = null;
