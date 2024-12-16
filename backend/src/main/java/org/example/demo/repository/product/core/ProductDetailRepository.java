@@ -25,7 +25,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             "AND p.style = ?8 AND p.material = ?9 AND p.thickness = ?10 AND p.elasticity = ?11  AND p.product = ?12")
     ProductDetail findByAttributes( Size size, Color color, Texture texture,
                                    Origin origin, Brand brand, Collar collar, Sleeve sleeve,
-                                   Style style, Material material, Thickness thickness, Elasticity elasticity, Product product);
+                                    Style style, Material material, Thickness thickness, Elasticity elasticity, Product product);
 
     @Query("SELECT p FROM ProductDetail p WHERE p.product.name = ?1 AND p.size = ?2 AND p.color = ?3")
     ProductDetail findByName(String name, Size size, Color color);
@@ -78,9 +78,17 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 OR (:query IS NULL OR LOWER(CAST(pd.quantity AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
                 OR (:query IS NULL OR LOWER(CAST(pd.price AS string)) LIKE LOWER(CONCAT('%', :query, '%')))
             )
-            AND (:createdFrom IS NULL OR pd.createdDate >= :createdFrom)
-            AND (:createdTo IS NULL OR pd.createdDate <= :createdTo)
-            
+            AND (:size IS NULL OR pd.size.name  LIKE LOWER(CONCAT('%', :size, '%')))
+            AND (:color IS NULL OR pd.color.name  LIKE LOWER(CONCAT('%', :color, '%')))
+            AND (:style IS NULL OR pd.style.name  LIKE LOWER(CONCAT('%', :style, '%')))
+            AND (:texture IS NULL OR pd.texture.name  LIKE LOWER(CONCAT('%', :texture, '%')))
+            AND (:origin IS NULL OR pd.origin.name  LIKE LOWER(CONCAT('%', :origin, '%')))
+            AND (:brand IS NULL OR pd.brand.name  LIKE LOWER(CONCAT('%', :brand, '%')))
+            AND (:collar IS NULL OR pd.collar.name  LIKE LOWER(CONCAT('%', :collar, '%')))
+            AND (:sleeve IS NULL OR pd.sleeve.name  LIKE LOWER(CONCAT('%', :sleeve, '%')))
+            AND (:material IS NULL OR pd.material.name  LIKE LOWER(CONCAT('%', :material, '%')))
+            AND (:thickness IS NULL OR pd.thickness.name  LIKE LOWER(CONCAT('%', :thickness, '%')))
+            AND (:elasticity IS NULL OR pd.elasticity.name LIKE LOWER(CONCAT('%', :elasticity, '%')))
             AND (s.deleted = false)
             AND (c.deleted = false)
             AND (t.deleted = false)
@@ -97,8 +105,17 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     Page<ProductDetail> findAllByProductIdWithQuery(
             @Param("productId") Integer productId,
             @Param("query") String query,
-            @Param("createdFrom") LocalDateTime createdFrom,
-            @Param("createdTo") LocalDateTime createdTo,
+            @Param("size") String size,
+            @Param("color") String color,
+            @Param("style") String style,
+            @Param("texture") String texture,
+            @Param("origin") String origin,
+            @Param("brand") String brand,
+            @Param("collar") String collar,
+            @Param("sleeve") String sleeve,
+            @Param("material") String material,
+            @Param("thickness") String thickness,
+            @Param("elasticity") String elasticity,
             Pageable pageable
     );
 
