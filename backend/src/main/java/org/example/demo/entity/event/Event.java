@@ -40,7 +40,7 @@ public class Event extends BaseEntity {
     @Column(name = "quantity_discount")
     private Integer quantityDiscount;
 
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "NVARCHAR(255)")
     private String status;
 
     @ManyToMany
