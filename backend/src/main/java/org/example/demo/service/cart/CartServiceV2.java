@@ -1,11 +1,14 @@
 package org.example.demo.service.cart;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.example.demo.dto.cart.request.CartRequestDTO;
 import org.example.demo.dto.cart.request.CartRequestDTOV2;
+import org.example.demo.dto.cart.request.CreateCartDetailDTO;
 import org.example.demo.dto.ghn.FeeDTO;
 import org.example.demo.dto.ghn.ItemDTO;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
+import org.example.demo.entity.cart.core.CartDetail;
 import org.example.demo.entity.cart.properties.Cart;
 import org.example.demo.entity.event.Event;
 import org.example.demo.entity.human.customer.Customer;
@@ -16,13 +19,18 @@ import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.entity.security.Account;
 import org.example.demo.entity.voucher.core.Voucher;
 import org.example.demo.exception.CustomExceptions;
+import org.example.demo.repository.cart.CartDetailRepository;
 import org.example.demo.repository.cart.CartRepository;
 import org.example.demo.repository.customer.CustomerRepository;
+import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
 import org.example.demo.service.fee.FeeService;
+import org.example.demo.util.CurrencyFormat;
 import org.example.demo.util.DataUtils;
 import org.example.demo.util.auth.AuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class CartServiceV2 {
 
@@ -46,6 +55,75 @@ public class CartServiceV2 {
 
     @Autowired
     private VoucherRepository voucherRepository;
+
+    @Autowired
+    private CartDetailRepository cartDetailRepository;
+
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
+
+    @Value("${custom.subtotal.allow.free.ship}")
+    private Double subTotalAllowFreeShip;
+
+    @Value("${custom.subtotal.allow.maximum}")
+    private Double subTotalAllowMaximum;
+
+
+    @Transactional
+    public CartDetail createCartDetail(CreateCartDetailDTO request) {
+        Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
+        ProductDetail productDetail = productDetailRepository.findById(request.getProductDetailId()).orElse(null);
+        if (cart == null) {
+            throw new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng");
+        }
+        if (productDetail == null) {
+            throw new CustomExceptions.CustomBadRequest("Không tìm thấy sản phẩm này");
+        }
+        //
+        int productDetailQuantity = productDetail.getQuantity();
+        CartDetail cartDetail = cartDetailRepository.findByCartIdAndProductDetailId(request.getCartId(), request.getProductDetailId());
+        if (cartDetail != null) {
+            // check quantity
+            if (productDetailQuantity >= cartDetail.getQuantity() + request.getQuantity()) {
+                cartDetail.setQuantity(cartDetail.getQuantity() + request.getQuantity());
+            } else {
+                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+            }
+        } else {
+            cartDetail = new CartDetail();
+            cartDetail.setProductDetail(productDetail);
+            cartDetail.setCart(cart);
+            // check quantity
+            if (productDetailQuantity >= request.getQuantity()) {
+                cartDetail.setQuantity(request.getQuantity());
+            } else {
+                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+            }
+        }
+        CartDetail cartDetailResult = cartDetailRepository.save(cartDetail);
+        reloadSubTotalOrder(cart);
+        return cartDetailResult;
+    }
+
+
+    @Transactional
+    public CartDetail updateQuantity(Integer cartId, Integer newQuantity) {
+        CartDetail cartDetail = cartDetailRepository.findById(cartId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Cart not found"));
+        int quantityInStorage = cartDetail.getProductDetail().getQuantity();
+        int quantityInOrder = cartDetail.getQuantity();
+
+        if (newQuantity > quantityInStorage) {
+            throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
+        } else if (newQuantity == 0) {
+            cartDetailRepository.delete(cartDetail);
+            reloadSubTotalOrder(cartDetail.getCart());
+            return cartDetail;
+        } else {
+            cartDetail.setQuantity(newQuantity);
+            reloadSubTotalOrder(cartDetail.getCart());
+            return cartDetailRepository.save(cartDetail);
+        }
+    }
 
     public void calculateDiscount(Cart cart) {
         Voucher voucher = cart.getVoucher();
@@ -65,7 +143,7 @@ public class CartServiceV2 {
         String address = "";
         // update customer
         Account account = AuthUtil.getAccount();
-        if(account != null){
+        if (account != null) {
             cart.setCustomer(account.getCustomer());
         }
 
@@ -133,11 +211,20 @@ public class CartServiceV2 {
         return cartRepository.save(cart);
     }
 
+
+    @Transactional
     public void reloadSubTotalOrder(Cart cart) {
-        cart.setSubTotal(fetchTotal(cart));
+        Double subTotal = fetchTotal(cart);
+        cart.setSubTotal(subTotal);
         calculateDiscount(cart);
+        if(subTotal > subTotalAllowMaximum){
+            throw new CustomExceptions.CustomBadRequest(String.format("Chỉ cho phép mua tối đa %sđ", CurrencyFormat.format(subTotalAllowMaximum)));
+        }
+        log.info("SUB TOTAL OF ORDER: " + subTotal);
+        log.info("SUBTOTAL ALLOW FREE SHIP: " + subTotalAllowFreeShip);
+        log.info("ALLOW FREE SHIP: " + (subTotal > subTotalAllowFreeShip));
         try {
-            if (cart.getDistrictId() != null && cart.getProvinceId() != null && cart.getType() == Type.ONLINE) {
+            if (cart.getDistrictId() != null && cart.getProvinceId() != null && cart.getType() == Type.ONLINE && subTotal < subTotalAllowFreeShip) {
                 JsonNode feeObject = calculateFee(cart.getId());
                 if (feeObject != null) {
                     String feeString = String.valueOf(feeObject.get("data").get("total"));
@@ -236,7 +323,6 @@ public class CartServiceV2 {
             return null;
         }
     }
-
 
 
 }

@@ -25,12 +25,6 @@ public class CartDetailController {
     private CartDetailRepository cartDetailRepository;
 
     @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
-    private ProductDetailRepository productDetailRepository;
-
-    @Autowired
     private CartDetailResponseMapper cartDetailResponseMapper;
 
     @Autowired
@@ -45,57 +39,12 @@ public class CartDetailController {
 
     @GetMapping(value = "quantity/update/{integer}")
     public ResponseEntity<?> updateQuantity(@PathVariable Integer integer, @RequestParam(value = "quantity", required = true) Integer newQuantity) {
-        CartDetail cartDetail = cartDetailRepository.findById(integer).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Cart not found"));
-        int quantityInStorage = cartDetail.getProductDetail().getQuantity();
-        int quantityInOrder = cartDetail.getQuantity();
-
-        if (newQuantity > quantityInStorage) {
-            throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-        } else if (newQuantity == 0) {
-            cartDetailRepository.delete(cartDetail);
-            cartServiceV2.reloadSubTotalOrder(cartDetail.getCart());
-            return ResponseEntity.ok(cartDetail);
-        } else {
-            cartDetail.setQuantity(newQuantity);
-            cartServiceV2.reloadSubTotalOrder(cartDetail.getCart());
-            return ResponseEntity.ok(cartDetailRepository.save(cartDetail));
-        }
+        return ResponseEntity.ok(cartServiceV2.updateQuantity(integer, newQuantity));
     }
 
     @PostMapping("create")
     public ResponseEntity<?> createCartDetail(@RequestBody CreateCartDetailDTO request) {
-        Cart cart = cartRepository.findById(request.getCartId()).orElse(null);
-        ProductDetail productDetail = productDetailRepository.findById(request.getProductDetailId()).orElse(null);
-        if (cart == null) {
-            throw new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng");
-        }
-        if (productDetail == null) {
-            throw new CustomExceptions.CustomBadRequest("Không tìm thấy sản phẩm này");
-        }
-        //
-        int productDetailQuantity = productDetail.getQuantity();
-        CartDetail cartDetail = cartDetailRepository.findByCartIdAndProductDetailId(request.getCartId(), request.getProductDetailId());
-        if (cartDetail != null) {
-            // check quantity
-            if (productDetailQuantity >= cartDetail.getQuantity() + request.getQuantity()) {
-                cartDetail.setQuantity(cartDetail.getQuantity() + request.getQuantity());
-            } else {
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-            }
-        } else {
-            cartDetail = new CartDetail();
-            cartDetail.setProductDetail(productDetail);
-            cartDetail.setCart(cart);
-            // check quantity
-            if (productDetailQuantity >= request.getQuantity()) {
-                cartDetail.setQuantity(request.getQuantity());
-            } else {
-                throw new CustomExceptions.CustomBadRequest("Không đủ số lượng đáp ứng");
-            }
-        }
-        CartDetail cartDetailResult = cartDetailRepository.save(cartDetail);
-        cartServiceV2.reloadSubTotalOrder(cart);
-        return ResponseEntity.ok(cartDetailResponseMapper.toDTO(cartDetailResult));
+        return ResponseEntity.ok(cartDetailResponseMapper.toDTO(cartServiceV2.createCartDetail(request)));
     }
 
     @DeleteMapping("/remove/{id}")
