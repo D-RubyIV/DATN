@@ -35,18 +35,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
     @Query("""
             SELECT pd FROM ProductDetail pd
             WHERE pd.deleted = false
-            AND pd.size.deleted = false
-            AND pd.color.deleted = false
-            AND pd.collar.deleted = false
-            AND pd.elasticity.deleted = false
-            AND pd.material.deleted = false
-            AND pd.brand.deleted = false
-            AND pd.origin.deleted = false
-            AND pd.sleeve.deleted = false
             AND pd.product.deleted = false
-            AND pd.thickness.deleted = false
-            AND pd.style.deleted = false
-            AND pd.texture.deleted = false
             AND pd.product.id = :id
             """)
     List<ProductDetail> findAllByProductId(Integer id);
@@ -167,6 +156,7 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             AND (:material IS NULL OR pd.material.id = :material)
             AND (:thickness IS NULL OR pd.thickness.id = :thickness)
             AND (:elasticity IS NULL OR pd.elasticity.id = :elasticity)
+            AND pdpt.deleted = FALSE
             AND pd.deleted = FALSE
             """)
     Page<ProductDetail> findAllByPageWithQuery(
@@ -241,9 +231,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
                 AND (:minPrice IS NULL OR pd.price >= :minPrice)
                 AND (:maxPrice IS NULL OR pd.price <= :maxPrice)
                 AND p.deleted = FALSE
-                AND c.deleted = FALSE
-                AND s.deleted = FALSE
-                AND b.deleted = FALSE
                 AND pd.deleted = FALSE
                 AND (:query IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :query, '%')))
                 GROUP BY p.id, p.code, p.name, p.createdDate

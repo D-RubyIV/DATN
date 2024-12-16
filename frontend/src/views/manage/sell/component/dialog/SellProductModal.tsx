@@ -154,49 +154,49 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
     }
 
     const initProperties = () => {
-        instance.get('/color/color-list').then(function(response) {
+        instance.get('/color/color-objects').then(function(response) {
             console.log(response.data)
-            setListColor(transformData(response.data.data))
+            setListColor(transformData(response.data))
         })
-        instance.get('/size/size-list').then(function(response) {
+        instance.get('/size/size-objects').then(function(response) {
             console.log(response.data)
-            setListSize(transformData(response.data.data))
+            setListSize(transformData(response.data))
         })
-        instance.get('/brand/brand-list').then(function(response) {
+        instance.get('/brand/brand-objects').then(function(response) {
             console.log(response.data)
-            setListBrand(transformData(response.data.data))
+            setListBrand(transformData(response.data))
         })
-        instance.get('/product/product-list').then(function(response) {
+        instance.get('/product/product-objects').then(function(response) {
             console.log(response.data)
-            setListProduct(transformData(response.data.data))
+            setListProduct(transformData(response.data))
         })
-        instance.get('/texture/texture-list').then(function(response) {
+        instance.get('/texture/texture-objects').then(function(response) {
             console.log(response.data)
-            setListTexture(transformData(response.data.data))
+            setListTexture(transformData(response.data))
         })
-        instance.get('/material/material-list').then(function(response) {
+        instance.get('/material/material-objects').then(function(response) {
             console.log(response.data)
-            setListMaterial(transformData(response.data.data))
+            setListMaterial(transformData(response.data))
         })
-        instance.get('/origin/origin-list').then(function(response) {
+        instance.get('/origin/origin-objects').then(function(response) {
             console.log(response.data)
-            setListOrigin(transformData(response.data.data))
+            setListOrigin(transformData(response.data))
         })
-        instance.get('/collar/collar-list').then(function(response) {
+        instance.get('/collar/collar-objects').then(function(response) {
             console.log(response.data)
-            setListCollar(transformData(response.data.data))
+            setListCollar(transformData(response.data))
         })
-        instance.get('/sleeve/sleeve-list').then(function(response) {
+        instance.get('/sleeve/sleeve-objects').then(function(response) {
             console.log(response.data)
-            setListSleeve(transformData(response.data.data))
+            setListSleeve(transformData(response.data))
         })
-        instance.get('/thickness/thickness-list').then(function(response) {
+        instance.get('/thickness/thickness-objects').then(function(response) {
             console.log(response.data)
-            setListThickness(transformData(response.data.data))
+            setListThickness(transformData(response.data))
         })
-        instance.get('/elasticity/elasticity-list').then(function(response) {
+        instance.get('/elasticity/elasticity-objects').then(function(response) {
             console.log(response.data)
-            setListElasticity(transformData(response.data.data))
+            setListElasticity(transformData(response.data))
         })
 
     }

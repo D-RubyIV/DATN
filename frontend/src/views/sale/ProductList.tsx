@@ -90,15 +90,15 @@ const ProductList = () => {
         setTotalElement(response?.data?.totalElements)
     }
     const initListColor = async () => {
-        const response = await instance.get('/color/color-list')
-        if (response.data.data && Array.isArray(response.data.data)) {
-            setSetListColor(response.data.data)
+        const response = await instance.get('/color/color-objects')
+        if (response.data && Array.isArray(response.data)) {
+            setSetListColor(response.data)
         }
     }
     const initListSize = async () => {
-        const response = await instance.get('/size/size-list')
-        if (response.data.data && Array.isArray(response.data.data)) {
-            setSetListSize(response.data.data)
+        const response = await instance.get('/size/size-objects')
+        if (response.data && Array.isArray(response.data)) {
+            setSetListSize(response.data)
         }
     }
     useEffect(() => {
