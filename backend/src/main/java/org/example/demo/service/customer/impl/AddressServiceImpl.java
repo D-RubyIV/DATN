@@ -6,6 +6,7 @@ import org.example.demo.dto.customer.CustomerMapper;
 import org.example.demo.entity.human.customer.Address;
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.security.Account;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.repository.customer.AddressRepository;
 import org.example.demo.service.customer.AddressService;
 import org.example.demo.util.auth.AuthUtil;
@@ -64,7 +65,7 @@ public class AddressServiceImpl implements AddressService {
                 .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
 
         if (address.getDefaultAddress()) {
-            throw new BadRequestException("Cannot delete the default address.");
+            throw new CustomExceptions.CustomBadRequest("Không thể xóa địa chỉ mặc định");
         }
 
         addressRepository.delete(address);
