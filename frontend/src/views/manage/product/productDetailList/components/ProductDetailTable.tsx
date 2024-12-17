@@ -196,13 +196,20 @@ const ProductDetailTable = () => {
                     return index;
                 }
             },
-
             {
                 header: 'Tên',
                 accessorKey: 'product__name',
                 cell: (props: any) => {
                     const row = props.row.original
                     return <ProductDetailColumn row={row} />
+                },
+            },
+            {
+                header: 'Mã',
+                accessorKey: 'product__code',
+                cell: (props: any) => {
+                    const row = props.row.original
+                    return <p>{row.code}</p>
                 },
             },
             {
@@ -213,7 +220,9 @@ const ProductDetailTable = () => {
                     return <span className=" block w-16 h-5 rounded-xl"
                         style={{
                             backgroundColor: row.color.name
-                        }} >
+                        }} >{
+                        row.color.name
+                    }
                     </span>
                 },
             },
@@ -223,6 +232,36 @@ const ProductDetailTable = () => {
                 cell: (props: any) => {
                     const row = props.row.original
                     return <span className="capitalize">{row.size.name}</span>
+                },
+            },
+            {
+                header: 'Thương hiệu',
+                accessorKey: 'brand__name',
+                cell: (props: any) => {
+                    const row = props.row.original
+                    return <span className=" block h-5 rounded-xl">{row.color.name}</span>
+                },
+            },
+            {
+                header: 'Xuất xứ',
+                accessorKey: 'origin__name',
+                cell: (props: any) => {
+                    const row = props.row.original
+                    return <p className=" block  h-5 rounded-xl">{
+                        row.origin.name
+                    }
+                    </p>
+                },
+            },
+            {
+                header: 'Chất liệu',
+                accessorKey: 'material__name',
+                cell: (props: any) => {
+                    const row = props.row.original
+                    return <p className=" block  h-5 rounded-xl">{
+                        row.material.name
+                    }
+                    </p>
                 },
             },
             {
@@ -324,7 +363,6 @@ const ProductDetailTable = () => {
                     onPaginationChange={onPaginationChange}
                     onSelectChange={onSelectChange}
                     onSort={onSort}
-                    selectable
                     onIndeterminateCheckBoxChange={handleIndeterminateCheckBoxChange}
 
                     onCheckBoxChange={handleCheckBoxChange}
