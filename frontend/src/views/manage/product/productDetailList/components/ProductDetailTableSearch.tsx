@@ -136,7 +136,7 @@ const ProductDetailTableSearch = () => {
                     <FormItem label="Tìm kiếm">
                         <Input
                             ref={searchInput}
-                            className="max-w-md md:w-65 md:mb-0 mb-4"
+                            className="w-full"
                             size="sm"
                             placeholder="Tìm kiếm theo mã, tên...."
                             prefix={<HiOutlineSearch className="text-lg" />}

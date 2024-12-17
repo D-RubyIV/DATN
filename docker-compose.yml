@@ -59,6 +59,8 @@ services:
       dockerfile: docker/fe/Dockerfile
     ports:
       - 5173:5173
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
     depends_on:
       - server
     networks:
