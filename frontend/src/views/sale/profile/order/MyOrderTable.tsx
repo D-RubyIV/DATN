@@ -511,9 +511,9 @@ export const MyOrderTable = () => {
             setIsLoading(true);
             const response = await fetch(`http://localhost:8080/api/v1/history/timeline/2`);
 
-            if (!response.ok) {
-                throw new Error('Không thể tải thông tin đơn hàng');
-            }
+            // if (!response.ok) {
+            //     throw new Error('Không thể tải thông tin đơn hàng');
+            // }
 
             const data = await response.json();
 
@@ -533,7 +533,7 @@ export const MyOrderTable = () => {
             setBill({ status: data.status });
         } catch (error) {
             console.error('Error fetching bill history:', error);
-            message.error('Không thể tải thông tin đơn hàng');
+            // message.error('Không thể tải thông tin đơn hàng');
         } finally {
             setIsLoading(false);
         }
@@ -569,7 +569,7 @@ export const MyOrderTable = () => {
                         statusBills.map((item, index) => (
                             <TabNav key={index}
                                 className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
-                                value={item.value}>
+                                value={item.value || 0}>
                                 <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)}
                                     maxCount={99} innerClass="bg-red-50 text-red-500">
                                     <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
