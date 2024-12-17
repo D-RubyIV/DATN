@@ -42,6 +42,7 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     @PostMapping(value = "")
     public ResponseEntity<?> create(@Valid @RequestBody OrderDetailRequestDTO orderDetailRequestDTO) {
         OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetailService.save(orderDetailRequestDTO));
+        messagingTemplate.convertAndSend("/has-change/messages", "Order Overview Updated");
         return ResponseEntity.ok(orderDetailResponseDTO);
     }
 
