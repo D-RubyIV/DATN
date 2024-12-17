@@ -5,6 +5,7 @@ import org.apache.coyote.BadRequestException;
 import org.example.demo.controller.IControllerBasic;
 import org.example.demo.dto.order.properties.request.AllowOverrideOrderDetailRequestDTO;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
+import org.example.demo.dto.order.properties.response.OrderDetailResponseDTO;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.mapper.order.properties.response.OrderDetailResponseMapper;
 import org.example.demo.repository.order.OrderProductDetailRepository;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,8 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     @Autowired
     private OrderDetailResponseMapper orderDetailResponseMapper;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate; // Inject SimpMessagingTemplate
 
     @GetMapping(value = "")
     public ResponseEntity<?> findAll() {
@@ -37,7 +41,8 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     @Override
     @PostMapping(value = "")
     public ResponseEntity<?> create(@Valid @RequestBody OrderDetailRequestDTO orderDetailRequestDTO) {
-        return ResponseEntity.ok(orderDetailResponseMapper.toDTO(orderDetailService.save(orderDetailRequestDTO)));
+        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetailService.save(orderDetailRequestDTO));
+        return ResponseEntity.ok(orderDetailResponseDTO);
     }
 
     @Override
@@ -47,13 +52,17 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
 
     @GetMapping(value = "quantity/update/{id}")
     public ResponseEntity<?> updateQuantity(@PathVariable Integer id, @RequestParam(value = "quantity", required = true) Integer quantity) {
-        return ResponseEntity.ok(orderDetailResponseMapper.toDTO(orderDetailService.updateQuantity(id, quantity)));
+        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetailService.updateQuantity(id, quantity));
+        messagingTemplate.convertAndSend("/has-change/messages", "Order Overview Updated");
+        return ResponseEntity.ok(orderDetailResponseDTO);
     }
 
     @Override
     @DeleteMapping(value = "{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        return ResponseEntity.ok(orderDetailResponseMapper.toDTO(orderDetailService.delete(id)));
+        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetailService.delete(id));
+        messagingTemplate.convertAndSend("/has-change/messages", "Order Overview Updated");
+        return ResponseEntity.ok(orderDetailResponseDTO);
     }
 
     @Override

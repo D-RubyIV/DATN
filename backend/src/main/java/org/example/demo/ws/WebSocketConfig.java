@@ -17,11 +17,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS(); // Hỗ trợ fallback qua SockJS
     }
 
-
-
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic","/send","/receive","/new-order"); // Định tuyến thông báo
+        registry.enableSimpleBroker("/topic","/send","/receive","/new-order", "/has-change"); // Định tuyến thông báo
         registry.setApplicationDestinationPrefixes("/app"); // Định tuyến request
     }
 }

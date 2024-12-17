@@ -156,6 +156,12 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             newOrderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
             // set hóa đơn vào hóa đơn chi tiết
             Order order_found = orderService.findById(requestDTO.getOrderId());
+            if(order_found.getInStore()){
+                if(productDetail.getQuantity() <= 0){
+                    log.error("[HDTQ] - 01 - KHÔNG ĐỦ ĐIỀU KIỆN");
+                    throw new CustomExceptions.CustomBadRequest("#ERIB28 - Không đủ số lượng đáp ứng");
+                }
+            }
             if(order_found.getStatus() != Status.PENDING){
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");
             }

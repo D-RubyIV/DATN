@@ -9,11 +9,13 @@ import { useToastContext } from '@/context/ToastContext'
 import DataTable, { type OnSortParam } from '../../../../../components/shared/DataTable'
 import { FiPackage } from 'react-icons/fi'
 import { DeleteOutline } from '@mui/icons-material'
+import { useWSContext } from '@/context/WsContext'
 
 const SellProductTable = ({ selectedOrder, fetchData }: {
     selectedOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
 }) => {
+    const {signalReloadTableProduct, setSelectedOrderInStoreCode} = useWSContext();
     const [isOpenEditQuantity, setIsOpenEditQuantity] = useState<boolean>(false)
     const [data, setData] = useState<OrderDetailResponseDTO[]>([])
     const [selectedOrderDetail, setSelectedOrderDetail] = useState<OrderDetailResponseDTO>()
@@ -75,13 +77,14 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
     const fetchOrderData = async () => {
         if (selectedOrder && selectedOrder.id) {
             console.log('Thay đổi selectedOrder')
+            setSelectedOrderInStoreCode(selectedOrder.code)
             await getAllOrderDetailWithIdOrder(selectedOrder.id)
         }
     }
 
     useEffect(() => {
         fetchOrderData()
-    }, [selectedOrder, tableData.pageSize, tableData.pageIndex])
+    }, [selectedOrder, tableData.pageSize, tableData.pageIndex, signalReloadTableProduct])
 
 
     const columns = useMemo<ColumnDef<OrderDetailResponseDTO>[]>(
