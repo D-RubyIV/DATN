@@ -2,6 +2,7 @@ package org.example.demo.infrastructure.converted;
 
 import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.voucher.core.Voucher;
+import org.example.demo.entity.voucher.enums.Type;
 import org.example.demo.model.request.VoucherRequest;
 import org.example.demo.repository.customer.CustomerRepository;
 import org.example.demo.repository.voucher.VoucherRepository;
@@ -50,7 +51,7 @@ public class VoucherConvert {
         voucher.setEndDate(request.getEndDate());
         voucher.setTypeTicket(request.getTypeTicket());
         voucher.setDeleted(request.getDeleted());
-        if (request.getCustomers() != null && !request.getCustomers().isEmpty()) {
+        if (request.getCustomers() != null && !request.getCustomers().isEmpty() && request.getTypeTicket() == Type.Individual) {
             List<Customer> customers = customerRepository.findAllById(request.getCustomers());
             if (customers.size() != request.getCustomers().size()) {
                 throw new RuntimeException("One or more customers not found");

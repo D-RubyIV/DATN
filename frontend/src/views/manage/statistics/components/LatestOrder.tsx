@@ -113,11 +113,11 @@ const columns = [
             const { status } = props.row.original
             return (
                 <div className="flex items-center">
-                    <Badge className={orderStatusColor[status].dotClass} />
+                    <Badge className={orderStatusColor[status]?.dotClass} />
                     <span
-                        className={`ml-2 rtl:mr-2 capitalize font-semibold ${orderStatusColor[status].textClass}`}
+                        className={`ml-2 rtl:mr-2 capitalize font-semibold ${orderStatusColor[status]?.textClass}`}
                     >
-                        {orderStatusColor[status].label}
+                        {orderStatusColor[status]?.label}
                     </span>
                 </div>
             )

@@ -991,8 +991,22 @@
           <Length>255</Length>
         </Column>
         <Column Name="status">
-          <Checked>false</Checked>
+          <Checked>true</Checked>
           <DataType>nvarchar</DataType>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
+            <AllowNulls>false</AllowNulls>
+            <NullProportion>10</NullProportion>
+            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <SeedValue>23</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>[0-9A-Z]+</Expression>
+          </GeneratorOptions>
+          <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <Length>255</Length>
         </Column>
       </Columns>
@@ -1873,7 +1887,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>9</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -2029,7 +2043,7 @@
             <SeedValue>65</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>S|M|XL|2XL|3XL|4XL|5XL</Expression>
+            <Expression>S|L|M|XL</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2202,7 +2216,7 @@
             <SeedValue>69</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Tay ngắn|Tay dài|Tay lỡ|Tay lỡ Kimono|Tay bồng|Tay loe|Tay xòe|Tay loe nhún|Tay lệch vai|Tay tôm</Expression>
+            <Expression>Tay ngắn|Tay dài|Tay lỡ|Tay lỡ Kimono|Tay bồng</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2375,7 +2389,7 @@
             <SeedValue>76</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Kiểu dáng cổ điển|Kiểu dáng hiện đại|Kiểu dáng thể thao|Kiểu dáng Vintage|Kiểu dáng tối giản|Kiểu dáng sang trọng|Kiểu dáng dạo phố</Expression>
+            <Expression>Kiểu dáng cổ điển|Kiểu dáng hiện đại|Kiểu dáng thể thao|Kiểu dáng Vintage</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -2721,7 +2735,7 @@
             <SeedValue>80</SeedValue>
             <Unique>true</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Expression>Rất mỏng|Mỏng|Vừa phải|Dày|Rất dày|Trung bình|Siêu mỏng|Siêu dày</Expression>
+            <Expression>Rất mỏng|Mỏng|Vừa phải|Dày|Rất dày</Expression>
           </GeneratorOptions>
           <GeneratorType>SqlRegularExpressionGenerator</GeneratorType>
           <GeneratorName>NickName</GeneratorName>
@@ -3349,7 +3363,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>50</RowsCount>
+          <RowsCount>12</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -5235,8 +5249,8 @@
             <NullProportion>10</NullProportion>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <Increment xsi:type="xsd:decimal">10000</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
             <SeedValue>28</SeedValue>
             <MinValue>0</MinValue>
             <MaxValue>99999</MaxValue>
@@ -5259,8 +5273,8 @@
             <NullProportion>10</NullProportion>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <Increment xsi:type="xsd:decimal">1000</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
             <SeedValue>29</SeedValue>
             <MinValue>0</MinValue>
             <MaxValue>99</MaxValue>
@@ -5283,7 +5297,7 @@
             <NullProportion>10</NullProportion>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
+            <Increment xsi:type="xsd:decimal">1</Increment>
             <ValueDistributionMode>Seed</ValueDistributionMode>
             <SeedValue>38</SeedValue>
             <MinValue>0</MinValue>
@@ -5408,8 +5422,8 @@
             <NullProportion>10</NullProportion>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <Increment xsi:type="xsd:decimal">100000</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
             <SeedValue>26</SeedValue>
             <MinValue>0</MinValue>
             <MaxValue>999999</MaxValue>
@@ -5432,8 +5446,8 @@
             <NullProportion>10</NullProportion>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <Increment xsi:type="xsd:decimal">100000</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
             <SeedValue>27</SeedValue>
             <MinValue>0</MinValue>
             <MaxValue>999999</MaxValue>
@@ -5456,8 +5470,8 @@
             <NullProportion>10</NullProportion>
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
-            <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <Increment xsi:type="xsd:decimal">10000</Increment>
+            <ValueDistributionMode>Sequential</ValueDistributionMode>
             <SeedValue>41</SeedValue>
             <MinValue>0</MinValue>
             <MaxValue>999999</MaxValue>
@@ -5537,7 +5551,7 @@
             <UseOffsetDetails>false</UseOffsetDetails>
             <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
             <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
-            <MinDate>2024-09-30T00:00:00</MinDate>
+            <MinDate>2024-05-23T00:00:00+07:00</MinDate>
             <MaxDate>2024-11-29T00:00:00+07:00</MaxDate>
             <IsRandomizeDate>true</IsRandomizeDate>
             <IsRandomizeTime>true</IsRandomizeTime>
@@ -5575,7 +5589,7 @@
             <UseOffsetDetails>false</UseOffsetDetails>
             <OffsetFromColumnMinDays>0</OffsetFromColumnMinDays>
             <OffsetFromColumnMaxDays>7</OffsetFromColumnMaxDays>
-            <MinDate>1970-01-01T00:00:00</MinDate>
+            <MinDate>2024-01-18T00:00:00+07:00</MinDate>
             <MaxDate>2024-10-06T00:00:00</MaxDate>
             <IsRandomizeDate>true</IsRandomizeDate>
             <IsRandomizeTime>true</IsRandomizeTime>
@@ -5755,18 +5769,20 @@
         <Column Name="status">
           <Checked>true</Checked>
           <DataType>varchar</DataType>
-          <GeneratorOptions xsi:type="CheckConstraintGeneratorOptions">
-            <Unique>false</Unique>
-            <IsAlwaysUnique>false</IsAlwaysUnique>
+          <GeneratorOptions xsi:type="SqlRegularExpressionGeneratorOptions">
+            <AllowEmptyStrings>false</AllowEmptyStrings>
+            <EmptyStringProportion>10</EmptyStringProportion>
             <AllowNulls>false</AllowNulls>
             <NullProportion>10</NullProportion>
             <ValueDistributionMode>Seed</ValueDistributionMode>
-            <SeedValue>26</SeedValue>
-            <IsApplyMeaningfulBounds>true</IsApplyMeaningfulBounds>
+            <SeedValue>37</SeedValue>
+            <Unique>false</Unique>
+            <IsAlwaysUnique>false</IsAlwaysUnique>
+            <Expression>PENDING|TOSHIP|TORECEIVE|DELIVERED|CANCELED</Expression>
           </GeneratorOptions>
-          <GeneratorType>CheckConstraintGenerator</GeneratorType>
-          <GeneratorName>Check Constraint (auto assigned)</GeneratorName>
-          <GeneratorDescription>fill with values within the value range of the check constraint expression</GeneratorDescription>
+          <GeneratorType>SqlStringRegularExpressionGenerator</GeneratorType>
+          <GeneratorName>Reg Exp</GeneratorName>
+          <GeneratorDescription>values based on a regular expression</GeneratorDescription>
           <HasCheckConstraint>true</HasCheckConstraint>
           <Length>255</Length>
         </Column>
@@ -6374,7 +6390,7 @@
         <RowsToGenerate>0</RowsToGenerate>
         <PopulationDetails>
           <PopulationType>RowsCount</PopulationType>
-          <RowsCount>1000</RowsCount>
+          <RowsCount>5</RowsCount>
           <LookupProportion>30</LookupProportion>
           <ProportionOfExistingData>10</ProportionOfExistingData>
           <TimeTicksToPopulate>100000000</TimeTicksToPopulate>
@@ -6673,7 +6689,7 @@
             <Unique>false</Unique>
             <IsAlwaysUnique>false</IsAlwaysUnique>
             <Increment xsi:type="xsd:double">1</Increment>
-            <ValueDistributionMode>Seed</ValueDistributionMode>
+            <ValueDistributionMode>Random</ValueDistributionMode>
             <SeedValue>34</SeedValue>
             <MinValue>0</MinValue>
             <MaxValue>50</MaxValue>
