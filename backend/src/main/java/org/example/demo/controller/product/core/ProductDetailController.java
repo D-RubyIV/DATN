@@ -6,6 +6,7 @@ import org.example.demo.dto.product.phah04.request.FindProductDetailRequest;
 import org.example.demo.dto.product.requests.core.ProductDetailRequestDTO;
 import org.example.demo.dto.product.response.core.ProductDetailResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductDiscountDTO;
+import org.example.demo.dto.product.response.properties.ProductResponseDTO;
 import org.example.demo.dto.product.response.properties.ProductResponseOverDTO;
 import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.event.Event;
@@ -70,29 +71,63 @@ public class ProductDetailController {
         return (org.example.demo.infrastructure.common.PageableObject) productDetailService.getAll(request);
     }
 
+
+
     @PostMapping(value = "details")
     public ResponseEntity<Page<ProductDetailResponseDTO>> getProductDetails(
-            @RequestParam(required = false) Integer productId,
-            @RequestParam(value = "createdFrom", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdFrom,
-            @RequestParam(value = "createdTo", required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDateTime createdTo,
+            @RequestParam(value = "productId", required = false) Integer productId,
+            @RequestParam(value = "size", required = false) String size,
+            @RequestParam(value = "color", required = false) String color,
+            @RequestParam(value = "style", required = false) String style,
+            @RequestParam(value = "texture", required = false) String texture,
+            @RequestParam(value = "origin", required = false) String origin,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "collar", required = false) String collar,
+            @RequestParam(value = "sleeve", required = false) String sleeve,
+            @RequestParam(value = "material", required = false) String material,
+            @RequestParam(value = "thickness", required = false) String thickness,
+            @RequestParam(value = "elasticity", required = false) String elasticity,
             @Valid @RequestBody PageableObject pageableObject,
+
             BindingResult bindingResult
     ) throws BindException {
-        // Kiểm tra lỗi
         if (bindingResult.hasErrors()) {
             throw new BindException(bindingResult);
         }
+        System.out.println(pageableObject);
 
-        // Gọi dịch vụ để lấy dữ liệu sản phẩm
         Page<ProductDetailResponseDTO> productDetails = productDetailService.findAllProductDetailsOverviewByPage(
                 productId,
-                createdFrom,
-                createdTo,
+                size,
+                color,
+                style,
+                texture,
+                origin,
+                brand,
+                collar,
+                sleeve,
+                material,
+                thickness,
+                elasticity,
                 pageableObject
         );
 
         return ResponseEntity.ok(productDetails);
     }
+
+
+
+
+
+
+    @GetMapping("getDataAttribute")
+    public ResponseEntity<List<ProductDetail>> getProductDetails(
+            @RequestParam(required = false) Integer productId) {
+        List<ProductDetail> productDetails = productDetailService.findAllByProductId(productId);
+        return ResponseEntity.ok(productDetails);
+    }
+
+
 
     @PostMapping("findById")
     public ResponseEntity<?> getProductDetailById(

@@ -128,7 +128,20 @@ export async function apiGetSalesThicknessOverview<T, U extends Record<string, u
 
 export async function apiGetSalesProductDetails<T, U extends Record<string, unknown>>(
     data: U,
-    params: U
+    params: {
+        productId: number,
+        size: string,
+        color: string,
+        style: string,
+        texture: string,
+        origin: string,
+        brand: string,
+        collar: string,
+        sleeve: string,
+        material: string,
+        thickness: string,
+        elasticity: string,
+    }
 
 ) {
     return ApiService.fetchData<T>({
@@ -141,8 +154,26 @@ export async function apiGetSalesProductDetails<T, U extends Record<string, unkn
 
 
 
+
+export async function apiGetDataProductDetailQuery<T, U extends Record<string, unknown>>(
+    params: U
+
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/productDetails/getDataAttribute`,
+        method: 'get',
+        params,
+    })
+}
+
+
+
+
+
+
 export async function apiGetSalesProductDetail<T, U extends Record<string, unknown>>(
     params: U
+
 ) {
     return ApiService.fetchData<T>({
         url: `http://localhost:8080/api/v1/productDetails/findById`,
@@ -615,7 +646,7 @@ export async function apiDeleteSalesThickness<T, U extends Record<string, unknow
     });
 }
 
-
+ 
 //update data
 
 export async function apiPutSalesProductDetail<T, U extends Record<string, unknown>>(

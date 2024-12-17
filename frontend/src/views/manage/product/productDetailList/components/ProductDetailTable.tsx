@@ -13,6 +13,7 @@ import { FiPackage } from 'react-icons/fi'
 import {
     getProductDetailId,
     getProductDetails,
+    getDataProductDetailQuery,
     setTableData,
     setProductId,
     toggleUpdateConfirmation,
@@ -20,8 +21,8 @@ import {
     setSelectedProductDetail,
     useAppDispatch,
     useAppSelector,
+    setFilterData
 } from '../store'
-
 
 import cloneDeep from 'lodash/cloneDeep'
 import type {
@@ -127,10 +128,34 @@ const ProductDetailTable = () => {
         (state) => state.salesProductDetailList.data.productDetailList
     )
 
+
+
+
+
     useEffect(() => {
+        dispatch(getDataProductDetailQuery({ productId: id || '' }));
         dispatch(setProductId(id));
+        dispatch(setFilterData({
+            productId: 55,
+            size: '',
+            color: '',
+            style: '',
+            texture: '',
+            origin: '',
+            brand: '',
+            collar: '',
+            sleeve: '',
+            material: '',
+            thickness: '',
+            elasticity: ''
+        }));
         fetchData()
-    }, [pageIndex, pageSize, sort, id])
+
+    }, [id])
+
+    useEffect(() => {
+        fetchData()
+    }, [pageIndex, pageSize, sort])
 
     const tableData = useMemo(
         () => ({ pageIndex, pageSize, sort, query, total }),
@@ -157,7 +182,7 @@ const ProductDetailTable = () => {
             onDelete()
         }
         return (
-            <div className="flex text-lg">
+            <div className="flex justify-end text-lg">
                 <FaEye
                     onClick={onUpdate}
                     size={20}
@@ -268,8 +293,12 @@ const ProductDetailTable = () => {
                 header: 'Giá',
                 accessorKey: 'price',
                 cell: (props: any) => {
-                    const row = props.row.original
-                    return <span className="capitalize">{row.price}</span>
+                    const value = props.row.original.price;
+                    if (typeof value !== 'number' || isNaN(value)) {
+                        return <span>Không xác định</span>;
+                    }
+
+                    return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
                 },
             },
             {
@@ -340,7 +369,7 @@ const ProductDetailTable = () => {
         console.log('Converted ProductDetails:', productDetails);
     };
     const handleCheckBoxChange = (checked: boolean, row: ProductDetail) => {
-            console.log('Checkbox changed:', checked, row);
+        console.log('Checkbox changed:', checked, row);
     };
 
 
@@ -363,12 +392,13 @@ const ProductDetailTable = () => {
                     onPaginationChange={onPaginationChange}
                     onSelectChange={onSelectChange}
                     onSort={onSort}
+                    // selectable
                     onIndeterminateCheckBoxChange={handleIndeterminateCheckBoxChange}
 
                     onCheckBoxChange={handleCheckBoxChange}
                 />
             ) : (
-                <div className="flex flex-col justify-center items-center h-full">
+                <div className="flex flex-col justify-center items-center h-1/2">
                     <DoubleSidedImage
                         className="max-w-[200px]"
                         src="/img/others/image-removebg-preview-order-empty.png"

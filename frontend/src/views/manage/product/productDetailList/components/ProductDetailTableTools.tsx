@@ -27,30 +27,28 @@ const ProductDetailTableTools = () => {
 
 
     return (
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+        <div className="">
             <div className="flex-grow mb-4 lg:mb-0">
-            <ProductDetailTableSearch />
+                <ProductDetailTableSearch />
             </div>
-            <div className="flex-shrink-0">
-
-            <div
-                className="block lg:inline-block md:mx-2 md:mb-0 mb-4"
-                >
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col lg:ml-auto mt-4 lg:mt-0 lg:flex-row lg:justify-end lg:items-end">
+                <div className="block lg:inline-block md:mx-2 md:mb-0 mb-4">
                     <Button block size="sm" onClick={handleExport} icon={<FaFileDownload />}>
                         Xuất Excel
                     </Button>
-            </div>
-            
-            <div
-                className="block lg:inline-block md:mx-2 md:mb-0 mb-4"
-                >
+                </div>
+
+                <div className="block lg:inline-block md:mx-2 md:mb-0 mb-4">
                     <Button block size="sm" onClick={handleQRCode} icon={<FaQrcode />}>
                         Xuất QR Code
                     </Button>
+                </div>
             </div>
-            
             </div>
         </div>
+
+
     )
 }
 

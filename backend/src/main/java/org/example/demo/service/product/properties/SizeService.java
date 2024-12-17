@@ -53,11 +53,21 @@ public class SizeService implements IService<Size, Integer, SizeRequestDTO> { //
     public List<Size> findAllList() {
         return sizeRepository.findAllList();
     }
+
+
+
+
+
+
+
     @Override
     public Size findById(Integer id) throws BadRequestException { // Đổi từ Origin sang Size
         return sizeRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Size not found with id: " + id)); // Đổi từ Origin sang Size
     }
+
+
+
 
     @Override
     public Size delete(Integer id) throws BadRequestException { // Đổi từ Origin sang Size

@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface BrandRepository extends JpaRepository<Brand,Integer> {
+public interface BrandRepository extends JpaRepository<Brand, Integer> {
     boolean existsByCodeAndName(String code, String name);
 
     @Query(value = """
@@ -33,7 +33,6 @@ public interface BrandRepository extends JpaRepository<Brand,Integer> {
     );
 
 
-
     @Query(value = """
             SELECT DISTINCT b FROM Brand b
             WHERE b.deleted = false
@@ -47,6 +46,5 @@ public interface BrandRepository extends JpaRepository<Brand,Integer> {
             ORDER BY b.createdDate DESC
             """)
     List<Brand> findAllObject();
-
 
 }

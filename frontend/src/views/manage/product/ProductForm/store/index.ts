@@ -25,7 +25,7 @@ export const useAppSelector: TypedUseSelectorHook<
         [productSliceName]: {
             productAdd: AddProductState 
         }
-        [detailedProductSliceName]: { // Thêm trạng thái cho sản phẩm chi tiết
+        [detailedProductSliceName]: { 
             detailedProduct: AddDetailedProductState
         }
     }

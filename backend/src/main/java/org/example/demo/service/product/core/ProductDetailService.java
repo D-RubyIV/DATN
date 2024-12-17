@@ -122,8 +122,17 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
     // Phương thức tìm tất cả sản phẩm chi tiết với điều kiện phân trang
     public Page<ProductDetailResponseDTO> findAllProductDetailsOverviewByPage(
             Integer productId,
-            LocalDateTime createdFrom,
-            LocalDateTime createdTo,
+            String size,
+            String color,
+            String style,
+            String texture,
+            String origin,
+            String brand,
+            String collar,
+            String sleeve,
+            String material,
+            String thickness,
+            String elasticity,
             PageableObject pageableObject
     ) {
         Pageable pageable = pageableObject.toPageRequest();
@@ -132,12 +141,26 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         Page<ProductDetail> productDetails = productDetailRepository.findAllByProductIdWithQuery(
                 productId,
                 query,
-                createdFrom,
-                createdTo,
+                size,
+                color,
+                style,
+                texture,
+                origin,
+                brand,
+                collar,
+                sleeve,
+                material,
+                thickness,
+                elasticity,
                 pageable
         );
 
         return productDetails.map(s -> productDetailResponseMapper.toDTO(s));
+    }
+
+
+    public List<ProductDetail> findAllByProductId(Integer productId) {
+        return productDetailRepository.findAllByProductIdv2(productId);
     }
 
     @Override
