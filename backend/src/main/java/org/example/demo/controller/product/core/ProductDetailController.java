@@ -121,10 +121,10 @@ public class ProductDetailController {
 
 
     @GetMapping("getDataAttribute")
-    public ResponseEntity<List<ProductDetail>> getProductDetails(
+    public ResponseEntity<List<?>> getProductDetails(
             @RequestParam(required = false) Integer productId) {
         List<ProductDetail> productDetails = productDetailService.findAllByProductId(productId);
-        return ResponseEntity.ok(productDetails);
+        return ResponseEntity.ok(productDetailResponseMapper.toListDTO(productDetails));
     }
 
 

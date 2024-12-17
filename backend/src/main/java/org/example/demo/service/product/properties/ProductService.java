@@ -40,8 +40,8 @@ public class ProductService implements IService<Product, Integer, ProductRequest
     @Autowired
     private ProductDetailRepository productDetailRepository;
 
-    public List<Product> findAllObject() {
-        return productRepository.findAllObject();
+    public List<?> findAllObject() {
+        return productResponseMapper.toListDTO(productRepository.findAllObject());
     }
 
     public Page<ProductDTO> getAllProductDTO(Pageable pageable) {
