@@ -85,6 +85,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
 
         int REQUIRED_QUANTITY = requestDTO.getQuantity();
+        if(REQUIRED_QUANTITY <= 0){
+            throw new CustomExceptions.CustomBadRequest("Vui lòng nhập số lượng hợp lệ");
+        }
         // tìm kiếm hóa đơn
         Order orderFounded = orderRepository.findById(requestDTO.getOrderId()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy hóa đơn"));
         // tìm kiếm sản phẩm chi tiết
@@ -161,6 +164,11 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
                     log.error("[HDTQ] - 01 - KHÔNG ĐỦ ĐIỀU KIỆN");
                     throw new CustomExceptions.CustomBadRequest("#ERIB28 - Không đủ số lượng đáp ứng");
                 }
+                if(productDetail.getQuantity() - REQUIRED_QUANTITY < 0){
+                    throw new CustomExceptions.CustomBadRequest("#ERIB38 - Không đủ số lượng đáp ứng");
+
+                }
+
             }
             if(order_found.getStatus() != Status.PENDING){
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");

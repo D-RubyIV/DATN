@@ -52,6 +52,7 @@ type IOveriewBill = {
     inStore: boolean;
     discountVoucherPercent: number;
     createdDate: string
+    updatedDate: string
 }
 
 export const OrderTable = () => {
@@ -264,10 +265,17 @@ export const OrderTable = () => {
             )
         },
         {
-            header: 'Thời gian',
+            header: 'TG tạo',
             accessorKey: 'createdDate',
             cell: (props) => (
                 calculateDistanceTime(props.row.original.createdDate)
+            )
+        },
+        {
+            header: 'Tg sửa',
+            accessorKey: 'createdDate',
+            cell: (props) => (
+                calculateDistanceTime(props.row.original.updatedDate)
             )
         },
         {
