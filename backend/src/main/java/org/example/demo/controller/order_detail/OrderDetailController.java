@@ -41,8 +41,9 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
     @Override
     @PostMapping(value = "")
     public ResponseEntity<?> create(@Valid @RequestBody OrderDetailRequestDTO orderDetailRequestDTO) {
-        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetailService.save(orderDetailRequestDTO));
-        messagingTemplate.convertAndSend("/has-change/messages", "Order Overview Updated");
+        OrderDetail orderDetail = orderDetailService.save(orderDetailRequestDTO);
+        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetail);
+        messagingTemplate.convertAndSend("/has-change/messages", orderDetail.getOrder().getCode());
         return ResponseEntity.ok(orderDetailResponseDTO);
     }
 
@@ -53,16 +54,18 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
 
     @GetMapping(value = "quantity/update/{id}")
     public ResponseEntity<?> updateQuantity(@PathVariable Integer id, @RequestParam(value = "quantity", required = true) Integer quantity) {
-        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetailService.updateQuantity(id, quantity));
-        messagingTemplate.convertAndSend("/has-change/messages", "Order Overview Updated");
+        OrderDetail orderDetail = orderDetailService.updateQuantity(id, quantity);
+        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetail);
+        messagingTemplate.convertAndSend("/has-change/messages", orderDetail.getOrder().getCode());
         return ResponseEntity.ok(orderDetailResponseDTO);
     }
 
     @Override
     @DeleteMapping(value = "{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
-        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetailService.delete(id));
-        messagingTemplate.convertAndSend("/has-change/messages", "Order Overview Updated");
+        OrderDetail orderDetail = orderDetailService.delete(id);
+        OrderDetailResponseDTO orderDetailResponseDTO = orderDetailResponseMapper.toDTO(orderDetail);
+        messagingTemplate.convertAndSend("/has-change/messages", orderDetail.getOrder().getCode());
         return ResponseEntity.ok(orderDetailResponseDTO);
     }
 
