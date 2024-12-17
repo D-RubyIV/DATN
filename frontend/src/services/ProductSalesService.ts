@@ -155,6 +155,20 @@ export async function apiGetSalesProductDetails<T, U extends Record<string, unkn
 
 
 
+export async function apiGetDataProductDetailQuery<T, U extends Record<string, unknown>>(
+    params: U
+
+) {
+    return ApiService.fetchData<T>({
+        url: `http://localhost:8080/api/v1/productDetails/getDataAttribute`,
+        method: 'get',
+        params,
+    })
+}
+
+
+
+
 
 
 export async function apiGetSalesProductDetail<T, U extends Record<string, unknown>>(

@@ -121,6 +121,31 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
 
 
 
+    @Query(value = """
+            SELECT DISTINCT pd FROM ProductDetail pd
+            LEFT JOIN FETCH pd.product 
+            LEFT JOIN FETCH pd.size s
+            LEFT JOIN FETCH pd.color c
+            LEFT JOIN FETCH pd.texture t
+            LEFT JOIN FETCH pd.origin o
+            LEFT JOIN FETCH pd.brand b
+            LEFT JOIN FETCH pd.collar cr
+            LEFT JOIN FETCH pd.sleeve sl
+            LEFT JOIN FETCH pd.style st
+            LEFT JOIN FETCH pd.material m
+            LEFT JOIN FETCH pd.thickness ts
+            LEFT JOIN FETCH pd.elasticity ey
+            WHERE 
+            (:productId IS NULL OR pd.product.id = :productId)
+            ORDER BY pd.createdDate DESC
+            """)
+    List<ProductDetail> findAllByProductIdv2(
+            @Param("productId") Integer productId
+
+    );
+
+
+
 
     @Query(value = """
      SELECT pd FROM ProductDetail pd

@@ -158,6 +158,11 @@ public class ProductDetailService implements IService<ProductDetail, Integer, Pr
         return productDetails.map(s -> productDetailResponseMapper.toDTO(s));
     }
 
+
+    public List<ProductDetail> findAllByProductId(Integer productId) {
+        return productDetailRepository.findAllByProductIdv2(productId);
+    }
+
     @Override
     public ProductDetail delete(Integer id) throws BadRequestException {
         ProductDetail entityFound = findById(id);

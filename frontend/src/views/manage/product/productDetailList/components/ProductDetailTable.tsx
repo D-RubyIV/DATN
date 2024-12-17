@@ -13,6 +13,7 @@ import { FiPackage } from 'react-icons/fi'
 import {
     getProductDetailId,
     getProductDetails,
+    getDataProductDetailQuery,
     setTableData,
     setProductId,
     toggleUpdateConfirmation,
@@ -127,8 +128,14 @@ const ProductDetailTable = () => {
         (state) => state.salesProductDetailList.data.productDetailList
     )
 
+
+
+    
+
     useEffect(() => {
+        dispatch(getDataProductDetailQuery({ productId: id || '' }));
         dispatch(setProductId(id));
+
         dispatch(setFilterData({
             productId: 55,
             size: '',

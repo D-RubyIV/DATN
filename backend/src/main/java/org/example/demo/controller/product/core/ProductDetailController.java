@@ -117,6 +117,18 @@ public class ProductDetailController {
 
 
 
+
+
+
+    @GetMapping("getDataAttribute")
+    public ResponseEntity<List<ProductDetail>> getProductDetails(
+            @RequestParam(required = false) Integer productId) {
+        List<ProductDetail> productDetails = productDetailService.findAllByProductId(productId);
+        return ResponseEntity.ok(productDetails);
+    }
+
+
+
     @PostMapping("findById")
     public ResponseEntity<?> getProductDetailById(
             @RequestParam(required = false) Integer id

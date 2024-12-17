@@ -46,6 +46,11 @@ public class BrandService implements IService<Brand, Integer, BrandRequestDTO> {
     }
 
 
+
+
+    
+
+
     public Page<BrandResponseDTO> findAllOverviewByPage(
             LocalDateTime createdFrom,
             LocalDateTime createdTo,
