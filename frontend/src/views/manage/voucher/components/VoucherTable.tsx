@@ -13,6 +13,7 @@ import instance from "@/axios/CustomAxios";
 import { useNavigate } from 'react-router-dom'
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { useToastContext } from '@/context/ToastContext'
 
 type IVoucher = {
     id: number
@@ -34,6 +35,7 @@ const VoucherTable = () => {
     const [searchKeyword, setSearchKeyword] = useState('')
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const {openNotification} = useToastContext()
     const [tableData, setTableData] = useState({
         pageIndex: 1,
         pageSize: 10,
@@ -241,11 +243,11 @@ const VoucherTable = () => {
                             <Tooltip title={deleted ? 'Kích hoạt lại' : 'Xoá Phiếu Giảm Giá'}>
                                 <Switcher
                                     color="green-500"
-                                    checked={deleted}
-                                    onChange={() => softDelete(id, !deleted)}
+                                    checked={!deleted}
                                     unCheckedContent={<RiMoonClearLine />}
                                     checkedContent={<RiSunLine />}
                                     className="text-sm"
+                                    onChange={() => softDelete(id, !deleted)}
                                 />
                             </Tooltip>
 
@@ -272,19 +274,23 @@ const VoucherTable = () => {
 
             if (response.status === 200) {
                 if (!softDelete) {
-                    toast.success('Kích hoạt lại phiếu giảm giá thành công');
+                    openNotification('Kích hoạt lại phiếu giảm giá thành công');
                 } else {
-                    toast.success('Xoá phiếu giảm giá thành công');
+                    openNotification('Xoá phiếu giảm giá thành công');
                 }
                 fetchData();
             } else {
-                toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+                // toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+                openNotification('Có lỗi xảy ra. Vui lòng thử lại.', 'Thông báo', 'warning', 5000)
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
-                toast.error(`Có lỗi xảy ra: ${error.response.data.message || 'Vui lòng thử lại.'}`);
+                // toast.error(`Có lỗi xảy ra: ${error.response.data.message || 'Vui lòng thử lại.'}`);
+                openNotification(`Có lỗi xảy ra: ${error.response.data.message || 'Vui lòng thử lại.'}`, 'Thông báo', 'warning', 5000)
+
             } else {
-                toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+                // toast.error('Có lỗi xảy ra. Vui lòng thử lại.');
+                openNotification('Có lỗi xảy ra. Vui lòng thử lại.', 'Thông báo', 'warning', 5000)
             }
             console.error('Error deleting voucher:', error);
         }
@@ -309,15 +315,13 @@ const VoucherTable = () => {
                 search: query,
                 sort: sort.key,
                 order: sort.order,
-                keyword: searchTerm,
+                keyword: searchTerm || "",
             };
 
             if (statusFilter) {
                 params.status = statusFilter;
             } else if (typeTicketFilter) {
                 params.typeTicket = typeTicketFilter;
-            } else {
-                params.keyword = query || ''; // Fallback khi cả hai đều trống
             }
 
             console.log('Fetching data with params:', params);
@@ -334,7 +338,8 @@ const VoucherTable = () => {
                 setData([]);
             }
         } catch (error) {
-            toast.error('Lỗi tải dữ liệu. Vui lòng thử lại.');
+            // toast.error('Lỗi tải dữ liệu. Vui lòng thử lại.');
+            openNotification('Có lỗi xảy ra. Vui lòng thử lại.', 'Thông báo', 'warning', 5000)
             console.error('Error fetching data:', error);
         } finally {
             setLoading(false);
@@ -384,7 +389,7 @@ const VoucherTable = () => {
                                         }}
                                     />
                                     <Input
-                                        placeholder="Tìm kiếm theo tên, mã, loại, số lượng..."
+                                        placeholder="Tìm kiếm theo tên, mã"
                                         style={{
                                             width: '100%',
                                             height: '37px',
