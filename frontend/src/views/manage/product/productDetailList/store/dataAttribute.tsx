@@ -38,7 +38,6 @@ type DataProductDetailQuery = ProductDetail[];
 
 export const DATA_NAME = 'datas';
 
-// Thunk action to fetch product details
 export const getDataProductDetailQuery = createAsyncThunk(
     DATA_NAME + '/getDataProductDetailQuery',
     async (data: { productId: string }) => {
@@ -58,23 +57,23 @@ const attributeSlice = createSlice({
     name: DATA_NAME,
     initialState,
     reducers: {
-        // You can add other reducers here if needed
     },
     extraReducers: (builder) => {
         builder
             .addCase(getDataProductDetailQuery.pending, (state) => {
-                state.loading = true;
-                state.error = null; // Reset error when request starts
+                state.loading = true;  // Đang tải dữ liệu
             })
             .addCase(getDataProductDetailQuery.fulfilled, (state, action) => {
-                state.loading = false;
-                state.attributeFormData = action.payload; // Set the fetched data to the state
+                state.loading = false;  // Dữ liệu đã tải thành công
+                state.attributeFormData = action.payload; // Lưu dữ liệu vào state
+                console.log(state.attributeFormData)
             })
-            .addCase(getDataProductDetailQuery.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || 'Something went wrong'; // Capture error message if rejected
+            .addCase(getDataProductDetailQuery.rejected, (state) => {
+                state.loading = false;  // Đã kết thúc yêu cầu (thành công hoặc thất bại)
+                state.error = 'Có lỗi xảy ra khi tải dữ liệu';
             });
-    },
+    }
+
 });
 
 export default attributeSlice.reducer;

@@ -28,10 +28,10 @@ const handleDebounceFn = debounce((val: string, tableData: any, fetchData: any) 
 
 const ProductDetailTableSearch = () => {
     const dispatch = useAppDispatch();
+    const attributeData = useAppSelector(state => state.datas.DataProductDetailQuery);
     const searchInput = useRef(null);
     const tableData = useAppSelector(state => state.salesProductDetailList.data.tableData);
     const filterData = useAppSelector(state => state.salesProductDetailList.data.filterData);
-    const attributeData = useAppSelector(state => state.datas.DataProductDetailQuery);
 
     const [isDataInitialized, setIsDataInitialized] = useState(false);
     const [brand, setBrands] = useState<{ label: string; value: FormAttribute }[]>([]);
@@ -41,62 +41,46 @@ const ProductDetailTableSearch = () => {
     const [collar, setCollars] = useState<{ label: string; value: FormAttribute }[]>([]);
     const [sleeve, setSleeves] = useState<{ label: string; value: FormAttribute }[]>([]);
     const [texture, setTextures] = useState<{ label: string; value: FormAttribute }[]>([]);
-    const [thicknesse, setThicknesses] = useState<{ label: string; value: FormAttribute }[]>([]);
-    const [elasticitie, setElasticities] = useState<{ label: string; value: FormAttribute }[]>([]);
+    const [thickness, setThicknesses] = useState<{ label: string; value: FormAttribute }[]>([]);
+    const [elasticity, setElasticities] = useState<{ label: string; value: FormAttribute }[]>([]);
     const [size, setSizes] = useState<{ label: string; value: FormAttribute }[]>([]);
     const [color, setColors] = useState<{ label: string; value: FormAttribute }[]>([]);
-    
-    
-    // const { id } = useParams();
-    // const dispatchID = useDispatch();
 
-    // useEffect(() => {
-    //     // Using an empty string as a fallback for undefined
-    //     dispatch(getDataProductDetailQuery({ productId: id || '' }));
-    // }, [id, dispatchID]);
+   
+
     useEffect(() => {
-        if (attributeData && !attributeData.loading && !isDataInitialized) {
-            // console.log('Initializing data...');
-            initializeData();
-        }
+            initializeData();  
     }, [attributeData, isDataInitialized]);
-
 
 
     const fetchData = (data: TableQueries) => {
         const params: FilterQueries = { ...filterData };
         dispatch(getProductDetails({ ...data, filterData: params }));
-        dispatch(getProductDetails({ ...data}));
+        dispatch(getProductDetails({ ...data })); 
     };
 
     const onEdit = (e: ChangeEvent<HTMLInputElement>) => {
         handleDebounceFn(e.target.value, tableData, fetchData);
     };
 
-  
-
     const initializeData = () => {
-        if (isDataInitialized || attributeData.loading) return;  // Đảm bảo không khởi tạo lại nếu đã làm xong
+        const combinedData = mapCombinedData(attributeData.attributeFormData);
+        setBrands(combinedData.brand);
+        setOrigins(combinedData.origin);
+        setStyles(combinedData.style);
+        setMaterials(combinedData.material);
+        setCollars(combinedData.collar);
+        setSleeves(combinedData.sleeve);
+        setTextures(combinedData.texture);
+        setThicknesses(combinedData.thickness);
+        setElasticities(combinedData.elasticity);
+        setSizes(combinedData.size);
+        setColors(combinedData.color);
 
-        // Kiểm tra xem dữ liệu có sẵn chưa
-        if (attributeData.attributeFormData.length > 0) {
-            const combinedData = mapCombinedData(attributeData.attributeFormData);
-            setBrands(combinedData.brand);
-            setOrigins(combinedData.origin);
-            setStyles(combinedData.style);
-            setMaterials(combinedData.material);
-            setCollars(combinedData.collar);
-            setSleeves(combinedData.sleeve);
-            setTextures(combinedData.texture);
-            setThicknesses(combinedData.thickness);
-            setElasticities(combinedData.elasticity);
-            setSizes(combinedData.size);
-            setColors(combinedData.color);
-            setIsDataInitialized(true);
-        }
+        setIsDataInitialized(true); 
     };
 
-    // Hàm map lại các thuộc tính trong attributeFormData thành options cho Select
+
     const mapCombinedData = (data: any[]) => {
         const mappedData = {
             brand: mapOptions(data.map(item => item.brand)),
@@ -111,23 +95,19 @@ const ProductDetailTableSearch = () => {
             size: mapOptions(data.map(item => item.size)),
             material: mapOptions(data.map(item => item.material)),
         };
-
         return mappedData;
     };
 
-
     const mapOptions = (items: any[]) => {
-        // Sử dụng filter và map để loại bỏ các phần tử trùng lặp theo thuộc tính 'name' hoặc 'id'
+      
         const uniqueItems = items?.filter((item, index, self) => {
-            return self.findIndex(i => i.name === item.name) === index; // Loại bỏ trùng lặp dựa trên 'name'
+            return self.findIndex(i => i.name === item.name) === index;
         }) || [];
-
         return uniqueItems.map(item => ({
-            label: item.name, // Hiển thị tên
-            value: item,      // Lưu lại đối tượng nguyên bản nếu cần
+            label: item.name,
+            value: item,      
         }));
     };
-
 
     const handleSelectChange = (selectedValue: string | undefined | '', key: keyof FilterQueries) => {
         const updatedFilterData = { ...filterData, [key]: selectedValue || '' };
@@ -149,6 +129,7 @@ const ProductDetailTableSearch = () => {
 
     return (
         <div>
+            
             {/* Tìm kiếm và các trường lọc */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="col-span-1">
@@ -174,8 +155,8 @@ const ProductDetailTableSearch = () => {
                 {renderSelectField('texture', 'Kết cấu', texture)}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {renderSelectField('thickness', 'Độ dày', thicknesse)}
-                {renderSelectField('elasticity', 'Độ co giãn', elasticitie)}
+                {renderSelectField('thickness', 'Độ dày', thickness)}
+                {renderSelectField('elasticity', 'Độ co giãn', elasticity)}
                 {renderSelectField('color', 'Màu sắc', color)}
                 {renderSelectField('size', 'Kích thước', size)}
             </div>

@@ -130,12 +130,11 @@ const ProductDetailTable = () => {
 
 
 
-    
+
 
     useEffect(() => {
         dispatch(getDataProductDetailQuery({ productId: id || '' }));
         dispatch(setProductId(id));
-
         dispatch(setFilterData({
             productId: 55,
             size: '',
@@ -151,6 +150,7 @@ const ProductDetailTable = () => {
             elasticity: ''
         }));
         fetchData()
+
     }, [id])
 
     useEffect(() => {
