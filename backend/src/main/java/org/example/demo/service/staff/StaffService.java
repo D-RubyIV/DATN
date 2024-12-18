@@ -339,6 +339,11 @@ public class StaffService implements IService1<Staff, Integer, StaffRequestDTO> 
         }
         Staff staff = staffRepository.findById(id).orElseThrow(() -> new RuntimeException("Staff with id " + id + " not found"));
         staff.setStatus(newStatus);
+        if (staff.getStatus().equalsIgnoreCase("Inactive")) {
+            staff.setDeleted(true);
+        } else {
+            staff.setDeleted(false);
+        }
         return staffRepository.save(staff);
     }
 
