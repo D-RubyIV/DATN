@@ -57,7 +57,7 @@ public class Staff extends BaseEntity {
     private LocalDate birthDay;
 
     @Column(name = "deleted")
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @Column(name = "gender")
     private Boolean gender;

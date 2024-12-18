@@ -264,7 +264,7 @@ const ProductDetailTable = () => {
                 accessorKey: 'brand__name',
                 cell: (props: any) => {
                     const row = props.row.original
-                    return <span className=" block h-5 rounded-xl">{row.color.name}</span>
+                    return <span className=" block h-5 rounded-xl">{row.brand.name}</span>
                 },
             },
             {

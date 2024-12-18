@@ -38,7 +38,7 @@ public class Customer extends BaseEntity {
     private String status;
 
     @Column(name = "deleted")
-    private Boolean deleted;
+    private Boolean deleted = false;
 
     @Column(name = "birth_date")
     @JsonFormat(pattern = "dd-MM-yyyy")

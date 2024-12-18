@@ -282,7 +282,7 @@ const EventTable = () => {
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-4">
                             {/* Input tìm kiếm */}
-                            <div className="relative w-80">
+                            <div className="relative w-[500px]">
                                 <Input
                                     placeholder="Tìm kiếm theo mã, tên..."
                                     size="sm"
@@ -294,28 +294,28 @@ const EventTable = () => {
                                 />
                             </div>
 
-                            <div className="flex justify-between gap-5">
-                                <DatePicker.DatePickerRange
-                                    placeholder="Chọn khoảng ngày"
-                                    value={dateRange}
-                                    dateViewCount={2}
-                                    onChange={handleDateRangeChange}
-                                />
-                            </div>
+                            {/*<div className="flex justify-between gap-5">*/}
+                            {/*    <DatePicker.DatePickerRange*/}
+                            {/*        placeholder="Chọn khoảng ngày"*/}
+                            {/*        value={dateRange}*/}
+                            {/*        dateViewCount={2}*/}
+                            {/*        onChange={handleDateRangeChange}*/}
+                            {/*    />*/}
+                            {/*</div>*/}
 
                             {/* Trạng thái */}
-                            <div className="w-40">
-                                <select
-                                    className="w-full px-2 py-2 border border-gray-300 rounded focus:outline-none bg-white h-10"
-                                    value={statusFilter || ''}
-                                    onChange={handleStatus}
-                                >
-                                    <option value="">Tất cả</option>
-                                    <option value="Đang diễn ra">Đang diễn ra</option>
-                                    <option value="Sắp diễn ra">Sắp diễn ra</option>
-                                    <option value="Đã kết thúc">Đã kết thúc</option>
-                                </select>
-                            </div>
+                            {/*<div className="w-40">*/}
+                            {/*    <select*/}
+                            {/*        className="w-full px-2 py-2 border border-gray-300 rounded focus:outline-none bg-white h-10"*/}
+                            {/*        value={statusFilter || ''}*/}
+                            {/*        onChange={handleStatus}*/}
+                            {/*    >*/}
+                            {/*        <option value="">Tất cả</option>*/}
+                            {/*        <option value="Đang diễn ra">Đang diễn ra</option>*/}
+                            {/*        <option value="Sắp diễn ra">Sắp diễn ra</option>*/}
+                            {/*        <option value="Đã kết thúc">Đã kết thúc</option>*/}
+                            {/*    </select>*/}
+                            {/*</div>*/}
                         </div>
 
                         {/* Nút thêm mới */}

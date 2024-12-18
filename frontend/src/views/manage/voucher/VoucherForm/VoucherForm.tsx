@@ -58,7 +58,7 @@ const validationSchema = Yup.object().shape({
         .min(0, 'Giá trị tối thiểu phải lớn hơn hoặc bằng 0')
         .required('Vui lòng nhập giá trị tối thiểu'),
     maxPercent: Yup.number()
-        .min(0, 'Phần trăm giảm giá phải lớn hơn hoặc bằng 0')
+        .min(1, 'Phần trăm giảm giá phải lớn hơn hoặc bằng 1')
         .max(100, 'Phần trăm giảm giá không thể vượt quá 100')
         .required('Vui lòng nhập phần trăm giảm giá'),
     typeTicket: Yup.string()
@@ -299,21 +299,13 @@ const VoucherForm = forwardRef<FormikRef, VoucherFormProps>((props, ref) => {
 
                                 <div className="md:flex items-center">
                                     <Button
-                                        size="sm"
-                                        className="ltr:mr-3 rtl:ml-3"
-                                        type="button"
-                                        onClick={() => onDiscard?.()}
-                                    >
-                                        Discard
-                                    </Button>
-                                    <Button
                                         color='blue'
                                         size="sm"
                                         variant="solid"
                                         loading={isSubmitting}
                                         type="submit"
                                     >
-                                        Save
+                                        Lưu
                                     </Button>
                                 </div>
                             </StickyFooter>

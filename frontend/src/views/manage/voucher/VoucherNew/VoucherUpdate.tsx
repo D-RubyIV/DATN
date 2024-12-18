@@ -137,7 +137,6 @@ const VoucherUpdate = () => {
                         </div>
 
 
-
                         <div>
                             <label className="block mb-2">Số lượng</label>
                             <Controller
@@ -165,7 +164,7 @@ const VoucherUpdate = () => {
                                 control={control}
                                 rules={{
                                     required: 'Vui lòng nhập phần trăm giảm',
-                                    min: { value: 0, message: 'Phần trăm không được âm' },
+                                    min: { value: 1, message: 'Phần trăm ít nhất là 1' },
                                     max: { value: 100, message: 'Phần trăm không được vượt quá 100' }
                                 }}
                                 render={({ field }) => (
@@ -199,7 +198,7 @@ const VoucherUpdate = () => {
                             />
                         </div>
 
-                        <div className="flex space-x-4">
+                        <div className={'flex'}>
                             <div className="flex-1">
                                 <label className="block mb-2">Ngày bắt đầu</label>
                                 <Controller
@@ -210,7 +209,7 @@ const VoucherUpdate = () => {
                                         <Input
                                             {...field}
                                             type="datetime-local"
-                                            value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ''}
+                                            value={field.value ? new Date(field.value).toLocaleString('sv-SE').slice(0, 16) : ''} // 'sv-SE' sẽ tạo định dạng 'YYYY-MM-DDTHH:mm'
                                             onChange={(e) => field.onChange(e.target.value)}
                                             placeholder="Chọn ngày bắt đầu"
                                             error={errors.startDate?.message}
@@ -218,6 +217,7 @@ const VoucherUpdate = () => {
                                     )}
                                 />
                             </div>
+
 
                             <div className="flex-1">
                                 <label className="block mb-2">Ngày kết thúc</label>
@@ -229,7 +229,7 @@ const VoucherUpdate = () => {
                                         <Input
                                             {...field}
                                             type="datetime-local"
-                                            value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ''}
+                                            value={field.value ? new Date(field.value).toLocaleString('sv-SE').slice(0, 16) : ''} // Đảm bảo định dạng 'YYYY-MM-DDTHH:mm'
                                             onChange={(e) => field.onChange(e.target.value)}
                                             placeholder="Chọn ngày kết thúc"
                                             error={errors.endDate?.message}

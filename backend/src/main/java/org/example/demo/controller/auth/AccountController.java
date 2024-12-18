@@ -12,7 +12,9 @@ import org.example.demo.dto.auth.request.ForgotPasswordDTO;
 import org.example.demo.dto.user.RefreshTokenDTO;
 import org.example.demo.dto.user.UserLoginDTO;
 import org.example.demo.dto.user.response.LoginResponse;
+import org.example.demo.entity.human.customer.Customer;
 import org.example.demo.entity.human.role.Role;
+import org.example.demo.entity.human.staff.Staff;
 import org.example.demo.entity.security.Account;
 import org.example.demo.entity.security.TokenRecord;
 import org.example.demo.exception.CustomExceptions;
@@ -131,6 +133,21 @@ public class AccountController {
 
         String userAgent = request.getHeader("User-Agent");
         Account account = accountService.getAccountDetailsFromToken(token);
+        if(account.getStaff() != null){
+            Staff staff = account.getStaff();
+            System.out.println("ooooooooo");
+            System.out.println(staff.getCode());
+            System.out.println(staff.getDeleted());
+            if(staff.getDeleted()){
+                throw new CustomExceptions.CustomBadRequest("Tài khoản nhân viên đã bị khóa");
+            }
+        }
+        else if (account.getCustomer() != null){
+            Customer customer = account.getCustomer();
+            if(customer.getDeleted()){
+                throw new CustomExceptions.CustomBadRequest("Tài khoản khách hàng đã bị khóa");
+            }
+        }
         System.out.println("======================2");
         TokenRecord jwtTokenRecord = tokenService.addToken(account, token,isMobileDevice(userAgent));
         System.out.println("======================3");

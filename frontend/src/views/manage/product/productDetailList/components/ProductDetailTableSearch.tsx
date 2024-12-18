@@ -138,7 +138,7 @@ const ProductDetailTableSearch = () => {
                             ref={searchInput}
                             className="w-full"
                             size="sm"
-                            placeholder="Tìm kiếm theo mã, tên...."
+                            placeholder="Tìm kiếm theo mã"
                             prefix={<HiOutlineSearch className="text-lg" />}
                             onChange={onEdit}
                         />

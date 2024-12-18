@@ -46,6 +46,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:sqlserver://database:1433;databaseName=final;encrypt=true;trustServerCertificate=true;
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_DATASOURCE_PASSWORD: ComplexP@ssw0rd
+      TZ: Asia/Ho_Chi_Minh
     depends_on:
       database:
         condition: service_healthy

@@ -85,7 +85,7 @@ function useAuth() {
             }
         } catch (error: any) {
             if(error?.response?.data?.error){
-                openNotification("Sai Email hoặc Mật khẩu", 'Thông báo', 'danger', 5000)
+                openNotification(error?.response?.data?.error, 'Thông báo', 'danger', 5000)
             }
             // return { status: 'failed', message: error?.response?.data?.message || error.toString() }
         }
