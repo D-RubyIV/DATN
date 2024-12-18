@@ -1,5 +1,6 @@
 package org.example.demo.util.auth;
 
+import org.example.demo.entity.human.role.Role;
 import org.example.demo.entity.security.Account;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,17 @@ public class AuthUtil {
             }
         }
         return null;
+    }
+    public static boolean hasRole(String role_code) {
+        Account account = getAccount();
+        if(account != null){
+            Role role = account.getRole();
+            if(role != null){
+                String roleCode = role.getCode();
+                return roleCode.equalsIgnoreCase(role_code);
+            }
+        }
+        return false;
     }
 
 }

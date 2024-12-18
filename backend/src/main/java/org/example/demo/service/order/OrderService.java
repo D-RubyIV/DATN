@@ -494,13 +494,16 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         // HÓA ĐƠN CHỜ -> CHỜ VẬN CHUYỂN
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP) {
+            log.info("1. TRUONG HOP 1");
             checkValidateQuantity(entityFound);
             // nếu là đơn giao hàng
             if (entityFound.getType() == Type.ONLINE) {
+                log.info("1.2 LÀ ĐƠN GIAO HÀNG");
                 check_validate_address_for_online_order(entityFound);
                 // kiem tra xem là đơn tại quầy hay đơn khách đặt online mà nhân viên đổi trạng thái
                 // nếu là đơn khách đặt mua online thì trừ (bên offline đã trừ từ lúc thêm)
                 if (!entityFound.getInStore()) {
+                    log.info("2.1 LÀ ĐƠN ĐẶT ONLINE");
                     minusProductDetailsQuantity(entityFound);
                 }
                 // chuyển trạng thái thang toán(vì khách đã thanh toán hết tại quầy)
@@ -517,6 +520,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
             log.info("1");
         }
+
         // CHỜ VẬN CHUYỂN -> CHỜ XÁC NHẬN
         else if (oldStatus == Status.TOSHIP && newStatus == Status.PENDING) {
             log.info("2");
@@ -544,6 +548,18 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         else if (oldStatus == Status.TORECEIVE && newStatus == Status.DELIVERED) {
             log.info("4");
             entityFound.setIsPayment(true);
+        }
+        // CHỜ VẬN CHUYỂN -> CHỜ XÁC NHẬN
+        else if (oldStatus == Status.TORECEIVE && newStatus == Status.PENDING) {
+            log.info("5");
+            // CHỈ ROLLBACK CHO ĐƠN ONLINE (ĐƠN OFFLINE CHỈ ROLLBACK KHI HỦY)
+            if (!entityFound.getInStore()) {
+                rollback_quantity_order(entityFound);
+            }
+            // ROLLBACK VOUCHER
+            if (entityFound.getVoucher() != null) {
+                increaseQuantityVoucher(entityFound.getVoucher());
+            }
         }
         // CHỜ XÁC NHẬN -> HỦY (ĐƠN TẠI QUẦY) --> ROLLBACK LẠI SỐ LƯỢNG SP VÀ VOUCHER
         else if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && entityFound.getInStore()) {
@@ -859,11 +875,15 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // lấy subtotal cần trả
         double subtotal_of_order = get_subtotal_of_order(order);
         // nếu đáp ứng giá trị đơn hàng tối thiểu với voucher
+        log.info("SUBTOTAL ORDER: " + subtotal_of_order);
+        log.info("VOUCHER SUBTOTAL REQUIRED: " + voucherMinimumSubtotalRequired);
         if (subtotal_of_order >= voucherMinimumSubtotalRequired) {
             log.info("CÓ THỂ SỬ DỤNG VOUCHER");
             return NumberUtil.roundDouble(subtotal_of_order / 100 * discount_percent_at_that_time);
         } else {
             log.info("KHÔNG THỂ SỬ DỤNG VOUCHER");
+            order.setDiscountVoucherPercent(0.0);
+            orderRepository.save(order);
             return 0.0;
         }
     }
@@ -1008,7 +1028,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
 
     @Transactional
     public void auto_fill_best_voucher_for_inStore_order(Order order) {
-        if (order.getInStore()) {
+        if (order.getInStore() || AuthUtil.hasRole("ROLE_ADMIN") || AuthUtil.hasRole("ROLE_STAFF")) {
             Voucher oldVoucher = order.getVoucher();
             Voucher bestVoucher = voucherUtil.getBestVoucherCanUse(order);
             double subTotal = get_subtotal_of_order(order);

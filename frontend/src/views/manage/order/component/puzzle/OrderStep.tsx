@@ -149,7 +149,8 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
         {
             'status': 'TORECEIVE',
             'messages': [
-                'Xác nhận hoàn thành đơn hàng'
+                'Xác nhận hoàn thành đơn hàng',
+                'Khách chưa nhận được hàng',
             ]
         },
         {
@@ -217,6 +218,7 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                         selectObject.type === 'ONLINE' && selectObject.refund > 0 ?
                             (
                                 <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto"
+                                        disabled={selectObject.orderDetailResponseDTOS.length === 0}
                                         icon={<HiOutlineTruck />}
                                         onClick={handleSubmit(async () => {
                                             setIsMode('FOR_TOSHIP')
@@ -291,6 +293,10 @@ const OrderStep = ({ selectObject, fetchData }: { selectObject: OrderResponseDTO
                     <Button block variant="solid" size="sm" className="bg-indigo-500 !w-auto" icon={<HiOutlineCash />}
                             onClick={handleSubmit(async () => submitChangeStatus('DELIVERED'))}>Xác nhận hoàn
                         thành</Button>
+                    <Button block variant="default" size="sm" className="bg-indigo-500 !w-auto"
+                            icon={<HiOutlineArrowLeft />}
+                            onClick={handleSubmit(async () => submitChangeStatus('PENDING'))}>Quay lại chờ xác
+                        nhận</Button>
                 </div>
             )
         } else if (currentStatus === 'DELIVERED') {
