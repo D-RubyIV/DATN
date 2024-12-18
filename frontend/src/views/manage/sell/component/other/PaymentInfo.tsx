@@ -8,11 +8,11 @@ import { updateOrder } from '@/services/OrderService'
 import { OrderResponseDTO } from '@/@types/order'
 import SuggestVoucher from '@/views/manage/util/SuggestVoucher'
 import UseVoucherBox from '@/views/manage/util/UseVoucherBox'
-import { HiPencilSquare } from 'react-icons/hi2'
-import { Formik, Form, Field, insert } from 'formik'
+import { Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
+import { HiOutlineCash } from 'react-icons/hi'
 
 const PaymentInfo = ({ setIsOpenVoucherModal, selectedOrder, data, fetchSelectedOrder }: {
     setIsOpenVoucherModal: React.Dispatch<SetStateAction<boolean>>,
@@ -69,19 +69,18 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
         feeShip: Yup.number()
             .required('Phí vận chuyển không được để trống.')
             .min(0, 'Phí vận chuyển không được nhỏ hơn 0.')
-            .max(100000, 'Phí vận chuyển không được vượt quá 100.000.')
+            .max(10000000, 'Phí vận chuyển không được vượt quá 10.000.000.')
     })
 
     const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>(EPaymentMethod.CASH)
     const [isOpenEditFeeShip, setIsOpenEditFeeShip] = useState<boolean>(false)
-    const [feeShipValue, setFeeShipValue] = useState<number>(0)
     const { openNotification } = useToastContext()
 
     const handleEditFeeShip = (value: number) => {
         console.log('FEE SHIP: ' + value)
         const data = {
-            "orderId": selectedOrder.id,
-            "amount": value
+            'orderId': selectedOrder.id,
+            'amount': value
         }
         instance.post('/orders/edit-custom-fee', data).then(function(response) {
             console.log('Ok')
@@ -138,11 +137,13 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
                                 width={'60px'} />
                         </div>
                     )} value={data?.deliveryFee} prefix={' + '}>
-                        <Button
-                            variant={'plain'}
-                            icon={<HiPencilSquare />}
-                            onClick={() => setIsOpenEditFeeShip(true)}
-                        />
+                        <div hidden={selectedOrder.type === "INSTORE"}>
+                            <Button
+                                variant={'plain'}
+                                icon={<HiOutlineCash  />}
+                                onClick={() => setIsOpenEditFeeShip(true)}
+                            />
+                        </div>
                     </PaymentRow>
                     <PaymentRow label={`Giảm giá (${selectedOrder?.discountVoucherPercent}%)`} value={data?.discount}
                                 prefix={' - '} />
