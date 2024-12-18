@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.demo.dto.ghn.FeeDTO;
 import org.example.demo.dto.ghn.ItemDTO;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
+import org.example.demo.dto.order.core.request.CustomFeeOrderRequest;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
@@ -888,6 +889,42 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
+    @Transactional
+    public Order apply_custom_fee(CustomFeeOrderRequest customFeeOrderRequest) {
+        Integer orderId = customFeeOrderRequest.getOrderId();
+        Double amount = customFeeOrderRequest.getAmount();
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đpn hàng"));
+        boolean isValidAddress = check_validate_address_for_online_order(order);
+        log.info("VALID ADDRESS: " + isValidAddress);
+        double subTotal = get_subtotal_of_order(order);
+        if (subTotal >= subTotalAllowFreeShip) {
+            throw new CustomExceptions.CustomBadRequest("Đơn hàng đang được miễn phí ship");
+        }
+
+        try {
+            if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE && subTotal < subTotalAllowFreeShip) {
+                CompletableFuture<JsonNode> feeFuture = calculateFee(order.getId());
+                JsonNode feeObject = feeFuture.join();
+                log.info("HE THONG DANG TINH PHI");
+                System.out.println(feeObject);
+                // HOẠT ĐỘNG ỔN DỊNH
+                if (feeObject != null) {
+                    log.info("PHI KHÁC NULL");
+                    String feeString = String.valueOf(feeObject.get("data").get("total"));
+                    throw new CustomExceptions.CustomBadRequest("Hệ thông tính phí vẫn hoạt động ổn định");
+                }
+                // KHÔNG HOẠT ĐỘNG ỔN ĐỊNH
+                else{
+                    order.setDeliveryFee(amount);
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+        return orderRepository.save(order);
+    }
+
     // SUBTOTAL CỦA HÓA DƠN
     // LẤY TỔNG TIỀN THEO HÓA DƠN CHI TIẾT (ĐÃ ẤP DỤNG EVENT)
     public double get_price_of_order_detail_at_that_time(OrderDetail s) {
@@ -916,7 +953,6 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return NumberUtil.roundDouble(subtotal);
     }
 
-
     public double get_fee_ship_of_order(Order order) {
         double subTotal = get_subtotal_of_order(order);
         log.info("[ORDER]SUB TOTAL OF ORDER: " + subTotal);
@@ -935,9 +971,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             }
             return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            log.error(e.getMessage());
-            throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
+            log.error("Hệ thống tính phí gặp trục trặc");
+            return order.getDeliveryFee();
+//            throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
         }
     }
 

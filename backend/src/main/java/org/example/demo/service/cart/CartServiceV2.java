@@ -239,8 +239,8 @@ public class CartServiceV2 {
                 cart.setTotal(fetchTotal(cart) - cart.getDiscount());
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
+            log.error("Hệ thống tính phí gặp trục trặc");
+            cart.setDeliveryFee(cart.getDeliveryFee());
         }
         cartRepository.save(cart);
     }

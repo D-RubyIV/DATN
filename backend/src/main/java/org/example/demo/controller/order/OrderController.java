@@ -3,6 +3,7 @@ package org.example.demo.controller.order;
 import jakarta.validation.Valid;
 import org.example.demo.controller.IControllerBasic;
 import org.example.demo.dto.history.request.HistoryRequestDTO;
+import org.example.demo.dto.order.core.request.CustomFeeOrderRequest;
 import org.example.demo.dto.order.core.request.OrderRequestDTO;
 import org.example.demo.dto.order.core.response.CountStatusOrder;
 import org.example.demo.dto.order.core.response.OrderOverviewResponseDTO;
@@ -208,5 +209,10 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     @PostMapping(value = "required-cancel-online-payment-order/{id}")
     public ResponseEntity<?> requiredCancelOnlinePaymentOrder(@PathVariable Integer id, @RequestBody HistoryRequestDTO requestDTO) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.required_cancel_online_payment_order(id, requestDTO)));
+    }
+
+    @PostMapping(value = "edit-custom-fee")
+    public ResponseEntity<?> editCustomFee(@RequestBody CustomFeeOrderRequest customFeeOrderRequest) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.apply_custom_fee(customFeeOrderRequest)));
     }
 }
