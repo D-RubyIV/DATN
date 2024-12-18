@@ -58,7 +58,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
     // context
     const { openNotification } = useToastContext()
     const { sleep, setIsLoadingComponent } = useLoadingContext()
-    const { removeTab } = useSellContext()
+    const { removeTab, tabs } = useSellContext()
     // func 
     const fetchSelectedOrder = async () => {
         setIsLoadingComponent(true)
@@ -125,7 +125,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
         fetchSelectedOrder().then(() => {
             console.log('Fetch SelectedOrder Done')
         })
-    }, [])
+    }, [tabs])
 
     const handleSubmitForm = async () => {
         console.log('PAYMENT')
