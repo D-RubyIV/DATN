@@ -52,13 +52,13 @@ const PaymentSummary = ({ selectObject, fetchData, data, unAllowUseVoucher = fal
     })
     const [isOpenEditFeeShip, setIsOpenEditFeeShip] = useState<boolean>(false)
     const { openNotification } = useToastContext()
-    const handleEditFeeShip = (value: number) => {
+    const handleEditFeeShip = async (value: number) => {
         console.log('FEE SHIP: ' + value)
         const data = {
             'orderId': selectObject.id,
             'amount': value
         }
-        instance.post('/orders/edit-custom-fee', data).then(function(response) {
+        await instance.post('/orders/edit-custom-fee', data).then(function(response) {
             console.log('Ok')
             if (response.status === 200) {
                 openNotification('Áp dụng thành công')
@@ -117,9 +117,10 @@ const PaymentSummary = ({ selectObject, fetchData, data, unAllowUseVoucher = fal
                     <Formik
                         initialValues={{ feeShip: 10000 }}
                         validationSchema={FeeShipSchema}
-                        onSubmit={(values) => {
-                            handleEditFeeShip(values.feeShip) // Gọi hàm với giá trị phí vận chuyển
+                        onSubmit={async (values) => {
+                            await handleEditFeeShip(values.feeShip) // Gọi hàm với giá trị phí vận chuyển
                             setIsOpenEditFeeShip(false) // Đóng dialog
+                            await fetchData()
                         }}
                     >
                         {({ errors, touched }) => (

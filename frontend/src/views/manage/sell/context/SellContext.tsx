@@ -3,6 +3,7 @@ import TabCard from '../component/card/TabCard'
 import instance from '@/axios/CustomAxios'
 import { changeOrderStatus } from '@/services/OrderService'
 import { EOrderStatusEnums, OrderHistoryResponseDTO } from '@/@types/order'
+import { useToastContext } from '@/context/ToastContext'
 
 type TabObject = {
     orderId: number,
@@ -34,6 +35,7 @@ const SellContext = createContext<AppContextType>({
 
 const SellProvider = ({ children }: { children: ReactNode }) => {
     const [tabs, setTabs] = useState<TabObject[]>([])
+    const { openNotification } = useToastContext()
     useEffect(() => {
         setTabs(getTabsFromLocalStorage())
     }, [])
@@ -66,15 +68,22 @@ const SellProvider = ({ children }: { children: ReactNode }) => {
             const data: OrderHistoryResponseDTO = {
                 id: orderId,
                 status: EOrderStatusEnums.CANCELED,
-                note: "Hủy tại quầy",
+                note: 'Hủy tại quầy'
             }
-            const result = await changeOrderStatus(orderId, data)
-            console.log("=======================")
-            console.log(result)
+            await instance.put(`/orders/status/change/${orderId}`, data).then(function(response) {
+                console.log(response)
+                if (response.status === 200) {
+                    savedIds = savedIds.filter((s: number) => s !== orderId)
+                    localStorage.setItem('orderIds', JSON.stringify(savedIds))
+                    setTabs(getTabsFromLocalStorage())
+                }
+            }).catch(function(error) {
+                if (error?.response?.data?.error === "Đơn hàng đã bị hủy trước đó") {
+                    removeTab(orderId)
+                    openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                }
+            })
 
-            savedIds = savedIds.filter((s: number) => s !== orderId)
-            localStorage.setItem('orderIds', JSON.stringify(savedIds))
-            setTabs(getTabsFromLocalStorage())
         }
     }
 

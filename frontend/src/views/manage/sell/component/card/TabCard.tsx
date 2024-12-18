@@ -155,8 +155,8 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
             }
             setIsLoadingComponent(false)
             setIsOpenConfirmOrder(false)
-
         }
+        await fetchSelectedOrder()
     }
     const handleCloseOverride = () => {
         console.log('Close')

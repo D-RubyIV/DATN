@@ -103,6 +103,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler({CustomExceptions.GHNException.class})
+    public ResponseEntity<?> handleGHNException(CustomExceptions.GHNException ex) {
+        CustomError error = new CustomError(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler({CustomExceptions.CustomThrowMessage.class})
+    public ResponseEntity<?> handleCustomThrowMessageException(CustomExceptions.CustomThrowMessage ex) {
+        CustomError error = new CustomError(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler({SQLIntegrityConstraintViolationException.class})
     public ResponseEntity<?> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex) {
         String fieldName = extractDuplicateFieldName(ex.getMessage());

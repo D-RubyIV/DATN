@@ -61,6 +61,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -691,7 +692,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 String a = String.valueOf(fee.get("data").get("total"));
                 System.out.println(a);
                 return CompletableFuture.completedFuture(fee);
-            } catch (Exception ex) {
+            }
+            catch (ConnectException ex){
+                throw new CustomExceptions.GHNException("NETWORK ERROR");
+            }
+            catch (Exception ex) {
                 log.error(ex.getMessage());
                 throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển. Vui lòng xem xét lại địa chỉ hợp lệ");
             }
@@ -889,7 +894,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = {CustomExceptions.GHNException.class, CustomExceptions.CustomThrowMessage.class})
     public Order apply_custom_fee(CustomFeeOrderRequest customFeeOrderRequest) {
         Integer orderId = customFeeOrderRequest.getOrderId();
         Double amount = customFeeOrderRequest.getAmount();
@@ -911,18 +916,26 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 if (feeObject != null) {
                     log.info("PHI KHÁC NULL");
                     String feeString = String.valueOf(feeObject.get("data").get("total"));
-                    throw new CustomExceptions.CustomBadRequest("Hệ thông tính phí vẫn hoạt động ổn định");
+                    reloadSubTotalOrder(order);
+                    throw new CustomExceptions.CustomThrowMessage("Hệ thông tính phí vẫn hoạt động ổn định");
                 }
                 // KHÔNG HOẠT ĐỘNG ỔN ĐỊNH
                 else{
                     order.setDeliveryFee(amount);
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (CustomExceptions.GHNException e) {
+            order.setDeliveryFee(amount);
+            log.error(e.getMessage());
+        }
+        catch (Exception e) {
             log.error(e.getMessage());
             throw e;
         }
-        return orderRepository.save(order);
+        Order orderSaved = orderRepository.save(order);
+        reloadSubTotalOrder(orderSaved);
+        return orderSaved;
     }
 
     // SUBTOTAL CỦA HÓA DƠN
@@ -1145,6 +1158,14 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             return orderRepository.save(order);
         }
         return order;
+    }
+
+    @Transactional
+    public Order unLinkVoucher(Integer id){
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
+        order.setVoucher(null);
+        order.setDiscountVoucherPercent(0.0);
+        return orderRepository.save(order);
     }
 
     public boolean isRequiredCancelOnlinePaymentOrder(Order order) {

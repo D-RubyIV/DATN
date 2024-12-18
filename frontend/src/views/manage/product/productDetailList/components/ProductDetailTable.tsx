@@ -242,13 +242,18 @@ const ProductDetailTable = () => {
                 accessorKey: 'color__name',
                 cell: (props: any) => {
                     const row = props.row.original
-                    return <span className=" block w-16 h-5 rounded-xl"
-                        style={{
-                            backgroundColor: row.color.name
-                        }} >{
-                        row.color.name
-                    }
-                    </span>
+                    return (
+                        <div className={'flex gap-2'}>
+                            <span className=" block w-6 h-6 rounded-full"
+                                  style={{
+                                      backgroundColor: row.color.name
+                                  }}>{
+
+                            }
+                            </span>
+                            {row.color.name}
+                        </div>
+                    )
                 },
             },
             {

@@ -215,4 +215,9 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     public ResponseEntity<?> editCustomFee(@RequestBody CustomFeeOrderRequest customFeeOrderRequest) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.apply_custom_fee(customFeeOrderRequest)));
     }
+
+    @GetMapping(value = "unlink-voucher/{id}")
+    public ResponseEntity<?> unlinkVoucher(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.unLinkVoucher(id)));
+    }
 }

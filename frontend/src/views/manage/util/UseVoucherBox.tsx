@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react'
 import { Button, Input } from '@/components/ui'
-import { HiPaperAirplane, HiTicket } from 'react-icons/hi'
+import { HiOutlineHand, HiPaperAirplane, HiTicket } from 'react-icons/hi'
 import SellVocherModal from '@/views/manage/sell/component/dialog/SellVocherModal'
 import { OrderResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
@@ -30,6 +30,21 @@ const UseVoucherBox = ({ selectedOrder, fetchSelectedOrder }: {
             if (error?.response?.data?.error) {
                 console.log(error.response.data)
                 openNotification(error?.response?.data?.error, 'Sử dụng phiếu giảm giá', 'danger', 2000)
+            }
+        })
+    }
+
+    const handleUnlinkVoucher = async () => {
+        instance.get(`/orders/unlink-voucher/${selectedOrder.id}`).then(function(response) {
+            console.log(response)
+            fetchSelectedOrder()
+            if (response.status === 200) {
+                openNotification('Gỡ bỏ voucher thành công', 'Thông báo', 'success', 2000)
+            }
+        }).catch(function(error) {
+            if (error?.response?.data?.error) {
+                console.log(error.response.data)
+                openNotification(error?.response?.data?.error, 'Thông báo', 'danger', 2000)
             }
         })
     }
@@ -78,11 +93,23 @@ const UseVoucherBox = ({ selectedOrder, fetchSelectedOrder }: {
                                 </div>
                                 <Button
                                     type={'button'}
-                                    className="!px-2  "
+                                    className="!px-2"
                                     icon={<HiTicket size={18} />}
                                     disabled={selectedOrder.status !== 'PENDING'}
                                     onClick={() => setIsOpenVoucherModal(true)}
                                 />
+                                {
+                                    selectedOrder?.voucherResponseDTO?.quantity <= 0 && (
+                                        <Button
+                                            type={'button'}
+                                            className="!px-2"
+                                            icon={<HiOutlineHand  size={18} />}
+                                            disabled={selectedOrder.status !== 'PENDING'}
+                                            onClick={() => handleUnlinkVoucher()}
+                                        />
+                                    )
+                                }
+
                             </Form>
                             <ErrorMessage
                                 name="codeVoucher"

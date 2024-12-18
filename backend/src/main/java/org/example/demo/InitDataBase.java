@@ -67,53 +67,5 @@ public class InitDataBase {
             account.setRoleId(roleRepository.findByCode("ROLE_ADMIN").get().getId());
             accountService.createAccount(account);
         }
-        if (accountRepository.findByUsername("user@gmail.com").isEmpty()){
-            AccountRequestDTO account = new AccountRequestDTO();
-            account.setUsername("user@gmail.com");
-            account.setPassword("123456");
-            account.setEnabled(true);
-            account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
-            accountService.createAccount(account);
-        }
-        if (accountRepository.findByUsername("phah04@gmail.com").isEmpty()){
-            AccountRequestDTO account = new AccountRequestDTO();
-            account.setUsername("phah04@gmail.com");
-            account.setPassword("123456");
-            account.setEnabled(true);
-            account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
-            accountService.createAccount(account);
-        }
-
-        if (accountRepository.findByUsername("haanhhy01f@gmail.com").isEmpty()){
-            AccountRequestDTO account = new AccountRequestDTO();
-            account.setUsername("haanhhy01f@gmail.com");
-            account.setPassword("123456");
-            account.setEnabled(true);
-            account.setRoleId(roleRepository.findByCode("ROLE_USER").get().getId());
-            accountService.createAccount(account);
-        }
-        if (accountRepository.findByUsername("staff@gmail.com").isEmpty()){
-            AccountRequestDTO account = new AccountRequestDTO();
-            account.setUsername("staff@gmail.com");
-            account.setPassword("123456");
-            account.setEnabled(true);
-            account.setRoleId(roleRepository.findByCode("ROLE_STAFF").get().getId());
-            accountService.createAccount(account);
-        }
-        if(addressRepository.findAddressByPhone("0833487637").isEmpty()){
-            Address address = new Address();
-            address.setCustomer(customerRepository.findByEmail("phah04@gmail.com").orElse(null));
-            address.setName("Phạm Hà Anh");
-            address.setWard("Xã Tống Phan");
-            address.setWardId("220713");
-            address.setDistrict("Huyện Phù Cừ");
-            address.setDistrictId("2194");
-            address.setPhone("0833487637");
-            address.setProvinceId("268");
-            address.setProvince("Tỉnh Hưng Yên");
-            address.setDetail("Thôn 5");
-            address.setDefaultAddress(true);
-            addressRepository.save(address);
-        }
     }
 }

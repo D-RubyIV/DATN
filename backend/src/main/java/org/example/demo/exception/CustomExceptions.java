@@ -26,4 +26,18 @@ public class CustomExceptions {
         }
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public static class CustomThrowMessage extends RuntimeException {
+        public CustomThrowMessage(String message) {
+            super(message);
+        }
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public static class GHNException extends RuntimeException {
+        public GHNException(String message) {
+            super(message);
+        }
+    }
+
 }

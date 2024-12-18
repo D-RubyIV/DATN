@@ -22,9 +22,9 @@ export const queryClient = new QueryClient({
 })
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     // <React.StrictMode>
-    <OrderProvider>
-        <AuthProvider>
-            <ToastProvider>
+    <ToastProvider>
+        <OrderProvider>
+            <AuthProvider>
                 <WsProvider>
                     <LoadingProvider>
                         <QueryClientProvider client={queryClient}>
@@ -36,8 +36,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                         </QueryClientProvider>
                     </LoadingProvider>
                 </WsProvider>
-            </ToastProvider>
-        </AuthProvider>
-    </OrderProvider>
+            </AuthProvider>
+        </OrderProvider>
+    </ToastProvider>
     // </React.StrictMode>
 )
