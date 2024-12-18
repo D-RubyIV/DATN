@@ -54,11 +54,11 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
         <Tab label="Chính sách bảo hành" />
       </Tabs>
 
-      <TabPanel value={tabIndex} index={0}>
-        {productDescription}
-      </TabPanel>
-      <TabPanel value={tabIndex} index={1}>
-        {reviews}
+        <TabPanel value={tabIndex} index={0}>
+            <div dangerouslySetInnerHTML={{ __html: productDescription }} />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={1}>
+            {reviews}
       </TabPanel>
       <TabPanel value={tabIndex} index={2}>
         {returnPolicy}
