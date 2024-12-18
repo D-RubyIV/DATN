@@ -10,6 +10,7 @@ services:
       MSSQL_SA_PASSWORD: ComplexP@ssw0rd
       MSSQL_DATABASE: final
       ACCEPT_EULA: Y
+      TZ: Asia/Ho_Chi_Minh
     restart: always
     command: >
       /bin/bash -c "
@@ -61,7 +62,7 @@ services:
     ports:
       - 5173:5173
     environment:
-      - TZ=Asia/Ho_Chi_Minh
+      TZ: Asia/Ho_Chi_Minh
     depends_on:
       - server
     networks:
