@@ -392,10 +392,10 @@ const ProductDetail = () => {
                                     className="w-6 h-6 lazyloaded"
                                     data-src="//theme.hstatic.net/200000690725/1001078549/14/product_info1_desc1_img.png?v=550"
                                     src="//theme.hstatic.net/200000690725/1001078549/14/product_info1_desc1_img.png?v=550"
-                                    alt="Miễn phí giao hàng cho đơn hàng từ 500K"
+                                    alt="Miễn phí giao hàng cho đơn hàng từ 1 triệu"
                                 />
                                 <div className="text-gray-800 text-sm flex-1">
-                                    Miễn phí giao hàng cho đơn hàng từ 500K
+                                    Miễn phí giao hàng cho đơn hàng từ 1 triệu
                                 </div>
                             </div>
 
@@ -433,7 +433,7 @@ const ProductDetail = () => {
                                     alt="ĐỔI SẢN PHẨM DỄ DÀNG (Trong vòng 7 ngày khi còn nguyên tem mác)"
                                 />
                                 <div className="text-gray-800 text-sm flex-1">
-                                    ĐỔI SẢN PHẨM DỄ DÀNG (Trong vòng 7 ngày khi còn nguyên tem mác)
+                                    Sản phẩm uy tín, chất lượng, bán hàng bằng trái tim
                                 </div>
                             </div>
 
@@ -457,7 +457,7 @@ const ProductDetail = () => {
                                     alt="Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store CANTH"
                                 />
                                 <div className="text-gray-800 text-sm flex-1 max-w-full">
-                                    Hỗ trợ bảo hành, đổi sản phẩm tại tất cả store CANTH
+                                    Hỗ trợ bảo hành, đổi sản phẩm tại tất cả tại store CANTH
                                 </div>
                             </div>
                         </div>
