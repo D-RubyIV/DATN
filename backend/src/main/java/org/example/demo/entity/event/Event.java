@@ -38,7 +38,7 @@ public class Event extends BaseEntity {
     private LocalDateTime endDate;
 
     @Column(name = "quantity_discount")
-    private Integer quantityDiscount;
+    private Integer quantityDiscount = 0;
 
     @Column(name = "status", columnDefinition = "NVARCHAR(255)")
     private String status;

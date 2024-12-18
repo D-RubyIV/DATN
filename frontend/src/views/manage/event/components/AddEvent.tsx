@@ -65,7 +65,7 @@ const AddEvent = () => {
             }),
         discountPercent: Yup.number()
             .required('Giá trị giảm là bắt buộc')
-            .min(0, 'Giá trị giảm phải lớn hơn hoặc bằng 0')
+            .min(1, 'Giá trị giảm phải lớn hơn hoặc bằng 1')
             .max(100, 'Giá trị giảm không được vượt quá 100'),
         startDate: Yup.string().required('Ngày bắt đầu là bắt buộc'),
         endDate: Yup.string().required('Ngày kết thúc là bắt buộc')

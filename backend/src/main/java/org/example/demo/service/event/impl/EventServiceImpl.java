@@ -5,6 +5,7 @@ import org.example.demo.dto.event.EventDTO;
 import org.example.demo.dto.event.EventListDTO;
 import org.example.demo.entity.event.Event;
 import org.example.demo.entity.product.properties.Product;
+import org.example.demo.exception.CustomExceptions;
 import org.example.demo.mapper.event.EventMapper;
 import org.example.demo.repository.event.EventRepository;
 import org.example.demo.repository.product.properties.ProductRepository;
@@ -78,6 +79,9 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EventDTO saveEvent(EventDTO eventDTO) throws BadRequestException {
+        if(eventDTO.getProductDTOS().isEmpty()){
+            throw new  CustomExceptions.CustomBadRequest("Cần chọn ít nhất 1 sản phẩm");
+        }
         eventValidator.validateName(eventDTO.getName());
         // Tạo mã giảm giá nếu không có
         if (eventDTO.getDiscountCode() == null || eventDTO.getDiscountCode().isEmpty()) {

@@ -278,24 +278,24 @@ const UpdateEvent = () => {
                                             <Field name="startDate">
                                                 {() => {
                                                     if (!updateEvent?.startDate) {
-                                                        return null;  // Or any fallback UI if startDate is not available
+                                                        return <div>Please provide a valid date</div>;
                                                     }
 
-                                                    console.log('START DATE: ', updateEvent?.startDate);
-                                                    const aa = '14:49 03-12-2024';
                                                     const bb = updateEvent?.startDate;
-                                                    console.log(aa === bb);
+                                                    const validDate = dayjs(bb, "HH:mm DD-MM-YYYY", true);
+                                                    if (!validDate.isValid()) {
+                                                        console.error('Invalid date format');
+                                                        return <div>Please provide a valid date</div>;
+                                                    }
 
-                                                    // If startDate is a Date or valid string, you can use dayjs without format:
-                                                    // Parse directly without calling toString() if it's a string in the correct format:
-                                                    const convertedDate = dayjs(bb, "HH:mm DD-MM-YYYY").toDate();
+                                                    const convertedDate = validDate.toDate();
 
                                                     return (
                                                         <DateTimepicker
                                                             inputFormat="DD/MM/YYYY HH:mm"
                                                             defaultValue={convertedDate}
                                                             onChange={(el) => {
-                                                                setFieldValue('startDate', dayjs(el).format('HH:mm DD-MM-YYYY'))
+                                                                setFieldValue('startDate', dayjs(el).format('HH:mm DD-MM-YYYY'));
                                                             }}
                                                         />
                                                     );
@@ -312,24 +312,24 @@ const UpdateEvent = () => {
                                             <Field name="endDate">
                                                 {() => {
                                                     if (!updateEvent?.endDate) {
-                                                        return null;  // Or any fallback UI if startDate is not available
+                                                        return <div>Please provide a valid date</div>;
                                                     }
 
-                                                    console.log('END DATE: ', updateEvent?.endDate);
-                                                    const aa = '14:49 03-12-2024';
                                                     const bb = updateEvent?.endDate;
-                                                    console.log(aa === bb);
+                                                    const validDate = dayjs(bb, "HH:mm DD-MM-YYYY", true);
+                                                    if (!validDate.isValid()) {
+                                                        console.error('Invalid date format');
+                                                        return <div>Please provide a valid date</div>;
+                                                    }
 
-                                                    // If startDate is a Date or valid string, you can use dayjs without format:
-                                                    // Parse directly without calling toString() if it's a string in the correct format:
-                                                    const convertedDate = dayjs(bb, "HH:mm DD-MM-YYYY").toDate();
+                                                    const convertedDate = validDate.toDate();
 
                                                     return (
                                                         <DateTimepicker
                                                             inputFormat="DD/MM/YYYY HH:mm"
                                                             defaultValue={convertedDate}
                                                             onChange={(el) => {
-                                                                setFieldValue('endDate', dayjs(el).format('HH:mm DD-MM-YYYY'))
+                                                                setFieldValue('endDate', dayjs(el).format('HH:mm DD-MM-YYYY'));
                                                             }}
                                                         />
                                                     );

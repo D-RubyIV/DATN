@@ -48,7 +48,6 @@ const SalesByCategories = () => {
             'Chờ xác nhận',
             'Chờ thanh toán',
             'Chờ vận chuyển',
-            'Đang vận chuyển',
             'Đã hoàn thành',
             'Đã hủy hàng',
         ],
