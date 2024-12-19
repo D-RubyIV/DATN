@@ -277,97 +277,20 @@ const UpdateEvent = () => {
                                         >
                                             <Field name="startDate">
                                                 {() => {
-                                                    if (!updateEvent?.startDate) {
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const bb = updateEvent?.startDate;
-                                                    const validDate = dayjs(bb, "HH:mm DD-MM-YYYY", true);
-                                                    if (!validDate.isValid()) {
-                                                        console.error('Invalid date format');
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const convertedDate = validDate.toDate();
-
                                                     return (
-                                                        <DateTimepicker
-                                                            inputFormat="DD/MM/YYYY HH:mm"
-                                                            defaultValue={convertedDate}
-                                                            onChange={(el) => {
-                                                                setFieldValue('startDate', dayjs(el).format('HH:mm DD-MM-YYYY'));
-                                                            }}
-                                                        />
+                                                        <div>
+                                                            <DateTimepicker
+                                                                inputFormat="DD/MM/YYYY HH:mm"
+                                                                placeholder={updateEvent?.startDate}
+                                                                onChange={(el) => {
+                                                                    setFieldValue('startDate', dayjs(el).format('HH:mm DD-MM-YYYY'));
+                                                                }}
+                                                            />
+                                                        </div>
                                                     );
                                                 }}
                                             </Field>
-                                        </FormItem>
-                                        <FormItem
-                                            asterisk
-                                            label="Ngày bắt đầu"
-                                            invalid={!!errors.startDate && touched.startDate}
-                                            errorMessage={errors.startDate}
-                                        >
-                                            <Field name="startDate">
-                                                {() => {
-                                                    if (!updateEvent?.startDate) {
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const bb = updateEvent?.startDate;
-                                                    const validDate = dayjs(bb, "HH:mm DD-MM-YYYY", true);
-                                                    if (!validDate.isValid()) {
-                                                        console.error('Invalid date format');
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const convertedDate = validDate.toDate();
-
-                                                    return (
-                                                        <DateTimepicker
-                                                            inputFormat="DD/MM/YYYY HH:mm"
-                                                            defaultValue={convertedDate}
-                                                            onChange={(el) => {
-                                                                setFieldValue('startDate', dayjs(el).format('HH:mm DD-MM-YYYY'));
-                                                            }}
-                                                        />
-                                                    );
-                                                }}
-                                            </Field>
-                                        </FormItem>
-
-                                        <FormItem
-                                            asterisk
-                                            label="Ngày bắt đầu"
-                                            invalid={!!errors.endDate && touched.endDate}
-                                            errorMessage={errors.endDate}
-                                        >
-                                            <Field name="endDate">
-                                                {() => {
-                                                    if (!updateEvent?.endDate) {
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const bb = updateEvent?.endDate;
-                                                    const validDate = dayjs(bb, "HH:mm DD-MM-YYYY", true);
-                                                    if (!validDate.isValid()) {
-                                                        console.error('Invalid date format');
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const convertedDate = validDate.toDate();
-
-                                                    return (
-                                                        <DateTimepicker
-                                                            inputFormat="DD/MM/YYYY HH:mm"
-                                                            defaultValue={convertedDate}
-                                                            onChange={(el) => {
-                                                                setFieldValue('endDate', dayjs(el).format('HH:mm DD-MM-YYYY'));
-                                                            }}
-                                                        />
-                                                    );
-                                                }}
-                                            </Field>
+                                            {/*<p>Thời trước cập nhật: {updateEvent?.startDate}</p>*/}
                                         </FormItem>
 
                                         <FormItem
@@ -378,30 +301,20 @@ const UpdateEvent = () => {
                                         >
                                             <Field name="endDate">
                                                 {() => {
-                                                    if (!updateEvent?.endDate) {
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const bb = updateEvent?.endDate;
-                                                    const validDate = dayjs(bb, "HH:mm DD-MM-YYYY", true);
-                                                    if (!validDate.isValid()) {
-                                                        console.error('Invalid date format');
-                                                        return <div>Please provide a valid date</div>;
-                                                    }
-
-                                                    const convertedDate = validDate.toDate();
-
                                                     return (
-                                                        <DateTimepicker
-                                                            inputFormat="DD/MM/YYYY HH:mm"
-                                                            defaultValue={convertedDate}
-                                                            onChange={(el) => {
-                                                                setFieldValue('endDate', dayjs(el).format('HH:mm DD-MM-YYYY'));
-                                                            }}
-                                                        />
-                                                    );
+                                                        <div>
+                                                            <DateTimepicker
+                                                                inputFormat="DD/MM/YYYY HH:mm"
+                                                                placeholder={updateEvent?.endDate}
+                                                                onChange={(el) => {
+                                                                    setFieldValue('endDate', dayjs(el).format('HH:mm DD-MM-YYYY'))
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    )
                                                 }}
                                             </Field>
+                                            {/*<p>Thời trước cập nhật: {updateEvent?.endDate}</p>*/}
                                         </FormItem>
 
 
