@@ -22,11 +22,6 @@ export default function TabLayout() {
               tabBarLabel: 'Explore',
               tabBarIcon: ({ color }) => <Ionicons name="search" size={24} color={color} />
             }} />
-          <Tabs.Screen name='cart'
-            options={{
-              tabBarLabel: 'Cart',
-              tabBarIcon: ({ color }) => <Ionicons name="cart" size={24} color={color} />
-            }} />
           <Tabs.Screen name='product'
             options={{
               tabBarLabel: 'Product',

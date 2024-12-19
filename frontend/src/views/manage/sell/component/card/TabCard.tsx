@@ -21,6 +21,7 @@ import { ConfirmDialog } from '@/components/shared'
 import { useOrderContext } from '@/views/manage/order/component/context/OrderContext'
 import History from '@/views/manage/order/component/puzzle/History'
 import StatusOrderFormat from '@/views/util/StatusOrderFormat'
+import { useWSContext } from '@/context/WsContext'
 
 
 const TabCard = ({ idOrder }: { idOrder: number }) => {
@@ -176,6 +177,11 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
 
     const [isOpenHistory, setIsOpenHistory] = useState<boolean>(false);
 
+    const {signalReloadTableProduct} = useWSContext();
+
+    useEffect(() => {
+        fetchSelectedOrder()
+    }, [signalReloadTableProduct])
     return (
         <Fragment>
 
