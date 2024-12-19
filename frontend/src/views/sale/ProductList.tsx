@@ -209,7 +209,7 @@ const ProductList = () => {
                     </div>
 
                     <div className={'py-4'}>
-                        <div className={'text-gray-800 py-2 font-semibold text-[16px]'}>
+                        <div className={'text-gray-800 py-2 font-semibold text-[18px]'}>
                             <p>Danh mục</p>
                         </div>
                         {/* <div className={'flex flex-col'}>
@@ -225,24 +225,24 @@ const ProductList = () => {
                     </div>
 
                     {/* Lọc theo Sản phẩm mới và Sản phẩm đang sale */}
-                    <div className={'py-4'}>
-                        <div className={'text-gray-800 py-2 font-semibold text-[16px]'}>
-                            <p>Loại sản phẩm</p>
-                        </div>
-                        <div className={'flex flex-col'}>
-                            <button
-                                className={`hover:bg-gray-200 p-2 text-left ${isNewProductSelected ? 'bg-gray-300' : ''}`}
-                                onClick={() => handleFilterNewProducts()}>
-                                <p className="font-bold"> Sản phẩm mới</p>
-                            </button>
-                            <button
-                                className={`hover:bg-gray-200 p-2 text-left ${isOnSaleSelected ? 'bg-gray-300' : ''}`}
-                                onClick={() => handleFilterOnSale()}>
-                                <p className="font-bold"> Sản phẩm đang sale</p>
+                    {/*<div className={'py-4'}>*/}
+                    {/*    <div className={'text-gray-800 py-2 font-semibold text-[16px]'}>*/}
+                    {/*        <p>Loại sản phẩm</p>*/}
+                    {/*    </div>*/}
+                    {/*    <div className={'flex flex-col'}>*/}
+                    {/*        <button*/}
+                    {/*            className={`hover:bg-gray-200 p-2 text-left ${isNewProductSelected ? 'bg-gray-300' : ''}`}*/}
+                    {/*            onClick={() => handleFilterNewProducts()}>*/}
+                    {/*            <p className="font-bold"> Sản phẩm mới</p>*/}
+                    {/*        </button>*/}
+                    {/*        <button*/}
+                    {/*            className={`hover:bg-gray-200 p-2 text-left ${isOnSaleSelected ? 'bg-gray-300' : ''}`}*/}
+                    {/*            onClick={() => handleFilterOnSale()}>*/}
+                    {/*            <p className="font-bold"> Sản phẩm đang sale</p>*/}
 
-                            </button>
-                        </div>
-                    </div>
+                    {/*        </button>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
 
 
                     <div className={'pb-4'}>

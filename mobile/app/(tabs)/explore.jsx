@@ -118,7 +118,10 @@ export default function Explore() {
         contentContainerStyle={styles.scrollViewContent}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Hóa đơn #{selectedOrderCode}</Text>
+          <Text style={styles.title}>Hóa đơn #{selectedOrderCode} - 
+            {" "}
+            <Text style={{color: "red"}}>{selectedOrder?.total.toLocaleString('vi')} vnđ</Text>
+          </Text>
         </View>
 
         <View style={styles.orderDetailsContainer}>

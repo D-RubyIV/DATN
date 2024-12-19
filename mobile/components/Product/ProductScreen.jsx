@@ -12,9 +12,10 @@ import { Slider } from '@miblanchard/react-native-slider';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {API_BASE_URL} from "../../constants/API"
 
 const { width } = Dimensions.get('window');
-const baseURL = 'http://192.168.1.150:8080/api/v1';
+
 
 // con gi nưa ko bkhum
 
@@ -42,7 +43,7 @@ export default function ProductScreen() {
 
   const initDataProduct = async () => {
     try {
-      const response = await axios.get(`${baseURL}/productDetails/abc`, {
+      const response = await axios.get(`${API_BASE_URL}/productDetails/abc`, {
         params: {
           colorCodes: param.colorCodes,
           sizeCodes: param.sizeCodes,
@@ -61,7 +62,7 @@ export default function ProductScreen() {
 
   const initListColor = async () => {
     try {
-      const response = await axios.get(`${baseURL}/color/color-list`);
+      const response = await axios.get(`${API_BASE_URL}/color/color-list`);
       if (response.data.data && Array.isArray(response.data.data)) {
         setListColor(response.data.data);
       }
@@ -72,7 +73,7 @@ export default function ProductScreen() {
 
   const initListSize = async () => {
     try {
-      const response = await axios.get(`${baseURL}/size/size-list`);
+      const response = await axios.get(`${API_BASE_URL}/size/size-list`);
       if (response.data.data && Array.isArray(response.data.data)) {
         setListSize(response.data.data);
       }

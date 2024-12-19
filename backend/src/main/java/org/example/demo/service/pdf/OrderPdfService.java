@@ -121,7 +121,7 @@ public class OrderPdfService {
             PDImageXObject qrCodeImage = LosslessFactory.createFromImage(document, bufferedImageQR);
 
 
-            myTextClass.addSingleLineText("CADTH", 25, pageHeight - 70, font, 40, Color.BLACK);
+            myTextClass.addSingleLineText("CANTH", 25, pageHeight - 70, font, 40, Color.BLACK);
             contentStream.drawImage(qrCodeImage, pageWidth - 100, pageHeight - 130, 100, 100);
             //
             myTextClass.addSingleLineText("Email: canth@gmail.com", 25, pageHeight - 95, font, 11, Color.BLACK);
@@ -289,8 +289,12 @@ public class OrderPdfService {
 
             Color bottomRectColor = new Color(122, 122, 122);
             BufferedImage bufferedImageQR = QRUtil.generateQRCodeWithoutBorder(orderCode, 100, 100);
-            PDImageXObject headImage = PDImageXObject.createFromFile("src/main/resources/image/ghn.png", document);
+//            PDImageXObject headImage = PDImageXObject.createFromFile("src/main/resources/image/ghn.png", document);
             PDImageXObject qrCodeImage = LosslessFactory.createFromImage(document, bufferedImageQR);
+
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("image/ghn.png");
+            PDImageXObject headImage = PDImageXObject.createFromByteArray(document, inputStream.readAllBytes(), "ghn");
+
 
 
             myTextClass.addSingleLineText("CADTH", 25, pageHeight - 70, font, 40, Color.BLACK);

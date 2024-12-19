@@ -1,6 +1,13 @@
 FROM node:18-alpine
 
 WORKDIR /app
+
+# Cài đặt tzdata để hỗ trợ timezone
+RUN apk add --no-cache tzdata
+
+# Cấu hình timezone
+ENV TZ=Asia/Ho_Chi_Minh
+
 RUN npm install -g serve
 
 # Copy the build files
