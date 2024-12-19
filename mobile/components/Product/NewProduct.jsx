@@ -7,10 +7,11 @@ import {
     ScrollView,
     ActivityIndicator,
     StyleSheet,
-    Dimensions
+    Dimensions,
+    RefreshControl
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import {API_BASE_URL} from "../../constants/API"
+import { API_BASE_URL } from "../../constants/API"
 
 export default function NewProduct() {
     const [products, setProducts] = useState([]);
@@ -19,6 +20,7 @@ export default function NewProduct() {
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize] = useState(10);
     const [totalElement, setTotalElement] = useState(0);
+    const [refreshing, setRefreshing] = useState(false);
 
     const router = useRouter();
 
@@ -60,8 +62,17 @@ export default function NewProduct() {
         );
     }
 
+    const onRefresh = () => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000);
+    };
+
+
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            contentContainerStyle={styles.scrollViewContent}>
             <View style={styles.list}>
                 <View style={styles.row}>
                     {products.map((item) => (
