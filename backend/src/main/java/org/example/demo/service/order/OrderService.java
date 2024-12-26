@@ -147,7 +147,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             pageable = PageRequest.of(
                     pageable.getPageNumber(),
                     pageable.getPageSize(),
-                    Sort.by(Sort.Direction.DESC, "createdDate")
+                    Sort.by(Sort.Direction.ASC, "createdDate")
             );
         }
 
@@ -233,6 +233,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setStatus(newStatus);
         if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && order.getInStore()) {
             rollback_quantity_order(order);
+        }
+        if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP && !order.getInStore()){
+            minusProductDetailsQuantity(order);
         }
         return orderRepository.save(order);
     }
