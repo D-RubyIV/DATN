@@ -94,7 +94,9 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderIdAndProductDetailId(requestDTO.getOrderId(), requestDTO.getProductDetailId());
 
         double currentDiscountPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
-        Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(requestDTO.getOrderId(), requestDTO.getProductDetailId(), currentDiscountPercent);
+        double currentUnitPrice = get_current_product_detail_price(productDetail);
+
+        Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercentAndUnitPrice(requestDTO.getOrderId(), requestDTO.getProductDetailId(), currentDiscountPercent, currentUnitPrice);
 
         orderService.check_validate_non_cancel_order(orderFounded);
 
@@ -285,15 +287,15 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
     }
 
-    public Map<String, Boolean> hasChangeOfPrice(AllowOverrideOrderDetailRequestDTO orderDetailRequestDTO) {
+    public boolean hasChangeOfPrice(Integer productDetailId, Integer orderId) {
         boolean changeOfPrice = false;
         List<OrderDetailValueCompare> orderDetailValueCompareListInThePart = new ArrayList<>();
         // lấy product detail
-        Optional<ProductDetail> productDetail = productDetailRepository.findById(orderDetailRequestDTO.getProductDetailId());
+        Optional<ProductDetail> productDetail = productDetailRepository.findById(productDetailId);
         // lấy danh sách hóa đơm chi tiết dựa vào order id và product id
         List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderIdAndProductDetailId(
-                orderDetailRequestDTO.getOrderId(),
-                orderDetailRequestDTO.getProductDetailId()
+                orderId,
+                productDetailId
         );
         //
         double currentUnitPrice = get_current_product_detail_price(productDetail.get());
@@ -301,7 +303,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
         OrderDetailValueCompare orderDetailValueCompareCurrent = new OrderDetailValueCompare(currentUnitPrice, currentDiscountEvent);
 
-        Map<String, Boolean> map = new HashMap<String, Boolean>();
+
         for (OrderDetail orderDetail : orderDetailList) {
             double orderUnitPrice = orderDetail.getUnitPrice();
             double orderDiscountEvent = orderDetail.getAverageDiscountEventPercent();
@@ -311,8 +313,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         changeOfPrice = !orderDetailValueCompareListInThePart.contains(orderDetailValueCompareCurrent);
 
         log.info("HAS CHANGE OF PRICE: " + changeOfPrice);
-        map.put("hasChange", changeOfPrice);
-        return map;
+        return changeOfPrice;
     }
 
     public boolean checkHasChangeOfEvent(ProductDetail productDetail, List<Double> percentList) {

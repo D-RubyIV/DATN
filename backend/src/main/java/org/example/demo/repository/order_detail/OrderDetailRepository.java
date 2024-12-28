@@ -15,6 +15,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Intege
     Optional<OrderDetail> findByOrderIdAndProductDetailId(Integer idOrder, Integer idProductDetail);
     List<OrderDetail> findAllByOrderIdAndProductDetailId(Integer idOrder, Integer idProductDetail);
     Optional<OrderDetail> findByOrderIdAndProductDetailIdAndAverageDiscountEventPercent(Integer idOrder, Integer idProductDetail, double average);
+    Optional<OrderDetail> findByOrderIdAndProductDetailIdAndAverageDiscountEventPercentAndUnitPrice(Integer idOrder, Integer idProductDetail, double average, double unitPrice);
 
     @Query(
             value = "SELECT o from OrderDetail o left join fetch o.order ord where ord.id = :id"

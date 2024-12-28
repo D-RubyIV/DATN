@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RequestMapping(value = "order-details")
 @RestController
 public class OrderDetailController implements IControllerBasic<Integer, OrderDetailRequestDTO> {
@@ -76,6 +79,10 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
 
     @PostMapping(value = "allowOverride")
     public ResponseEntity<?> checkAllowOverride(@Valid @RequestBody AllowOverrideOrderDetailRequestDTO orderDetailRequestDTO) {
-        return ResponseEntity.ok(orderDetailService.hasChangeOfPrice(orderDetailRequestDTO));
+        Map<String, Boolean> map = new HashMap<String, Boolean>();
+        Integer productDetailId = orderDetailRequestDTO.getProductDetailId();
+        Integer orderId = orderDetailRequestDTO.getOrderId();
+        map.put("hasChange", orderDetailService.hasChangeOfPrice(productDetailId, orderId));
+        return ResponseEntity.ok(map);
     }
 }
