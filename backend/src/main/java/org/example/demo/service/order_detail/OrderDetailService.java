@@ -2,11 +2,11 @@ package org.example.demo.service.order_detail;
 
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
+import org.example.demo.dto.compare.OrderDetailValueCompare;
 import org.example.demo.dto.order.properties.request.AllowOverrideOrderDetailRequestDTO;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
 import org.example.demo.entity.order.core.Order;
 import org.example.demo.entity.order.enums.Status;
-import org.example.demo.entity.order.enums.Type;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.entity.product.core.ProductDetail;
 import org.example.demo.exception.CustomExceptions;
@@ -17,16 +17,14 @@ import org.example.demo.repository.product.core.ProductDetailRepository;
 import org.example.demo.service.IService;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.util.event.EventUtil;
+import org.example.demo.util.number.NumberUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -63,14 +61,14 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     public OrderDetail delete(Integer integer) {
         OrderDetail orderDetail = findById(integer);
         Order order = orderDetail.getOrder();
-        if(order.getStatus() != Status.PENDING){
+        if (order.getStatus() != Status.PENDING) {
             throw new CustomExceptions.CustomBadRequest("Hóa đơn này không còn ở trạng thái chờ xác nhận");
         }
-        if(orderService.isRequiredCancelOnlinePaymentOrder(order)){
+        if (orderService.isRequiredCancelOnlinePaymentOrder(order)) {
             throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
         }
         ProductDetail productDetail = orderDetail.getProductDetail();
-        if (orderDetail.getOrder().getStatus() != Status.CANCELED && order.getInStore()){
+        if (orderDetail.getOrder().getStatus() != Status.CANCELED && order.getInStore()) {
             productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
         }
         productDetailRepository.save(productDetail);
@@ -85,7 +83,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     public OrderDetail save(OrderDetailRequestDTO requestDTO) {
 
         int REQUIRED_QUANTITY = requestDTO.getQuantity();
-        if(REQUIRED_QUANTITY <= 0){
+        if (REQUIRED_QUANTITY <= 0) {
             throw new CustomExceptions.CustomBadRequest("Vui lòng nhập số lượng hợp lệ");
         }
         // tìm kiếm hóa đơn
@@ -111,10 +109,10 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             int cumulativeQuantity = REQUIRED_QUANTITY + oldOrderDetailQuantity;
             int ABS_RANGE_FROM_CUMULATIVE_AND_REQUIRED = Math.abs(REQUIRED_QUANTITY - cumulativeQuantity);
 
-            if(ORDER_FOUND.getStatus() != Status.PENDING){
+            if (ORDER_FOUND.getStatus() != Status.PENDING) {
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");
             }
-            if(orderService.isRequiredCancelOnlinePaymentOrder(ORDER_FOUND)){
+            if (orderService.isRequiredCancelOnlinePaymentOrder(ORDER_FOUND)) {
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
             }
 
@@ -131,7 +129,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
                     throw new CustomExceptions.CustomBadRequest("#ERIB23 - Không đủ số lượng đáp ứng");
                 }
             } else {
-                if (STORE_QUANTITY -cumulativeQuantity >= 0 ) {
+                if (STORE_QUANTITY - cumulativeQuantity >= 0) {
                     log.info("[HDTT] - ĐỦ ĐIỀU KIỆN");
                 } else {
                     log.error("[HDTT] - KHÔNG ĐỦ ĐIỀU KIỆN");
@@ -153,32 +151,35 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             OrderDetail newOrderDetail = new OrderDetail();
             // set trạng thái xóa cho hóa đơn
             newOrderDetail.setDeleted(false);
+
             // set số lượng
             newOrderDetail.setQuantity(REQUIRED_QUANTITY);
             // set gia trị event trung bình
             newOrderDetail.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(productDetail.getProduct().getValidEvents()));
             // set hóa đơn vào hóa đơn chi tiết
             Order order_found = orderService.findById(requestDTO.getOrderId());
-            if(order_found.getInStore()){
-                if(productDetail.getQuantity() <= 0){
+            if (order_found.getInStore()) {
+                if (productDetail.getQuantity() <= 0) {
                     log.error("[HDTQ] - 01 - KHÔNG ĐỦ ĐIỀU KIỆN");
                     throw new CustomExceptions.CustomBadRequest("#ERIB28 - Không đủ số lượng đáp ứng");
                 }
-                if(productDetail.getQuantity() - REQUIRED_QUANTITY < 0){
+                if (productDetail.getQuantity() - REQUIRED_QUANTITY < 0) {
                     throw new CustomExceptions.CustomBadRequest("#ERIB38 - Không đủ số lượng đáp ứng");
 
                 }
 
             }
-            if(order_found.getStatus() != Status.PENDING){
+            if (order_found.getStatus() != Status.PENDING) {
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi không ở trạng thái chờ xác nhận");
             }
-            if(orderService.isRequiredCancelOnlinePaymentOrder(order_found)){
+            if (orderService.isRequiredCancelOnlinePaymentOrder(order_found)) {
                 throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
             }
             newOrderDetail.setOrder(order_found);
             // set spct vào hóa đơn chi tiết
             newOrderDetail.setProductDetail(productDetail);
+            // set giá
+            newOrderDetail.setUnitPrice(get_current_product_detail_price(productDetail));
             // lưu lại hóa đơn chi tết
             OrderDetail response = orderDetailRepository.save(newOrderDetail);
             // cập nhật số lượng trong kho
@@ -202,10 +203,10 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         log.info("ĐÃ TÌM THẤY HÓA ĐƠN");
         // tìm hóa đơn
         Order order = orderDetail.getOrder();
-        if(order.getStatus() != Status.PENDING){
+        if (order.getStatus() != Status.PENDING) {
             throw new CustomExceptions.CustomBadRequest("Hóa đơn này không còn ở trạng thái chờ xác nhận");
         }
-        if(orderService.isRequiredCancelOnlinePaymentOrder(order)){
+        if (orderService.isRequiredCancelOnlinePaymentOrder(order)) {
             throw new CustomExceptions.CustomBadRequest("Không thể thêm sản phẩm mới khi đơn có yêu cầu hủy và hoàn trả");
         }
         orderService.check_validate_non_cancel_order(order);
@@ -235,7 +236,6 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
             orderDetailRepository.delete(orderDetail);
             entityManager.flush();
-
 
 
             // cập nhật lại giá trị
@@ -285,28 +285,33 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         }
     }
 
-    public Map<String, Boolean> checkAllowOverride(AllowOverrideOrderDetailRequestDTO orderDetailRequestDTO) {
+    public Map<String, Boolean> hasChangeOfPrice(AllowOverrideOrderDetailRequestDTO orderDetailRequestDTO) {
+        boolean changeOfPrice = false;
+        List<OrderDetailValueCompare> orderDetailValueCompareListInThePart = new ArrayList<>();
         // lấy product detail
         Optional<ProductDetail> productDetail = productDetailRepository.findById(orderDetailRequestDTO.getProductDetailId());
-        // lấy hóa đơn
-        Optional<Order> order = orderRepository.findById(orderDetailRequestDTO.getOrderId());
         // lấy danh sách hóa đơm chi tiết dựa vào order id và product id
         List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderIdAndProductDetailId(
                 orderDetailRequestDTO.getOrderId(),
                 orderDetailRequestDTO.getProductDetailId()
         );
-        // thu thập list % giảm giá
-        List<Double> listPercent = orderDetailList.stream().map(OrderDetail::getAverageDiscountEventPercent).toList();
+        //
+        double currentUnitPrice = get_current_product_detail_price(productDetail.get());
+        double currentDiscountEvent = EventUtil.getAveragePercentEvent(productDetail.get().getProduct().getValidEvents());
+
+        OrderDetailValueCompare orderDetailValueCompareCurrent = new OrderDetailValueCompare(currentUnitPrice, currentDiscountEvent);
 
         Map<String, Boolean> map = new HashMap<String, Boolean>();
-        boolean changeOfEvent = false;
-        // nếu ko có hóa đơn chi tiết cũ làm có giảm giá
-        System.out.println(listPercent.toString());
-        if (!listPercent.isEmpty()) {
-            changeOfEvent = checkHasChangeOfEvent(productDetail.get(), listPercent);
+        for (OrderDetail orderDetail : orderDetailList) {
+            double orderUnitPrice = orderDetail.getUnitPrice();
+            double orderDiscountEvent = orderDetail.getAverageDiscountEventPercent();
+            orderDetailValueCompareListInThePart.add(new OrderDetailValueCompare(orderUnitPrice, orderDiscountEvent));
         }
-        log.info("HAS CHANGE EVENT: " + changeOfEvent);
-        map.put("hasChange", changeOfEvent);
+
+        changeOfPrice = !orderDetailValueCompareListInThePart.contains(orderDetailValueCompareCurrent);
+
+        log.info("HAS CHANGE OF PRICE: " + changeOfPrice);
+        map.put("hasChange", changeOfPrice);
         return map;
     }
 
@@ -340,5 +345,11 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     public Page<OrderDetail> getPageOrderDetailByIdOrder(Integer id, Pageable pageable) {
         return orderDetailRepository.getPageOrderDetailWithPage(id, pageable);
 
+    }
+
+    public Double get_current_product_detail_price(ProductDetail productDetail) {
+        double productDetailPrice = productDetail.getPrice();
+        double averageEventPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
+        return NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
     }
 }

@@ -1,23 +1,18 @@
 package org.example.demo.controller.order_detail;
 
 import jakarta.validation.Valid;
-import org.apache.coyote.BadRequestException;
 import org.example.demo.controller.IControllerBasic;
 import org.example.demo.dto.order.properties.request.AllowOverrideOrderDetailRequestDTO;
 import org.example.demo.dto.order.properties.request.OrderDetailRequestDTO;
 import org.example.demo.dto.order.properties.response.OrderDetailResponseDTO;
 import org.example.demo.entity.order.properties.OrderDetail;
 import org.example.demo.mapper.order.properties.response.OrderDetailResponseMapper;
-import org.example.demo.repository.order.OrderProductDetailRepository;
-import org.example.demo.service.order.OrderService;
 import org.example.demo.service.order_detail.OrderDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping(value = "order-details")
@@ -81,6 +76,6 @@ public class OrderDetailController implements IControllerBasic<Integer, OrderDet
 
     @PostMapping(value = "allowOverride")
     public ResponseEntity<?> checkAllowOverride(@Valid @RequestBody AllowOverrideOrderDetailRequestDTO orderDetailRequestDTO) {
-        return ResponseEntity.ok(orderDetailService.checkAllowOverride(orderDetailRequestDTO));
+        return ResponseEntity.ok(orderDetailService.hasChangeOfPrice(orderDetailRequestDTO));
     }
 }

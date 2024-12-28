@@ -29,6 +29,9 @@ public class OrderDetail extends BaseEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @Column(name = "unitPrice")
+    private Double unitPrice;
+
     @Column(name = "deleted")
     private Boolean deleted;
 
