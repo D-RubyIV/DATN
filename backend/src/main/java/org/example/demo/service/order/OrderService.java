@@ -14,6 +14,7 @@ import org.example.demo.dto.order.other.RefundAndChangeStatusDTO;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOByCode;
 import org.example.demo.dto.order.other.UseOrderVoucherDTOById;
 import org.example.demo.dto.statistic.response.StatisticOverviewResponse;
+import org.example.demo.entity.BaseEntity;
 import org.example.demo.entity.cart.core.CartDetail;
 import org.example.demo.entity.cart.properties.Cart;
 import org.example.demo.entity.human.customer.Address;
@@ -623,9 +624,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderRepository.save(orderFound);
     }
 
-    private void useVoucher(Voucher voucherFound, Order orderFound) {
+    @Transactional
+    public void useVoucher(Voucher voucherFound, Order orderFound) {
         System.out.println(orderFound.getCode());
         System.out.println(voucherFound.getCode());
+        check_own_voucher(voucherFound);
 
         double subtotal_of_order = get_subtotal_of_order(orderFound);
         Integer t = voucherFound.getMinAmount();
@@ -1178,5 +1181,23 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             return lastHistory.getStatus() == Status.REQUESTED;
         }
         return false;
+    }
+    private void check_own_voucher(Voucher voucher){
+        Account account = AuthUtil.getAccount();
+        if(account != null){
+            if(account.getCustomer() != null){
+                List<Integer> idCustomerList = voucher.getCustomers().stream().map(BaseEntity::getId).toList();
+                Integer customerId = account.getCustomer().getId();
+                if(voucher.getTypeTicket() == org.example.demo.entity.voucher.enums.Type.Individual && !idCustomerList.contains(customerId)) {
+                    throw new CustomExceptions.CustomBadRequest("Voucher này không thuộc quyền sử dụng của bạn");
+                }
+                else{
+                    log.info("VOUCHER CHO PHÉP SỬ DỤNG");
+                }
+            }
+        }
+        else{
+            throw new CustomExceptions.CustomBadRequest("Cần đăng nhập để có thể sử dụng voucher");
+        }
     }
 }

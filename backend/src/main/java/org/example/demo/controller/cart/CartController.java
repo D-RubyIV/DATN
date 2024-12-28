@@ -214,6 +214,7 @@ public class CartController {
                 () -> new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng")
         );
         Voucher voucherFound = voucherRepository.findByCode(request.getVoucherCode()).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Khuyễn mãi không tồn tại"));
+        check_own_voucher(voucherFound);
         System.out.println(cartFound.getCode());
         System.out.println(voucherFound.getCode());
         Double total = cartServiceV2.fetchTotal(cartFound);
@@ -278,6 +279,25 @@ public class CartController {
             }
         }
         return ResponseEntity.ok("Ok");
+    }
+
+    private void check_own_voucher(Voucher voucher){
+        Account account = AuthUtil.getAccount();
+        if(account != null){
+            if(account.getCustomer() != null){
+                List<Integer> idCustomerList = voucher.getCustomers().stream().map(s -> s.getId()).toList();
+                Integer customerId = account.getCustomer().getId();
+                if(voucher.getTypeTicket() == org.example.demo.entity.voucher.enums.Type.Individual && !idCustomerList.contains(customerId)) {
+                    throw new CustomExceptions.CustomBadRequest("Voucher này không thuộc quyền sử dụng của bạn");
+                }
+                else{
+                    log.info("VOUCHER CHO PHÉP SỬ DỤNG");
+                }
+            }
+        }
+        else{
+            throw new CustomExceptions.CustomBadRequest("Cần đăng nhập để có thể sử dụng voucher");
+        }
     }
 }
 
