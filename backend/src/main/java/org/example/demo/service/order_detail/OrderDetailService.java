@@ -351,6 +351,10 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
     public Double get_current_product_detail_price(ProductDetail productDetail) {
         double productDetailPrice = productDetail.getPrice();
         double averageEventPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
-        return NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
+        double unitPrice = NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
+        log.info("productDetailPrice: " +  productDetailPrice);
+        log.info("averageEventPercent: " +  averageEventPercent);
+        log.info("UNIT PRICE: " +  unitPrice);
+        return unitPrice;
     }
 }

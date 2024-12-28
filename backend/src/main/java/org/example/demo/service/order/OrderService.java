@@ -941,17 +941,17 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         return orderSaved;
     }
 
-    // SUBTOTAL CỦA HÓA DƠN
-    // LẤY TỔNG TIỀN THEO HÓA DƠN CHI TIẾT (ĐÃ ẤP DỤNG EVENT)
-    public double get_price_of_order_detail_at_that_time(OrderDetail s) {
-        ProductDetail productDetail = s.getProductDetail();
-        // lấy giá product detail cho tính toán
-        double productDetailPrice = productDetail.getPrice();
-        // lấy ra phần trăm giảm giá của sự kiện lúc tạo hóa đơn chờ tại thời điểm đó
-        double averageEventPercent = s.getAverageDiscountEventPercent();
-        // tính giá trị của hóa đơn chi tiết này tại thời điểm đó
-        return NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
-    }
+//    // SUBTOTAL CỦA HÓA DƠN
+//    // LẤY TỔNG TIỀN THEO HÓA DƠN CHI TIẾT (ĐÃ ẤP DỤNG EVENT)
+//    public double get_price_of_order_detail_at_that_time(OrderDetail s) {
+//        ProductDetail productDetail = s.getProductDetail();
+//        // lấy giá product detail cho tính toán
+//        double productDetailPrice = productDetail.getPrice();
+//        // lấy ra phần trăm giảm giá của sự kiện lúc tạo hóa đơn chờ tại thời điểm đó
+//        double averageEventPercent = s.getAverageDiscountEventPercent();
+//        // tính giá trị của hóa đơn chi tiết này tại thời điểm đó
+//        return NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
+//    }
 
     // SUBTOTAL CỦA HÓA DƠN CHI TIẾT
     // LẤY TỔNG TIỀN THEO HÓA ĐƠN (SUBTOTAL) (CHƯA CÓ VOCHER)
@@ -962,7 +962,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // lặp tính tiền hóa đơn
         for (OrderDetail s : orderDetailList) {
             // lấy product detail cho việc tính toán
-            double price_of_this_order_detail = get_price_of_order_detail_at_that_time(s) * s.getQuantity();
+            double price_of_this_order_detail = s.getUnitPrice() * s.getQuantity();
             // cộng dồn giá trị vào total;
             subtotal += price_of_this_order_detail;
         }

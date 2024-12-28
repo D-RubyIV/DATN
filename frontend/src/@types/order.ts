@@ -172,6 +172,7 @@ export type OrderDetailResponseDTO = {
     name: string;
     code: string;
     quantity: number;
+    unitPrice: number;
     productDetailResponseDTO: OrderProductDetail;
     averageDiscountEventPercent: number
 };

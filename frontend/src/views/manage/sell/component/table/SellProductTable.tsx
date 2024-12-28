@@ -136,7 +136,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
             },
             {
                 accessorKey: 'price',
-                header: 'Giá Gốc',
+                header: 'Giá Hiện tại',
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
                     return (
@@ -168,13 +168,30 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 }
             },
             {
+                accessorKey: 'unitPrice',
+                header: 'Giá được tính',
+                cell: (props) => {
+                    const row = props.row.original as OrderDetailResponseDTO
+                    return (
+                        <div>
+                            <div>
+                                <PriceAmount
+                                    className={'text-red-600'}
+                                    amount={row.unitPrice}
+                                />
+                            </div>
+                        </div>
+                    )
+                }
+            },
+            {
                 // accessorKey: 'price',
                 header: 'Tổng',
                 cell: (props) => {
                     const row = props.row.original as OrderDetailResponseDTO
                     return <PriceAmount
                         className={'text-red-600'}
-                        amount={row.quantity * getFinalPriceInThePart(row)}
+                        amount={row.quantity * row.unitPrice}
                     />
                 }
             },
@@ -260,6 +277,11 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         const partPercent = item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent
         return nowPercent === partPercent
     }
+    const hasChangeUnitPrice= (item: OrderDetailResponseDTO) => {
+        const unitPrice = item.unitPrice
+        const partPercent = getFinalPriceInThePart(item)
+        return unitPrice === partPercent
+    }
 
     const getFinalPriceInThePart = (item: OrderDetailResponseDTO) => {
         const discountPercent = item.averageDiscountEventPercent > 0
@@ -321,8 +343,14 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                         </div>
                     </div>
                 </div>
-                <div className={'text-orange-700'}>
-                    {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+                <div className={'text-orange-700 flex flex-col'}>
+                    <p>
+                        {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+
+                    </p>
+                    <p>
+                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString("vi")}₫ - ${row.unitPrice}`}
+                    </p>
                 </div>
                 <div className={'text-orange-700'}>
                     {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng thêm`}
