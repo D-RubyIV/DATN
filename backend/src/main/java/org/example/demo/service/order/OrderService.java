@@ -148,7 +148,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             pageable = PageRequest.of(
                     pageable.getPageNumber(),
                     pageable.getPageSize(),
-                    Sort.by(Sort.Direction.ASC, "createdDate")
+                    Sort.by(Sort.Direction.DESC, "createdDate")
             );
         }
 

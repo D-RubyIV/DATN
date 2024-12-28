@@ -1,17 +1,17 @@
-import { useState, useEffect, useRef, ChangeEvent } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
+import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
 import DataTable from '@/components/shared/DataTable'
 import debounce from 'lodash/debounce'
-import type { ColumnDef, OnSortParam } from '@/components/shared/DataTable'
 import { Badge, DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
-import { StatusBill, EOrderStatusEnums, OrderTypeBill, EOrderTypeEnums } from '@/@types/order'
+import { EOrderStatusEnums, EOrderTypeEnums, OrderTypeBill, StatusBill } from '@/@types/order'
 import { Link } from 'react-router-dom'
 import { HiEye, HiOutlineSearch } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
-import { parse, formatDistanceToNow, format } from 'date-fns'
+import { format, formatDistanceToNow, parse } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import TypeOrderFormat from '@/views/util/TypeOrderFormat'
 import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
@@ -80,6 +80,7 @@ export const OrderTable = () => {
         createdTo: ''
     })
 
+
     const setFromDateParam = (p: string) => {
         setQueryParam(prevState => ({
             ...prevState,
@@ -109,6 +110,18 @@ export const OrderTable = () => {
     }
 
     const setStatusParam = (p: EOrderStatusEnums) => {
+        if (p === EOrderStatusEnums.PENDING){
+            setTableData((prevData) => ({
+                ...prevData,
+                ...{ sort: {order: "asc", key: "createdDate"} }
+            }))
+        }
+        else{
+            setTableData((prevData) => ({
+                ...prevData,
+                ...{ sort: {order: "desc", key: "createdDate"} }
+            }))
+        }
         setQueryParam(prevState => ({
             ...prevState,
             status: p
@@ -171,7 +184,11 @@ export const OrderTable = () => {
     }
 
 
-    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()])
+
+    useEffect(() => {
+        console.log("dateRange: ", dateRange)
+    }, [dateRange])
 
 
     const handleRangePickerChange = (date: [Date | null, Date | null]) => {
@@ -273,7 +290,7 @@ export const OrderTable = () => {
         },
         {
             header: 'Tg sửa',
-            accessorKey: 'createdDate',
+            accessorKey: 'updatedDate',
             cell: (props) => (
                 calculateDistanceTime(props.row.original.updatedDate)
             )
@@ -503,7 +520,7 @@ export const OrderTable = () => {
                             <TabNav key={index}
                                     className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
                                     value={item.value}>
-                                <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number)}
+                                <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number) || 0}
                                        maxCount={99} innerClass="bg-red-50 text-red-500">
                                     <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
                                         {item.label}
