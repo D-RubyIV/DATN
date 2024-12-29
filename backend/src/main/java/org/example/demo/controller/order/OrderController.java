@@ -220,4 +220,9 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
     public ResponseEntity<?> unlinkVoucher(@PathVariable Integer id) {
         return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.unLinkVoucher(id)));
     }
+
+    @PutMapping(value = "change-is-manually/{id}")
+    public ResponseEntity<?> changeIsManually(@PathVariable Integer id, @RequestParam boolean isManually){
+        return ResponseEntity.ok(orderResponseMapper.toDTO(orderService.changeIsFillFeeManually(id, isManually)));
+    }
 }

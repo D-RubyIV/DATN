@@ -8,4 +8,7 @@ const updateOrder = async (idOrder: number, data: any) => {
 const changeOrderStatus = async (idOrder: number, data: OrderHistoryResponseDTO) => {
     return instance.put(`/orders/status/change/${idOrder}`, data)
 }
-export { updateOrder, changeOrderStatus }
+const changeIsManually = async (idOrder: number, isManually: boolean) => {
+    return instance.put(`/orders/change-is-manually/${idOrder}?isManually=${isManually}`)
+}
+export { updateOrder, changeOrderStatus, changeIsManually }

@@ -227,7 +227,7 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                             onCancel={handleCloseOverride}
                             onConfirm={handleConfirmOverride}
                         >
-                            <p>Đợt giảm giá cho đơn này đã có sự thay đổi</p>
+                            <p>Vui lòng xác nhận</p>
                         </ConfirmDialog>
                         {
                             selectedOrder && <SellProductTable fetchData={fetchSelectedOrder}

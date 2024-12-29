@@ -1,10 +1,10 @@
 import { PaymentInfoProps, PaymentSummaryProps } from '@/@types/payment'
-import { Button, Card, Dialog, Input, Radio } from '@/components/ui'
+import { Button, Card, Dialog, Input, Notification, Radio, toast } from '@/components/ui'
 import { NumericFormat } from 'react-number-format'
 import { Fragment } from 'react/jsx-runtime'
 import { EPaymentMethod } from '@/views/manage/sell'
 import { SetStateAction, useEffect, useState } from 'react'
-import { updateOrder } from '@/services/OrderService'
+import { changeIsManually, updateOrder } from '@/services/OrderService'
 import { OrderResponseDTO } from '@/@types/order'
 import SuggestVoucher from '@/views/manage/util/SuggestVoucher'
 import UseVoucherBox from '@/views/manage/util/UseVoucherBox'
@@ -12,7 +12,7 @@ import { Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import instance from '@/axios/CustomAxios'
 import { useToastContext } from '@/context/ToastContext'
-import { HiOutlineCash } from 'react-icons/hi'
+import { HiOutlineCash, HiOutlineTruck } from 'react-icons/hi'
 
 const PaymentInfo = ({ setIsOpenVoucherModal, selectedOrder, data, fetchSelectedOrder }: {
     setIsOpenVoucherModal: React.Dispatch<SetStateAction<boolean>>,
@@ -82,6 +82,7 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
             'orderId': selectedOrder.id,
             'amount': value
         }
+        await changeIsManually(selectedOrder.id, true);
         await instance.post('/orders/edit-custom-fee', data).then(function(response) {
             console.log('Ok')
             if (response.status === 200) {
@@ -104,6 +105,51 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
         const response = await updateOrder(selectedOrder.id, { payment: val })
         console.log(response)
         await fetchSelectedOrder()
+    }
+
+    const closeNotification = (key: string | Promise<string>) => {
+        if (typeof key !== 'string') {
+            key.then((resolvedValue) => {
+                toast.remove(resolvedValue)
+            })
+        } else {
+            toast.remove(key)
+        }
+    }
+
+    const handleChangeAutoFillFeeShip = async () => {
+        const notificationAutoFillFeeShip  = toast.push(
+            <Notification title="Thông báo" duration={8000}>
+                <div>
+                    Xác nhận đổi phương thức tính phí tự động?
+                </div>
+                <div className="text-right mt-3">
+                    <Button
+                        size="sm"
+                        variant="solid"
+                        className="mr-2 bg-red-600"
+                        onClick={async () => {
+                            closeNotification(notificationAutoFillFeeShip as string | Promise<string>)
+                            const response = await changeIsManually(selectedOrder.id, false);
+                            if (response.status === 200) {
+                                console.log('response', response)
+                                await fetchSelectedOrder()
+                            }
+                        }}
+                    >
+                        Xác nhận
+                    </Button>
+                    <Button
+                        size="sm"
+                        onClick={() =>
+                            closeNotification(notificationAutoFillFeeShip as string | Promise<string>)
+                        }
+                    >
+                        Hủy
+                    </Button>
+                </div>
+            </Notification>
+        )
     }
 
 
@@ -138,6 +184,11 @@ const PaymentSummary = ({ selectedOrder, data, fetchSelectedOrder, setIsOpenVouc
                         </div>
                     )} value={data?.deliveryFee} prefix={' + '}>
                         <div hidden={selectedOrder.type === "INSTORE"}>
+                            <Button
+                                variant={'plain'}
+                                icon={<HiOutlineTruck  />}
+                                onClick={handleChangeAutoFillFeeShip}
+                            />
                             <Button
                                 variant={'plain'}
                                 icon={<HiOutlineCash  />}

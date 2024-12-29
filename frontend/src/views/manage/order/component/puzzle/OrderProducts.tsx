@@ -418,7 +418,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                 onCancel={handleCloseOverride}
                 onConfirm={handleConfirmOverride}
             >
-                <p>Đợt giảm giá cho đơn này đã có sự thay đổi</p>
+                <p>Vui lòng xác nhận</p>
             </ConfirmDialog>
             {/*  */}
             {isOpenProductModal && <SellProductModal fetchData={fetchData} setIsOpenProductModal={setIsOpenProductModal}

@@ -149,7 +149,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                                                 amount={row.productDetailResponseDTO.price}
                                             />
                                             <PriceAmount
-                                                className={'text-red-600'}
+                                                className={'text-red-400'}
                                                 amount={getFinalPriceInThePart(row)}
                                             />
                                         </div>
@@ -157,7 +157,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                                     (
                                         <div>
                                             <PriceAmount
-                                                className={'text-red-600'}
+                                                className={'text-red-400'}
                                                 amount={getFinalPriceInThePart(row)}
                                             />
                                         </div>

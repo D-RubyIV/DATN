@@ -235,7 +235,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && order.getInStore()) {
             rollback_quantity_order(order);
         }
-        if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP && !order.getInStore()){
+        if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP && !order.getInStore()) {
             minusProductDetailsQuantity(order);
         }
         return orderRepository.save(order);
@@ -698,11 +698,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 String a = String.valueOf(fee.get("data").get("total"));
                 System.out.println(a);
                 return CompletableFuture.completedFuture(fee);
-            }
-            catch (ConnectException ex){
+            } catch (ConnectException ex) {
                 throw new CustomExceptions.GHNException("NETWORK ERROR");
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 log.error(ex.getMessage());
                 throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển. Vui lòng xem xét lại địa chỉ hợp lệ");
             }
@@ -900,45 +898,18 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
     }
 
-    @Transactional(noRollbackFor = {CustomExceptions.GHNException.class, CustomExceptions.CustomThrowMessage.class})
+    @Transactional
     public Order apply_custom_fee(CustomFeeOrderRequest customFeeOrderRequest) {
         Integer orderId = customFeeOrderRequest.getOrderId();
         Double amount = customFeeOrderRequest.getAmount();
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đpn hàng"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng"));
         boolean isValidAddress = check_validate_address_for_online_order(order);
         log.info("VALID ADDRESS: " + isValidAddress);
         double subTotal = get_subtotal_of_order(order);
         if (subTotal >= subTotalAllowFreeShip) {
             throw new CustomExceptions.CustomBadRequest("Đơn hàng đang được miễn phí ship");
         }
-
-        try {
-            if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE && subTotal < subTotalAllowFreeShip) {
-                CompletableFuture<JsonNode> feeFuture = calculateFee(order.getId());
-                JsonNode feeObject = feeFuture.join();
-                log.info("HE THONG DANG TINH PHI");
-                System.out.println(feeObject);
-                // HOẠT ĐỘNG ỔN DỊNH
-                if (feeObject != null) {
-                    log.info("PHI KHÁC NULL");
-                    String feeString = String.valueOf(feeObject.get("data").get("total"));
-                    reloadSubTotalOrder(order);
-                    throw new CustomExceptions.CustomThrowMessage("Hệ thông tính phí vẫn hoạt động ổn định");
-                }
-                // KHÔNG HOẠT ĐỘNG ỔN ĐỊNH
-                else{
-                    order.setDeliveryFee(amount);
-                }
-            }
-        }
-        catch (CustomExceptions.GHNException e) {
-            order.setDeliveryFee(amount);
-            log.error(e.getMessage());
-        }
-        catch (Exception e) {
-            log.error(e.getMessage());
-            throw e;
-        }
+        order.setDeliveryFee(amount);
         Order orderSaved = orderRepository.save(order);
         reloadSubTotalOrder(orderSaved);
         return orderSaved;
@@ -977,22 +948,25 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         log.info("[ORDER]SUB TOTAL OF ORDER: " + subTotal);
         log.info("[ORDER]SUBTOTAL ALLOW FREE SHIP: " + subTotalAllowFreeShip);
         log.info("[ORDER]ALLOW FREE SHIP: " + (subTotal > subTotalAllowFreeShip));
-        try {
-            if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE && subTotal < subTotalAllowFreeShip) {
-                CompletableFuture<JsonNode> feeFuture = calculateFee(order.getId());
-                // Chờ kết quả trong trường hợp cần (có thể dùng timeout)
-                JsonNode feeObject = feeFuture.join();
-                log.info("TÍNH PHÍ XONG");
-                if (feeObject != null) {
-                    String feeString = String.valueOf(feeObject.get("data").get("total"));
-                    return DataUtils.safeToDouble(feeString);
-                }
-            }
-            return 0;
-        } catch (Exception e) {
-            log.error("Hệ thống tính phí gặp trục trặc");
+        if (order.getIsFeeManually()) {
             return order.getDeliveryFee();
-//            throw new CustomExceptions.CustomBadRequest("Lỗi tính phí vận chuyển");
+        } else {
+            try {
+                if (order.getDistrictId() != null && order.getProvinceId() != null && order.getType() == Type.ONLINE && subTotal < subTotalAllowFreeShip) {
+                    CompletableFuture<JsonNode> feeFuture = calculateFee(order.getId());
+                    // Chờ kết quả trong trường hợp cần (có thể dùng timeout)
+                    JsonNode feeObject = feeFuture.join();
+                    log.info("TÍNH PHÍ XONG");
+                    if (feeObject != null) {
+                        String feeString = String.valueOf(feeObject.get("data").get("total"));
+                        return DataUtils.safeToDouble(feeString);
+                    }
+                }
+                return 0;
+            } catch (Exception e) {
+                log.error("Hệ thống tính phí gặp trục trặc");
+                return order.getDeliveryFee();
+            }
         }
     }
 
@@ -1167,7 +1141,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Transactional
-    public Order unLinkVoucher(Integer id){
+    public Order unLinkVoucher(Integer id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         order.setVoucher(null);
         order.setDiscountVoucherPercent(0.0);
@@ -1182,22 +1156,29 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         }
         return false;
     }
-    private void check_own_voucher(Voucher voucher){
+
+    private void check_own_voucher(Voucher voucher) {
         Account account = AuthUtil.getAccount();
-        if(account != null){
-            if(account.getCustomer() != null){
+        if (account != null) {
+            if (account.getCustomer() != null) {
                 List<Integer> idCustomerList = voucher.getCustomers().stream().map(BaseEntity::getId).toList();
                 Integer customerId = account.getCustomer().getId();
-                if(voucher.getTypeTicket() == org.example.demo.entity.voucher.enums.Type.Individual && !idCustomerList.contains(customerId)) {
+                if (voucher.getTypeTicket() == org.example.demo.entity.voucher.enums.Type.Individual && !idCustomerList.contains(customerId)) {
                     throw new CustomExceptions.CustomBadRequest("Voucher này không thuộc quyền sử dụng của bạn");
-                }
-                else{
+                } else {
                     log.info("VOUCHER CHO PHÉP SỬ DỤNG");
                 }
             }
-        }
-        else{
+        } else {
             throw new CustomExceptions.CustomBadRequest("Cần đăng nhập để có thể sử dụng voucher");
         }
+    }
+
+    @Transactional
+    public Order changeIsFillFeeManually(Integer orderId, boolean isManually) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
+        order.setIsFeeManually(isManually);
+        reloadSubTotalOrder(order);
+        return orderRepository.save(order);
     }
 }

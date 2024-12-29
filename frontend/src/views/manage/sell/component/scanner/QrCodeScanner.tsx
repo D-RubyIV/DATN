@@ -152,7 +152,7 @@ const QrCodeScanner: React.FC<IProps> = ({ isScanning, setIsScanning, selectOrde
                     onCancel={handleCloseOverride}
                     onConfirm={handleConfirmOverride}
                 >
-                    <p>Đợt giảm giá cho đơn này đã có sự thay đổi</p>
+                    <p>Vui lòng xác nhận</p>
                 </ConfirmDialog>
             </div>
             <div style={{ textAlign: 'center', marginTop: '50px' }}>

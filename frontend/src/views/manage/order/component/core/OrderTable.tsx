@@ -184,7 +184,7 @@ export const OrderTable = () => {
     }
 
 
-    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()])
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
 
     useEffect(() => {
         console.log("dateRange: ", dateRange)

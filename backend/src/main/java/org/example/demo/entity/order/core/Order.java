@@ -89,6 +89,9 @@ public class Order extends BaseEntity {
     @Column(name = "sub_total")
     private Double subTotal;
 
+    @Column(name = "is_fee_manually")
+    private Boolean isFeeManually = Boolean.FALSE;
+
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private Type type;

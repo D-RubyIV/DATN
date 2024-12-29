@@ -506,8 +506,9 @@ const SellProductModal = ({ setIsOpenProductModal, selectOrder, fetchData }: {
             setIsOpenPlacement(false)
             setIsOpenProductModal(false)
             await sleep(500)
-            document.body.style.overflow = 'auto'
         }
+        document.body.style.overflow = 'auto'
+
 
     }
 
