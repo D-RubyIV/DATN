@@ -12,6 +12,7 @@ import { AppProvider } from '@/views/client/contexts/app.context'
 import OrderProvider from '@/views/manage/order/component/context/OrderContext'
 import WebSocketNotification from '@/views/ws/WebSocketNotification'
 import WsProvider from '@/context/WsContext'
+import SellProvider from '@/views/manage/sell/context/SellContext'
 
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -23,21 +24,23 @@ export const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     // <React.StrictMode>
     <ToastProvider>
-        <OrderProvider>
-            <AuthProvider>
-                <WsProvider>
-                    <LoadingProvider>
-                        <QueryClientProvider client={queryClient}>
-                            <AppProvider>
-                                <App />
-                                <WebSocketNotification></WebSocketNotification>
-                                <ReactQueryDevtools initialIsOpen={false} />
-                            </AppProvider>
-                        </QueryClientProvider>
-                    </LoadingProvider>
-                </WsProvider>
-            </AuthProvider>
-        </OrderProvider>
+        <SellProvider>
+            <OrderProvider>
+                <AuthProvider>
+                    <WsProvider>
+                        <LoadingProvider>
+                            <QueryClientProvider client={queryClient}>
+                                <AppProvider>
+                                    <App />
+                                    <WebSocketNotification></WebSocketNotification>
+                                    <ReactQueryDevtools initialIsOpen={false} />
+                                </AppProvider>
+                            </QueryClientProvider>
+                        </LoadingProvider>
+                    </WsProvider>
+                </AuthProvider>
+            </OrderProvider>
+        </SellProvider>
     </ToastProvider>
     // </React.StrictMode>
 )

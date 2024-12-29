@@ -8,13 +8,15 @@ import { Badge, DatePicker, Select } from '@/components/ui'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import { EOrderStatusEnums, EOrderTypeEnums, OrderTypeBill, StatusBill } from '@/@types/order'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { HiEye, HiOutlineSearch } from 'react-icons/hi'
 import instance from '@/axios/CustomAxios'
 import { format, formatDistanceToNow, parse } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import TypeOrderFormat from '@/views/util/TypeOrderFormat'
 import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
+import { useSellContext } from '@/views/manage/sell/context/SellContext'
+import dayjs from 'dayjs'
 
 type BadgeType =
     'countAll'
@@ -56,8 +58,10 @@ type IOveriewBill = {
 }
 
 export const OrderTable = () => {
+    const { addTabByOrderId } = useSellContext()
     const [data, setData] = useState([])
     const [loading, setLoading] = useState(false)
+
     const [countAnyStatus, setCountAnyStatus] = useState<ICountStatus>({
         countAll: 0,
         countPending: 0,
@@ -79,8 +83,7 @@ export const OrderTable = () => {
         createdFrom: '',
         createdTo: ''
     })
-
-
+    const navigate = useNavigate()
     const setFromDateParam = (p: string) => {
         setQueryParam(prevState => ({
             ...prevState,
@@ -110,16 +113,15 @@ export const OrderTable = () => {
     }
 
     const setStatusParam = (p: EOrderStatusEnums) => {
-        if (p === EOrderStatusEnums.PENDING){
+        if (p === EOrderStatusEnums.PENDING) {
             setTableData((prevData) => ({
                 ...prevData,
-                ...{ sort: {order: "asc", key: "createdDate"} }
+                ...{ sort: { order: 'asc', key: 'createdDate' } }
             }))
-        }
-        else{
+        } else {
             setTableData((prevData) => ({
                 ...prevData,
-                ...{ sort: {order: "desc", key: "createdDate"} }
+                ...{ sort: { order: 'desc', key: 'createdDate' } }
             }))
         }
         setQueryParam(prevState => ({
@@ -187,7 +189,7 @@ export const OrderTable = () => {
     const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
 
     useEffect(() => {
-        console.log("dateRange: ", dateRange)
+        console.log('dateRange: ', dateRange)
     }, [dateRange])
 
 
@@ -212,7 +214,9 @@ export const OrderTable = () => {
 
         setDateRange(date)
     }
-
+    useEffect(() => {
+        handleRangePickerChange([dayjs().startOf('day').toDate(), dayjs().endOf('day').toDate()])
+    }, [])
 
     const columns: ColumnDef<IOveriewBill>[] = [
         {
@@ -300,8 +304,8 @@ export const OrderTable = () => {
             accessorKey: 'status',
             cell: (props) => (
                 <Button
-                    size="xs"
                     block
+                    size="xs"
                     variant="solid"
                     className={`!bg-none !bg-transparent !bg-opacity-100 ${props.row.original.status === 'PENDING'
                         ? '!text-yellow-500'
@@ -354,28 +358,46 @@ export const OrderTable = () => {
             header: 'PT Nhận Hàng',
             accessorKey: 'type',
             cell: (props) => (
-                    <span><TypeOrderFormat status={props.row.original.type }></TypeOrderFormat></span>
+                <span><TypeOrderFormat status={props.row.original.type}></TypeOrderFormat></span>
             )
         },
         {
             header: 'Loại đơn',
             accessorKey: 'inStore',
             cell: (props) => (
-                <span><IsInStoreOrderFormat status={props.row.original.inStore }></IsInStoreOrderFormat></span>
+                <span><IsInStoreOrderFormat status={props.row.original.inStore}></IsInStoreOrderFormat></span>
             )
         },
         {
             header: 'Hành động',
             id: 'action',
             cell: (props) => (
-                <Button size="xs" className="w-full flex justify-start items-center" variant="plain">
-                    <Link to={`order-details/${props.row.original.id}`}><HiEye size={20} className="mr-3 text-2xl"
-                                                                               style={{ cursor: 'pointer' }} /></Link>
+                <Button
+                    size="xs"
+                    className="w-full flex justify-start items-center"
+                    variant="plain"
+                    onClick={() => onClickOrder(props.row.original)}
+                >
+                    <HiEye
+                        size={20}
+                        className="mr-3 text-2xl"
+                        style={{ cursor: 'pointer' }}
+                    />
                 </Button>
 
             )
         }
     ]
+
+    const onClickOrder = (orderObject: IOveriewBill) => {
+        if (orderObject.inStore) {
+            console.log("tai quay")
+            addTabByOrderId(orderObject.id)
+        } else {
+            console.log("online")
+            navigate(`order-details/${orderObject.id}`)
+        }
+    }
 
     const statusBills: StatusBill[] = [
         { label: 'TẤT CẢ', value: EOrderStatusEnums.EMPTY, badge: 'countAll' },
@@ -451,7 +473,14 @@ export const OrderTable = () => {
     ]
 
     const fetchCountAnyStatus = async () => {
-        instance.get(`orders/count-any-status?type=${queryParam.type}`).then(function(response) {
+        const param = {
+            type: queryParam.type,
+            createdFrom: queryParam.createdFrom,
+            createdTo: queryParam.createdTo
+        }
+        instance.get(`orders/count-any-status`, {
+            params: param
+        }).then(function(response) {
             if (response.data) {
                 setCountAnyStatus(response.data as ICountStatus)
             }
@@ -520,7 +549,8 @@ export const OrderTable = () => {
                             <TabNav key={index}
                                     className={`w-full rounded ${queryParam.status === item.value ? 'bg-opacity-80 bg-blue-100 text-indigo-600' : ''}`}
                                     value={item.value}>
-                                <Badge className="mr-5" content={(countAnyStatus[item.badge as BadgeType] as number) || 0}
+                                <Badge className="mr-5"
+                                       content={(countAnyStatus[item.badge as BadgeType] as number) || 0}
                                        maxCount={99} innerClass="bg-red-50 text-red-500">
                                     <button className="p-2 w-auto" onClick={() => setStatusParam(item.value)}>
                                         {item.label}

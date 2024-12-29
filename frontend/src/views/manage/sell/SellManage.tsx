@@ -5,7 +5,6 @@ import {Link} from "react-router-dom";
 
 const SellManage = () => {
     return (
-        <SellProvider>
             <div className="bg-white h-full">
                 <div className="p-5 rounded-md card h-full card-border">
                     <div className="lg:flex items-center justify-between mb-4">
@@ -40,7 +39,6 @@ const SellManage = () => {
                     </div>
                 </div>
             </div>
-        </SellProvider>
     );
 }
 

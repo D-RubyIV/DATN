@@ -652,8 +652,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         reloadSubTotalOrder(orderFound);
     }
 
-    public CountStatusOrder getCountStatusAnyOrder(String type) {
-        return orderRepository.getCountStatus(type);
+    public CountStatusOrder getCountStatusAnyOrder(String type, LocalDateTime createdFrom, LocalDateTime createdTo) {
+        return orderRepository.getCountStatus(type, createdFrom, createdTo);
     }
 
     public List<ICountOrderDetailInOrder> getCountOrderDetailInOrder(List<Integer> ids) {

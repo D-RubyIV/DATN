@@ -100,17 +100,25 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             Pageable pageable
     );
 
-    @Query(value = "SELECT new org.example.demo.dto.order.core.response.CountStatusOrder( " +
-                   "COUNT(o), " +  // Đếm tổng số đơn hàng
-                   "SUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END), " +  // Đếm số đơn hàng 'PENDING'
-                   "SUM(CASE WHEN o.status = 'TOSHIP' THEN 1 ELSE 0 END), " +   // Đếm số đơn hàng 'TOSHIP'
-                   "SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'TORECEIVE'
-                   "SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), " +// Đếm số đơn hàng 'DELIVERED'
-                   "SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END)) " + // Đếm số đơn hàng 'CANCELED'
-                   "FROM Order o WHERE o.deleted = false " +
-                   "AND (:type IS NULL OR LOWER(o.type) LIKE LOWER(CONCAT('%', :type, '%')))"
+    @Query(value = """
+            SELECT new org.example.demo.dto.order.core.response.CountStatusOrder(
+            COUNT(o),
+            SUM(CASE WHEN o.status = 'PENDING' THEN 1 ELSE 0 END), 
+            SUM(CASE WHEN o.status = 'TOSHIP' THEN 1 ELSE 0 END), 
+            SUM(CASE WHEN o.status = 'TORECEIVE' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END), 
+            SUM(CASE WHEN o.status = 'CANCELED' THEN 1 ELSE 0 END)) 
+            FROM Order o WHERE o.deleted = false
+            AND (:createdFrom IS NULL OR o.createdDate >= :createdFrom)
+            AND (:createdTo IS NULL OR o.createdDate <= :createdTo)
+            AND (:type IS NULL OR LOWER(o.type) LIKE LOWER(CONCAT('%', :type, '%')))
+            """
     )
-    CountStatusOrder getCountStatus(@Param("type") String type);
+    CountStatusOrder getCountStatus(
+            @Param("type") String type,
+            @Param("createdFrom") LocalDateTime createdFrom,
+            @Param("createdTo") LocalDateTime createdTo
+    );
 
     @Query(value = "SELECT new org.example.demo.dto.order.core.response.CountStatusOrder( " +
                    "COUNT(o), " +  // Đếm tổng số đơn hàng

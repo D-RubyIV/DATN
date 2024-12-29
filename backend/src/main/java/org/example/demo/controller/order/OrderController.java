@@ -159,8 +159,12 @@ public class OrderController implements IControllerBasic<Integer, OrderRequestDT
 
     // OTHER
     @GetMapping(value = "count-any-status")
-    public ResponseEntity<CountStatusOrder> getCountAnyStatus(@RequestParam(value = "type", required = false) String type) {
-        return ResponseEntity.ok(orderService.getCountStatusAnyOrder(type));
+    public ResponseEntity<CountStatusOrder> getCountAnyStatus(
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "createdFrom", required = false) LocalDateTime createdFrom,
+            @RequestParam(value = "createdTo", required = false) LocalDateTime createdTo
+    ) {
+        return ResponseEntity.ok(orderService.getCountStatusAnyOrder(type, createdFrom, createdTo));
     }
 
     @GetMapping(value = "count-order-detail")

@@ -18,6 +18,7 @@ type AppContextType = {
     createTab: (orderId: number) => void;
     removeTab: (orderId: number) => void;
     removeTabAndCancel: (orderId: number) => void;
+    addTabByOrderId: (orderId: number) => void;
 };
 
 
@@ -30,15 +31,28 @@ const SellContext = createContext<AppContextType>({
     removeTab: () => {
     },
     removeTabAndCancel: () => {
+    },
+    addTabByOrderId: () => {
     }
 })
 
 const SellProvider = ({ children }: { children: ReactNode }) => {
     const [tabs, setTabs] = useState<TabObject[]>([])
     const { openNotification } = useToastContext()
+
     useEffect(() => {
         setTabs(getTabsFromLocalStorage())
     }, [])
+
+    const addTabByOrderId = (id: number) => {
+        let savedIds = JSON.parse(localStorage.getItem('orderIds') || '[]')
+        savedIds = savedIds.filter((savedId: number) => savedId !== id)
+        savedIds.push(id)
+        localStorage.setItem("orderIds", JSON.stringify(savedIds))
+        console.log(savedIds)
+        window.location.href = "/admin/manage/sell"
+    }
+
 
     const getTabsFromLocalStorage = () => {
         const savedIds = JSON.parse(localStorage.getItem('orderIds') || '[]')
@@ -98,7 +112,7 @@ const SellProvider = ({ children }: { children: ReactNode }) => {
 
 
     return (
-        <SellContext.Provider value={{ tabs, setTabs, createTab, removeTab, removeTabAndCancel }}>
+        <SellContext.Provider value={{ tabs, setTabs, createTab, removeTab, removeTabAndCancel, addTabByOrderId }}>
             {children}
         </SellContext.Provider>
     )
