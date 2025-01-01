@@ -390,7 +390,7 @@ export const OrderTable = () => {
     ]
 
     const onClickOrder = (orderObject: IOveriewBill) => {
-        if (orderObject.inStore) {
+        if (orderObject.inStore && orderObject.status === "PENDING") {
             console.log("tai quay")
             addTabByOrderId(orderObject.id)
         } else {

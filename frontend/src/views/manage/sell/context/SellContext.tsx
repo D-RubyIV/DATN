@@ -93,9 +93,10 @@ const SellProvider = ({ children }: { children: ReactNode }) => {
                 }
             }).catch(function(error) {
                 if (error?.response?.data?.error === "Đơn hàng đã bị hủy trước đó") {
-                    removeTab(orderId)
                     openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
                 }
+            }).finally(function(){
+                removeTab(orderId)
             })
 
         }
