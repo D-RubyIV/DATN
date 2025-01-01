@@ -192,11 +192,11 @@ const Checkout = () => {
     const [amount, setAmount] = useState<number>(100000)
     const [isOpenSelectAddressModal, setIsOpenSelectAddressModal] = useState<boolean>(false)
     const { callHaveNewOrder } = useWSContext()
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const handleConfirmOrder = async () => {
-        setIsModalOpen(true);
-    };
+        setIsModalOpen(true)
+    }
 
 
     const toggleVoucherModal = () => {
@@ -212,18 +212,18 @@ const Checkout = () => {
     }
 
     const checkValidCart = async () => {
-        instance.get(`cart/check-cart-active/${id}`).then(function (response) {
+        instance.get(`cart/check-cart-active/${id}`).then(function(response) {
             if ((response.data as CartResponseDTO).deleted) {
                 localStorage.removeItem('myCartId')
-                console.log("Xóa cart id ở check-cart-activ")
+                console.log('Xóa cart id ở check-cart-activ')
 
                 window.location.reload()
             }
-        }).catch(function (error) {
+        }).catch(function(error) {
             console.log(error.response.data.error === 'Order not found')
             if (error.response.status === 400) {
                 localStorage.removeItem('myCartId')
-                console.log("Xóa cart id ở check Order")
+                console.log('Xóa cart id ở check Order')
                 window.location.href = '/'
             }
         })
@@ -311,13 +311,13 @@ const Checkout = () => {
             'idCartId': id,
             'voucherCode': data.voucherCode
         }
-        instance.post(`cart/use-voucher`, payload).then(function (response) {
+        instance.post(`cart/use-voucher`, payload).then(function(response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
 
                 openNotification('Sử dụng thành công')
             }
-        }).catch(function (error) {
+        }).catch(function(error) {
             console.log(error)
             openNotification(error.response.data.error, 'Thông báo', 'warning', 5000)
         })
@@ -326,11 +326,73 @@ const Checkout = () => {
     // DUNG CLOSE CO MAY CAI LAM DO TAT DI QUEN K BIET CAI NAO
 
     const handleConfirmCart = async () => {
-        setIsModalOpen(false);
-        if (paymentMethod === 'CASH') {
-            try {
+        // check valid convert
+        let allowConvert = true
+        await instance.get(`/cart/allow-convert/${id}`)
+            .then(function(response) {
+                if (response.status === 200) {
+                    console.log('OKOK ALLOW CONVERT')
+                }
+            })
+            .catch(function(error) {
+                console.log('ERRORR', error)
+                if (error?.response?.data?.error) {
+                    openNotification(error?.response?.data?.error, 'Thông báo', 'warning', 5000)
+                }
+                allowConvert = false
+            })
+            .finally(() => {
+                console.log('allow convert: ', allowConvert)
+            })
+
+        //
+        setIsModalOpen(false)
+        if (allowConvert) {
+            if (paymentMethod === 'CASH') {
+                try {
+                    const data = {
+                        status: 'PENDING',
+                        payment: paymentMethod,
+                        recipientName: getValuesFormRecipient('recipientName'),
+                        email: getValuesFormRecipient('email'),
+                        phone: getValuesFormRecipient('phone'),
+                        address: getValuesFormRecipient('address'),
+                        provinceId: getValuesFormRecipient('provinceId'),
+                        districtId: getValuesFormRecipient('districtId'),
+                        wardId: getValuesFormRecipient('wardId'),
+                        provinceName: IAddress.iprovince?.ProvinceName,
+                        districtName: IAddress.idistrict?.DistrictName,
+                        wardName: IAddress.iward?.WardName
+                    }
+
+                    // Update cart
+                    await handleUpdateCart(data)
+                    instance.put(`/cart/v2/${id}`, data).then(function(response) {
+                        if (response.status === 200 && response.data) {
+                            instance.get(`/orders/convert/${id}`).then(function(response) {
+                                if (response.status === 200 && response.data) {
+                                    getDetailAboutCart()
+                                    callHaveNewOrder()
+                                    location.href = '/thank'
+
+                                    console.log('Xóa cart id ở convert')
+                                    localStorage.removeItem('myCartId')
+                                }
+                            })
+                            getDetailAboutCart()
+
+                        }
+                    })
+
+                    // Convert cart to order
+
+                } catch (error) {
+                    console.error('Error processing payment:', error)
+                    // Add appropriate error handling (e.g., show a notification to the user)
+                }
+            } else if (paymentMethod === 'TRANSFER') {
                 const data = {
-                    status: 'PENDING',
+                    'status': 'PENDING',
                     payment: paymentMethod,
                     recipientName: getValuesFormRecipient('recipientName'),
                     email: getValuesFormRecipient('email'),
@@ -343,67 +405,28 @@ const Checkout = () => {
                     districtName: IAddress.idistrict?.DistrictName,
                     wardName: IAddress.iward?.WardName
                 }
-
-                // Update cart
-                await handleUpdateCart(data)
-                instance.put(`/cart/v2/${id}`, data).then(function (response) {
+                instance.put(`/cart/v2/${id}`, data).then(function(response) {
                     if (response.status === 200 && response.data) {
-                        instance.get(`/orders/convert/${id}`).then(function (response) {
+                        instance.get(`/orders/convert/${id}`).then(function(response) {
                             if (response.status === 200 && response.data) {
-                                getDetailAboutCart()
-                                callHaveNewOrder()
-                                location.href='/thank'
-
-                                console.log("Xóa cart id ở convert")
-                                localStorage.removeItem('myCartId')
+                                const idOrder = response.data.id
+                                const amount = Math.round((selectedCart as CartResponseDTO).total)
+                                instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function(response) {
+                                    if (response.status === 200 && response.data) {
+                                        callHaveNewOrder()
+                                        const url = response?.data?.data?.paymentUrl
+                                        if (url) {
+                                            window.location.href = url // Mở đường dẫn mới
+                                        }
+                                    }
+                                })
                             }
                         })
-                        getDetailAboutCart()
-
                     }
                 })
-
-                // Convert cart to order
-
-            } catch (error) {
-                console.error('Error processing payment:', error)
-                // Add appropriate error handling (e.g., show a notification to the user)
             }
-        } else if (paymentMethod === 'TRANSFER') {
-            const data = {
-                'status': 'PENDING',
-                payment: paymentMethod,
-                recipientName: getValuesFormRecipient('recipientName'),
-                email: getValuesFormRecipient('email'),
-                phone: getValuesFormRecipient('phone'),
-                address: getValuesFormRecipient('address'),
-                provinceId: getValuesFormRecipient('provinceId'),
-                districtId: getValuesFormRecipient('districtId'),
-                wardId: getValuesFormRecipient('wardId'),
-                provinceName: IAddress.iprovince?.ProvinceName,
-                districtName: IAddress.idistrict?.DistrictName,
-                wardName: IAddress.iward?.WardName
-            }
-            instance.put(`/cart/v2/${id}`, data).then(function (response) {
-                if (response.status === 200 && response.data) {
-                    instance.get(`/orders/convert/${id}`).then(function (response) {
-                        if (response.status === 200 && response.data) {
-                            const idOrder = response.data.id
-                            const amount = Math.round((selectedCart as CartResponseDTO).total)
-                            instance.get(`/payment/vn-pay?amount=${amount}&currency=VND&returnUrl=http://localhost:5173/client/payment/callback&idOrder=${idOrder}`).then(function (response) {
-                                if (response.status === 200 && response.data) {
-                                    callHaveNewOrder()
-                                    const url = response?.data?.data?.paymentUrl
-                                    if (url) {
-                                        window.location.href = url // Mở đường dẫn mới
-                                    }
-                                }
-                            })
-                        }
-                    })
-                }
-            })
         }
+
     }
 
     const debounceFn = debounce(handleDebounceFn, 500)
@@ -422,16 +445,24 @@ const Checkout = () => {
     }
 
     const handleUpdateCart = async (data: any) => {
-        instance.put(`/cart/v2/${id}`, data).then(function (response) {
+        instance.put(`/cart/v2/${id}`, data).then(function(response) {
             if (response.status === 200 && response.data) {
                 getDetailAboutCart()
             }
         })
     }
 
+    const handleUnLinkVoucherCart = async () => {
+        await instance.get(`/cart/unlink-voucher/${id}`).then(function(response) {
+            if (response.status === 200 && response.data) {
+                setSelectedCart(response.data)
+            }
+        })
+    }
+
 
     const getDetailAboutCart = async () => {
-        instance.get(`cart/detail/${id}`).then(function (response) {
+        instance.get(`cart/detail/${id}`).then(function(response) {
             if (response.status === 200 && response.data) {
                 setSelectedCart(response.data)
                 setPaymentMethod(response.data.payment)
@@ -467,11 +498,11 @@ const Checkout = () => {
 
     useEffect(() => {
         checkValidCart()
-        instance.get(`cart-details/in-cart/${id}`).then(function (response) {
+        instance.get(`cart-details/in-cart/${id}`).then(function(response) {
             if (response?.data) {
                 setListCartDetailResponseDTO(response?.data)
             }
-        }).catch(function (error) {
+        }).catch(function(error) {
             console.log(error.response.data.error === 'cart not found')
         })
         handleFindAllProvinces()
@@ -566,7 +597,7 @@ const Checkout = () => {
         const [selectedAddressId, setSelectedAddressId] = useState<string>('')
 
         const getMyAddress = async () => {
-            instance.get('/address/my-address').then(function (response) {
+            instance.get('/address/my-address').then(function(response) {
                 console.log(response)
                 if (response.status === 200) {
                     console.log('MY ADDRESS')
@@ -589,7 +620,7 @@ const Checkout = () => {
 
         const updateCartAddress = async () => {
             if (selectedAddressId) {
-                await instance.get(`/cart/edit-my-address/${id}?addressId=${selectedAddressId}`).then(function (response) {
+                await instance.get(`/cart/edit-my-address/${id}?addressId=${selectedAddressId}`).then(function(response) {
                     if (response.status === 200) {
                         openNotification('Cập nhật thành công')
                         getDetailAboutCart()
@@ -632,7 +663,7 @@ const Checkout = () => {
                             </div>
                         </Radio>
                     )) : (
-                        <div className={"py-5 text-center"}>
+                        <div className={'py-5 text-center'}>
                             <p className={'text-[16px] font-semibold'}>Quý khách không có bất kì địa chỉ nào khác</p>
                         </div>
                     )}
@@ -848,10 +879,10 @@ const Checkout = () => {
                                             onChange={onChangeMethod}
                                         >
                                             <Radio value={EPaymentMethod.TRANSFER}
-                                                checked={selectedCart?.payment === 'TRANSFER'}>Thanh toán ngân
+                                                   checked={selectedCart?.payment === 'TRANSFER'}>Thanh toán ngân
                                                 hàng</Radio>
                                             <Radio value={EPaymentMethod.CASH}
-                                                checked={selectedCart?.payment === 'CASH'}>Thanh toán khi nhận
+                                                   checked={selectedCart?.payment === 'CASH'}>Thanh toán khi nhận
                                                 hàng</Radio>
                                         </Radio.Group>
                                     </Card>
@@ -901,7 +932,7 @@ const Checkout = () => {
                                                             <div>
                                                                 <p className="font-semibold text-sm">
                                                                     Sản phẩm: <span
-                                                                        className="text-gray-800">{item.productDetailResponseDTO?.product?.name}</span>
+                                                                    className="text-gray-800">{item.productDetailResponseDTO?.product?.name}</span>
                                                                 </p>
                                                                 {/* Thuộc tính sản phẩm */}
                                                                 <div className="mt-2 text-sm text-gray-600 space-y-1">
@@ -911,11 +942,11 @@ const Checkout = () => {
                                                                     </p>
                                                                     <p>
                                                                         Size: <span
-                                                                            className="text-gray-800">{item.productDetailResponseDTO?.size?.name}</span>
+                                                                        className="text-gray-800">{item.productDetailResponseDTO?.size?.name}</span>
                                                                     </p>
                                                                     <p>
                                                                         Thương hiệu: <span
-                                                                            className="text-gray-800">{item.productDetailResponseDTO?.brand?.name}</span>
+                                                                        className="text-gray-800">{item.productDetailResponseDTO?.brand?.name}</span>
                                                                     </p>
                                                                     <p>
                                                                         Đơn giá:{' '}
@@ -950,8 +981,8 @@ const Checkout = () => {
                                                 <div className="flex flex-col justify-center items-center h-full">
                                                     <div>
                                                         <img className="w-28 h-28 object-cover"
-                                                            src="/img/OIP-removebg-preview.png"
-                                                            alt="No product image" />
+                                                             src="/img/OIP-removebg-preview.png"
+                                                             alt="No product image" />
                                                     </div>
                                                     <div>
                                                         <span className="font-light text-gray-500">Không có sản phẩm nào trong giỏ hàng</span>
@@ -967,7 +998,7 @@ const Checkout = () => {
                                         Thông tin thanh toán
                                     </div>
                                     <form className="grid grid-cols-12 gap-4 w-full py-4">
-                                        <div className="col-span-8">
+                                        <div className="col-span-6">
                                             <Input
                                                 placeholder="Mã giảm giá"
                                                 className={`border-2  rounded-none border-gray-200  ${errors.voucherCode ? 'border-red-500' : ''}`}
@@ -983,19 +1014,32 @@ const Checkout = () => {
                                                 <p className="text-red-500 text-sm mt-2">{errors.voucherCode.message}</p>
                                             )}
                                         </div>
-                                        <div className="col-span-4">
-                                            <button
-                                                className="border-2 w-full h-[38px] rounded-none border-black text-black"
-                                                onClick={handleSubmit(customHandleSubmit)}
-                                            >
-                                                Sử dụng
-                                            </button>
+                                        <div className="col-span-6">
+                                            <div className={'flex justify-between gap-2'}>
+                                                <button
+                                                    className="border-2 w-full h-[38px] rounded-none border-black text-black"
+                                                    onClick={handleSubmit(customHandleSubmit)}
+                                                >
+                                                    Sử dụng
+                                                </button>
+                                                {
+                                                    selectedCart?.voucherResponseDTO && (
+                                                        <button
+                                                            type={'button'}
+                                                            className={'border-2 w-full h-[38px] rounded-none border-black text-black'}
+                                                            onClick={ handleUnLinkVoucherCart}
+                                                        >
+                                                            Bỏ gán
+                                                        </button>
+                                                    )
+                                                }
+                                            </div>
                                         </div>
                                     </form>
 
                                     {/* Dòng "Xem thêm mã giảm giá" */}
                                     <div className="text-sm text-blue-600 cursor-pointer mt-2"
-                                        onClick={toggleVoucherModal}>
+                                         onClick={toggleVoucherModal}>
                                         Xem thêm mã giảm giá
                                     </div>
 
@@ -1015,7 +1059,12 @@ const Checkout = () => {
 
                                     {selectedVoucher && (
                                         <div className="mt-4 p-4 border rounded bg-gray-100">
-                                            <h2 className="font-semibold text-lg">Phiếu giảm giá đã chọn</h2>
+                                            <div className={'flex justify-between items-center'}>
+                                                <div>
+                                                    <h2 className="font-semibold text-lg">Phiếu giảm giá đã chọn</h2>
+                                                </div>
+
+                                            </div>
                                             <p>Tên: {selectedVoucher.name}</p>
                                             <p>Mã: {selectedVoucher.code}</p>
                                             <p>Phần trăm giảm: {selectedVoucher.maxPercent}%</p>
@@ -1054,8 +1103,8 @@ const Checkout = () => {
                                             isOpen={isModalOpen}
                                             onClose={() => setIsModalOpen(false)}
                                             onConfirm={() => {
-                                                handleSubmitFormRecipient(handleConfirmCart)();
-                                                setIsModalOpen(false);
+                                                handleSubmitFormRecipient(handleConfirmCart)()
+                                                setIsModalOpen(false)
                                             }}
                                         />
                                         <button
@@ -1063,7 +1112,7 @@ const Checkout = () => {
                                             className="bg-black w-full py-2 font-thin rounded-none text-white"
                                             onClick={() => {
                                                 handleSubmitFormRecipient(() => {
-                                                    setIsModalOpen(true);
+                                                    setIsModalOpen(true)
                                                 })()
                                             }}
                                         >

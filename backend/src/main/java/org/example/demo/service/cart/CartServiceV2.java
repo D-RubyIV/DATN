@@ -272,6 +272,16 @@ public class CartServiceV2 {
                 .sum();
     }
 
+
+    @Transactional
+    public Cart unlinkVoucher(Integer idCart) {
+        Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng"));
+        cart.setVoucher(null);
+        cart.setDiscount(0.0);
+        reloadSubTotalOrder(cart);
+        return cartRepository.save(cart);
+    }
+
     public JsonNode calculateFee(Integer idCart) {
         Cart cart = cartRepository.findById(idCart).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy giỏ hàng"));
         FeeDTO feeDTO = new FeeDTO();
@@ -339,12 +349,14 @@ public class CartServiceV2 {
         return available;
     }
 
-//    public boolean check_valid_voucher_quantity_in_storage(Cart cart) {
-//        Voucher voucher = cart.getVoucher();
-//        if (voucher == null) {
-//            return true;
-//        } else {
-//            return voucher.getQuantity() > 0;
-//        }
-//    }
+
+
+    public boolean check_valid_voucher_quantity_in_storage(Cart cart) {
+        Voucher voucher = cart.getVoucher();
+        if (voucher == null) {
+            return true;
+        } else {
+            return voucher.getQuantity() > 0;
+        }
+    }
 }
