@@ -184,7 +184,6 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
     }, [signalReloadTableProduct])
     return (
         <Fragment>
-
             <div className="2xl:grid 2xl:grid-cols-12 gap-5 mt-2">
                 <Card className="xl:col-span-8">
                     <div className="flex justify-between items-center py-2">
@@ -280,7 +279,6 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                         {
                             selectedOrder ? (
                                 <PaymentInfo
-                                    setIsOpenVoucherModal={setIsOpenVoucherModal}
                                     selectedOrder={selectedOrder}
                                     data={paymentSummaryProp}
                                     fetchSelectedOrder={fetchSelectedOrder} />

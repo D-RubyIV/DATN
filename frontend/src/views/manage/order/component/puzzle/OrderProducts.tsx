@@ -8,13 +8,12 @@ import {
     flexRender,
     createColumnHelper
 } from '@tanstack/react-table'
-import { NumericFormat } from 'react-number-format'
 import { Button, Dialog, Drawer, Input } from '@/components/ui'
-import { HiLockClosed, HiMinus, HiMinusCircle, HiPencil, HiPlusCircle, HiViewList } from 'react-icons/hi'
+import { HiLockClosed, HiMinusCircle, HiPencil, HiPlusCircle, HiViewList } from 'react-icons/hi'
 import {
     OrderResponseDTO,
     OrderDetailResponseDTO,
-    OrderProductDetail, EOrderStatus
+    EOrderStatus
 } from '@/@types/order'
 import History from './History'
 import { ConfirmDialog } from '@/components/shared'
@@ -26,6 +25,8 @@ import { useOrderContext } from '@/views/manage/order/component/context/OrderCon
 import { useLoadingContext } from '@/context/LoadingContext'
 import { DeleteOutline } from '@mui/icons-material'
 import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
+import PriceAmount from '@/views/util/PriceAmount'
+import { getFinalPriceInThePart, hasChangeEventPercent, hasChangeUnitPrice } from '@/views/util/OrderUtil'
 
 
 const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = false }: {
@@ -45,10 +46,6 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
 
     const { setIsLoadingComponent } = useLoadingContext()
     const columnHelper = createColumnHelper<OrderDetailResponseDTO>()
-
-    const hasSaleEvent = (item: OrderProductDetail) => {
-        return item.product.eventDTOList.length > 0
-    }
 
     useEffect(() => {
         const historyLength = selectObject.historyResponseDTOS.length
@@ -70,20 +67,6 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
             console.log('DON TRUC TUYEN')
             return product_detail_quantity > order_detail_quantity
         }
-    }
-
-    const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
-        const nowPercent = item.averageDiscountEventPercent
-        const partPercent = item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent
-        return nowPercent === partPercent
-    }
-
-    const getFinalPriceInThePart = (item: OrderDetailResponseDTO) => {
-        const discountPercent = item.averageDiscountEventPercent > 0
-            ? item.averageDiscountEventPercent
-            : 0
-
-        return Math.round(item.productDetailResponseDTO.price * (1 - discountPercent / 100))
     }
 
     const ProductColumn = ({ row }: { row: OrderDetailResponseDTO }) => {
@@ -133,8 +116,14 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                         </div>
                     </div>
                 </div>
-                <div className={'text-yellow-700'}>
-                    {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+                <div className={'text-orange-700 flex flex-col'}>
+                    <p>
+                        {hasChangeEventPercent(row) ? '' : `Có sự thay đổi về khuyễn mãi sự kiện hiện tại là ${row.productDetailResponseDTO.product.nowAverageDiscountPercentEvent}%`}
+
+                    </p>
+                    <p>
+                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString('vi')}₫ - ${row.unitPrice}`}
+                    </p>
                 </div>
                 <div className={'text-yellow-700'}>
                     {availableQuantityProvide(row) ? '' : `Sản phẩm này hiện không đủ số lượng cung ứng thêm`}
@@ -162,7 +151,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                 openNotification('Xóa thành công')
             }
             fetchData()
-        }).catch(function(err){
+        }).catch(function(err) {
             console.log(err)
             if (err?.response?.status === 400) {
                 openNotification(err.response.data.error, 'Thông báo', 'warning', 1500)
@@ -205,7 +194,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
         return (
             <div>
                 {
-                    selectObject.status === 'PENDING' && !unAllowEditProduct && endHistoryStatus === "PENDING" ? (
+                    selectObject.status === 'PENDING' && !unAllowEditProduct && endHistoryStatus === 'PENDING' ? (
                         <div className="flex gap-2">
                             {/*<button><HiPencil size={20}></HiPencil></button>*/}
                             <Button
@@ -229,17 +218,6 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
         )
     }
 
-    const PriceAmount = ({ amount }: { amount: number }) => {
-        return (
-            <NumericFormat
-                displayType="text"
-                value={(Math.round(amount * 100) / 100).toFixed(0)}
-                suffix={'₫'}
-                thousandSeparator={true}
-            />
-        )
-    }
-
     const columns = [
         columnHelper.accessor('productDetailResponseDTO.name', {
             header: 'Sản phẩm',
@@ -255,14 +233,16 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                     <div className="flex gap-1 items-center justify-start">
                         {
                             selectObject.status === 'PENDING' && (
-                                <button hidden={unAllowEditProduct || endHistoryStatus !== "PENDING"} className="p-2 text-xl" onClick={() => {
+                                <button hidden={unAllowEditProduct || endHistoryStatus !== 'PENDING'}
+                                        className="p-2 text-xl" onClick={() => {
                                     handleUpdateQuantity(props.row.original.id, props.row.original.quantity + 1)
                                 }}><HiPlusCircle /></button>)
                         }
                         <p>{props.row.original.quantity} </p>
                         {
                             selectObject.status === 'PENDING' && (
-                                <button hidden={unAllowEditProduct || endHistoryStatus !== "PENDING"} className="p-2 text-xl" onClick={() => {
+                                <button hidden={unAllowEditProduct || endHistoryStatus !== 'PENDING'}
+                                        className="p-2 text-xl" onClick={() => {
                                     handleUpdateQuantity(props.row.original.id, props.row.original.quantity - 1)
                                 }}><HiMinusCircle /></button>)
                         }
@@ -284,15 +264,49 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
             }
         }),
         columnHelper.accessor('productDetailResponseDTO.price', {
-            header: 'Giá',
+            header: 'Giá hiện tại',
             cell: (props) => {
                 const row = props.row.original
                 return (
-                    <div className={'flex gap-3 text-red-600'} >
-                        <div className={`${hasSaleEvent(row.productDetailResponseDTO) ? 'line-through' : 'hidden'}`}>
-                            <PriceAmount amount={row.productDetailResponseDTO.price} />
+                    <div>
+                        {
+                            row.averageDiscountEventPercent ? (
+                                    <div className={'flex gap-2 flex-col'}>
+                                        <PriceAmount
+                                            className={'text-gray-900 line-through'}
+                                            amount={row.productDetailResponseDTO.price}
+                                        />
+                                        <PriceAmount
+                                            className={'text-red-400'}
+                                            amount={getFinalPriceInThePart(row)}
+                                        />
+                                    </div>
+                                ) :
+                                (
+                                    <div>
+                                        <PriceAmount
+                                            className={'text-red-400'}
+                                            amount={getFinalPriceInThePart(row)}
+                                        />
+                                    </div>
+                                )
+                        }
+                    </div>
+                )
+            }
+        }),
+        columnHelper.accessor('unitPrice', {
+            header: 'Giá được tính',
+            cell: (props) => {
+                const row = props.row.original as OrderDetailResponseDTO
+                return (
+                    <div>
+                        <div>
+                            <PriceAmount
+                                className={'text-red-600'}
+                                amount={row.unitPrice}
+                            />
                         </div>
-                        <PriceAmount amount={getFinalPriceInThePart(row)} />
                     </div>
                 )
             }
@@ -303,7 +317,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                 const row = props.row.original
                 return (
                     <div className={'flex gap-3 text-red-600'}>
-                        <PriceAmount amount={row.quantity * getFinalPriceInThePart(row)} />
+                        <PriceAmount amount={row.quantity * row.unitPrice} />
                     </div>
                 )
             }
@@ -449,7 +463,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
                             selectObject.status === 'PENDING' && (
                                 <Button block variant="solid" size="sm" className="bg-indigo-500 !w-36"
                                         icon={<HiPlusCircle />}
-                                        hidden={selectObject.status !== "PENDING" || endHistoryStatus === "REQUESTED"}
+                                        hidden={selectObject.status !== 'PENDING' || endHistoryStatus === 'REQUESTED'}
                                         onClick={() => setIsOpenProductModal(true)}>
                                     Thêm sản phẩm
                                 </Button>

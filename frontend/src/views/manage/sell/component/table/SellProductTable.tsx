@@ -1,7 +1,6 @@
 import { ChangeEvent, Fragment, useEffect, useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Avatar, Button, Dialog, Input, Notification, toast } from '@/components/ui'
-import { NumericFormat } from 'react-number-format'
 import { HiLockClosed, HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
@@ -10,6 +9,8 @@ import DataTable, { type OnSortParam } from '../../../../../components/shared/Da
 import { FiPackage } from 'react-icons/fi'
 import { DeleteOutline } from '@mui/icons-material'
 import { useWSContext } from '@/context/WsContext'
+import PriceAmount from '@/views/util/PriceAmount'
+import { getFinalPriceInThePart, hasChangeEventPercent, hasChangeUnitPrice } from '@/views/util/OrderUtil'
 
 const SellProductTable = ({ selectedOrder, fetchData }: {
     selectedOrder: OrderResponseDTO,
@@ -259,36 +260,6 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
                 key: (key as string).replace('___', '.')
             }
         }))
-    }
-    const PriceAmount = ({ amount, className }: { amount: number; className?: string }) => {
-        return (
-            <NumericFormat
-                displayType="text"
-                value={(Math.round(amount * 100) / 100).toFixed(0)}
-                suffix={'₫'}
-                thousandSeparator={true}
-                className={className} // Áp dụng className
-            />
-        )
-    }
-
-    const hasChangeEventPercent = (item: OrderDetailResponseDTO) => {
-        const nowPercent = item.averageDiscountEventPercent
-        const partPercent = item.productDetailResponseDTO.product.nowAverageDiscountPercentEvent
-        return nowPercent === partPercent
-    }
-    const hasChangeUnitPrice= (item: OrderDetailResponseDTO) => {
-        const unitPrice = item.unitPrice
-        const partPercent = getFinalPriceInThePart(item)
-        return unitPrice === partPercent
-    }
-
-    const getFinalPriceInThePart = (item: OrderDetailResponseDTO) => {
-        const discountPercent = item.averageDiscountEventPercent > 0
-            ? item.averageDiscountEventPercent
-            : 0
-
-        return Math.round(item.productDetailResponseDTO.price * (1 - discountPercent / 100))
     }
 
     const availableQuantityProvide = (item: OrderDetailResponseDTO) => {

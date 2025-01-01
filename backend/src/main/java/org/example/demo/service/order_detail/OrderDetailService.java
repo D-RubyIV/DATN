@@ -18,6 +18,7 @@ import org.example.demo.service.IService;
 import org.example.demo.service.order.OrderService;
 import org.example.demo.util.event.EventUtil;
 import org.example.demo.util.number.NumberUtil;
+import org.example.demo.util.order_detail_util.OrderDetailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -94,7 +95,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
         List<OrderDetail> orderDetailList = orderDetailRepository.findAllByOrderIdAndProductDetailId(requestDTO.getOrderId(), requestDTO.getProductDetailId());
 
         double currentDiscountPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
-        double currentUnitPrice = get_current_product_detail_price(productDetail);
+        double currentUnitPrice = OrderDetailUtil.get_current_product_detail_price(productDetail);
 
         Optional<OrderDetail> entityFound = orderDetailRepository.findByOrderIdAndProductDetailIdAndAverageDiscountEventPercentAndUnitPrice(requestDTO.getOrderId(), requestDTO.getProductDetailId(), currentDiscountPercent, currentUnitPrice);
 
@@ -181,7 +182,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             // set spct vào hóa đơn chi tiết
             newOrderDetail.setProductDetail(productDetail);
             // set giá
-            newOrderDetail.setUnitPrice(get_current_product_detail_price(productDetail));
+            newOrderDetail.setUnitPrice(OrderDetailUtil.get_current_product_detail_price(productDetail));
             // lưu lại hóa đơn chi tết
             OrderDetail response = orderDetailRepository.save(newOrderDetail);
             // cập nhật số lượng trong kho
@@ -298,7 +299,7 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
                 productDetailId
         );
         //
-        double currentUnitPrice = get_current_product_detail_price(productDetail.get());
+        double currentUnitPrice = OrderDetailUtil.get_current_product_detail_price(productDetail.get());
         double currentDiscountEvent = EventUtil.getAveragePercentEvent(productDetail.get().getProduct().getValidEvents());
 
         OrderDetailValueCompare orderDetailValueCompareCurrent = new OrderDetailValueCompare(currentUnitPrice, currentDiscountEvent);
@@ -348,13 +349,5 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
 
     }
 
-    public Double get_current_product_detail_price(ProductDetail productDetail) {
-        double productDetailPrice = productDetail.getPrice();
-        double averageEventPercent = productDetail.getProduct().getNowAverageDiscountPercentEvent();
-        double unitPrice = NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
-        log.info("productDetailPrice: " +  productDetailPrice);
-        log.info("averageEventPercent: " +  averageEventPercent);
-        log.info("UNIT PRICE: " +  unitPrice);
-        return unitPrice;
-    }
+
 }

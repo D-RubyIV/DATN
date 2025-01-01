@@ -50,6 +50,7 @@ import org.example.demo.util.RandomCodeGenerator;
 import org.example.demo.util.auth.AuthUtil;
 import org.example.demo.util.event.EventUtil;
 import org.example.demo.util.number.NumberUtil;
+import org.example.demo.util.order_detail_util.OrderDetailUtil;
 import org.example.demo.util.phah04.PageableObject;
 import org.example.demo.util.voucher.VoucherUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -778,6 +779,7 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             od.setQuantity(s.getQuantity());
             od.setProductDetail(s.getProductDetail());
             od.setDeleted(false);
+            od.setUnitPrice(OrderDetailUtil.get_current_product_detail_price(s.getProductDetail()));
             od.setAverageDiscountEventPercent(EventUtil.getAveragePercentEvent(s.getProductDetail().getProduct().getValidEvents()));
             list.add(od);
         });
