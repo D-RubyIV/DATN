@@ -250,6 +250,12 @@ public class OrderDetailService implements IService<OrderDetail, Integer, OrderD
             // ngăn ng dùng mua thêm với hóa đơn chi tiết có sụ thay đổi % event
             if (newQuantity > quantityInOrder) {
                 double currentSaleDiscountEvent = orderDetail.getProductDetail().getProduct().getNowAverageDiscountPercentEvent();
+                double currentUnitPrice = OrderDetailUtil.get_current_product_detail_price(orderDetail.getProductDetail());
+
+                if (orderDetail.getUnitPrice() != currentUnitPrice) {
+                    throw new CustomExceptions.CustomBadRequest("Sản phảm này đã có sự thay đổi về giá, vui lòng thêm sản phẩm mới ");
+                }
+
                 if (orderDetail.getAverageDiscountEventPercent() != currentSaleDiscountEvent) {
                     throw new CustomExceptions.CustomBadRequest("Sản phảm này đã có sự thay đổi % đợt giảm giá ");
                 }

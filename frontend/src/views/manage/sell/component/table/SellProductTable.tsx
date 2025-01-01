@@ -320,7 +320,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
                     </p>
                     <p>
-                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString("vi")}₫ - ${row.unitPrice}`}
+                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString("vi")}₫ - ${row.unitPrice.toLocaleString("vi")}₫`}
                     </p>
                 </div>
                 <div className={'text-orange-700'}>

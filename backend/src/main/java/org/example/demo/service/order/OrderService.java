@@ -519,11 +519,11 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                     entityFound.setTotalPaid(entityFound.getTotal());
                 }
             }
-            if (!entityFound.getInStore()) {
-                if (entityFound.getVoucher() != null) {
-                    decreaseQuantityVoucher(entityFound.getVoucher());
-                }
-            }
+//            if (!entityFound.getInStore()) {
+//                if (entityFound.getVoucher() != null) {
+//                    decreaseQuantityVoucher(entityFound.getVoucher());
+//                }
+//            }
 
             log.info("1");
         }
@@ -535,8 +535,8 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
             if (!entityFound.getInStore()) {
                 rollback_quantity_order(entityFound);
             }
-            // ROLLBACK VOUCHER
-            if (entityFound.getVoucher() != null) {
+            // ROLLBACK VOUCHER CHO DON INSTORE
+            if (entityFound.getVoucher() != null && entityFound.getInStore()) {
                 increaseQuantityVoucher(entityFound.getVoucher());
             }
         }
@@ -571,6 +571,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // CHỜ XÁC NHẬN -> HỦY (ĐƠN TẠI QUẦY) --> ROLLBACK LẠI SỐ LƯỢNG SP VÀ VOUCHER
         else if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && entityFound.getInStore()) {
             rollback_quantity_order(entityFound);
+        }
+        // CHỜ XÁC NHẬN -> HỦY (ĐƠN TRỤC TUYẾN) --> ROLLBACK LẠI SỐ LƯỢNG VOUCHER
+        else if (oldStatus == Status.PENDING && newStatus == Status.CANCELED && entityFound.getInStore() == false) {
+            if (entityFound.getVoucher() != null) {
+                increaseQuantityVoucher(entityFound.getVoucher());
+            }
         }
 
 
@@ -752,6 +758,12 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         order.setVoucher(cart.getVoucher());
 
         order.setInStore(false);
+
+        if (!order.getInStore()) {
+            if (order.getVoucher() != null) {
+                decreaseQuantityVoucher(order.getVoucher());
+            }
+        }
 
         if (cart.getVoucher() != null) {
             order.setDiscountVoucherPercent(Double.valueOf(cart.getVoucher().getMaxPercent()));

@@ -122,7 +122,7 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
 
                     </p>
                     <p>
-                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString('vi')}₫ - ${row.unitPrice}`}
+                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString('vi')}₫ - ${row.unitPrice.toLocaleString('vi')}₫`}
                     </p>
                 </div>
                 <div className={'text-yellow-700'}>
