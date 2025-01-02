@@ -32,7 +32,9 @@ public class VoucherUtil {
             voucherValidList.sort((voucher1, voucher2) -> Double.compare(voucher2.getMaxPercent(), voucher1.getMaxPercent()));
             log.info("TOTAL VOUCHER VALID FOUND: " + voucherValidList.size());
             voucherValidList.forEach(s -> {
-                System.out.println(s.getCode() + " - PERCENT: " + s.getMaxPercent() + " - MIN AMOUNT: " + s.getMinAmount());
+                double saleAmount = (double) s.getMaxPercent() / 100 * subTotal;
+                saleAmount = subTotal > s.getMinAmount() ? saleAmount : 0.0;
+                System.out.println(s.getCode() + " - PERCENT: " + s.getMaxPercent() + " - MIN AMOUNT: " + s.getMinAmount() + " - QUANTITY: " + s.getQuantity() + " - SALE AMOUNT: " + saleAmount);
             });
             return voucherValidList.get(0);
         }

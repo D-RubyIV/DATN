@@ -1,6 +1,6 @@
-import { ChangeEvent, Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
-import { Avatar, Button, Dialog, Input, Notification, toast } from '@/components/ui'
+import { Avatar, Button, Dialog, Notification, toast } from '@/components/ui'
 import { HiLockClosed, HiMinusCircle, HiPencil, HiPlusCircle } from 'react-icons/hi'
 import { OrderDetailResponseDTO, OrderResponseDTO } from '@/@types/order'
 import instance from '@/axios/CustomAxios'
@@ -11,12 +11,14 @@ import { DeleteOutline } from '@mui/icons-material'
 import { useWSContext } from '@/context/WsContext'
 import PriceAmount from '@/views/util/PriceAmount'
 import { getFinalPriceInThePart, hasChangeEventPercent, hasChangeUnitPrice } from '@/views/util/OrderUtil'
+import { ErrorMessage, Field, Form, Formik } from 'formik'
+import * as Yup from 'yup'
 
 const SellProductTable = ({ selectedOrder, fetchData }: {
     selectedOrder: OrderResponseDTO,
     fetchData: () => Promise<void>
 }) => {
-    const {signalReloadTableProduct, setSelectedOrderInStoreCode} = useWSContext();
+    const { signalReloadTableProduct, setSelectedOrderInStoreCode } = useWSContext()
     const [isOpenEditQuantity, setIsOpenEditQuantity] = useState<boolean>(false)
     const [data, setData] = useState<OrderDetailResponseDTO[]>([])
     const [selectedOrderDetail, setSelectedOrderDetail] = useState<OrderDetailResponseDTO>()
@@ -320,7 +322,7 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
 
                     </p>
                     <p>
-                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString("vi")}₫ - ${row.unitPrice.toLocaleString("vi")}₫`}
+                        {hasChangeUnitPrice(row) ? '' : `Có sự thay đổi về giá hiện tại là ${getFinalPriceInThePart(row).toLocaleString('vi')}₫ - ${row.unitPrice.toLocaleString('vi')}₫`}
                     </p>
                 </div>
                 <div className={'text-orange-700'}>
@@ -377,16 +379,24 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
     }
 
     const EditQuantityDialog = () => {
-        const [quantity, setQuantity] = useState<number>(selectedOrderDetail?.quantity || 0)
-        useEffect(() => {
-            setQuantity(selectedOrderDetail?.quantity || 0)
-        }, [selectedOrderDetail])
-        const onDialogEditNumberOk = () => {
-            console.log('OK')
-            selectedOrderDetail && handleUpdateQuantity(selectedOrderDetail?.id, quantity)
-            onClose()
-
+        const initialValues = {
+            quantity: selectedOrderDetail?.quantity || 1
         }
+
+        const validationSchema = Yup.object({
+            quantity: Yup.number()
+                .typeError('Số lượng phải là số')
+                .positive('Số lượng phải lớn hơn 0')
+                .integer('Số lượng phải là số nguyên')
+                .required('Vui lòng nhập số lượng')
+        })
+
+        const onSubmit = (values: { quantity: number }) => {
+            console.log('OK')
+            selectedOrderDetail && handleUpdateQuantity(selectedOrderDetail?.id, values.quantity)
+            onClose()
+        }
+
         const onClose = () => {
             setIsOpenEditQuantity(false)
             document.body.style.overflow = 'auto'
@@ -394,25 +404,47 @@ const SellProductTable = ({ selectedOrder, fetchData }: {
         return (
             <Dialog isOpen={isOpenEditQuantity} closable={false}>
                 <h5 className="mb-4">Thay đổi số lượng</h5>
-                <p>Vui lòng nhập số lượng mong muôn:</p>
-                <Input
-                    type={'number'}
-                    min={1}
-                    defaultValue={quantity}
-                    onChange={(el: ChangeEvent<HTMLInputElement>) => setQuantity(Number(el.target.value))}
-                ></Input>
-                <div className="text-right mt-6">
-                    <Button
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onClose}
-                    >
-                        Hủy
-                    </Button>
-                    <Button variant="solid" onClick={onDialogEditNumberOk}>
-                        Xác nhận
-                    </Button>
-                </div>
+                <p>Vui lòng nhập số lượng mong muốn:</p>
+                <Formik
+                    enableReinitialize
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={onSubmit}
+                >
+                    {({ setFieldValue }) => (
+                        <Form>
+                            <Field
+                                name="quantity"
+                                type="number"
+                                min={1}
+                                className="w-full px-3 py-2 border rounded"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const value = e.target.value
+                                    if (/^\d*$/.test(value)) {
+                                        setFieldValue('quantity', value ? Math.max(Number(value), 1) : '')
+                                    }
+                                }}
+                            />
+                            <ErrorMessage
+                                name="quantity"
+                                component="p"
+                                className="text-red-500 mt-2"
+                            />
+                            <div className="text-right mt-6">
+                                <Button
+                                    className="ltr:mr-2 rtl:ml-2"
+                                    variant="plain"
+                                    onClick={onClose}
+                                >
+                                    Hủy
+                                </Button>
+                                <Button type="submit" variant="solid">
+                                    Xác nhận
+                                </Button>
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
             </Dialog>
         )
     }

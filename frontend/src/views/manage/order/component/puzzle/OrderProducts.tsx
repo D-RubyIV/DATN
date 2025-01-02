@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import AdaptableCard from '@/components/shared/AdaptableCard'
 import Table from '@/components/ui/Table'
 import Avatar from '@/components/ui/Avatar'
@@ -8,7 +8,9 @@ import {
     flexRender,
     createColumnHelper
 } from '@tanstack/react-table'
-import { Button, Dialog, Drawer, Input } from '@/components/ui'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+import { Button, Dialog, Drawer } from '@/components/ui'
 import { HiLockClosed, HiMinusCircle, HiPencil, HiPlusCircle, HiViewList } from 'react-icons/hi'
 import {
     OrderResponseDTO,
@@ -366,46 +368,79 @@ const OrderProducts = ({ data, selectObject, fetchData, unAllowEditProduct = fal
 
     const { isOpenOverrideConfirm, setIsOpenOverrideConfirm, selectedOrderRequestContext } = useOrderContext()
 
-    const EditQuantityDialog = () => {
-        const [quantity, setQuantity] = useState<number>(selectedOrderDetail?.quantity || 0)
-        useEffect(() => {
-            setQuantity(selectedOrderDetail?.quantity || 0)
-        }, [selectedOrderDetail])
-        const onDialogEditNumberOk = () => {
-            console.log('OK')
-            selectedOrderDetail && handleUpdateQuantity(selectedOrderDetail?.id, quantity)
-            onClose()
 
+    const EditQuantityDialog = () => {
+        const initialValues = {
+            quantity: selectedOrderDetail?.quantity || 1
         }
+
+        const validationSchema = Yup.object({
+            quantity: Yup.number()
+                .typeError('Số lượng phải là số')
+                .positive('Số lượng phải lớn hơn 0')
+                .integer('Số lượng phải là số nguyên')
+                .required('Vui lòng nhập số lượng')
+        })
+
+        const onSubmit = (values: { quantity: number }) => {
+            console.log('OK')
+            selectedOrderDetail && handleUpdateQuantity(selectedOrderDetail?.id, values.quantity)
+            onClose()
+        }
+
         const onClose = () => {
             setIsOpenEditQuantity(false)
             document.body.style.overflow = 'auto'
         }
+
         return (
             <Dialog isOpen={isOpenEditQuantity} closable={false}>
                 <h5 className="mb-4">Thay đổi số lượng</h5>
-                <p>Vui lòng nhập số lượng mong muôn:</p>
-                <Input
-                    type={'number'}
-                    min={1}
-                    defaultValue={quantity}
-                    onChange={(el: ChangeEvent<HTMLInputElement>) => setQuantity(Number(el.target.value))}
-                ></Input>
-                <div className="text-right mt-6">
-                    <Button
-                        className="ltr:mr-2 rtl:ml-2"
-                        variant="plain"
-                        onClick={onClose}
-                    >
-                        Hủy
-                    </Button>
-                    <Button variant="solid" onClick={onDialogEditNumberOk}>
-                        Xác nhận
-                    </Button>
-                </div>
+                <p>Vui lòng nhập số lượng mong muốn:</p>
+                <Formik
+                    enableReinitialize
+                    initialValues={initialValues}
+                    validationSchema={validationSchema}
+                    onSubmit={onSubmit}
+                >
+                    {({ setFieldValue }) => (
+                        <Form>
+                            <Field
+                                name="quantity"
+                                type="number"
+                                min={1}
+                                className="w-full px-3 py-2 border rounded"
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                    const value = e.target.value
+                                    if (/^\d*$/.test(value)) {
+                                        setFieldValue('quantity', value ? Math.max(Number(value), 1) : '')
+                                    }
+                                }}
+                            />
+                            <ErrorMessage
+                                name="quantity"
+                                component="p"
+                                className="text-red-500 mt-2"
+                            />
+                            <div className="text-right mt-6">
+                                <Button
+                                    className="ltr:mr-2 rtl:ml-2"
+                                    variant="plain"
+                                    onClick={onClose}
+                                >
+                                    Hủy
+                                </Button>
+                                <Button type="submit" variant="solid">
+                                    Xác nhận
+                                </Button>
+                            </div>
+                        </Form>
+                    )}
+                </Formik>
             </Dialog>
         )
     }
+
 
     return (
         <div

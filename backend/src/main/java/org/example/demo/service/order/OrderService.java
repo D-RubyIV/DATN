@@ -502,7 +502,10 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
         // HÓA ĐƠN CHỜ -> CHỜ VẬN CHUYỂN
         if (oldStatus == Status.PENDING && newStatus == Status.TOSHIP) {
             log.info("1. TRUONG HOP 1");
-            checkValidateQuantity(entityFound);
+            // khi nảo check ? (1. đơn tại quầy là giao hàng , 2. là đơn online lúc convert) => chỉ cần check cho đơn tại quầy
+            if (entityFound.getInStore()) {
+                checkValidateQuantity(entityFound);
+            }
             // nếu là đơn giao hàng
             if (entityFound.getType() == Type.ONLINE) {
                 log.info("1.2 LÀ ĐƠN GIAO HÀNG");
@@ -632,24 +635,35 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     }
 
     @Transactional
-    public void useVoucher(Voucher voucherFound, Order orderFound) {
+    public void useVoucher(Voucher newVoucherFound, Order orderFound) {
         System.out.println(orderFound.getCode());
-        System.out.println(voucherFound.getCode());
-        check_own_voucher(voucherFound);
+        System.out.println(newVoucherFound.getCode());
+        check_own_voucher(newVoucherFound);
+
+        Voucher oldVoucher = orderFound.getVoucher();
 
         double subtotal_of_order = get_subtotal_of_order(orderFound);
-        Integer t = voucherFound.getMinAmount();
+        Integer t = newVoucherFound.getMinAmount();
         // kiêm tra số lương
-        if (voucherFound.getQuantity() > 0) {
+        if (newVoucherFound.getQuantity() > 0) {
             if (subtotal_of_order >= t) {
-                double discount = NumberUtil.roundDouble(subtotal_of_order / 100 * voucherFound.getMaxPercent());
+                double discount = NumberUtil.roundDouble(subtotal_of_order / 100 * newVoucherFound.getMaxPercent());
                 log.info("DISCOUNT VALUE: " + discount);
-                log.info("DISCOUNT PERCENT: " + voucherFound.getMaxPercent());
+                log.info("DISCOUNT PERCENT: " + newVoucherFound.getMaxPercent());
                 orderFound.setTotal(subtotal_of_order - discount);
                 orderFound.setDiscount(discount);
                 orderFound.setSubTotal(subtotal_of_order);
-                orderFound.setDiscountVoucherPercent(Double.valueOf(voucherFound.getMaxPercent()));
-                orderFound.setVoucher(voucherFound);
+                orderFound.setDiscountVoucherPercent(Double.valueOf(newVoucherFound.getMaxPercent()));
+                orderFound.setVoucher(newVoucherFound);
+                // TRU SL VOUCHER
+                if (oldVoucher != null && !Objects.equals(oldVoucher.getId(), newVoucherFound.getId())) {
+                    if (!orderFound.getInStore()) {
+                        decreaseQuantityVoucher(newVoucherFound);
+                        increaseQuantityVoucher(oldVoucher);
+                    }
+                }
+
+
             } else {
                 throw new CustomExceptions.CustomBadRequest("Số tiền tối thiểu không đáp ứng");
             }
@@ -1083,6 +1097,17 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
                 log.info("BEST VOUCHER CODE: " + bestVoucher.getCode());
                 order.setDiscountVoucherPercent(Double.valueOf(bestVoucher.getMaxPercent()));
                 order.setVoucherMinimumSubtotalRequired(Double.valueOf(bestVoucher.getMinAmount()));
+
+                // TU TRU SO LUONG NEU LÀ DƠN TRUC TUYEN
+                if (!order.getInStore()) {
+                    log.info("TRU LUON SO LUONG VOUCHER VỚI ĐƠN TRUC TUYEN");
+                    decreaseQuantityVoucher(order.getVoucher());
+                    log.info("- LUON SO LUONG VOUCHER: " + order.getVoucher().getCode());
+                    if(oldVoucher != null){
+                        increaseQuantityVoucher(oldVoucher);
+                        log.info("+ LUON SO LUONG VOUCHER: " + oldVoucher.getCode());
+                    }
+                }
             } else if (oldVoucher != null) {
                 // kiem tra dk voucher cu
                 log.info("CÓ VOUCHER CŨ");
@@ -1157,8 +1182,16 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     @Transactional
     public Order unLinkVoucher(Integer id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
-        order.setVoucher(null);
-        order.setDiscountVoucherPercent(0.0);
+        if (order.getStatus() == Status.PENDING) {
+            if (!order.getInStore() && order.getVoucher() != null) {
+                increaseQuantityVoucher(order.getVoucher());
+            }
+            order.setVoucher(null);
+            order.setDiscountVoucherPercent(0.0);
+        } else {
+            throw new CustomExceptions.CustomBadRequest("Không thể hủy gán phiếu giảm giá khi không ở trạng thái chờ xác nhận");
+        }
+        reloadSubTotalOrder(order);
         return orderRepository.save(order);
     }
 

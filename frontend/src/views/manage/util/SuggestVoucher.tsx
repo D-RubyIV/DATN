@@ -105,11 +105,11 @@ const SuggestVoucher = ({ selectedOrder, fetchSelectedOrder }: {
                                 {
                                     listVoucherSuggest[0]?.minAmount > selectedOrder.subTotal ? (
                                             <div className={'py-2 flex'}>
-                                                <p className={'text-red-500'}>Cần mua
-                                                    thêm {Math.round(listVoucherSuggest[0]?.minAmount - selectedOrder.subTotal).toLocaleString('vi') + 'đ'} giá
-                                                    để có thể sử dụng khuyễn mãi tốt hơn
-                                                    giảm {listVoucherSuggest[0]?.maxPercent} %
-                                                </p>
+                                                {/*<p className={'text-red-500'}>Cần mua*/}
+                                                {/*    thêm {Math.round(listVoucherSuggest[0]?.minAmount - selectedOrder.subTotal).toLocaleString('vi') + 'đ'} giá*/}
+                                                {/*    để có thể sử dụng khuyễn mãi tốt hơn*/}
+                                                {/*    giảm {listVoucherSuggest[0]?.maxPercent} %*/}
+                                                {/*</p>*/}
                                             </div>
                                         ) :
                                         (
