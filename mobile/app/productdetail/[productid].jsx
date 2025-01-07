@@ -182,10 +182,10 @@ export default function ProductDetailScreen() {
         }
     };
 
-    const handleAddToCart = async() => {
+    const handleAddToCart = async () => {
         // Logic to add the selected product to the cart
         console.log('Add to cart functionality not implemented yet.');
-        if(selectedOrder?.id){
+        if (selectedOrder?.id) {
             const data = {
                 "orderId": selectedOrder.id,
                 "quantity": quantity,
@@ -195,10 +195,10 @@ export default function ProductDetailScreen() {
                 console.log(response)
             })
         }
-        else{
+        else {
             console.log("Chưa có order id")
         }
-    
+
     };
 
     const renderPriceSection = () => {
@@ -291,114 +291,100 @@ export default function ProductDetailScreen() {
 
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.productDetailContainer}>
+            <View style={styles.mainContent}>
                 {renderProductImages()}
 
-                <View style={styles.productInfoContainer}>
+                <View style={styles.infoCard}>
                     <Text style={styles.productName}>{product.name}</Text>
-
-                    <View style={styles.productMetaContainer}>
-                        <Text>Mã sản phẩm:
-                            <Text style={styles.boldText}>
-                                {selectedProductDetail?.code}
-                            </Text>
-                        </Text>
-                        <Text>Thương hiệu:
-                            <Text style={styles.boldText}>
-                                {selectedProductDetail?.brand?.name}
-                            </Text>
-                        </Text>
-                        <Text>Chất liệu:
-                            <Text style={styles.boldText}>
-                                {selectedProductDetail?.material?.name}
-                            </Text>
-                        </Text>
-                        <Text>Kho:
-                            <Text style={styles.boldText}>
-                                {selectedProductDetail?.quantity}
-                            </Text>
-                        </Text>
-                        <Text>Tình trạng:
-                            <Text style={styles.boldText}>
-                                {selectedProductDetail?.quantity > 0 ? 'Còn hàng' : 'Hết hàng'}
-                            </Text>
-                        </Text>
-                    </View>
-
+                    
                     {renderPriceSection()}
 
-                    <View style={styles.selectionContainer}>
-                        <Text style={styles.sectionTitle}>Màu sắc</Text>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.colorSelectionContainer}
-                        >
-                            {listColor.map((color) => (
-                                <TouchableOpacity
-                                    key={color.id}
-                                    style={[
-                                        styles.colorButton,
-                                        selectedColor?.id === color.id && styles.selectedColorButton
-                                    ]}
-                                    onPress={() => handleColorSelect(color)}
-                                >
-                                    <Text style={styles.colorButtonText}>{color.name}</Text>
-                                </TouchableOpacity>
-                            ))}
+                    <View style={styles.metaGrid}>
+                        {selectedProductDetail && (
+                            <>
+                                <View style={styles.metaItem}>
+                                    <Text style={styles.metaLabel}>Mã SP</Text>
+                                    <Text style={styles.metaValue}>{selectedProductDetail.code}</Text>
+                                </View>
+                                <View style={styles.metaItem}>
+                                    <Text style={styles.metaLabel}>Thương hiệu</Text>
+                                    <Text style={styles.metaValue}>{selectedProductDetail.brand?.name}</Text>
+                                </View>
+                                <View style={styles.metaItem}>
+                                    <Text style={styles.metaLabel}>Chất liệu</Text>
+                                    <Text style={styles.metaValue}>{selectedProductDetail.material?.name}</Text>
+                                </View>
+                                <View style={styles.metaItem}>
+                                    <Text style={styles.metaLabel}>Kho</Text>
+                                    <Text style={styles.metaValue}>{selectedProductDetail.quantity}</Text>
+                                </View>
+                                <View style={styles.metaItem}>
+                                    <Text style={styles.metaLabel}>Tình trạng</Text>
+                                    <Text style={[styles.metaValue, {color: selectedProductDetail.quantity > 0 ? '#00C853' : '#D32F2F'}]}>
+                                        {selectedProductDetail.quantity > 0 ? 'Còn hàng' : 'Hết hàng'}
+                                    </Text>
+                                </View>
+                            </>
+                        )}
+                    </View>
+
+                    <View style={styles.optionsContainer}>
+                        <Text style={styles.optionTitle}>Màu sắc</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <View style={styles.optionsRow}>
+                                {listColor.map((color) => (
+                                    <TouchableOpacity
+                                        key={color.id}
+                                        style={[styles.optionChip, selectedColor?.id === color.id && styles.selectedChip]}
+                                        onPress={() => handleColorSelect(color)}
+                                    >
+                                        <Text style={[styles.optionText, selectedColor?.id === color.id && styles.selectedOptionText]}>
+                                            {color.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </ScrollView>
+
+                        <Text style={[styles.optionTitle, {marginTop: 16}]}>Size</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            <View style={styles.optionsRow}>
+                                {listSize.map((size) => (
+                                    <TouchableOpacity
+                                        key={size.id}
+                                        style={[styles.optionChip, selectedSize?.id === size.id && styles.selectedChip]}
+                                        onPress={() => handleSizeSelect(size)}
+                                    >
+                                        <Text style={[styles.optionText, selectedSize?.id === size.id && styles.selectedOptionText]}>
+                                            {size.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
                         </ScrollView>
                     </View>
 
-                    <View style={styles.selectionContainer}>
-                        <Text style={styles.sectionTitle}>Size</Text>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={styles.sizeSelectionContainer}
-                        >
-                            {listSize.map((size) => (
-                                <TouchableOpacity
-                                    key={size.id}
-                                    style={[
-                                        styles.sizeButton,
-                                        selectedSize?.id === size.id && styles.selectedSizeButton
-                                    ]}
-                                    onPress={() => handleSizeSelect(size)}
-                                >
-                                    <Text style={styles.sizeButtonText}>{size.name}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </ScrollView>
-                    </View>
-
-                    <View style={styles.quantityContainer}>
-                        <Text style={styles.sectionTitle}>Số lượng</Text>
-                        <View style={styles.quantityControl}>
-                            <TouchableOpacity onPress={handleDecreaseQuantity}>
-                                <Icon name="minus-circle" size={30} color="black" />
+                    <View style={styles.quantitySection}>
+                        <Text style={styles.optionTitle}>Số lượng</Text>
+                        <View style={styles.quantityControls}>
+                            <TouchableOpacity style={styles.quantityButton} onPress={handleDecreaseQuantity}>
+                                <Icon name="minus" size={16} color="#333" />
                             </TouchableOpacity>
-                            <Text style={styles.quantityText}>{quantity}</Text>
-                            <TouchableOpacity onPress={handleIncreaseQuantity}>
-                                <Icon name="plus-circle" size={30} color="black" />
+                            <Text style={styles.quantityDisplay}>{quantity}</Text>
+                            <TouchableOpacity style={styles.quantityButton} onPress={handleIncreaseQuantity}>
+                                <Icon name="plus" size={16} color="#333" />
                             </TouchableOpacity>
                         </View>
                     </View>
 
-                    <View style={styles.actionButtonContainer}>
-                        <TouchableOpacity
-                            style={styles.addToCartButton}
-                            onPress={( ) => handleAddToCart()}
-                        >
-                            <Text style={styles.addToCartButtonText}>Thêm vào giỏ hàng</Text>
+                    <View style={styles.actionButtons}>
+                        <TouchableOpacity style={styles.cartButton} onPress={handleAddToCart}>
+                            <Icon name="shopping-cart" size={18} color="white" style={styles.buttonIcon} />
+                            <Text style={styles.buttonText}>Thêm vào giỏ</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.buyNowButton}
-                            onPress={() => {
-                                handleAddToCart();
-                                // navigation.navigate('Checkout'); // Ensure navigation is properly set up
-                            }}
-                        >
-                            <Text style={styles.buyNowButtonText}>Mua ngay</Text>
+                        <TouchableOpacity style={styles.buyButton} onPress={() => handleAddToCart()}>
+                            <Icon name="bolt" size={18} color="white" style={styles.buttonIcon} />
+                            <Text style={styles.buttonText}>Mua ngay</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -407,20 +393,22 @@ export default function ProductDetailScreen() {
     );
 }
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#f5f5f5',
     },
-    productDetailContainer: {
-        paddingHorizontal: 20,
-        paddingTop: 20,
+    mainContent: {
+        padding: 12,
     },
     mainImageContainer: {
-        position: 'relative',
-        width: width - 40,
-        height: width * 1.25,
+        width: width - 24,
+        aspectRatio: 1,
+        borderRadius: 16,
+        overflow: 'hidden',
+        backgroundColor: 'white',
+        elevation: 4,
+        marginBottom: 12,
     },
     mainImage: {
         width: '100%',
@@ -428,151 +416,168 @@ const styles = StyleSheet.create({
     },
     discountBadge: {
         position: 'absolute',
-        top: 10,
-        right: 10,
-        backgroundColor: 'red',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        zIndex: 10,
+        top: 12,
+        right: 12,
+        backgroundColor: '#FF3D00',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
     },
     discountBadgeText: {
         color: 'white',
-        fontWeight: 'bold',
+        fontWeight: '600',
+        fontSize: 14,
     },
-    thumbnailContainer: {
-        flexDirection: 'row',
-        marginTop: 10,
+    thumbnailScroll: {
+        marginTop: 8,
     },
-    thumbnailWrapper: {
-        marginRight: 10,
-        borderWidth: 1,
+    thumbnail: {
+        width: 64,
+        height: 64,
+        marginRight: 8,
+        borderRadius: 8,
+        borderWidth: 2,
         borderColor: 'transparent',
     },
     selectedThumbnail: {
-        borderColor: 'black',
+        borderColor: '#1976D2',
     },
-    thumbnailImage: {
-        width: 60,
-        height: 60,
-        resizeMode: 'cover',
-    },
-    productInfoContainer: {
-        marginTop: 20,
+    infoCard: {
+        backgroundColor: 'white',
+        borderRadius: 16,
+        padding: 16,
+        marginTop: 12,
+        elevation: 2,
     },
     productName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#212121',
+        marginBottom: 12,
     },
-    productMetaContainer: {
-        marginBottom: 15,
+    metaGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginVertical: 16,
+        borderRadius: 12,
+        backgroundColor: '#F5F5F5',
+        padding: 12,
     },
-    boldText: {
-        fontWeight: 'bold',
+    metaItem: {
+        width: '50%',
+        marginBottom: 12,
+    },
+    metaLabel: {
+        fontSize: 13,
+        color: '#757575',
+        marginBottom: 4,
+    },
+    metaValue: {
+        fontSize: 15,
+        color: '#212121',
+        fontWeight: '500',
     },
     priceContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 15,
+        marginBottom: 8,
     },
     discountedPrice: {
-        color: 'red',
-        fontSize: 18,
-        marginRight: 10,
+        fontSize: 24,
+        fontWeight: '700',
+        color: '#F44336',
+        marginRight: 8,
     },
     originalPrice: {
-        color: 'black',
         fontSize: 16,
-    },
-    strikethrough: {
+        color: '#9E9E9E',
         textDecorationLine: 'line-through',
-        color: 'gray',
     },
-    priceRangeText: {
-        color: 'red',
-        fontSize: 18,
-        fontWeight: 'bold',
+    optionsContainer: {
+        marginTop: 16,
     },
-    selectionContainer: {
-        marginVertical: 10,
-    },
-    sectionTitle: {
+    optionTitle: {
         fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 10,
+        fontWeight: '600',
+        color: '#212121',
+        marginBottom: 12,
     },
-    colorSelectionContainer: {
+    optionsRow: {
         flexDirection: 'row',
+        flexWrap: 'wrap',
     },
-    colorButton: {
-        borderWidth: 1,
-        borderColor: 'black',
-        padding: 10,
-        marginRight: 10,
+    optionChip: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: '#F5F5F5',
+        marginRight: 8,
+        marginBottom: 8,
     },
-    selectedColorButton: {
-        backgroundColor: 'black',
+    selectedChip: {
+        backgroundColor: '#1976D2',
     },
-    colorButtonText: {
-        color: 'black',
+    optionText: {
+        color: '#424242',
+        fontSize: 14,
     },
-    sizeSelectionContainer: {
-        flexDirection: 'row',
+    selectedOptionText: {
+        color: 'white',
     },
-    sizeButton: {
-        borderWidth: 1,
-        borderColor: 'black',
-        padding: 10,
-        marginRight: 10,
+    quantitySection: {
+        marginTop: 24,
     },
-    selectedSizeButton: {
-        backgroundColor: 'black',
-    },
-    sizeButtonText: {
-        color: 'black',
-    },
-    quantityContainer: {
-        marginVertical: 10,
-    },
-    quantityControl: {
+    quantityControls: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: '#F5F5F5',
+        borderRadius: 12,
+        padding: 8,
     },
-    quantityText: {
-        fontSize: 18,
-        marginHorizontal: 10,
+    quantityButton: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 1,
     },
-    actionButtonContainer: {
+    quantityDisplay: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginHorizontal: 24,
+    },
+    actionButtons: {
         flexDirection: 'row',
-        marginTop: 20,
+        marginTop: 24,
+        gap: 12,
     },
-    addToCartButton: {
+    cartButton: {
         flex: 1,
-        backgroundColor: 'orange',
-        padding: 15,
-        marginRight: 10,
-        justifyContent: 'center',
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FF9800',
+        padding: 16,
+        borderRadius: 12,
     },
-    addToCartButtonText: {
+    buyButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#4CAF50',
+        padding: 16,
+        borderRadius: 12,
+    },
+    buttonIcon: {
+        marginRight: 8,
+    },
+    buttonText: {
         color: 'white',
         fontSize: 16,
-    },
-    buyNowButton: {
-        flex: 1,
-        backgroundColor: 'green',
-        padding: 15,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buyNowButtonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-    center: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        fontWeight: '600',
     },
 });

@@ -7,7 +7,7 @@ import axios from "axios";
 import { AppContext } from "../../context/AppContext";
 import { Trash2, Plus, Minus } from "lucide-react-native";
 import Toast from 'react-native-toast-message';
-import {API_BASE_URL} from "../../constants/API"
+import { API_BASE_URL } from "../../constants/API";
 let stompClient = null;
 
 export default function Explore() {
@@ -34,20 +34,17 @@ export default function Explore() {
 
   const onGetOrderByCode = async (code) => {
     if (code !== " ") {
-
     }
     try {
       setlistOrderDetail([]);
-
       const response = await axios.get(
         `${API_BASE_URL}/orders/by-code/${code}`
-      )
+      );
       if (response.status === 200) {
-        setselectedOrder(response.data)
+        setselectedOrder(response.data);
         setlistOrderDetail(response.data.orderDetailResponseDTOS || []);
       }
     } catch (error) {
-      // console.error("Không tìm thấy đơn hàng.", error);
       Toast.show({
         type: 'error',
         text1: 'Không đủ số lượng sản phẩm trong kho!',
@@ -79,17 +76,15 @@ export default function Explore() {
       }
     );
   };
+
   const deleteOrderDetail = async (order_detail_id) => {
     try {
-      await axios.delete(
-        `${API_BASE_URL}/order-details/${order_detail_id}`
-      );
+      await axios.delete(`${API_BASE_URL}/order-details/${order_detail_id}`);
       onGetOrderByCode(selectedOrderCode);
     } catch (error) {
       console.error("Failed to update quantity", error);
     }
-  }
-
+  };
 
   const updateQuantity = async (itemId, newQuantity) => {
     try {
@@ -109,8 +104,6 @@ export default function Explore() {
     }, 0);
   };
 
-
-
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -118,9 +111,12 @@ export default function Explore() {
         contentContainerStyle={styles.scrollViewContent}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Hóa đơn #{selectedOrderCode} - 
-            {" "}
-            <Text style={{color: "red"}}>{selectedOrder?.total.toLocaleString('vi')} vnđ</Text>
+          <Text style={styles.title}>
+            Hóa đơn #{selectedOrderCode}
+            {/* -{" "} */}
+            {/* <Text style={{ color: "red" }}>
+              {selectedOrder?.total?.toLocaleString('vi')} vnđ
+            </Text> */}
           </Text>
         </View>
 
@@ -130,7 +126,7 @@ export default function Explore() {
               <View style={styles.imageContainer}>
                 <Image
                   source={{
-                    uri: item.productDetailResponseDTO.images[0]?.url || 'https://via.placeholder.com/150'
+                    uri: item.productDetailResponseDTO.images[0]?.url || 'https://via.placeholder.com/150',
                   }}
                   style={styles.image}
                   resizeMode="cover"
@@ -138,18 +134,17 @@ export default function Explore() {
               </View>
 
               <View style={styles.productDetails}>
-                <Text style={styles.productCode} numberOfLines={2} >{item.productDetailResponseDTO.product.name}</Text>
-
-                <Text style={styles.text} >
-                  {item.productDetailResponseDTO.code}
+                <Text style={styles.productCode} numberOfLines={2}>
+                  {item.productDetailResponseDTO.product.name}
                 </Text>
-                <Text style={styles.text} >
+                <Text style={styles.text}>{item.productDetailResponseDTO.code}</Text>
+                <Text style={styles.text}>
                   Màu sắc: {item.productDetailResponseDTO.color.name}
                 </Text>
-                <Text style={styles.text} >
+                <Text style={styles.text}>
                   Kích cỡ: {item.productDetailResponseDTO.size.name}
                 </Text>
-                <Text style={styles.text} color="red.500" >
+                <Text style={styles.text} color="red.500">
                   Giá: {item.productDetailResponseDTO.price}
                 </Text>
                 <View style={styles.quantityContainer}>
@@ -159,7 +154,9 @@ export default function Explore() {
                       colorScheme="coolGray"
                       variant="outline"
                       rounded="full"
-                      onPress={() => updateQuantity(item.id, Math.max(0, item.quantity - 1))}
+                      onPress={() =>
+                        updateQuantity(item.id, Math.max(0, item.quantity - 1))
+                      }
                       size="xs"
                       style={styles.iconButton}
                     />
@@ -187,6 +184,16 @@ export default function Explore() {
           ))}
         </View>
       </ScrollView>
+
+      {/* Footer for Total Price */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          Tổng số tiền:{" "}
+          <Text style={{ color: "red", fontWeight: "bold" }}>
+            {selectedOrder?.total?.toLocaleString('vi')} vnđ
+          </Text>
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   scrollViewContent: {
-    paddingBottom: 20,
+    paddingBottom: 80, // Add padding so the footer doesn't overlap content
   },
   header: {
     padding: 15,
@@ -231,14 +238,14 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   iconButton: {
-    width: 20, // Thay đổi chiều rộng
-    height: 20, // Thay đổi chiều cao
-    borderWidth: 1, // Độ dày viền
-    padding: 1, // Khoảng cách bên trong nút
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    padding: 1,
   },
   image: {
-    width: 100,  // Reduced to 20% of screen width
-    height: 100,  // Square aspect ratio
+    width: 100,
+    height: 100,
     borderRadius: 8,
   },
   productDetails: {
@@ -271,16 +278,19 @@ const styles = StyleSheet.create({
     minWidth: 30,
     textAlign: "center",
   },
-  totalContainer: {
-    marginTop: 20,
-    padding: 15,
+  footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: "#fff",
+    padding: 15,
     borderTopWidth: 1,
     borderColor: "#ddd",
-    alignItems: "flex-end",
+    alignItems: "center",
   },
-  totalText: {
-    fontSize: 18,
+  footerText: {
+    fontSize: 16,
     fontWeight: "bold",
     color: "#333",
   },
