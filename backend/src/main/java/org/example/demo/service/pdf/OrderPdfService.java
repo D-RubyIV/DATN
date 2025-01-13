@@ -191,7 +191,7 @@ public class OrderPdfService {
                 double productDetailPrice = s.getProductDetail().getPrice();
                 // lấy ra phần trăm giảm giá của sự kiện lúc tạo hóa đơn chờ tại thời điểm đó
                 double averageEventPercent = s.getAverageDiscountEventPercent();
-                double currentPrice = NumberUtil.roundDouble(productDetailPrice * (1 - averageEventPercent / 100));
+                double currentPrice = s.getUnitPrice();
 
                 String price = CurrencyFormat.format(currentPrice) + " VND";
                 String subTotal = CurrencyFormat.format(currentPrice * s.getQuantity()) + " VND";

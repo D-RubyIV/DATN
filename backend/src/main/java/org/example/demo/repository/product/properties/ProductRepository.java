@@ -86,19 +86,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query(value = """
             SELECT p.id as id, p.code as code, p.name as name, p.deleted as deleted,
-            COALESCE(SUM(CASE WHEN 
-            pd.size.deleted = false AND
-            pd.color.deleted = false AND
-            pd.brand.deleted = false AND
-            pd.texture.deleted = false AND
-            pd.origin.deleted = false AND
-            pd.sleeve.deleted = false AND
-            pd.style.deleted = false AND
-            pd.material.deleted = false AND
-            pd.thickness.deleted = false AND
-            pd.elasticity.deleted = false AND
-            pd.collar.deleted = false 
-            THEN pd.quantity ELSE 0 END), 0) as quantity,
+            COALESCE(SUM(pd.quantity), 0) as quantity,
             p.createdDate as createdDate, p.updatedDate as modifiedDate
             FROM Product p
             LEFT JOIN ProductDetail pd ON p.id = pd.product.id

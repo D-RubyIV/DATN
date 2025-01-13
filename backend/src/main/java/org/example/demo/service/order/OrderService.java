@@ -1225,6 +1225,9 @@ public class OrderService implements IService<Order, Integer, OrderRequestDTO> {
     public Order changeIsFillFeeManually(Integer orderId, boolean isManually) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomExceptions.CustomBadRequest("Không tìm thấy đơn hàng này"));
         order.setIsFeeManually(isManually);
+        if(isManually){
+            check_validate_address_for_online_order(order);
+        }
         reloadSubTotalOrder(order);
         return orderRepository.save(order);
     }

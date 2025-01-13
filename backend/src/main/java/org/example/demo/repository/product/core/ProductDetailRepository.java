@@ -87,17 +87,6 @@ public interface ProductDetailRepository extends JpaRepository<ProductDetail, In
             AND (:material IS NULL OR pd.material.name  LIKE LOWER(CONCAT('%', :material, '%')))
             AND (:thickness IS NULL OR pd.thickness.name  LIKE LOWER(CONCAT('%', :thickness, '%')))
             AND (:elasticity IS NULL OR pd.elasticity.name LIKE LOWER(CONCAT('%', :elasticity, '%')))
-            AND (s.deleted = false)
-            AND (c.deleted = false)
-            AND (t.deleted = false)
-            AND (o.deleted = false)
-            AND (b.deleted = false)
-            AND (cr.deleted = false)
-            AND (sl.deleted = false)
-            AND (st.deleted = false)
-            AND (m.deleted = false)
-            AND (ts.deleted = false)
-            AND (ey.deleted = false)
             ORDER BY pd.createdDate DESC
             """)
     Page<ProductDetail> findAllByProductIdWithQuery(
