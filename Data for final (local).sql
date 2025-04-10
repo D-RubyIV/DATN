@@ -18,6 +18,8 @@ GO
 USE final
 GO
 
+SET QUOTED_IDENTIFIER ON;
+
 IF DB_NAME() <> N'final' SET NOEXEC ON
 GO
 --

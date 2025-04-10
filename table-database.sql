@@ -1,6 +1,5 @@
 ﻿use final
 go
-
 create table brand
 (
     deleted      bit,
@@ -81,7 +80,7 @@ create table event
     updated_date      datetime2(6),
     discount_code     varchar(255),
     name              nvarchar(255),
-    status            varchar(255)
+    status            nvarchar(255)
 )
 go
 
@@ -560,6 +559,7 @@ create table orders
     id                                int identity
         primary key,
     in_store                          bit,
+    is_fee_manually                   bit,
     is_payment                        bit,
     province_id                       nvarchar(255),
     staff_id                          int
@@ -625,6 +625,7 @@ create table order_detail
         constraint FK4onmghajt9jh9quh6ed3lipdn
             references product_detail,
     quantity               int,
+    unit_price             float,
     created_date           datetime2(6),
     updated_date           datetime2(6)
 )
