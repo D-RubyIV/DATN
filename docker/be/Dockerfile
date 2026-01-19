@@ -1,5 +1,5 @@
 # Stage 1: Build the application using Maven
-FROM maven:3.9.5 AS build
+FROM maven:3.8.4-eclipse-temurin-17 AS build
 
 # Set the working directory within the container to /app
 WORKDIR /backend
@@ -11,7 +11,7 @@ COPY /backend .
 RUN mvn clean install -DskipTests
 
 # Stage 2: Create a lightweight container with only the necessary artifacts
-FROM openjdk:17
+FROM amazoncorretto:17-alpine
 
 # Set the working directory within the container to /app
 

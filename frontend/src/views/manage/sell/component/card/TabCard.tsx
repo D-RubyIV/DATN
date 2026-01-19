@@ -348,9 +348,9 @@ const TabCard = ({ idOrder }: { idOrder: number }) => {
                                 </div>
                                 <div>
                                     <img
-                                        src={`https://img.vietqr.io/image/970436-1037904766-bank.png?amount=${
+                                        src={`https://img.vietqr.io/image/970418-2154212981-bank.png?amount=${
                                             Math.round(selectedOrder?.total ?? 0)
-                                        }&addInfo=THANH TOAN DON HANG&accountName=Pham Ha Anh`}
+                                        }&addInfo=THANH TOAN DON HANG&accountName=Nguyen Van Hai`}
                                         width={500}
                                         height={500}
                                     />

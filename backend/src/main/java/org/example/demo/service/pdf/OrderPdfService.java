@@ -126,7 +126,7 @@ public class OrderPdfService {
             //
             myTextClass.addSingleLineText("Email: canth@gmail.com", 25, pageHeight - 95, font, 11, Color.BLACK);
             myTextClass.addSingleLineText("So dien thoại: 0123456789", 25, pageHeight - 110, font, 11, Color.BLACK);
-            myTextClass.addSingleLineText("Địa chỉ: FPT POLYTECHNIC, Kieu mai", 25, pageHeight - 125, font, 11, Color.BLACK);
+            myTextClass.addSingleLineText("Địa chỉ: DAI HOC DIEN LUC,HQV", 25, pageHeight - 125, font, 11, Color.BLACK);
             //
 
             //
@@ -302,7 +302,7 @@ public class OrderPdfService {
 
             contentStream.drawImage(qrCodeImage, pageWidth - 100, pageHeight - 130, 100, 100);
 
-            String fromAddress = "FPT POLYTECHNIC Kieu Mai, Phúc Diễn, Từ Liêm, Hà Nội";
+            String fromAddress = "235 Hoang QUOC VIET, CAU GIAY, HA NOI";
             myTextClass.addSingleLineText("Từ: " + fromAddress, 25, pageHeight - 205, font, 12, Color.BLACK);
 
             String fromPhone = "0833486527";

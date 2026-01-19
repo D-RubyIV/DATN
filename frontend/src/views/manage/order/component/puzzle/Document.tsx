@@ -12,8 +12,8 @@ const Document = ({ billDTO }: { billDTO: OrderResponseDTO }) => {
                 </div>
 
                 <div className="text-right">
-                    <p className="p-0 mb-1">Số 1, Trịnh Văn Bô</p>
-                    <p className="p-0 mb-1">Cao đẳng FPT Hà Nội</p>
+                    <p className="p-0 mb-1">235</p>
+                    <p className="p-0 mb-1">DH Điện Lực</p>
                     <p className="p-0 mb-1">Hà nội, Việt Name</p>
                 </div>
 
