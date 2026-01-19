@@ -13,6 +13,7 @@ import * as Yup from 'yup' // Import Yup để xác thực
 import axios from 'axios' // Import axios để gọi API
 import emailjs from 'emailjs-com' // Import thư viện gửi email
 import dayjs from 'dayjs' // Import thư viện xử lý ngày tháng
+import appConfig from '@/configs/app.config'
 import { useNavigate } from 'react-router-dom' // Import hook để điều hướng
 import {
     FormItem,
@@ -235,7 +236,7 @@ const AddStaffPage = () => {
                 return value.trim() === value
             })
             .test('email-unique', 'Email đã tồn tại', async (email) => {
-                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-email`, { params: { email } })
+                const response = await axios.get(`${appConfig.apiPrefix}/staffs/check-email`, { params: { email } })
                 return !response.data.exists
             }),
 
@@ -243,7 +244,7 @@ const AddStaffPage = () => {
             .required('Số điện thoại là bắt buộc')
             .matches(/(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/, 'Số điện thoại không hợp lệ')
             .test('phone-unique', 'Số điện thoại đã tồn tại', async (phone) => {
-                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-phone`, { params: { phone } })
+                const response = await axios.get(`${appConfig.apiPrefix}/staffs/check-phone`, { params: { phone } })
                 return !response.data.exists
             }),
 
@@ -251,7 +252,7 @@ const AddStaffPage = () => {
             .matches(/^[0-9]{12}$/, 'Căn cước công dân phải có đúng 12 chữ số')
             .required('Căn cước công dân là bắt buộc')
             .test('citizenId-unique', 'Căn cước công dân đã tồn tại', async (citizenId) => {
-                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-citizenId`, { params: { citizenId } })
+                const response = await axios.get(`${appConfig.apiPrefix}/staffs/check-citizenId`, { params: { citizenId } })
                 return !response.data.exists
             }),
 
@@ -296,7 +297,7 @@ const AddStaffPage = () => {
                 ward: values.ward
             }
 
-            const response = await axios.post('http://localhost:8080/api/v1/staffs', payload)
+            const response = await axios.post(`${appConfig.apiPrefix}/staffs`, payload)
 
             if (response.status === 201) {
                 const { code, password } = response.data

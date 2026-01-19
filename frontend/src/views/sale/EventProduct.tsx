@@ -5,6 +5,7 @@ import { FaEye } from 'react-icons/fa';
 import { Button } from '@/components/ui';
 import { Pagination, Select } from '@/components/ui'
 import BreadCrumb from './BreadCrumb';
+import appConfig from '@/configs/app.config'
 
 interface Color {
     id: number;
@@ -69,7 +70,7 @@ function EventProduct() {
         const fetchProducts = async () => {
             try {
                 const response = await fetch(
-                    "http://localhost:8080/api/v1/productDetails/new-in-last-week?page=0&size=10"
+                    `${appConfig.apiPrefix}/productDetails/new-in-last-week?page=0&size=10`
                 );
                 if (!response.ok) {
                     throw new Error("Failed to fetch data from API");

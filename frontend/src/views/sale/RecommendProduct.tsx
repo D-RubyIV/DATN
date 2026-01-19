@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { Pagination, Select } from '@/components/ui'
 import ProductCard from '@/views/sale/product/ProductCard'
 import { ProductSaleCardDTO } from '@/@types/sale'
+import appConfig from '@/configs/app.config'
 
 
 interface Product {
@@ -66,7 +67,7 @@ const RecommendProduct: React.FC = () => {
     // Fetch data from the API
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/v1/productDetails/new-in-last-week?page=0&size=5');
+        const response = await fetch(`${appConfig.apiPrefix}/productDetails/new-in-last-week?page=0&size=5`);
         const data = await response.json();
         setProducts(data.content);
         setLoading(false);

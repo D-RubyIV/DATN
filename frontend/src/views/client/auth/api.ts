@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:8080/api/v1';
+import appConfig from '@/configs/app.config'
+
+const API_URL = appConfig.apiPrefix;
 
 export const loginApi = async (email: string, password: string): Promise<LoginResponse> => {
   const response = await fetch(`${API_URL}/users/login`, {

@@ -3,6 +3,8 @@ import React, { useState,  } from 'react';
 import { useParams } from 'react-router-dom';
 import Details from "./ui/Details";
 import TableProductDetails from "./ui/TableProductDetails";
+import appConfig from '@/configs/app.config';
+
 const ProductDetailsManage = () => {
     const labels = [
         { header: 'MÃ', accessorKey: 'code' },
@@ -20,7 +22,7 @@ const ProductDetailsManage = () => {
                 label="SẢN PHẨM CHI TIẾT"
                 childrenArticle={<TableProductDetails
                     label={labels}
-                    url="http://localhost:8080/api/v1/productDetails/details"
+                    url={`${appConfig.apiPrefix}/productDetails/details`}
                     // onRowClick={(id) => {
                     //     // Chuyển hướng hoặc xử lý khi click vào hàng
                     //     console.log('Row clicked with ID:', id);

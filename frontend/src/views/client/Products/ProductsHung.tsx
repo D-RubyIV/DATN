@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaEye, FaShoppingCart } from "react-icons/fa";
 import axios from "axios";
+import appConfig from '@/configs/app.config';
 
 // Adjusted Product interface to match API response
 interface Product {
@@ -25,7 +26,7 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/productDetails/abc?page=5");
+        const response = await axios.get(`${appConfig.apiPrefix}/productDetails/abc?page=5`);
         // Extract the content array from the API response
         const products = response.data.content || [];
         setProductList(products);

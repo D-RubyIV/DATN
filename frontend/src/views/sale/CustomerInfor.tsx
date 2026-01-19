@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import { Pagination } from 'antd';
 import Dialog from '@/components/ui/Dialog'
 import { SingleValue } from 'react-select';
+import appConfig from '@/configs/app.config';
 
 
 
@@ -182,7 +183,7 @@ const UpdateCustomer = () => {
                 if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra email có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
+                const response = await axios.get(`${appConfig.apiPrefix}/customer/check-email`, { params: { email } });
                 return !response.data.exists; // Nếu email đã tồn tại, trả về false
             }),
 
@@ -193,7 +194,7 @@ const UpdateCustomer = () => {
                 if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra số điện thoại có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/customer/check-phone`, { params: { phone } });
+                const response = await axios.get(`${appConfig.apiPrefix}/customer/check-phone`, { params: { phone } });
                 return !response.data.exists; // Nếu phone đã tồn tại, trả về false
             }),
 
@@ -392,7 +393,7 @@ const UpdateCustomer = () => {
     // Fetch all addresses
     const fetchAddresses = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/address`);
+            const response = await axios.get(`${appConfig.apiPrefix}/address`);
             setAddresses(response.data);
         } catch (error) {
             console.error("Error fetching addresses:", error);
@@ -402,7 +403,7 @@ const UpdateCustomer = () => {
     const fetchCustomer = async (email: string, currentPage: number) => {
         try {
 
-            const response = await axios.get(`http://localhost:8080/api/v1/customer/customer-infor/${email}`, {
+            const response = await axios.get(`${appConfig.apiPrefix}/customer/customer-infor/${email}`, {
                 params: {
                     page: currentPage > 0 ? currentPage - 1 : 0, // Chuyển đổi currentPage về định dạng 0
                     size: pageSize
@@ -476,7 +477,7 @@ const UpdateCustomer = () => {
             return;
         }
         try {
-            const response = await axios.delete(`http://localhost:8080/api/v1/address/delete/${id}`);
+            const response = await axios.delete(`${appConfig.apiPrefix}/address/delete/${id}`);
             if (response.status === 200) {
                 toast.success('Xóa thành công')
                 remove(index);
@@ -518,7 +519,7 @@ const UpdateCustomer = () => {
 
             // Định dạng ngày sinh trước khi gửi
             const formattedBirthDate = dayjs(values.birthDate, 'YYYY-MM-DD').format('DD-MM-YYYY');
-            const response = await axios.put(`http://localhost:8080/api/v1/customer/update/${values.id}`, {
+            const response = await axios.put(`${appConfig.apiPrefix}/customer/update/${values.id}`, {
                 ...values,
                 birthDate: formattedBirthDate, // Gửi ngày đã định dạng
             });
@@ -564,7 +565,7 @@ const UpdateCustomer = () => {
 
             let response;
             if (mode === 'add') {
-                response = await axios.post(`http://localhost:8080/api/v1/customer/${customerId}/address`, address);
+                response = await axios.post(`${appConfig.apiPrefix}/customer/${customerId}/address`, address);
                 console.log('Dữ liệu địa chỉ vừa thêm:', response.data);
                 if (response.status === 201) {
                     // Thêm địa chỉ mới vào đầu danh sách sau khi thành công
@@ -575,7 +576,7 @@ const UpdateCustomer = () => {
                 toast.success('Thêm địa chỉ mới thành công');
             } else {
                 // Gửi yêu cầu cập nhật với các trường ID quận và xã
-                response = await axios.put(`http://localhost:8080/api/v1/address/update/${addressId}`, {
+                response = await axios.put(`${appConfig.apiPrefix}/address/update/${addressId}`, {
                     ...address, // Bao gồm cả districtId và wardId
                     districtId: address.districtId, // Đảm bảo ID quận được gửi
                     wardId: address.wardId // Đảm bảo ID xã được gửi
@@ -599,7 +600,7 @@ const UpdateCustomer = () => {
         try {
             console.log('Updating address ID:', addressId, 'to default:', isDefault);
             const response = await axios.put(
-                `http://localhost:8080/api/v1/customer/${addressId}/default`,
+                `${appConfig.apiPrefix}/customer/${addressId}/default`,
                 null,
                 {
                     params: {

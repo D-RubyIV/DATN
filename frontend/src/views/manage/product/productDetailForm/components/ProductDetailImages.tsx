@@ -9,6 +9,7 @@ import { HiEye, HiTrash } from 'react-icons/hi'
 import cloneDeep from 'lodash/cloneDeep'
 import { Field, FieldProps, FieldInputProps, FormikProps } from 'formik'
 import { Image } from '../store';
+import appConfig from '@/configs/app.config'
 
 
 type FormModel = {
@@ -141,7 +142,7 @@ const ProductDetailImages = (props: ProductImagesProps) => {
         formData.append("file", latestFile);
 
         try {
-            const response = await fetch("http://localhost:8080/api/v1/image/upload", {
+            const response = await fetch(`${appConfig.apiPrefix}/api/v1/api/v1/image/upload`, {
                 method: "POST",
                 body: formData,
             });

@@ -1,6 +1,7 @@
 import React, { SetStateAction, useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import axios from "axios";
+import appConfig from '@/configs/app.config';
 
 interface IProps {
     selectedSizes: Size[];
@@ -21,7 +22,7 @@ const ShowFormSize: React.FC<IProps> = ({ selectedSizes, setSelectedSizes }) => 
     const fetchSizes = async () => {
         try {
             const response = await axios.get(
-                'http://localhost:8080/api/size/'
+                `${appConfig.apiPrefix}/api/size/`
             );
             setSizes(response.data);
         } catch (error) {

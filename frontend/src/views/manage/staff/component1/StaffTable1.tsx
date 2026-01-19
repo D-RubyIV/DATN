@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import appConfig from '@/configs/app.config';
 import debounce from 'lodash/debounce';
 import { Modal } from 'antd';
 import { FaPen, FaFileDownload, FaFileUpload } from 'react-icons/fa';
@@ -205,7 +206,7 @@ const StaffTableStaff = () => {
 
   const updateStatus = async (id: number, newStatus: boolean) => {
     try {
-      await axios.patch(`http://localhost:8080/api/v1/staffs/status/${id}`, {
+      await axios.patch(`${appConfig.apiPrefix}/staffs/status/${id}`, {
         status: newStatus ? 'Active' : 'Inactive',
       });
       toast.success('Cập nhật trạng thái thành công');
@@ -232,7 +233,7 @@ const StaffTableStaff = () => {
         params.status = statusFilter;
       }
 
-      const response = await axios.get('http://localhost:8080/api/v1/staffs/page', { params });
+      const response = await axios.get(`${appConfig.apiPrefix}/staffs/page`, { params });
 
       if (response.data) {
         setData(response.data.content);
@@ -305,7 +306,7 @@ const StaffTableStaff = () => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post<StaffResponseItem[]>('http://localhost:8080/api/v1/staffs/upload-excel', formData, {
+      const response = await axios.post<StaffResponseItem[]>(`${appConfig.apiPrefix}/staffs/upload-excel`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

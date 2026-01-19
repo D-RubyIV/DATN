@@ -1,4 +1,5 @@
 import React, { Fragment, Suspense} from 'react'
+import appConfig from '@/configs/app.config'
 
 const WebSocketNotification: React.FC = () => {
     // const [messages, setMessages] = useState<MessageEntity[]>([])
@@ -21,7 +22,7 @@ const WebSocketNotification: React.FC = () => {
     //     const token = tokenString ? JSON.parse(tokenString) : null
     //     const accessToken = token ? token.accessToken : ''
     //
-    //     const socket = new SockJS(`http://localhost:8080/api/v1/ws-notifications`)
+    //     const socket = new SockJS(`${appConfig.apiPrefix}/ws-notifications`)
     //     const client = new Client({
     //         webSocketFactory: () => socket,
     //         connectHeaders: {

@@ -3,6 +3,8 @@ import FormComponent from "./ui/FormComponent";
 import Details from "./ui/Details";
 import React, { useState } from 'react';
 import { Button } from "@/components/ui";
+import appConfig from '@/configs/app.config';
+
 const ProductManage = () => {
     return (
         <div>
@@ -13,7 +15,7 @@ const ProductManage = () => {
                         { header: 'Mã', accessorKey: 'code' },
                         { header: 'Tên', accessorKey: 'name' },
                     ]}
-                    url="http://localhost:8080/api/v1/product/overview"
+                    url={`${appConfig.apiPrefix}/product/overview`}
                     onRowClick={(id) => {
                         console.log('Row clicked with ID:', id);
                     }}

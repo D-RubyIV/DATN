@@ -13,6 +13,7 @@ import Radio from '@/components/ui/Radio';
 import Select from '@/components/ui/Select';
 import { toast } from 'react-toastify';
 import { SingleValue } from 'react-select';
+import appConfig from '@/configs/app.config';
 import { RxReset } from "react-icons/rx";
 import { GrUpdate } from "react-icons/gr";
 
@@ -92,7 +93,7 @@ const initialStaffState: Staff = {
 //       if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
 //       // Gọi API kiểm tra email có trùng không
-//       const response = await axios.get(`http://localhost:8080/api/v1/customer/check-email`, { params: { email } });
+//       const response = await axios.get(`${appConfig.apiPrefix}/customer/check-email`, { params: { email } });
 //       return !response.data.exists; // Nếu email đã tồn tại, trả về false
 //     }),
 //   birthDay: Yup.date()
@@ -150,7 +151,7 @@ const UpdateStaffPage = () => {
                 if (email === initialContact.currentEmail) return true; // Nếu email không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra email có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-email`, { params: { email } });
+                const response = await axios.get(`${appConfig.apiPrefix}/staffs/check-email`, { params: { email } });
                 return !response.data.exists; // Nếu email đã tồn tại, trả về false
             }),
         birthDay: Yup.date()
@@ -168,7 +169,7 @@ const UpdateStaffPage = () => {
                 if (phone === initialContact.currentPhone) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra số điện thoại có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/staffs/check-phone`, { params: { phone } });
+                const response = await axios.get(`${appConfig.apiPrefix}/staffs/check-phone`, { params: { phone } });
                 return !response.data.exists; // Nếu phone đã tồn tại, trả về false
             }),
         province: Yup.string().required("Tỉnh/Thành phố là bắt buộc"),
@@ -257,7 +258,7 @@ const UpdateStaffPage = () => {
 
     const fetchStaff = async (id: string): Promise<Staff | undefined> => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/staffs/${id}`);
+            const response = await axios.get(`${appConfig.apiPrefix}/staffs/${id}`);
             console.log('Data: ', response)
             const fetchedStaff = response.data;
             const formattedStaff = {
@@ -308,7 +309,7 @@ const UpdateStaffPage = () => {
                 birthDay: values.birthDay ? dayjs(values.birthDay).format('YYYY-MM-DD') : '',
             };
 
-            await axios.put(`http://localhost:8080/api/v1/staffs/${id}`, formattedValues);
+            await axios.put(`${appConfig.apiPrefix}/staffs/${id}`, formattedValues);
             resetForm();
             toast.success('Nhân viên đã được cập nhật thành công.');
             navigate("/admin/manage/staff");

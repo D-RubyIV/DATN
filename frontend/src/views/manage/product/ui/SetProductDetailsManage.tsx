@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import TableRowSelection from './TableRowSelection';
 import { useAppContext } from '@/store/ProductContext';
 import MyComponent from "./MyComponent";
+import appConfig from "@/configs/app.config";
 
 interface ChildComponentProps {
     label?: string;
@@ -34,7 +35,7 @@ console.log(productDetails)
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/product/search/${product.name}`);
+            const response = await fetch(`${appConfig.apiPrefix}/api/v1/product/search/${product.name}`);
             if (response.ok) {
                 const data = await response.json();
                 setProductData(data);
@@ -55,7 +56,7 @@ console.log(productDetails)
         }
 
         try {
-            const response = await fetch('http://localhost:8080/api/v1/product/save', {
+            const response = await fetch(`${appConfig.apiPrefix}/product/save`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,7 +78,7 @@ console.log(productDetails)
 
     const refetchProduct = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/product/search/${product.name}`);
+            const response = await fetch(`${appConfig.apiPrefix}/product/search/${product.name}`);
             if (response.ok) {
                 const data = await response.json();
                 setProperties(prevProperties => ({
@@ -129,7 +130,7 @@ console.log(productDetails)
         console.log("Details to save:", detailsToSave); // Thêm dòng này để kiểm tra dữ liệu
 
         try {
-            const response = await fetch('http://localhost:8080/api/v1/productDetails/saveAll', {
+            const response = await fetch(`${appConfig.apiPrefix}/productDetails/saveAll`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

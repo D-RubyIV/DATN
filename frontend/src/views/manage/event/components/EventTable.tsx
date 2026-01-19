@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 import instance from '@/axios/CustomAxios'
 import { OrderTable } from '@/views/manage/order/component/core/OrderTable'
 import * as Yup from 'yup';
+import appConfig from '@/configs/app.config'
 
 type EventListDTO = {
     id: number;
@@ -51,7 +52,7 @@ const EventTable = () => {
     ) => {
         setLoading(true)
         try {
-            let url = `http://localhost:8080/api/v1/event/all`
+            let url = `${appConfig.apiPrefix}/event/all`
             const params: Record<string, string | number | undefined> = { page, size }
 
             // thay doi endpoint neu co search hoac status filter
@@ -63,7 +64,7 @@ const EventTable = () => {
                 params.status = statusFilter // phai khop voi params cua api (prams.status)
             } else if (dateRange && dateRange[0] && dateRange[1]) {
                 // Dùng API filter-date nếu có dateRange
-                url = `http://localhost:8080/api/v1/event/filter-date`
+                url = `${appConfig.apiPrefix}/event/filter-date`
                 params.startDate = format(dateRange[0], 'yyyy-MM-dd\'T\'HH:mm:ss')
                 params.endDate = format(dateRange[1], 'yyyy-MM-dd\'T\'HH:mm:ss')
             }

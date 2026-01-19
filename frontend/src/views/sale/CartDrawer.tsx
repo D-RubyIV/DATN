@@ -6,6 +6,7 @@ import { CartDetailResponseDTO, Color, ProductDetailResponseDTO, Size } from '@/
 import { Link, useNavigate } from 'react-router-dom'
 import { Avatar, Button, Dialog } from '@/components/ui'
 import instance from '@/axios/CustomAxios'
+import appConfig from '@/configs/app.config'
 import { FiPackage } from 'react-icons/fi'
 import { Delete } from '@mui/icons-material'
 import { useToastContext } from '@/context/ToastContext'
@@ -28,7 +29,7 @@ const CartDrawer = () => {
     const [selectedCartDetail, setSelectedCartDetail] = useState<CartDetailResponseDTO>()
     const handleChangeQuantity = async (item: CartDetailResponseDTO, isIncrease: boolean) => {
         const quantity = isIncrease ? item.quantity += 1 : item.quantity -= 1
-        await instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
+        await instance.get(`${appConfig.apiPrefix}/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
             console.log(response)
 
         }).catch(function(error) {
@@ -41,7 +42,7 @@ const CartDrawer = () => {
     }
 
     const onCheckout = () => {
-         instance.get(`http://localhost:8080/api/v1/cart/allow-checkout/${myCartId}`).then(function(response) {
+         instance.get(`${appConfig.apiPrefix}/cart/allow-checkout/${myCartId}`).then(function(response) {
             console.log(response)
              console.log("OKKK")
              navigate(`/checkout/${myCartId}`)
@@ -55,7 +56,7 @@ const CartDrawer = () => {
     }
 
     const handleChangeQuantityForInput = async (item: CartDetailResponseDTO, quantity) => {
-        await instance.get(`http://localhost:8080/api/v1/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
+        await instance.get(`${appConfig.apiPrefix}/cart-details/quantity/update/${item.id}?quantity=${quantity}`).then(function(response) {
             console.log(response)
 
         }).catch(function(error) {
@@ -68,7 +69,7 @@ const CartDrawer = () => {
     }
 
     const handleRemoveItem = async (itemId: number) => {
-        await instance.delete(`http://localhost:8080/api/v1/cart-details/remove/${itemId}`).then((response) => {
+        await instance.delete(`${appConfig.apiPrefix}/cart-details/remove/${itemId}`).then((response) => {
             if (response.status === 200) {
                 getCartDetailInCard()
             }

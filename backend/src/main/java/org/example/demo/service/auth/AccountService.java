@@ -117,7 +117,7 @@ public class AccountService {
         try {
             Context context = new Context();
             context.setVariable("username", account.getUsername());
-            context.setVariable("websiteUrl", "http://localhost:5173/");
+            context.setVariable("websiteUrl", "https://canthshop.uk/");
 
             emailService.sendHtmlEmail(
                     "hungit23@gmail.com",

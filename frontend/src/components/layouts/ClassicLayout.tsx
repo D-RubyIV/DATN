@@ -28,6 +28,7 @@ import { MyOrderTable } from '@/views/sale/profile/order/MyOrderTable'
 import MyOrderDetail from '@/views/sale/profile/order/MyOrderDetail'
 import MyVoucher from '@/views/sale/profile/voucher/MyVoucher'
 import LandingPage from '@/views/client/LandingPage'
+import appConfig from '@/configs/app.config'
 import PaymentCallback from '@/views/manage/sell/component/payment/PaymentCallback'
 import ResetPassword from '@/views/sale/ResetPassword'
 
@@ -74,7 +75,7 @@ const Bell = () => {
             }
         }
         if (total > 0) {
-            instance.post('http://localhost:8080/api/v1/orders/overview?status=PENDING&type=ONLINE', data).then(function(response) {
+            instance.post(`${appConfig.apiPrefix}/orders/overview?status=PENDING&type=ONLINE`, data).then(function(response) {
                 console.log(response)
                 if (response.status === 200 && response?.data?.content) {
                     setListOrderCurrent(response.data.content)

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui';
 import { Pagination, Select } from '@/components/ui'
 import BreadCrumb from './BreadCrumb';
 import ProductCard from '@/views/sale/product/ProductCard'
+import appConfig from '@/configs/app.config'
 
 
 interface Color {
@@ -69,7 +70,7 @@ const NewProduct: React.FC = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/v1/productDetails/event?page=0&size=10');
+                const response = await fetch(`${appConfig.apiPrefix}/productDetails/event?page=0&size=10`);
                 const data = await response.json();
                 setProducts(data.content);
                 setLoading(false);

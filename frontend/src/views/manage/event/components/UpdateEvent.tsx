@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import * as Yup from 'yup'
 import { Table as AntTable } from 'antd'
 import { useToastContext } from '@/context/ToastContext'
+import appConfig from '@/configs/app.config'
 
 type EventDTO = {
     id: string;
@@ -54,7 +55,7 @@ const UpdateEvent = () => {
                 if (name === initialContact.currentName) return true; // Nếu phone không thay đổi, bỏ qua xác thực
 
                 // Gọi API kiểm tra số điện thoại có trùng không
-                const response = await axios.get(`http://localhost:8080/api/v1/event/check-name`, { params: { name } });
+                const response = await axios.get(`${appConfig.apiPrefix}/event/check-name`, { params: { name } });
                 return !response.data.exists; // Nếu phone đã tồn tại, trả về false
             }),
         discountPercent: Yup.number()
@@ -70,7 +71,7 @@ const UpdateEvent = () => {
         // lấy dữ liệu event theo id
         const fetchEventDetails = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/event/detail/${id}`)
+                const response = await axios.get(`${appConfig.apiPrefix}/event/detail/${id}`)
                 setInitialContact({
                     currentName: response.data.name
                 })
@@ -94,7 +95,7 @@ const UpdateEvent = () => {
     // Lấy danh sách sản phẩm
     const fetchProductDTO = async (pageIndex: number, pageSize: number) => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/event/product-list`, {
+            const response = await axios.get(`${appConfig.apiPrefix}/event/product-list`, {
                 params: { page: pageIndex, size: pageSize }
             })
             setProduct(response.data.content || [])
@@ -161,7 +162,7 @@ const UpdateEvent = () => {
             console.log('Formatted payload:', formattedPayload)
 
             // Gửi yêu cầu PUT để cập nhật sự kiện
-            const response = await axios.put(`http://localhost:8080/api/v1/event/update/${id}`, formattedPayload)
+            const response = await axios.put(`${appConfig.apiPrefix}/event/update/${id}`, formattedPayload)
 
             if (response.status === 200) {
                 console.log('Update response:', response)

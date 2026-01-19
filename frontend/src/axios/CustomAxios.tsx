@@ -1,10 +1,11 @@
 // Create an instance using the config defaults provided by the library
 
+import appConfig from "@/configs/app.config";
 import Axios from "axios";
 
 // At this point the timeout config value is `0` as is the default for the library
 const instance = Axios.create({
-    baseURL: 'https://canthshop.uk/api/v1',
+    baseURL: `${appConfig.apiPrefix}/api/v1`,
     timeout: 30000,
     headers: {}
   });

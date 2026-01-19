@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
+import appConfig from '@/configs/app.config';
 
 
 const ResetPassword = () => {
@@ -38,7 +39,7 @@ const ResetPassword = () => {
 
         try {
             const response = await axios.put(
-                `http://localhost:8080/api/v1/staffs/reset-password?email=${email}`,
+                `${appConfig.apiPrefix}/staffs/reset-password?email=${email}`,
                 {
                     newPassword,
                 }

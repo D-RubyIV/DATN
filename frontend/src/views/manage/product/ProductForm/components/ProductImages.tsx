@@ -7,6 +7,7 @@ import Dialog from '@/components/ui/Dialog';
 import Upload from '@/components/ui/Upload';
 import DoubleSidedImage from '@/components/shared/DoubleSidedImage';
 import { Image } from '../store'; // Đảm bảo kiểu Image được định nghĩa đúng trong project của bạn
+import appConfig from '@/configs/app.config'
 
 type ProductImagesProps = {
     colorName: string; // Tên màu sắc của sản phẩm
@@ -134,7 +135,7 @@ const ProductImages = ({ colorName }: ProductImagesProps) => {
         formData.append("file", file);
 
         try {
-            const response = await fetch("http://localhost:8080/api/v1/image/upload", {
+            const response = await fetch(`${appConfig.apiPrefix}/image/upload`, {
                 method: "POST",
                 body: formData,
             });

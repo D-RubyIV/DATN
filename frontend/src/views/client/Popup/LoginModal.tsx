@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import appConfig from '@/configs/app.config';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -18,7 +19,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLoginSuccess
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/users/login", {
+      const response = await fetch(`${appConfig.apiPrefix}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

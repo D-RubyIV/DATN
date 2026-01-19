@@ -9,19 +9,21 @@ import SizeSelect from './ui/SizeSelect';
 import ProductImage from './ui/ProductImage';
 import { RequestsData, useAppContext } from '../../../store/ProductContext';
 import SetProductDetailsManage from './ui/SetProductDetailsManage';
+import appConfig from '@/configs/app.config';
+
 const AddProductDetailsManage = () => {
 
     const attributeGroups = [
         [
-            { lableAddAttribute: 'brand', label: 'brand', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/brand/brand', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/brand/save', },
-            { lableAddAttribute: 'collar', label: 'collar', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/collar/collar', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/collar/save', },
-            { lableAddAttribute: 'elasticity', label: 'elasticity', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/elasticity/elasticity', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/elasticity/save', },
-            { lableAddAttribute: 'material', label: 'material', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/material/material', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/material/save', },
-            { lableAddAttribute: 'origin', label: 'origin', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/origin/origin', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/origin/save', },
-            { lableAddAttribute: 'sleeve', label: 'sleeve', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/sleeve/sleeve', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/sleeve/save', },
-            { lableAddAttribute: 'style', label: 'style', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/style/style', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/style/save', },
-            { lableAddAttribute: 'texture', label: 'texture', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/texture/texture', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/texture/save', },
-            { lableAddAttribute: 'thickness', label: 'thickness', labelBTN: 'Add', url: 'http://localhost:8080/api/v1/thickness/thickness', placeholder: 'Chọn ...', linksAddAttribute: 'http://localhost:8080/api/v1/thickness/save', },
+            { lableAddAttribute: 'brand', label: 'brand', labelBTN: 'Add', url: `${appConfig.apiPrefix}/brand/brand`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/brand/save`, },
+            { lableAddAttribute: 'collar', label: 'collar', labelBTN: 'Add', url: `${appConfig.apiPrefix}/collar/collar`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/collar/save`, },
+            { lableAddAttribute: 'elasticity', label: 'elasticity', labelBTN: 'Add', url: `${appConfig.apiPrefix}/elasticity/elasticity`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/elasticity/save`, },
+            { lableAddAttribute: 'material', label: 'material', labelBTN: 'Add', url: `${appConfig.apiPrefix}/material/material`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/material/save`, },
+            { lableAddAttribute: 'origin', label: 'origin', labelBTN: 'Add', url: `${appConfig.apiPrefix}/origin/origin`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/origin/save`, },
+            { lableAddAttribute: 'sleeve', label: 'sleeve', labelBTN: 'Add', url: `${appConfig.apiPrefix}/sleeve/sleeve`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/sleeve/save`, },
+            { lableAddAttribute: 'style', label: 'style', labelBTN: 'Add', url: `${appConfig.apiPrefix}/style/style`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/style/save`, },
+            { lableAddAttribute: 'texture', label: 'texture', labelBTN: 'Add', url: `${appConfig.apiPrefix}/texture/texture`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/texture/save`, },
+            { lableAddAttribute: 'thickness', label: 'thickness', labelBTN: 'Add', url: `${appConfig.apiPrefix}/thickness/thickness`, placeholder: 'Chọn ...', linksAddAttribute: `${appConfig.apiPrefix}/thickness/save`, },
 
 
         ],
@@ -73,10 +75,10 @@ const AddProductDetailsManage = () => {
                                 </label>
                                 <div className="grid grid-flow-row-dense grid-cols-10 items-center">
                                     <div className="col-span-9">
-                                        <ColourSelect url='http://localhost:8080/api/v1/color/color' />
+                                        <ColourSelect url={`${appConfig.apiPrefix}/color/color`} />
                                     </div>
                                     <div>
-                                        <AddAttribute labelAddAttribute={"Thêm màu sắc"} linksAddAttribute={"http://localhost:8080/api/v1/color/save"} />
+                                        <AddAttribute labelAddAttribute={"Thêm màu sắc"} linksAddAttribute={`${appConfig.apiPrefix}/color/save`} />
                                     </div>
                                 </div>
                             </div>
@@ -88,10 +90,10 @@ const AddProductDetailsManage = () => {
                                 </label>
                                 <div className="grid grid-flow-row-dense grid-cols-10 items-center">
                                     <div className="col-span-9">
-                                        <SizeSelect urlSize='http://localhost:8080/api/v1/size/size' />
+                                        <SizeSelect urlSize={`${appConfig.apiPrefix}/size/size`} />
                                     </div>
                                     <div>
-                                        <AddAttribute labelAddAttribute={"Thêm kích thước"} linksAddAttribute={"http://localhost:8080/api/v1/size/save"} />
+                                        <AddAttribute labelAddAttribute={"Thêm kích thước"} linksAddAttribute={`${appConfig.apiPrefix}/size/save`} />
                                     </div>
                                 </div>
                             </div>

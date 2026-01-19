@@ -1,4 +1,5 @@
 import ApiService from './ApiService'
+import appConfig from '@/configs/app.config'
 
 
 //get data
@@ -6,7 +7,7 @@ export async function apiGetSalesProducts<T, U extends Record<string, unknown>>(
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/product/overview',
+        url: `${appConfig.apiPrefix}/product/overview`,
         method: 'post',
         data,
     })
@@ -17,7 +18,7 @@ export async function apiGetSalesSizeOverview<T, U extends Record<string, unknow
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/size/overview',
+        url: `${appConfig.apiPrefix}/size/overview`,
         method: 'post',
         data,
     });
@@ -27,7 +28,7 @@ export async function apiGetSalesColorOverview<T, U extends Record<string, unkno
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/color/overview',
+        url: `${appConfig.apiPrefix}/color/overview`,
         method: 'post',
         data,
     });
@@ -37,7 +38,7 @@ export async function apiGetSalesBrandOverview<T, U extends Record<string, unkno
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/brand/overview',
+        url: `${appConfig.apiPrefix}/brand/overview`,
         method: 'post',
         data,
     });
@@ -47,7 +48,7 @@ export async function apiGetSalesCollarOverview<T, U extends Record<string, unkn
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/collar/overview',
+        url: `${appConfig.apiPrefix}/collar/overview`,
         method: 'post',
         data,
     });
@@ -57,7 +58,7 @@ export async function apiGetSalesElasticityOverview<T, U extends Record<string, 
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/elasticity/overview',
+        url: `${appConfig.apiPrefix}/elasticity/overview`,
         method: 'post',
         data,
     });
@@ -67,7 +68,7 @@ export async function apiGetSalesMaterialOverview<T, U extends Record<string, un
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/material/overview',
+        url: `${appConfig.apiPrefix}/material/overview`,
         method: 'post',
         data,
     });
@@ -77,7 +78,7 @@ export async function apiGetSalesOriginOverview<T, U extends Record<string, unkn
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/origin/overview',
+        url: `${appConfig.apiPrefix}/origin/overview`,
         method: 'post',
         data,
     });
@@ -87,7 +88,7 @@ export async function apiGetSalesSleeveOverview<T, U extends Record<string, unkn
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/sleeve/overview',
+        url: `${appConfig.apiPrefix}/sleeve/overview`,
         method: 'post',
         data,
     });
@@ -97,7 +98,7 @@ export async function apiGetSalesStyleOverview<T, U extends Record<string, unkno
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/style/overview',
+        url: `${appConfig.apiPrefix}/style/overview`,
         method: 'post',
         data,
     });
@@ -107,7 +108,7 @@ export async function apiGetSalesTextureOverview<T, U extends Record<string, unk
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/texture/overview',
+        url: `${appConfig.apiPrefix}/texture/overview`,
         method: 'post',
         data,
     });
@@ -117,7 +118,7 @@ export async function apiGetSalesThicknessOverview<T, U extends Record<string, u
     data: U
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/thickness/overview',
+        url: `${appConfig.apiPrefix}/thickness/overview`,
         method: 'post',
         data,
     });
@@ -145,7 +146,7 @@ export async function apiGetSalesProductDetails<T, U extends Record<string, unkn
 
 ) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/productDetails/details',
+        url: `${appConfig.apiPrefix}/productDetails/details`,
         method: 'post',
         data,
         params
@@ -160,7 +161,7 @@ export async function apiGetDataProductDetailQuery<T, U extends Record<string, u
 
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/productDetails/getDataAttribute`,
+        url: `${appConfig.apiPrefix}/productDetails/getDataAttribute`,
         method: 'get',
         params,
     })
@@ -176,7 +177,7 @@ export async function apiGetSalesProductDetail<T, U extends Record<string, unkno
 
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/productDetails/findById`,
+        url: `${appConfig.apiPrefix}/productDetails/findById`,
         method: 'post',
         params,
     })
@@ -187,7 +188,7 @@ export async function apiGetSalesProductDetail<T, U extends Record<string, unkno
 
 export async function apiGetSalesProductList<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/product/product-list',
+        url: `${appConfig.apiPrefix}/product/product-list`,
         method: 'get',
     });
 }
@@ -196,7 +197,7 @@ export async function apiGetSalesProductList<T>() {
 
 export async function apiGetSalesBrands<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/brand/brand-list',
+        url: `${appConfig.apiPrefix}/brand/brand-list`,
         method: 'get',
     });
 }
@@ -205,70 +206,70 @@ export async function apiGetSalesBrands<T>() {
 
 export async function apiGetSalesOrigins<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/origin/origin-list',
+        url: `${appConfig.apiPrefix}/origin/origin-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesStyles<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/style/style-list',
+        url: `${appConfig.apiPrefix}/style/style-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesCollars<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/collar/collar-list',
+        url: `${appConfig.apiPrefix}/collar/collar-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesSleeves<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/sleeve/sleeve-list',
+        url: `${appConfig.apiPrefix}/sleeve/sleeve-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesThickness<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/thickness/thickness-list',
+        url: `${appConfig.apiPrefix}/thickness/thickness-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesTextures<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/texture/texture-list',
+        url: `${appConfig.apiPrefix}/texture/texture-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesElasticitys<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/elasticity/elasticity-list',
+        url: `${appConfig.apiPrefix}/elasticity/elasticity-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesColors<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/color/color-list',
+        url: `${appConfig.apiPrefix}/color/color-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesSizes<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/size/size-list',
+        url: `${appConfig.apiPrefix}/size/size-list`,
         method: 'get',
     });
 }
 
 export async function apiGetSalesMaterials<T>() {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/material/material-list',
+        url: `${appConfig.apiPrefix}/material/material-list`,
         method: 'get',
     });
 }
@@ -278,7 +279,7 @@ export async function apiGetSalesMaterials<T>() {
 //save data
 export async function apiCreateSalesProductDetail<T, U extends Record<string, unknown>>(data: U[]) {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/productDetails/saveAll',
+        url: `${appConfig.apiPrefix}/productDetails/saveAll`,
         method: 'post',
         data, // Dữ liệu là một mảng
     });
@@ -286,14 +287,14 @@ export async function apiCreateSalesProductDetail<T, U extends Record<string, un
 
 export async function apiCreateSalesProduct<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/product/save',
+        url: `${appConfig.apiPrefix}/product/save`,
         method: 'post',
         data,
     });
 }
 export async function apiCreateSalesBrand<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/brand/save',
+        url: `${appConfig.apiPrefix}/brand/save`,
         method: 'post',
         data,
     });
@@ -301,7 +302,7 @@ export async function apiCreateSalesBrand<T, U extends Record<string, unknown>>(
 
 export async function apiCreateSalesOrigin<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/origin/save',
+        url: `${appConfig.apiPrefix}/origin/save`,
         method: 'post',
         data,
     });
@@ -310,7 +311,7 @@ export async function apiCreateSalesOrigin<T, U extends Record<string, unknown>>
 // API cho Style
 export async function apiCreateSalesStyle<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/style/save',
+        url: `${appConfig.apiPrefix}/style/save`,
         method: 'post',
         data,
     });
@@ -319,7 +320,7 @@ export async function apiCreateSalesStyle<T, U extends Record<string, unknown>>(
 // API cho Material
 export async function apiCreateSalesMaterial<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/material/save',
+        url: `${appConfig.apiPrefix}/material/save`,
         method: 'post',
         data,
     });
@@ -328,7 +329,7 @@ export async function apiCreateSalesMaterial<T, U extends Record<string, unknown
 // API cho Collar
 export async function apiCreateSalesCollar<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/collar/save',
+        url: `${appConfig.apiPrefix}/collar/save`,
         method: 'post',
         data,
     });
@@ -337,7 +338,7 @@ export async function apiCreateSalesCollar<T, U extends Record<string, unknown>>
 // API cho Sleeve
 export async function apiCreateSalesSleeve<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/sleeve/save',
+        url: `${appConfig.apiPrefix}/sleeve/save`,
         method: 'post',
         data,
     });
@@ -346,7 +347,7 @@ export async function apiCreateSalesSleeve<T, U extends Record<string, unknown>>
 // API cho Texture
 export async function apiCreateSalesTexture<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/texture/save',
+        url: `${appConfig.apiPrefix}/texture/save`,
         method: 'post',
         data,
     });
@@ -355,7 +356,7 @@ export async function apiCreateSalesTexture<T, U extends Record<string, unknown>
 // API cho Thickness
 export async function apiCreateSalesThickness<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/thickness/save',
+        url: `${appConfig.apiPrefix}/thickness/save`,
         method: 'post',
         data,
     });
@@ -364,7 +365,7 @@ export async function apiCreateSalesThickness<T, U extends Record<string, unknow
 // API cho Elasticity
 export async function apiCreateSalesElasticity<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/elasticity/save',
+        url: `${appConfig.apiPrefix}/elasticity/save`,
         method: 'post',
         data,
     });
@@ -375,7 +376,7 @@ export async function apiCreateSalesElasticity<T, U extends Record<string, unkno
 
 export async function apiCreateSalesColor<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/color/save',
+        url: `${appConfig.apiPrefix}/color/save`,
         method: 'post',
         data,
     });
@@ -383,7 +384,7 @@ export async function apiCreateSalesColor<T, U extends Record<string, unknown>>(
 
 export async function apiCreateSalesSize<T, U extends Record<string, unknown>>(data: U): Promise<{ data: T }> {
     return ApiService.fetchData<T>({
-        url: 'http://localhost:8080/api/v1/size/save',
+        url: `${appConfig.apiPrefix}/size/save`,
         method: 'post',
         data,
     });
@@ -401,7 +402,7 @@ export async function apiGetBrandById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/brand/${id}`, // Truyền id trực tiếp vào URL
+        url: `${appConfig.apiPrefix}/brand/${id}`, // Truyền id trực tiếp vào URL
         method: 'get',
     });
 }
@@ -413,7 +414,7 @@ export async function apiGetCollarById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/collar/${id}`,
+        url: `${appConfig.apiPrefix}/collar/${id}`,
         method: 'get',
     });
 }
@@ -425,7 +426,7 @@ export async function apiGetColorById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/color/${id}`,
+        url: `${appConfig.apiPrefix}/color/${id}`,
         method: 'get',
     });
 }
@@ -436,7 +437,7 @@ export async function apiGetElasticityById<T, U extends Record<string, unknown>>
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/elasticity/${id}`,
+        url: `${appConfig.apiPrefix}/elasticity/${id}`,
         method: 'get',
     });
 }
@@ -448,7 +449,7 @@ export async function apiGetMaterialById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/material/${id}`,
+        url: `${appConfig.apiPrefix}/material/${id}`,
         method: 'get',
     });
 }
@@ -459,7 +460,7 @@ export async function apiGetOriginById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/origin/${id}`,
+        url: `${appConfig.apiPrefix}/origin/${id}`,
         method: 'get',
     });
 }
@@ -472,7 +473,7 @@ export async function apiGetSizeById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/size/${id}`,
+        url: `${appConfig.apiPrefix}/size/${id}`,
         method: 'get',
     });
 }
@@ -483,7 +484,7 @@ export async function apiGetSleeveById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/sleeve/${id}`,
+        url: `${appConfig.apiPrefix}/sleeve/${id}`,
         method: 'get',
     });
 }
@@ -494,7 +495,7 @@ export async function apiGetStyleById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/style/${id}`,
+        url: `${appConfig.apiPrefix}/style/${id}`,
         method: 'get',
     });
 }
@@ -505,7 +506,7 @@ export async function apiGetTextureById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/texture/${id}`,
+        url: `${appConfig.apiPrefix}/texture/${id}`,
         method: 'get',
     });
 }
@@ -516,7 +517,7 @@ export async function apiGetThicknessById<T, U extends Record<string, unknown>>(
     const { id } = params;
 
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/thickness/${id}`,
+        url: `${appConfig.apiPrefix}/thickness/${id}`,
         method: 'get',
     });
 }
@@ -528,7 +529,7 @@ export async function apiDeleteSalesProducts<T>(id: string | string[]) {
     // Đảm bảo id là kiểu string trước khi đưa vào URL
     const productId = Array.isArray(id) ? id[0] : id; // Lấy ID đầu tiên nếu là mảng
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/product/delete/${productId}`, // Sử dụng path parameters
+        url: `${appConfig.apiPrefix}/product/delete/${productId}`, // Sử dụng path parameters
         method: 'delete',
     });
 }
@@ -537,7 +538,7 @@ export async function apiDeleteSalesProductDetail<T, U extends Record<string, un
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/productDetails/${param.id}`, // Thêm phần tham số id vào URL
+        url: `${appConfig.apiPrefix}/productDetails/${param.id}`, // Thêm phần tham số id vào URL
         method: 'delete',
         param
     });
@@ -548,7 +549,7 @@ export async function apiDeleteSalesBrand<T, U extends Record<string, unknown>>(
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/brand/${param.id}`,
+        url: `${appConfig.apiPrefix}/brand/${param.id}`,
         method: 'delete',
         param
     });
@@ -558,7 +559,7 @@ export async function apiDeleteSalesCollar<T, U extends Record<string, unknown>>
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/collar/${param.id}`,
+        url: `${appConfig.apiPrefix}/collar/${param.id}`,
         method: 'delete',
         param
     });
@@ -568,7 +569,7 @@ export async function apiDeleteSalesColor<T, U extends Record<string, unknown>>(
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/color/${param.id}`,
+        url: `${appConfig.apiPrefix}/color/${param.id}`,
         method: 'delete',
         param
     });
@@ -577,7 +578,7 @@ export async function apiDeleteSalesElasticity<T, U extends Record<string, unkno
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/elasticity/${param.id}`,
+        url: `${appConfig.apiPrefix}/elasticity/${param.id}`,
         method: 'delete',
         param
     });
@@ -586,7 +587,7 @@ export async function apiDeleteSalesMaterial<T, U extends Record<string, unknown
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/material/${param.id}`,
+        url: `${appConfig.apiPrefix}/material/${param.id}`,
         method: 'delete',
         param
     });
@@ -595,7 +596,7 @@ export async function apiDeleteSalesOrigin<T, U extends Record<string, unknown>>
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/origin/${param.id}`,
+        url: `${appConfig.apiPrefix}/origin/${param.id}`,
         method: 'delete',
         param
     });
@@ -604,7 +605,7 @@ export async function apiDeleteSalesSize<T, U extends Record<string, unknown>>(
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/size/${param.id}`,
+        url: `${appConfig.apiPrefix}/size/${param.id}`,
         method: 'delete',
         param
     });
@@ -613,7 +614,7 @@ export async function apiDeleteSalesSleeve<T, U extends Record<string, unknown>>
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/sleeve/${param.id}`,
+        url: `${appConfig.apiPrefix}/sleeve/${param.id}`,
         method: 'delete',
         param
     });
@@ -622,7 +623,7 @@ export async function apiDeleteSalesStyle<T, U extends Record<string, unknown>>(
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/style/${param.id}`,
+        url: `${appConfig.apiPrefix}/style/${param.id}`,
         method: 'delete',
         param
     });
@@ -631,7 +632,7 @@ export async function apiDeleteSalesTexture<T, U extends Record<string, unknown>
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/texture/${param.id}`,
+        url: `${appConfig.apiPrefix}/texture/${param.id}`,
         method: 'delete',
         param
     });
@@ -640,7 +641,7 @@ export async function apiDeleteSalesThickness<T, U extends Record<string, unknow
     param: U
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/thickness/${param.id}`,
+        url: `${appConfig.apiPrefix}/thickness/${param.id}`,
         method: 'delete',
         param
     });
@@ -655,7 +656,7 @@ export async function apiPutSalesProductDetail<T, U extends Record<string, unkno
 
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/productDetails/${param}`,
+        url: `${appConfig.apiPrefix}/productDetails/${param}`,
         method: 'put',
         data,
     });
@@ -668,7 +669,7 @@ export async function apiPutSalesBrand<T, U extends Record<string, unknown>>(
  
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/brand/${param}`,
+        url: `${appConfig.apiPrefix}/brand/${param}`,
         method: 'put',
         data,
     });
@@ -679,7 +680,7 @@ export async function apiPutSalesCollar<T, U extends Record<string, unknown>>(
 
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/collar/${param}`,
+        url: `${appConfig.apiPrefix}/collar/${param}`,
         method: 'put',
         data,
     });
@@ -692,7 +693,7 @@ export async function apiPutSalesColor<T, U extends Record<string, unknown>>(
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/color/${param}`,
+        url: `${appConfig.apiPrefix}/color/${param}`,
         method: 'put',
         data,
     });
@@ -703,7 +704,7 @@ export async function apiPutSalesElasticity<T, U extends Record<string, unknown>
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/elasticity/${param}`,
+        url: `${appConfig.apiPrefix}/elasticity/${param}`,
         method: 'put',
         data,
     });
@@ -716,7 +717,7 @@ export async function apiPutSalesMaterial<T, U extends Record<string, unknown>>(
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/material/${param}`,
+        url: `${appConfig.apiPrefix}/material/${param}`,
         method: 'put',
         data,
     });
@@ -727,7 +728,7 @@ export async function apiPutSalesOrigin<T, U extends Record<string, unknown>>(
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/origin/${param}`,
+        url: `${appConfig.apiPrefix}/origin/${param}`,
         method: 'put',
         data,
     });
@@ -740,7 +741,7 @@ export async function apiPutSalesSize<T, U extends Record<string, unknown>>(
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/size/${param}`,
+        url: `${appConfig.apiPrefix}/size/${param}`,
         method: 'put',
         data,
     });
@@ -751,7 +752,7 @@ export async function apiPutSalesSleeve<T, U extends Record<string, unknown>>(
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/sleeve/${param}`,
+        url: `${appConfig.apiPrefix}/sleeve/${param}`,
         method: 'put',
         data,
     });
@@ -762,7 +763,7 @@ export async function apiPutSalesStyle<T, U extends Record<string, unknown>>(
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/style/${param}`,
+        url: `${appConfig.apiPrefix}/style/${param}`,
         method: 'put',
         data,
     });
@@ -773,7 +774,7 @@ export async function apiPutSalesTexture<T, U extends Record<string, unknown>>(
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/texture/${param}`,
+        url: `${appConfig.apiPrefix}/texture/${param}`,
         method: 'put',
         data,
     });
@@ -784,7 +785,7 @@ export async function apiPutSalesThickness<T, U extends Record<string, unknown>>
     param: string
 ) {
     return ApiService.fetchData<T>({
-        url: `http://localhost:8080/api/v1/thickness/${param}`,
+        url: `${appConfig.apiPrefix}/thickness/${param}`,
         method: 'put',
         data,
     });

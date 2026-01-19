@@ -8,6 +8,7 @@ import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup'
 import axios from 'axios'
 import { toast, ToastContainer } from 'react-toastify'
+import appConfig from '@/configs/app.config'
 
 interface ForgotPasswordModalProps {
     isOpen: boolean;
@@ -50,7 +51,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
     ) => {
         setSubmitting(true)
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/users/request-verification-code', {
+            const response = await axios.post(`${appConfig.apiPrefix}/users/request-verification-code`, {
                 email: values.email,
             })
             if (response.status === 200) {
@@ -72,7 +73,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
     ) => {
         setSubmitting(true)
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/users/reset-password/v2', {
+            const response = await axios.post(`${appConfig.apiPrefix}/users/reset-password/v2`, {
                 email: values.email,
                 verificationCode: values.verificationCode,
                 newPassword: values.newPassword,

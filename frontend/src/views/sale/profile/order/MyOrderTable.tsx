@@ -17,6 +17,7 @@ import TypeOrderFormat from '@/views/util/TypeOrderFormat'
 import IsInStoreOrderFormat from '@/views/util/IsInStoreOrderFormat'
 import OrderStatusTimeline from './OrderStatusTimeline'
 import { message } from 'antd'
+import appConfig from '@/configs/app.config'
 
 
 type BadgeType =
@@ -480,7 +481,7 @@ export const MyOrderTable = () => {
         const actionText = isCancel ? 'Hủy đơn hàng' : 'Xác nhận đơn hàng';
 
         try {
-            const response = await fetch('http://localhost:8080/api/v1/history/action', {
+            const response = await fetch(`${appConfig.apiPrefix}/history/action`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -509,7 +510,7 @@ export const MyOrderTable = () => {
     const fetchBillHistory = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch(`http://localhost:8080/api/v1/history/timeline/2`);
+            const response = await fetch(`${appConfig.apiPrefix}/history/timeline/2`);
 
             // if (!response.ok) {
             //     throw new Error('Không thể tải thông tin đơn hàng');

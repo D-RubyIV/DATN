@@ -1,1 +1,0 @@
-import{u as s,j as t,p as l}from"./index-CmnZOBjS.js";import{R as o}from"./ClassicLayout-7NXnncxJ.js";const r=()=>{const a=s(e=>e.theme.layout.type);return t.jsx("div",{className:"app-layout-blank flex flex-auto flex-col h-[100vh]",children:a===l?t.jsx(o,{}):t.jsx(o,{})})};export{r as default};
