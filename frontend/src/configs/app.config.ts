@@ -8,7 +8,7 @@ export type AppConfig = {
 }
 
 const appConfig: AppConfig = {
-    apiPrefix: 'http://localhost:8080/api/v1',
+    apiPrefix: 'https://canthshop.uk/api/v1',
     authenticatedEntryPath: '/admin/manage/home',
     unAuthenticatedEntryPath: '/auth/sign-in',
     tourPath: '/',
