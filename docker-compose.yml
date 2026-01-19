@@ -77,7 +77,7 @@ services:
     image: nginx:latest
     build:
       context: .
-      dockerfile: nginx/Dockerfile
+      dockerfile: docker/nginx/Dockerfile
     ports:        
       - 80:80
     depends_on:
