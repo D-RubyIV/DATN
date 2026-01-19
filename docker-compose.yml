@@ -70,6 +70,29 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+  
+  
+  nginx:
+    container_name: ms_nginx
+    image: nginx:latest
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    ports:        
+      - 80:80
+    depends_on:
+      - client
+      - server
+    volumes:
+    - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - dev
+
 networks:
   dev:
     driver: bridge
