@@ -4,7 +4,7 @@ import Axios from "axios";
 
 // At this point the timeout config value is `0` as is the default for the library
 const instance = Axios.create({
-    baseURL: 'https://canthshop.uk/api/v1',
+    baseURL: 'http://163.223.224.172/api/v1',
     timeout: 30000,
     headers: {}
   });
