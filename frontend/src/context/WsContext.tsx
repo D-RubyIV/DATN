@@ -73,7 +73,7 @@ const WsProvider = ({ children }: { children: ReactNode }) => {
     }, [countOrder])
 
     const connect = () => {
-        const socket = new SockJS(`http://localhost:8080/api/v1/ws-notifications`)
+        const socket = new SockJS(`http://163.223.224.172/api/v1/ws-notifications`)
         const client = new Client({
             webSocketFactory: () => socket,
             connectHeaders: {
