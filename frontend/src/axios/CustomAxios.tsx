@@ -5,7 +5,7 @@ import Axios from "axios";
 
 // At this point the timeout config value is `0` as is the default for the library
 const instance = Axios.create({
-    baseURL: `${appConfig.apiPrefix}/api/v1`,
+    baseURL: `${appConfig.apiPrefix}`,
     timeout: 30000,
     headers: {}
   });

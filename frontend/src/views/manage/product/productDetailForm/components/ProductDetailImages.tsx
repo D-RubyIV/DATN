@@ -142,7 +142,7 @@ const ProductDetailImages = (props: ProductImagesProps) => {
         formData.append("file", latestFile);
 
         try {
-            const response = await fetch(`${appConfig.apiPrefix}/api/v1/api/v1/image/upload`, {
+            const response = await fetch(`${appConfig.apiPrefix}/image/upload`, {
                 method: "POST",
                 body: formData,
             });

@@ -22,7 +22,7 @@ const ShowFormSize: React.FC<IProps> = ({ selectedSizes, setSelectedSizes }) => 
     const fetchSizes = async () => {
         try {
             const response = await axios.get(
-                `${appConfig.apiPrefix}/api/size/`
+                `${appConfig.apiPrefix}/size/`
             );
             setSizes(response.data);
         } catch (error) {

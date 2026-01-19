@@ -35,7 +35,7 @@ console.log(productDetails)
         }
 
         try {
-            const response = await fetch(`${appConfig.apiPrefix}/api/v1/product/search/${product.name}`);
+            const response = await fetch(`${appConfig.apiPrefix}/product/search/${product.name}`);
             if (response.ok) {
                 const data = await response.json();
                 setProductData(data);

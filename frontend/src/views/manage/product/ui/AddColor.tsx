@@ -22,7 +22,7 @@ const AlpineModal: React.FC<IProps> = ({ selectedColors, setSelectedColors }) =>
 
         try {
             const response = await axios.get(
-                `${appConfig.apiPrefix}/api/color/`
+                `${appConfig.apiPrefix}/color/`
             );
             setColors(response.data);
             // console.log(response.data);
